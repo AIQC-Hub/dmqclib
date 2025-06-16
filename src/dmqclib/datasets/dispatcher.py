@@ -1,6 +1,7 @@
 from dmqclib.utils.config import read_config
 from dmqclib.datasets.input.dataset_a import DataSetA
 
+
 def load_input_dataset(label: str, config_file: str = None):
     """
     Given a label (e.g., 'NRT_AL_001'), look up the class specified in the

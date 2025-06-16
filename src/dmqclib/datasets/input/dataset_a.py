@@ -1,5 +1,6 @@
 from dmqclib.datasets.input.input_base import InputDataSetBase
 
+
 class DataSetA(InputDataSetBase):
     """
     DataSetA inherits from DataSetBase and sets the 'expected_class_name' to 'DataSetA'.

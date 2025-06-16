@@ -14,12 +14,16 @@ class InputDataSetBase:
         data = read_config(config_file, "datasets.yaml")
 
         if label not in data:
-            raise ValueError(f"Label '{label}' not found in config file '{config_file}'")
+            raise ValueError(
+                f"Label '{label}' not found in config file '{config_file}'"
+            )
 
         dataset_config = data[label]
 
         if not self.expected_class_name:
-            raise NotImplementedError("Child class must define 'expected_class_name' attribute")
+            raise NotImplementedError(
+                "Child class must define 'expected_class_name' attribute"
+            )
 
         # Validate that the YAML's "class" matches the child's declared class name
         if dataset_config.get("class") != self.expected_class_name:
