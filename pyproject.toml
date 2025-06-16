@@ -1,0 +1,21 @@
+[project]
+name = "dmqclib"
+version = "0.1.0"
+description = "This package aims to offer helper functions that simplify model building and evaluation"
+readme = "README.md"
+authors = [
+    { name = "Takaya Saito", email = "takaya.saito@outlook.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+]

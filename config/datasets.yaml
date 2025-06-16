@@ -1,0 +1,16 @@
+path_info:
+  path: ../data
+  input: input
+  train: train
+  validate: validate
+  test: test
+
+NRT_AL_001:
+  class: DataSetA
+  file: nrt_al_001.parquet
+  filter: True
+
+NRT_AL_002:
+  class: DataSetB
+  file: nrt_cora_002.parquet
+  filter: False
