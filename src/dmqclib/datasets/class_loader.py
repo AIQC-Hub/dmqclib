@@ -1,5 +1,6 @@
 from dmqclib.utils.config import read_config
-from dmqclib.datasets.input.dataset_a import DataSetA
+from dmqclib.datasets.registry import INPUT_DATASET_REGISTRY
+
 
 def load_input_dataset(label: str, config_file: str = None):
     """
@@ -12,8 +13,9 @@ def load_input_dataset(label: str, config_file: str = None):
     if dataset_config is None:
         raise ValueError(f"No dataset configuration found for label '{label}'")
 
-    class_name = dataset_config.get("class")
-    if class_name == "DataSetA":
-        return DataSetA(label, config_file=config_file)
-    else:
+    class_name = dataset_config.get("input_class")
+    dataset_class = INPUT_DATASET_REGISTRY.get(class_name)
+    if not dataset_class:
         raise ValueError(f"Unknown dataset class specified: {class_name}")
+
+    return dataset_class(label, config_file=config_file)
