@@ -35,6 +35,7 @@ class InputDataSetBase:
 
         # Set member variables
         self.dataset_name = dataset_name
+        self.config_file = data.get("config_file")
         self.dataset_config = dataset_config
         self.path_info = data.get("path_info")
         self.__build_input_file_name()
@@ -47,7 +48,7 @@ class InputDataSetBase:
         file_name = self.dataset_config.get("input_file", "")
         if file_name is None or file_name == "":
             raise ValueError(
-                f"'input_file' not found or set in config file '{self.config_file}'"
+                f"'input_file' not found or set to None in config file '{self.config_file}'"
             )
 
         self.input_file_name = build_full_input_path(

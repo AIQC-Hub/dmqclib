@@ -29,4 +29,6 @@ def read_config(
     with open(config_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
+    data["config_file"] = config_file
+
     return data

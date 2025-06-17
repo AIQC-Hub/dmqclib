@@ -22,3 +22,18 @@ class TestDataSetA(unittest.TestCase):
         """Test that constructing DataSetA with an invalid label raises ValueError."""
         with self.assertRaises(ValueError):
             DataSetA("NON_EXISTENT_LABEL", str(self.explicit_config_file_path))
+
+    def test_config_file(self):
+        """Test that config file is properly set in the corresponding member variable"""
+        ds = DataSetA("NRT_AL_001", str(self.explicit_config_file_path))
+        self.assertTrue("datasets.yaml" in ds.config_file)
+
+    def test_input_file_name(self):
+        """Test that config file is properly set in the corresponding member variable"""
+        ds = DataSetA("NRT_AL_001", str(self.explicit_config_file_path))
+        self.assertEqual("/path/to/data/input/nrt_al_001.parquet", str(ds.input_file_name))
+
+    def test_no_input_file_name(self):
+        """Test that config file is properly set in the corresponding member variable"""
+        with self.assertRaises(ValueError):
+            _ = DataSetA("NRT_AL_002", str(self.explicit_config_file_path))

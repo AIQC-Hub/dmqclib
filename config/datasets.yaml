@@ -12,6 +12,4 @@ NRT_AL_001:
   data_folder: nrt_al_001
 
 NRT_AL_002:
-  input_class: DataSetB
-  input_file: nrt_cora_002.parquet
-  data_folder: nrt_al_002
+  input_class: DataSetA
