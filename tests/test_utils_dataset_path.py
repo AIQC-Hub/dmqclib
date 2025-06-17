@@ -2,13 +2,13 @@ import unittest
 from pathlib import Path
 from dmqclib.utils.config import read_config
 from dmqclib.utils.dataset_path import build_full_input_path
+from dmqclib.utils.dataset_path import build_full_data_path
 
 
 class TestBuildFullInputPath(unittest.TestCase):
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Called before each test method. We create a config file here for reuse.
         """
         self.explicit_config_file_path = (
             Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
@@ -69,3 +69,72 @@ class TestBuildFullInputPath(unittest.TestCase):
         self.config["path_info"]["input_folder"] = ""
         result = build_full_input_path(self.config, "", "filename.txt")
         self.assertEqual(result, "/path/to/data/filename.txt")
+
+
+class TestBuildFullDataPath(unittest.TestCase):
+    def setUp(self):
+        """
+        Called before each test method. We create a config file here for reuse.
+        """
+        self.explicit_config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+        self.config = read_config(config_file=str(self.explicit_config_file_path))
+
+    def test_normal_usage(self):
+        """
+        Test that a normal call (with non-empty data_folder, data_type, file_name)
+        produces the expected path.
+        """
+        result = build_full_data_path(self.config, "my_data", "train", "datafile.csv")
+        expected = "/path/to/data/my_data/train/datafile.csv"
+        self.assertEqual(result, expected)
+
+    def test_empty_data_folder(self):
+        """
+        Test when data_folder is an empty string. It should skip appending
+        the data_folder level.
+        """
+        result = build_full_data_path(self.config, "", "validate", "val.csv")
+        expected = "/path/to/data/validate/val.csv"
+        self.assertEqual(result, expected)
+
+    def test_none_data_folder(self):
+        """
+        Test when data_folder is None. It should skip appending the data_folder level.
+        """
+        result = build_full_data_path(self.config, None, "test", "testfile.csv")
+        expected = "/path/to/data/test/testfile.csv"
+        self.assertEqual(result, expected)
+
+    def test_empty_data_type_folder(self):
+        """
+        Test when config["path_info"][data_type] is an empty string.
+        """
+        # Make "train" key empty to simulate having an empty folder name
+        self.config["path_info"]["train_folder"] = ""
+        result = build_full_data_path(self.config, "subfolder", "train", "somefile.txt")
+        expected = "/path/to/data/subfolder/somefile.txt"
+        self.assertEqual(result, expected)
+
+    def test_none_data_type_folder(self):
+        """
+        Test when config["path_info"][data_type] is None.
+        """
+        self.config["path_info"]["train_folder"] = None
+        result = build_full_data_path(
+            self.config, "subfolder", "train", "anotherfile.txt"
+        )
+        expected = "/path/to/data/subfolder/anotherfile.txt"
+        self.assertEqual(result, expected)
+
+    def test_relative_paths(self):
+        """
+        Test when data_folder or config["path_info"][data_type] includes relative segments like '..'.
+        """
+        self.config["path_info"]["validate_folder"] = "../valid"
+        result = build_full_data_path(
+            self.config, "../archive", "validate", "mydata.csv"
+        )
+        expected = "/path/to/valid/mydata.csv"
+        self.assertEqual(result, expected)
