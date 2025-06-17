@@ -31,7 +31,9 @@ class TestDataSetA(unittest.TestCase):
     def test_input_file_name(self):
         """Test that config file is properly set in the corresponding member variable"""
         ds = DataSetA("NRT_AL_001", str(self.explicit_config_file_path))
-        self.assertEqual("/path/to/data/input/nrt_al_001.parquet", str(ds.input_file_name))
+        self.assertEqual(
+            "/path/to/data/input/nrt_al_001.parquet", str(ds.input_file_name)
+        )
 
     def test_no_input_file_name(self):
         """Test that config file is properly set in the corresponding member variable"""
