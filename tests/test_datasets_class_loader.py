@@ -1,10 +1,10 @@
 import unittest
 from pathlib import Path
-from dmqclib.datasets.dispatcher import load_input_dataset
+from dmqclib.datasets.class_loader import load_input_dataset
 from dmqclib.datasets.input.dataset_a import DataSetA
 
 
-class TestInputDispatcher(unittest.TestCase):
+class TestInputClassLoader(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We define the explicit path to
