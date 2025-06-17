@@ -6,10 +6,10 @@ path_info:
   validate_folder: validate
   test_folder: test
 
-NRT_AL_001:
+NRT_BO_001:
   input_class: DataSetA
-  input_file: nrt_al_001.parquet
-  data_folder: nrt_al_001
+  input_file: nrt_cora_bo_test.parquet
+  data_folder: nrt_bo_001
 
-NRT_AL_002:
+NRT_BO_002:
   input_class: DataSetA

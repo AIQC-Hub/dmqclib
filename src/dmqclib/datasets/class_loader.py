@@ -4,7 +4,7 @@ from dmqclib.datasets.registry import INPUT_DATASET_REGISTRY
 
 def load_input_dataset(label: str, config_file: str = None):
     """
-    Given a label (e.g., 'NRT_AL_001'), look up the class specified in the
+    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
     data = read_config(config_file, "datasets.yaml")

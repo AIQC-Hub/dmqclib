@@ -18,9 +18,9 @@ class TestInputClassLoader(unittest.TestCase):
         """
         Test that load_dataset returns an instance of DataSetA for the known label.
         """
-        ds = load_input_dataset("NRT_AL_001", str(self.explicit_config_file_path))
+        ds = load_input_dataset("NRT_BO_001", str(self.explicit_config_file_path))
         self.assertIsInstance(ds, DataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_AL_001")
+        self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_load_dataset_invalid_label(self):
         """

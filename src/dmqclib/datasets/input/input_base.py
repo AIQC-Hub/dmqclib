@@ -1,5 +1,6 @@
 from dmqclib.utils.config import read_config
 from dmqclib.utils.dataset_path import build_full_input_path
+from dmqclib.utils.file_io import read_input_file
 
 
 class InputDataSetBase:
@@ -54,6 +55,20 @@ class InputDataSetBase:
         self.input_file_name = build_full_input_path(
             self.path_info, input_folder, file_name
         )
+
+    def read_input_data(self):
+        """
+        Reads the input data from self.input_file_name using read_input_file,
+        with file type and options derived from self.dataset_config.
+        If either is missing or None, appropriate defaults (None for file_type,
+        and empty dict for options) are used. The resulting DataFrame is stored
+        in self.input_data.
+        """
+        input_file = self.input_file_name
+        file_type = self.dataset_config.get("input_file_type") or None
+        options = self.dataset_config.get("input_file_options") or {}
+
+        self.input_data = read_input_file(input_file, file_type, options)
 
     def __repr__(self):
         # Provide a simple representation
