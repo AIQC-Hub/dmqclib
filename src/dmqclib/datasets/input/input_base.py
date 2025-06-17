@@ -26,7 +26,7 @@ class InputDataSetBase:
             )
 
         # Validate that the YAML's "class" matches the child's declared class name
-        if dataset_config.get("class") != self.expected_class_name:
+        if dataset_config.get("input_class") != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
                 f"but got '{dataset_config.get('class')}'"
@@ -34,9 +34,8 @@ class InputDataSetBase:
 
         # Store common fields or config data
         self.label = label
-        self.file = dataset_config.get("file")
-        self.filter = dataset_config.get("filter", False)
+        self.file = dataset_config.get("input_file")
 
     def __repr__(self):
         # Provide a simple representation; you could customize further if needed
-        return f"{self.expected_class_name}(file={self.file}, filter={self.filter})"
+        return f"{self.expected_class_name}(file={self.file})"

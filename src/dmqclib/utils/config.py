@@ -29,3 +29,9 @@ def read_config(
         data = yaml.safe_load(f)
 
     return data
+
+
+def build_full_path(config: dict, dataset_type: str, file_name: str) -> str:
+    full_path = ""
+
+    return full_path

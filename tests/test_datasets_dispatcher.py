@@ -21,7 +21,6 @@ class TestInputDispatcher(unittest.TestCase):
         ds = load_input_dataset("NRT_AL_001", str(self.explicit_config_file_path))
         self.assertIsInstance(ds, DataSetA)
         self.assertEqual(ds.file, "nrt_al_001.parquet")
-        self.assertTrue(ds.filter)
 
     def test_load_dataset_invalid_label(self):
         """

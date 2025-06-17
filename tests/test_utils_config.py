@@ -21,9 +21,12 @@ class TestReadConfig(unittest.TestCase):
         data = read_config(config_file=str(self.explicit_config_file_path))
         self.assertIsNotNone(data, "Data should not be None")
         self.assertIn("path_info", data, "Key 'path_info' should be in the YAML")
-        self.assertEqual(data["path_info"]["path"], "/path/to/data")
-        self.assertEqual(data["path_info"]["input"], "input")
-        self.assertEqual(data["path_info"]["train"], "train")
+        self.assertEqual(data["path_info"]["input_path"], "/path/to/data")
+        self.assertEqual(data["path_info"]["input_folder"], "input")
+        self.assertEqual(data["path_info"]["data_path"], "/path/to/data")
+        self.assertEqual(data["path_info"]["train_folder"], "train")
+        self.assertEqual(data["path_info"]["validate_folder"], "validate")
+        self.assertEqual(data["path_info"]["test_folder"], "test")
 
     def test_read_config_with_config_name(self):
         """
