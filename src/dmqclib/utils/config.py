@@ -1,10 +1,12 @@
+import os
 import yaml
 from pathlib import Path
+from typing import Dict, Optional
 
 
 def read_config(
     config_file: str = None, config_name: str = None, parent_level: int = 3
-) -> dict:
+) -> Dict:
     """
     Reads a YAML configuration file named config_name after traversing
     parent_level directories upward from this file, then returning the 'config'
@@ -29,9 +31,3 @@ def read_config(
         data = yaml.safe_load(f)
 
     return data
-
-
-def build_full_path(config: dict, dataset_type: str, file_name: str) -> str:
-    full_path = ""
-
-    return full_path
