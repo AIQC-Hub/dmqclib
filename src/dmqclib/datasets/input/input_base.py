@@ -1,9 +1,10 @@
+from abc import ABC, abstractmethod
 from dmqclib.utils.config import read_config
 from dmqclib.utils.dataset_path import build_full_input_path
 from dmqclib.utils.file_io import read_input_file
 
 
-class InputDataSetBase:
+class InputDataSetBase(ABC):
     """
     Base class for data set classes like DataSetA, DataSetB, DataSetC, etc.
     Child classes must define an 'expected_class_name' attribute, which is
@@ -69,6 +70,20 @@ class InputDataSetBase:
         options = self.dataset_config.get("input_file_options") or {}
 
         self.input_data = read_input_file(input_file, file_type, options)
+
+    @abstractmethod
+    def select(self):
+        """
+        Selects columns of the data frame in self.input_data
+        """
+        pass
+
+    @abstractmethod
+    def filter(self):
+        """
+        Filter rows of the data frame in self.input_data
+        """
+        pass
 
     def __repr__(self):
         # Provide a simple representation
