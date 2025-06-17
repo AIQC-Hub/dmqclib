@@ -27,4 +27,6 @@ class TestInputDispatcher(unittest.TestCase):
         Test that calling load_dataset with an invalid label raises a ValueError.
         """
         with self.assertRaises(ValueError):
-            load_input_dataset("NON_EXISTENT_LABEL", str(self.explicit_config_file_path))
+            load_input_dataset(
+                "NON_EXISTENT_LABEL", str(self.explicit_config_file_path)
+            )

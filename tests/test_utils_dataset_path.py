@@ -5,7 +5,6 @@ from dmqclib.utils.dataset_path import build_full_input_path
 
 
 class TestBuildFullInputPath(unittest.TestCase):
-
     def setUp(self):
         """
         Called before each test method. We define the explicit path to

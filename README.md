@@ -42,6 +42,12 @@ To lint the code under the *src* folder with [ruff](https://astral.sh/ruff), use
 uvx ruff check src
 ```
 
+and the unit test code under the *tests* folder:
+
+```bash
+uvx ruff check tests
+```
+
 Alternatively, to lint the code with [flake8](https://flake8.pycqa.org), use the following command:
 
 ```bash
@@ -54,6 +60,12 @@ To format the code under the *src* folder with [ruff](https://astral.sh/ruff), u
 
 ```bash
 uvx ruff format src
+```
+
+and the unit test code under the *tests* folder:
+
+```bash
+uvx ruff format tests
 ```
 
 Alternatively, to format the code with [black](https://pypi.org/project/black/), use the following command:

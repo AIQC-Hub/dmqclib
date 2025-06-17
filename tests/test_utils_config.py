@@ -4,7 +4,6 @@ from dmqclib.utils.config import read_config
 
 
 class TestReadConfig(unittest.TestCase):
-
     def setUp(self):
         """
         Called before each test method. We define the explicit path to

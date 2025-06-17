@@ -2,7 +2,9 @@ import os
 from typing import Dict, Optional
 
 
-def build_full_input_path(config: Dict, input_folder: Optional[str], file_name: str) -> str:
+def build_full_input_path(
+    config: Dict, input_folder: Optional[str], file_name: str
+) -> str:
     """
     Build a full input path based on the fields in the 'config' dictionary and
     the provided arguments. The assembled path is:
@@ -34,10 +36,14 @@ def build_full_input_path(config: Dict, input_folder: Optional[str], file_name: 
 
     # Use os.path.join to properly handle slashes and special cases
     path_with_config_folder = (
-        os.path.join(base_path, config_input_folder) if config_input_folder else base_path
+        os.path.join(base_path, config_input_folder)
+        if config_input_folder
+        else base_path
     )
     path_with_input_folder = (
-        os.path.join(path_with_config_folder, input_folder) if input_folder else path_with_config_folder
+        os.path.join(path_with_config_folder, input_folder)
+        if input_folder
+        else path_with_config_folder
     )
 
     # Finally join with the file_name
