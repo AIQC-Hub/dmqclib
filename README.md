@@ -51,7 +51,7 @@ uvx ruff check tests
 Alternatively, to lint the code with [flake8](https://flake8.pycqa.org), use the following command:
 
 ```bash
-uvx flake8 src --max-line-length=90
+uvx flake8 src --max-line-length=100
 ```
 
 

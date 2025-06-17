@@ -20,7 +20,9 @@ class TestBuildFullInputPath(unittest.TestCase):
         Test with all normal, non-empty parameters.
         Expect paths to be joined with slashes correctly.
         """
-        result = build_full_input_path(self.config, "my_subfolder", "datafile.csv")
+        result = build_full_input_path(
+            self.config["path_info"], "my_subfolder", "datafile.csv"
+        )
         self.assertEqual(result, "/path/to/data/input/my_subfolder/datafile.csv")
 
     def test_empty_input_folder_arg(self):
@@ -28,7 +30,7 @@ class TestBuildFullInputPath(unittest.TestCase):
         Test when the input_folder argument is an empty string.
         Should skip including it in the path.
         """
-        result = build_full_input_path(self.config, "", "something.txt")
+        result = build_full_input_path(self.config["path_info"], "", "something.txt")
         self.assertEqual(result, "/path/to/data/input/something.txt")
 
     def test_none_input_folder_arg(self):
@@ -36,7 +38,9 @@ class TestBuildFullInputPath(unittest.TestCase):
         Test when the input_folder argument is None.
         Should skip including it in the path.
         """
-        result = build_full_input_path(self.config, None, "something_else.txt")
+        result = build_full_input_path(
+            self.config["path_info"], None, "something_else.txt"
+        )
         self.assertEqual(result, "/path/to/data/input/something_else.txt")
 
     def test_empty_config_input_folder(self):
@@ -44,7 +48,9 @@ class TestBuildFullInputPath(unittest.TestCase):
         Test when config['path_info']['input_folder'] is an empty string.
         """
         self.config["path_info"]["input_folder"] = ""
-        result = build_full_input_path(self.config, "some_folder", "file.csv")
+        result = build_full_input_path(
+            self.config["path_info"], "some_folder", "file.csv"
+        )
         self.assertEqual(result, "/path/to/data/some_folder/file.csv")
 
     def test_none_config_input_folder(self):
@@ -52,14 +58,18 @@ class TestBuildFullInputPath(unittest.TestCase):
         Test when config['path_info']['input_folder'] is None.
         """
         self.config["path_info"]["input_folder"] = None
-        result = build_full_input_path(self.config, "another_subfolder", "info.txt")
+        result = build_full_input_path(
+            self.config["path_info"], "another_subfolder", "info.txt"
+        )
         self.assertEqual(result, "/path/to/data/another_subfolder/info.txt")
 
     def test_relative_paths(self):
         """
         Test when input_folder includes '..' or other relative segments.
         """
-        result = build_full_input_path(self.config, "../relative", "file.csv")
+        result = build_full_input_path(
+            self.config["path_info"], "../relative", "file.csv"
+        )
         self.assertEqual(result, "/path/to/data/relative/file.csv")
 
     def test_only_file_name(self):
@@ -67,7 +77,7 @@ class TestBuildFullInputPath(unittest.TestCase):
         Test if the user sets both config['path_info']['input_folder'] and input_folder to empty.
         """
         self.config["path_info"]["input_folder"] = ""
-        result = build_full_input_path(self.config, "", "filename.txt")
+        result = build_full_input_path(self.config["path_info"], "", "filename.txt")
         self.assertEqual(result, "/path/to/data/filename.txt")
 
 
@@ -86,7 +96,9 @@ class TestBuildFullDataPath(unittest.TestCase):
         Test that a normal call (with non-empty data_folder, data_type, file_name)
         produces the expected path.
         """
-        result = build_full_data_path(self.config, "my_data", "train", "datafile.csv")
+        result = build_full_data_path(
+            self.config["path_info"], "my_data", "train", "datafile.csv"
+        )
         expected = "/path/to/data/my_data/train/datafile.csv"
         self.assertEqual(result, expected)
 
@@ -95,7 +107,9 @@ class TestBuildFullDataPath(unittest.TestCase):
         Test when data_folder is an empty string. It should skip appending
         the data_folder level.
         """
-        result = build_full_data_path(self.config, "", "validate", "val.csv")
+        result = build_full_data_path(
+            self.config["path_info"], "", "validate", "val.csv"
+        )
         expected = "/path/to/data/validate/val.csv"
         self.assertEqual(result, expected)
 
@@ -103,7 +117,9 @@ class TestBuildFullDataPath(unittest.TestCase):
         """
         Test when data_folder is None. It should skip appending the data_folder level.
         """
-        result = build_full_data_path(self.config, None, "test", "testfile.csv")
+        result = build_full_data_path(
+            self.config["path_info"], None, "test", "testfile.csv"
+        )
         expected = "/path/to/data/test/testfile.csv"
         self.assertEqual(result, expected)
 
@@ -113,7 +129,9 @@ class TestBuildFullDataPath(unittest.TestCase):
         """
         # Make "train" key empty to simulate having an empty folder name
         self.config["path_info"]["train_folder"] = ""
-        result = build_full_data_path(self.config, "subfolder", "train", "somefile.txt")
+        result = build_full_data_path(
+            self.config["path_info"], "subfolder", "train", "somefile.txt"
+        )
         expected = "/path/to/data/subfolder/somefile.txt"
         self.assertEqual(result, expected)
 
@@ -123,7 +141,7 @@ class TestBuildFullDataPath(unittest.TestCase):
         """
         self.config["path_info"]["train_folder"] = None
         result = build_full_data_path(
-            self.config, "subfolder", "train", "anotherfile.txt"
+            self.config["path_info"], "subfolder", "train", "anotherfile.txt"
         )
         expected = "/path/to/data/subfolder/anotherfile.txt"
         self.assertEqual(result, expected)
@@ -134,7 +152,7 @@ class TestBuildFullDataPath(unittest.TestCase):
         """
         self.config["path_info"]["validate_folder"] = "../valid"
         result = build_full_data_path(
-            self.config, "../archive", "validate", "mydata.csv"
+            self.config["path_info"], "../archive", "validate", "mydata.csv"
         )
         expected = "/path/to/valid/mydata.csv"
         self.assertEqual(result, expected)

@@ -16,8 +16,7 @@ class TestDataSetA(unittest.TestCase):
     def test_init_valid_label(self):
         """Test that we can properly construct a DataSetA instance from the YAML."""
         ds = DataSetA("NRT_AL_001", str(self.explicit_config_file_path))
-        self.assertEqual(ds.file, "nrt_al_001.parquet")
-        self.assertEqual(ds.label, "NRT_AL_001")
+        self.assertEqual(ds.dataset_name, "NRT_AL_001")
 
     def test_init_invalid_label(self):
         """Test that constructing DataSetA with an invalid label raises ValueError."""
