@@ -1,8 +1,11 @@
 import yaml
 from pathlib import Path
+from typing import Dict
 
 
-def read_config(config_file: str = None, config_name: str = None, parent_level: int = 3) -> dict:
+def read_config(
+    config_file: str = None, config_name: str = None, parent_level: int = 3
+) -> Dict:
     """
     Reads a YAML configuration file named config_name after traversing
     parent_level directories upward from this file, then returning the 'config'
@@ -18,10 +21,14 @@ def read_config(config_file: str = None, config_name: str = None, parent_level: 
 
     if config_file is None:
         if config_name is None:
-            raise ValueError(f"config_name cannot be None when config_file is None")
-        config_file = Path(__file__).resolve().parents[parent_level] / "config" / config_name
+            raise ValueError("config_name cannot be None when config_file is None")
+        config_file = (
+            Path(__file__).resolve().parents[parent_level] / "config" / config_name
+        )
 
     with open(config_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
+
+    data["config_file"] = config_file
 
     return data
