@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from dmqclib.utils.config import read_config
 from dmqclib.utils.dataset_path import build_full_input_path
-from dmqclib.utils.dataset_path import build_full_training_path
+from dmqclib.utils.dataset_path import build_full_select_path
 
 
 class TestBuildFullInputPath(unittest.TestCase):
@@ -79,7 +79,7 @@ class TestBuildFullInputPath(unittest.TestCase):
         self.assertEqual(result, "/path/to/data/filename.txt")
 
 
-class TestBuildFullTrainPath(unittest.TestCase):
+class TestBuildFullSelectPath(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We create a config file here for reuse.
@@ -93,47 +93,45 @@ class TestBuildFullTrainPath(unittest.TestCase):
         """
         Test that a normal call produces the expected path.
         """
-        result = build_full_training_path(
+        result = build_full_select_path(
             self.config["path_info"], "my_data", "datafile.csv"
         )
-        expected = "/path/to/data/my_data/train/datafile.csv"
+        expected = "/path/to/data/my_data/select/datafile.csv"
         self.assertEqual(result, expected)
 
     def test_empty_data_folder(self):
         """
         Test when folder_name1 is an empty string.
         """
-        result = build_full_training_path(self.config["path_info"], "", "val.csv")
-        expected = "/path/to/data/train/val.csv"
+        result = build_full_select_path(self.config["path_info"], "", "val.csv")
+        expected = "/path/to/data/select/val.csv"
         self.assertEqual(result, expected)
 
     def test_none_folder_name(self):
         """
         Test when folder_name1 is None.
         """
-        result = build_full_training_path(
-            self.config["path_info"], None, "testfile.csv"
-        )
-        expected = "/path/to/data/train/testfile.csv"
+        result = build_full_select_path(self.config["path_info"], None, "testfile.csv")
+        expected = "/path/to/data/select/testfile.csv"
         self.assertEqual(result, expected)
 
-    def test_empty_train_folder_name(self):
+    def test_empty_select_folder_name(self):
         """
-        Test when config["path_info"]["train"]["folder_name"] is an empty string.
+        Test when config["path_info"]["select"]["folder_name"] is an empty string.
         """
-        self.config["path_info"]["train"]["folder_name"] = ""
-        result = build_full_training_path(
+        self.config["path_info"]["select"]["folder_name"] = ""
+        result = build_full_select_path(
             self.config["path_info"], "subfolder", "somefile.txt"
         )
         expected = "/path/to/data/subfolder/somefile.txt"
         self.assertEqual(result, expected)
 
-    def test_none_train_folder_name(self):
+    def test_none_select_folder_name(self):
         """
-        Test when config["path_info"]["train"]["folder_name"] is None.
+        Test when config["path_info"]["select"]["folder_name"] is None.
         """
-        self.config["path_info"]["train"]["folder_name"] = None
-        result = build_full_training_path(
+        self.config["path_info"]["select"]["folder_name"] = None
+        result = build_full_select_path(
             self.config["path_info"], "subfolder", "anotherfile.txt"
         )
         expected = "/path/to/data/subfolder/anotherfile.txt"
@@ -141,10 +139,10 @@ class TestBuildFullTrainPath(unittest.TestCase):
 
     def test_relative_paths(self):
         """
-        Test when folder_name1 or config["path_info"]["train"]["folder_name"] includes relative segments like '..'.
+        Test when folder_name1 or config["path_info"]["select"]["folder_name"] includes relative segments like '..'.
         """
-        self.config["path_info"]["train"]["folder_name"] = "../valid"
-        result = build_full_training_path(
+        self.config["path_info"]["select"]["folder_name"] = "../valid"
+        result = build_full_select_path(
             self.config["path_info"], "../archive", "mydata.csv"
         )
         expected = "/path/to/valid/mydata.csv"

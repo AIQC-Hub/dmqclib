@@ -2,19 +2,21 @@ path_info:
   input:
     base_path: /path/to/data
     folder_name: input
-  train:
+  select:
     base_path: /path/to/data
-    folder_name: train
+    folder_name: select
 
 NRT_BO_001:
   input:
-    base_class: DataSetA
+    base_class: InputDataSetA
     file_name: nrt_cora_bo_test.parquet
-  train:
+  select:
+    base_class: SelectDataSetA
     folder_name: nrt_bo_001
-    base_class: TrainingSetA
-
+    file_name: selected_profiles.parquet
 
 NRT_BO_002:
   input:
-    base_class: DataSetA
+    base_class: InputDataSetA
+  select:
+    base_class: SelectDataSetA

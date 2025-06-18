@@ -21,8 +21,8 @@ class TestReadConfig(unittest.TestCase):
         self.assertIn("path_info", config, "Key 'path_info' should be in the YAML")
         self.assertEqual(config["path_info"]["input"]["base_path"], "/path/to/data")
         self.assertEqual(config["path_info"]["input"]["folder_name"], "input")
-        self.assertEqual(config["path_info"]["train"]["base_path"], "/path/to/data")
-        self.assertEqual(config["path_info"]["train"]["folder_name"], "train")
+        self.assertEqual(config["path_info"]["select"]["base_path"], "/path/to/data")
+        self.assertEqual(config["path_info"]["select"]["folder_name"], "select")
 
     def test_read_config_with_config_name(self):
         """

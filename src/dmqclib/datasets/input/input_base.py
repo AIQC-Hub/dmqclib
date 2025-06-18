@@ -6,9 +6,9 @@ from dmqclib.utils.file_io import read_input_file
 
 class InputDataSetBase(ABC):
     """
-    Base class for data set classes like DataSetA, DataSetB, DataSetC, etc.
+    Base class for data set classes like InputDataSetA, InputDataSetB, InputDataSetC, etc.
     Child classes must define an 'expected_class_name' attribute, which is
-    validated against the YAML entry's 'class' field.
+    validated against the YAML entry's 'base_class' field.
     """
 
     expected_class_name = None  # Must be overridden by child classes

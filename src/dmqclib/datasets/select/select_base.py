@@ -1,13 +1,24 @@
 from abc import ABC, abstractmethod
 import polars as pl
 from dmqclib.utils.config import read_config
+from dmqclib.utils.dataset_path import build_full_select_path
 
 
-class TrainingDataSetBin1Base(ABC):
+class ProfileSelectionBase(ABC):
     """
-    Base class for data set classes like DataSetA, DataSetB, DataSetC, etc.
+    Base class for profile selection data set classes like SelectDataSetA, SelectDataSetB, SelectDataSetC, etc.
     Child classes must define an 'expected_class_name' attribute, which is
-    validated against the YAML entry's 'class' field.
+    validated against the YAML entry's 'base_class' field.
+
+    Main steps:
+    1. Label Profiles:
+        Positive profiles are those that contain invalid value flags (e.g. 4) in at least one of the target variables.
+        Profiles that are similar to the positive profiles are marked as negative profiles.
+
+    2. Filter Profiles:
+        Profiles that do not have positive or negative labels are removed.
+
+
     """
 
     expected_class_name = None  # Must be overridden by child classes
@@ -31,7 +42,7 @@ class TrainingDataSetBin1Base(ABC):
         dataset_info = config[dataset_name]
 
         # Validate that the YAML's "class" matches the child's declared class name
-        base_class = dataset_info["train"].get("base_class")
+        base_class = dataset_info["select"].get("base_class")
         if base_class != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
@@ -44,8 +55,24 @@ class TrainingDataSetBin1Base(ABC):
         self.base_class_name = base_class
         self.dataset_info = dataset_info
         self.path_info = config.get("path_info")
+        self.__build_output_file_name()
         self.input_data = input_data
-        self.profiles = None
+        self.selected_profiles = None
+
+    def __build_output_file_name(self):
+        """
+        Set the input file from configuration entries to the member variable 'self.input_file_name'.
+        """
+        folder_name = self.dataset_info["select"].get("folder_name", "")
+        file_name = self.dataset_info["select"].get("file_name", "")
+        if file_name is None or file_name == "":
+            raise ValueError(
+                f"'input_file' not found or set to None in config file '{self.config_file_name}'"
+            )
+
+        self.output_file_name = build_full_select_path(
+            self.path_info, folder_name, file_name
+        )
 
     @abstractmethod
     def label_profiles(self):
@@ -60,6 +87,15 @@ class TrainingDataSetBin1Base(ABC):
         Filter profiles based on the labels
         """
         pass
+
+    def write_selected_profiles(self):
+        """
+        Write selected profiles to parquet file
+        """
+        if self.selected_profiles is None:
+            raise ValueError("'selected_profiles' is empty.")
+
+        self.selected_profiles.write_parquet(self.output_file_name)
 
     def __repr__(self):
         # Provide a simple representation

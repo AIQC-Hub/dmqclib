@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 from dmqclib.datasets.class_loader import load_input_dataset
-from dmqclib.datasets.input.dataset_a import DataSetA
+from dmqclib.datasets.input.dataset_a import InputDataSetA
 
 
 class TestInputClassLoader(unittest.TestCase):
@@ -16,10 +16,10 @@ class TestInputClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_label(self):
         """
-        Test that load_dataset returns an instance of DataSetA for the known label.
+        Test that load_dataset returns an instance of InputDataSetA for the known label.
         """
         ds = load_input_dataset("NRT_BO_001", str(self.explicit_config_file_path))
-        self.assertIsInstance(ds, DataSetA)
+        self.assertIsInstance(ds, InputDataSetA)
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_load_dataset_invalid_label(self):

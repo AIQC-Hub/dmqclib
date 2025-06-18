@@ -1,5 +1,5 @@
-from dmqclib.datasets.input.dataset_a import DataSetA
+from dmqclib.datasets.input.dataset_a import InputDataSetA
 
 INPUT_DATASET_REGISTRY = {
-    "DataSetA": DataSetA,
+    "InputDataSetA": InputDataSetA,
 }

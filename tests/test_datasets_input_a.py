@@ -1,10 +1,10 @@
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.input.dataset_a import DataSetA
+from dmqclib.datasets.input.dataset_a import InputDataSetA
 
 
-class TestDataSetA(unittest.TestCase):
+class TestInputDataSetA(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We define the explicit path to
@@ -21,7 +21,7 @@ class TestDataSetA(unittest.TestCase):
         )
 
     def _get_input_data(self, file_type=None, options=None):
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file)
 
         if file_type is not None:
@@ -35,23 +35,23 @@ class TestDataSetA(unittest.TestCase):
         return ds.input_data
 
     def test_init_valid_label(self):
-        """Test that we can properly construct a DataSetA instance from the YAML."""
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        """Test that we can properly construct a InputDataSetA instance from the YAML."""
+        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_init_invalid_label(self):
-        """Test that constructing DataSetA with an invalid label raises ValueError."""
+        """Test that constructing InputDataSetA with an invalid label raises ValueError."""
         with self.assertRaises(ValueError):
-            DataSetA("NON_EXISTENT_LABEL", str(self.explicit_config_file_path))
+            InputDataSetA("NON_EXISTENT_LABEL", str(self.explicit_config_file_path))
 
     def test_config_file(self):
         """Test that config file is properly set in the corresponding member variable"""
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_input_file_name(self):
         """Test that config file is properly set in the corresponding member variable"""
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         self.assertEqual(
             "/path/to/data/input/nrt_cora_bo_test.parquet", str(ds.input_file_name)
         )
@@ -59,7 +59,7 @@ class TestDataSetA(unittest.TestCase):
     def test_no_input_file_name(self):
         """Test that config file is properly set in the corresponding member variable"""
         with self.assertRaises(ValueError):
-            _ = DataSetA("NRT_BO_002", str(self.explicit_config_file_path))
+            _ = InputDataSetA("NRT_BO_002", str(self.explicit_config_file_path))
 
     def test_read_input_data_with_explicit_type(self):
         """
@@ -96,7 +96,7 @@ class TestDataSetA(unittest.TestCase):
         """
         Tests that an unsupported file type raises a ValueError.
         """
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file)
         ds.dataset_info["input"]["file_type"] = "foo"
         ds.dataset_info["input"]["options"] = {}
@@ -109,7 +109,7 @@ class TestDataSetA(unittest.TestCase):
         """
         Tests that reading a non-existent file raises FileNotFoundError.
         """
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file) + "_not_found"
         ds.dataset_info["input"]["file_type"] = "parquet"
         ds.dataset_info["input"]["options"] = {}
