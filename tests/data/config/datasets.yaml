@@ -10,6 +10,7 @@ NRT_BO_001:
   input_class: DataSetA
   input_file: nrt_cora_bo_test.parquet
   data_folder: nrt_bo_001
+  train_class: TrainingSetA
 
 NRT_BO_002:
   input_class: DataSetA

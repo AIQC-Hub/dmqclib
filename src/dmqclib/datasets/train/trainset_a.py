@@ -1,13 +1,13 @@
-from dmqclib.datasets.input.input_base import InputDataSetBase
+from dmqclib.datasets.train.train_base import TrainingDataSetBase
 
 
-class DataSetA(InputDataSetBase):
+class TrainingSetA(TrainingDataSetBase):
     """
-    DataSetA inherits from DataSetBase and sets the 'expected_class_name' to 'DataSetA'.
-    Any custom logic specific to DataSetA can go here.
+    TrainingSetA inherits from TrainingDataSetBase and sets the 'expected_class_name' to 'TrainingSetA'.
+    Any custom logic specific to TrainingSetA can go here.
     """
 
-    expected_class_name = "DataSetA"
+    expected_class_name = "TrainingSetA"
 
     def __init__(self, dataset_name: str, config_file: str = None):
         super().__init__(dataset_name, config_file=config_file)
