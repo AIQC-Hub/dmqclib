@@ -20,6 +20,20 @@ class TestDataSetA(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
+    def _get_input_data(self, file_type=None, options=None):
+        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds.input_file_name = str(self.test_data_file)
+
+        if file_type is not None:
+            ds.dataset_info["input"]["file_type"] = file_type
+
+        if options is not None:
+            ds.dataset_info["input"]["options"] = options
+
+        ds.read_input_data()
+
+        return ds.input_data
+
     def test_init_valid_label(self):
         """Test that we can properly construct a DataSetA instance from the YAML."""
         ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
@@ -33,7 +47,7 @@ class TestDataSetA(unittest.TestCase):
     def test_config_file(self):
         """Test that config file is properly set in the corresponding member variable"""
         ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
-        self.assertTrue("datasets.yaml" in ds.config_file)
+        self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_input_file_name(self):
         """Test that config file is properly set in the corresponding member variable"""
@@ -51,14 +65,7 @@ class TestDataSetA(unittest.TestCase):
         """
         Tests that data is read correctly when the dataset_config specifies the file type explicitly.
         """
-
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
-        ds.input_file_name = str(self.test_data_file)
-        ds.dataset_config["input_file_type"] = "parquet"
-        ds.dataset_config["input_file_options"] = {}
-
-        ds.read_input_data()
-        df = ds.input_data
+        df = self._get_input_data(file_type="parquet", options={})
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 132342)
@@ -68,12 +75,7 @@ class TestDataSetA(unittest.TestCase):
         """
         Tests that data is read correctly when file_type is not provided (auto-detection).
         """
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
-        ds.input_file_name = str(self.test_data_file)
-        ds.dataset_config["input_file_options"] = {}
-
-        ds.read_input_data()
-        df = ds.input_data
+        df = self._get_input_data(file_type=None, options={})
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 132342)
@@ -84,12 +86,7 @@ class TestDataSetA(unittest.TestCase):
         Tests that passing no 'input_file_options' key (or None) defaults to empty dict,
         so reading still works as intended.
         """
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
-        ds.input_file_name = str(self.test_data_file)
-        ds.dataset_config["input_file_type"] = "parquet"
-
-        ds.read_input_data()
-        df = ds.input_data
+        df = self._get_input_data(file_type="parquet", options=None)
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 132342)
@@ -101,8 +98,8 @@ class TestDataSetA(unittest.TestCase):
         """
         ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file)
-        ds.dataset_config["input_file_type"] = "foo"
-        ds.dataset_config["input_file_options"] = {}
+        ds.dataset_info["input"]["file_type"] = "foo"
+        ds.dataset_info["input"]["options"] = {}
 
         with self.assertRaises(ValueError) as context:
             ds.read_input_data()
@@ -114,8 +111,8 @@ class TestDataSetA(unittest.TestCase):
         """
         ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file) + "_not_found"
-        ds.dataset_config["input_file_type"] = "parquet"
-        ds.dataset_config["input_file_options"] = {}
+        ds.dataset_info["input"]["file_type"] = "parquet"
+        ds.dataset_info["input"]["options"] = {}
 
         with self.assertRaises(FileNotFoundError):
             ds.read_input_data()
@@ -124,13 +121,7 @@ class TestDataSetA(unittest.TestCase):
         """
         Demonstrates passing extra options
         """
-        ds = DataSetA("NRT_BO_001", str(self.explicit_config_file_path))
-        ds.input_file_name = str(self.test_data_file)
-        ds.dataset_config["input_file_type"] = "parquet"
-        ds.dataset_config["input_file_options"] = {"n_rows": 100}
-
-        ds.read_input_data()
-        df = ds.input_data
+        df = self._get_input_data(file_type="parquet", options={"n_rows": 100})
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 100)

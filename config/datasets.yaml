@@ -1,16 +1,20 @@
 path_info:
-  input_path: /path/to/data
-  input_folder: input
-  data_path: /path/to/data
-  train_folder: train
-  validate_folder: validate
-  test_folder: test
+  input:
+    base_path: /path/to/data
+    folder_name: input
+  train:
+    base_path: /path/to/data
+    folder_name: train
 
 NRT_BO_001:
-  input_class: DataSetA
-  input_file: nrt_cora_bo_test.parquet
-  data_folder: nrt_bo_001
-  train_class: TrainingSetA
+  input:
+    base_class: DataSetA
+    file_name: nrt_cora_bo_test.parquet
+  train:
+    folder_name: nrt_bo_001
+    base_class: TrainingSetA
+
 
 NRT_BO_002:
-  input_class: DataSetA
+  input:
+    base_class: DataSetA

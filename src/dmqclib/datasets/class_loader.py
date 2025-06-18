@@ -7,13 +7,13 @@ def load_input_dataset(label: str, config_file: str = None):
     Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    data = read_config(config_file, "datasets.yaml")
+    config = read_config(config_file, "datasets.yaml")
 
-    dataset_config = data.get(label)
-    if dataset_config is None:
+    dataset_info = config.get(label)
+    if dataset_info is None:
         raise ValueError(f"No dataset configuration found for label '{label}'")
 
-    class_name = dataset_config.get("input_class")
+    class_name = dataset_info["input"].get("base_class")
     dataset_class = INPUT_DATASET_REGISTRY.get(class_name)
     if not dataset_class:
         raise ValueError(f"Unknown dataset class specified: {class_name}")
