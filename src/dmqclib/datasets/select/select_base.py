@@ -17,8 +17,6 @@ class ProfileSelectionBase(ABC):
 
     2. Filter Profiles:
         Profiles that do not have positive or negative labels are removed.
-
-
     """
 
     expected_class_name = None  # Must be overridden by child classes
