@@ -79,13 +79,6 @@ class ProfileSelectionBase(ABC):
         """
         pass
 
-    @abstractmethod
-    def filter_profiles(self):
-        """
-        Filter profiles based on the labels
-        """
-        pass
-
     def write_selected_profiles(self):
         """
         Write selected profiles to parquet file

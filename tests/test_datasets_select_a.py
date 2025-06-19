@@ -84,8 +84,37 @@ class TestSelectDataSetA(unittest.TestCase):
         ds = SelectDataSetA(
             "NRT_BO_001", str(self.config_file_path), self.ds.input_data
         )
+        ds.select_positive_profiles()
         ds.select_negative_profiles()
 
         self.assertIsInstance(ds.neg_profile_df, pl.DataFrame)
         self.assertEqual(ds.neg_profile_df.shape[0], 478)
         self.assertEqual(ds.neg_profile_df.shape[1], 7)
+
+    def test_find_profile_pairs(self):
+        """
+        Tests that data is read correctly when the dataset_config specifies the file type explicitly.
+        """
+        ds = SelectDataSetA(
+            "NRT_BO_001", str(self.config_file_path), self.ds.input_data
+        )
+        ds.select_positive_profiles()
+        ds.select_negative_profiles()
+        ds.find_profile_pairs()
+
+        self.assertEqual(ds.pos_profile_df.shape[0], 25)
+        self.assertEqual(ds.pos_profile_df.shape[1], 8)
+        self.assertEqual(ds.neg_profile_df.shape[0], 19)
+        self.assertEqual(ds.neg_profile_df.shape[1], 8)
+
+    def test_label_profiles(self):
+        """
+        Tests that data is read correctly when the dataset_config specifies the file type explicitly.
+        """
+        ds = SelectDataSetA(
+            "NRT_BO_001", str(self.config_file_path), self.ds.input_data
+        )
+        ds.label_profiles()
+
+        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
