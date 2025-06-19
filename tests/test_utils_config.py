@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 from dmqclib.utils.config import read_config
+from dmqclib.utils.config import get_file_name_from_config
 
 
 class TestReadConfig(unittest.TestCase):
@@ -46,3 +47,32 @@ class TestReadConfig(unittest.TestCase):
         """
         with self.assertRaises(FileNotFoundError):
             read_config(config_file="non_existent.yaml")
+
+
+class TestGetFileName(unittest.TestCase):
+    def setUp(self):
+        """
+        Set the test data config file.
+        """
+        self.explicit_config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+
+    def test_file_name(self):
+        """
+        Test file name with a correct entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+
+        file_name = get_file_name_from_config(config["NRT_BO_001"]["input"], "config_file_name")
+        self.assertEqual("nrt_cora_bo_test.parquet", file_name)
+
+    def test_no_file_name(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+
+        with self.assertRaises(ValueError):
+            _ = get_file_name_from_config(config["NRT_BO_002"]["input"], "config_file_name")
+

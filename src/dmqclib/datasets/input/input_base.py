@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dmqclib.utils.config import read_config
+from dmqclib.utils.config import get_file_name_from_config
 from dmqclib.utils.dataset_path import build_full_input_path
 from dmqclib.utils.file_io import read_input_file
 
@@ -48,11 +49,7 @@ class InputDataSetBase(ABC):
         Set the input file from configuration entries to the member variable 'self.input_file_name'.
         """
         folder_name = self.dataset_info["input"].get("folder_name", "")
-        file_name = self.dataset_info["input"].get("file_name", "")
-        if file_name is None or file_name == "":
-            raise ValueError(
-                f"'input_file' not found or set to None in config file '{self.config_file_name}'"
-            )
+        file_name = get_file_name_from_config(self.dataset_info["input"], self.config_file_name)
 
         self.input_file_name = build_full_input_path(
             self.path_info, folder_name, file_name

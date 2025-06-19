@@ -1,13 +1,13 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import polars as pl
 from dmqclib.utils.config import read_config
 from dmqclib.utils.config import get_file_name_from_config
-from dmqclib.utils.dataset_path import build_full_select_path
+from dmqclib.utils.dataset_path import build_full_locate_path
 
 
-class ProfileSelectionBase(ABC):
+class LocatePositionBase(ABC):
     """
-    Base class for profile selection data set classes like SelectDataSetA, SelectDataSetB, SelectDataSetC, etc.
+    Base class for identifying position classes like LocateDataSetA, LocateDataSetB, LocateDataSetC, etc.
     Child classes must define an 'expected_class_name' attribute, which is
     validated against the YAML entry's 'base_class' field.
     """
@@ -19,6 +19,7 @@ class ProfileSelectionBase(ABC):
         dataset_name: str,
         config_file: str = None,
         input_data: pl.DataFrame = None,
+        selected_profiles: pl.DataFrame = None,
     ):
         if not self.expected_class_name:
             raise NotImplementedError(
@@ -33,7 +34,7 @@ class ProfileSelectionBase(ABC):
         dataset_info = config[dataset_name]
 
         # Validate that the YAML's "class" matches the child's declared class name
-        base_class = dataset_info["select"].get("base_class")
+        base_class = dataset_info["locate"].get("base_class")
         if base_class != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
@@ -46,36 +47,19 @@ class ProfileSelectionBase(ABC):
         self.base_class_name = base_class
         self.dataset_info = dataset_info
         self.path_info = config.get("path_info")
-        self.__build_output_file_name()
+        self.__build_output_file_names()
         self.input_data = input_data
-        self.selected_profiles = None
+        self.selected_profiles = selected_profiles
 
-    def __build_output_file_name(self):
+    def __build_output_file_names(self):
         """
         Set the input file from configuration entries to the member variable 'self.input_file_name'.
         """
-        folder_name = self.dataset_info["select"].get("folder_name", "")
-        file_name = get_file_name_from_config(self.dataset_info["select"], self.config_file_name)
+        folder_name = self.dataset_info["locate"].get("folder_name", "")
 
-        self.output_file_name = build_full_select_path(
-            self.path_info, folder_name, file_name
-        )
-
-    @abstractmethod
-    def label_profiles(self):
-        """
-        Label profiles in terms of positive and negative candidates
-        """
-        pass
-
-    def write_selected_profiles(self):
-        """
-        Write selected profiles to parquet file
-        """
-        if self.selected_profiles is None:
-            raise ValueError("'selected_profiles' is empty.")
-
-        self.selected_profiles.write_parquet(self.output_file_name)
+        self.output_file_names = {k: build_full_locate_path(
+            self.path_info, folder_name, get_file_name_from_config(v, self.config_file_name)
+        ) for k, v in self.dataset_info["locate"]["targets"].items()}
 
     def __repr__(self):
         # Provide a simple representation

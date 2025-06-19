@@ -3,6 +3,7 @@ from pathlib import Path
 from dmqclib.utils.config import read_config
 from dmqclib.utils.dataset_path import build_full_input_path
 from dmqclib.utils.dataset_path import build_full_select_path
+from dmqclib.utils.dataset_path import build_full_locate_path
 
 
 class TestBuildFullInputPath(unittest.TestCase):
@@ -146,4 +147,25 @@ class TestBuildFullSelectPath(unittest.TestCase):
             self.config["path_info"], "../archive", "mydata.csv"
         )
         expected = "/path/to/valid/mydata.csv"
+        self.assertEqual(result, expected)
+
+
+class TestBuildFullLocatePath(unittest.TestCase):
+    def setUp(self):
+        """
+        Called before each test method. We create a config file here for reuse.
+        """
+        self.explicit_config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+        self.config = read_config(config_file=str(self.explicit_config_file_path))
+
+    def test_normal_usage(self):
+        """
+        Test that a normal call produces the expected path.
+        """
+        result = build_full_locate_path(
+            self.config["path_info"], "my_data", "datafile.csv"
+        )
+        expected = "/path/to/data/my_data/select/datafile.csv"
         self.assertEqual(result, expected)
