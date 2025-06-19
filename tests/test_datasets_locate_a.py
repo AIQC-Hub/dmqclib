@@ -50,11 +50,11 @@ class TestLocateDataSetA(unittest.TestCase):
         ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
             "/path/to/data/nrt_bo_001/select/temp_positions.parquet",
-            str(ds.output_file_names["temp"])
+            str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
             "/path/to/data/nrt_bo_001/select/psal_positions.parquet",
-            str(ds.output_file_names["psal"])
+            str(ds.output_file_names["psal"]),
         )
 
     def test_no_input_file_name(self):
@@ -67,7 +67,10 @@ class TestLocateDataSetA(unittest.TestCase):
         Tests that data is read correctly when the dataset_config specifies the file type explicitly.
         """
         ds = LocateDataSetA(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data, self.ds_select.selected_profiles
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
         )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)

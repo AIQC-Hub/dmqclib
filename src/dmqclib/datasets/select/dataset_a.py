@@ -4,7 +4,7 @@ from dmqclib.datasets.select.select_base import ProfileSelectionBase
 
 class SelectDataSetA(ProfileSelectionBase):
     """
-    SelectDataSetA inherits from ProfileSelectionBase and sets the 'expected_class_name' to 'SelectDataSetA'.
+    SelectDataSetA defines negative and positive profiles from BO NRT+Cora test data.
 
     Main steps:
     1. Select positive profiles:
@@ -13,7 +13,7 @@ class SelectDataSetA(ProfileSelectionBase):
     2. Select negative profiles:
         Select profiles that have values 1 in all of temp_qc, psal_qc, pres_qc, temp_qc_dm, psal_qc_dm, pres_qc_dm.
 
-    3. Identify pairs from positive and negative datasets :
+    3. Identify pairs from positive and negative datasets:
         To reduce negative profiles, identify and keep only profiles having close dates to those of positive profiles.
 
     4. Combine dataframes:
@@ -35,7 +35,7 @@ class SelectDataSetA(ProfileSelectionBase):
 
     def select_positive_profiles(self):
         """
-        Select profiles with invalid value flags as positive profiles
+        Select profiles with bad flags as positive profiles.
         """
         self.pos_profile_df = (
             self.input_data.filter(
@@ -69,7 +69,7 @@ class SelectDataSetA(ProfileSelectionBase):
 
     def select_negative_profiles(self):
         """
-        Select profiles with all valid value flags as negative profiles
+        Select profiles with all good flags as negative profiles.
         """
         self.neg_profile_df = (
             self.input_data.group_by(
@@ -115,6 +115,9 @@ class SelectDataSetA(ProfileSelectionBase):
         )
 
     def find_profile_pairs(self):
+        """
+        Identify pairs from positive and negative datasets.
+        """
         closest_neg_id = (
             self.pos_profile_df.join(self.neg_profile_df, how="cross", suffix="_neg")
             .with_columns(
@@ -149,6 +152,9 @@ class SelectDataSetA(ProfileSelectionBase):
         )
 
     def label_profiles(self):
+        """
+        Select and filter positive and negative datasets and combine them.
+        """
         self.select_positive_profiles()
         self.select_negative_profiles()
         self.find_profile_pairs()
