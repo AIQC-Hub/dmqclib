@@ -5,6 +5,19 @@ from dmqclib.datasets.select.select_base import ProfileSelectionBase
 class SelectDataSetA(ProfileSelectionBase):
     """
     SelectDataSetA inherits from ProfileSelectionBase and sets the 'expected_class_name' to 'SelectDataSetA'.
+
+    Main steps:
+    1. Select positive profiles:
+        Select profiles that have values 4 in at least one of temp_qc, psal_qc, and pres_qc.
+
+    2. Select negative profiles:
+        Select profiles that have values 1 in all of temp_qc, psal_qc, pres_qc, temp_qc_dm, psal_qc_dm, pres_qc_dm.
+
+    3. Identify pairs from positive and negative datasets :
+        To reduce negative profiles, identify and keep only profiles having close dates to those of positive profiles.
+
+    4. Combine dataframes:
+        Combine positive and negative datasets.
     """
 
     expected_class_name = "SelectDataSetA"

@@ -9,14 +9,6 @@ class ProfileSelectionBase(ABC):
     Base class for profile selection data set classes like SelectDataSetA, SelectDataSetB, SelectDataSetC, etc.
     Child classes must define an 'expected_class_name' attribute, which is
     validated against the YAML entry's 'base_class' field.
-
-    Main steps:
-    1. Label Profiles:
-        Positive profiles are those that contain invalid value flags (e.g. 4) in at least one of the target variables.
-        Profiles that are similar to the positive profiles are marked as negative profiles.
-
-    2. Filter Profiles:
-        Profiles that do not have positive or negative labels are removed.
     """
 
     expected_class_name = None  # Must be overridden by child classes
