@@ -19,11 +19,11 @@ class ProfileSelectionBase(DataSetBase):
         super().__init__("select", dataset_name, config_file=config_file)
 
         # Set member variables
-        self.__build_output_file_name()
+        self._build_output_file_name()
         self.input_data = input_data
         self.selected_profiles = None
 
-    def __build_output_file_name(self):
+    def _build_output_file_name(self):
         """
         Set the output file based on configuration entries.
         """
@@ -48,6 +48,6 @@ class ProfileSelectionBase(DataSetBase):
         Write selected profiles to parquet file
         """
         if self.selected_profiles is None:
-            raise ValueError("'selected_profiles' is empty.")
+            raise ValueError("Member variable 'selected_profiles' must not be empty.")
 
         self.selected_profiles.write_parquet(self.output_file_name)

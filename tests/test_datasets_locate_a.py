@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.input.dataset_a import InputDataSetA
-from dmqclib.datasets.select.dataset_a import SelectDataSetA
+from dmqclib.datasets.class_loader import load_input_dataset
+from dmqclib.datasets.class_loader import load_select_dataset
 from dmqclib.datasets.locate.dataset_a import LocateDataSetA
 
 
@@ -21,11 +21,11 @@ class TestLocateDataSetA(unittest.TestCase):
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds_input = InputDataSetA("NRT_BO_001", str(self.config_file_path))
+        self.ds_input = load_input_dataset("NRT_BO_001", str(self.config_file_path))
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
-        self.ds_select = SelectDataSetA(
+        self.ds_select = load_select_dataset(
             "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
         )
         self.ds_select.label_profiles()

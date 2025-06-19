@@ -14,10 +14,10 @@ class InputDataSetBase(DataSetBase):
         super().__init__("input", dataset_name, config_file=config_file)
 
         # Set member variables
-        self.__build_input_file_name()
+        self._build_input_file_name()
         self.input_data = None
 
-    def __build_input_file_name(self):
+    def _build_input_file_name(self):
         """
         Set the input file based on configuration entries.
         """

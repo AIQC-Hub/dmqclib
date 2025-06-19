@@ -1,3 +1,5 @@
+from abc import abstractmethod
+from typing import Dict
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_file_name_from_config
@@ -19,11 +21,12 @@ class LocatePositionBase(DataSetBase):
         super().__init__("locate", dataset_name, config_file=config_file)
 
         # Set member variables
-        self.__build_output_file_names()
+        self._build_output_file_names()
         self.input_data = input_data
         self.selected_profiles = selected_profiles
+        self.target_locations = None
 
-    def __build_output_file_names(self):
+    def _build_output_file_names(self):
         """
         Set the output files based on configuration entries.
         """
@@ -37,3 +40,29 @@ class LocatePositionBase(DataSetBase):
             )
             for k, v in self.dataset_info["locate"]["targets"].items()
         }
+
+    def process_targets(self):
+        """
+        Iterate all targets to locate training data chunks.
+        """
+        self.target_locations = {
+            k: self.locate_target_chunks(k, v)
+            for k, v in self.dataset_info["locate"]["targets"].items()
+        }
+
+    @abstractmethod
+    def locate_target_chunks(self, target_name: str, target_value: Dict):
+        """
+        Locate training data chunks.
+        """
+        pass
+
+    def write_target_locations(self):
+        """
+        Write target_locations to parquet files
+        """
+        if self.target_locations is None:
+            raise ValueError("Member variable 'target_locations' must not be empty.")
+
+        for k, v in self.target_locations.items():
+            v.write_parquet(self.output_file_names[k])

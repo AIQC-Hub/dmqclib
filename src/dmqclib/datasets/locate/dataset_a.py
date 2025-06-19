@@ -1,3 +1,4 @@
+from typing import Dict
 import polars as pl
 from dmqclib.datasets.locate.locate_base import LocatePositionBase
 
@@ -22,3 +23,9 @@ class LocateDataSetA(LocatePositionBase):
             input_data=input_data,
             selected_profiles=selected_profiles,
         )
+
+    def locate_target_chunks(self, target_name: str, target_value: Dict):
+        """
+        Locate training data chunks.
+        """
+        pass

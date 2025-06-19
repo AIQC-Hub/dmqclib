@@ -32,7 +32,7 @@ def build_full_input_path(
     )
 
 
-def __build_full_data_path(
+def _build_full_data_path(
     path_info: Dict, data_type: str, folder_name1: Optional[str], file_name: str
 ) -> str:
     """
@@ -69,7 +69,7 @@ def build_full_select_path(
     """
     Returns the full path with the specified file name for the select module.
     """
-    return __build_full_data_path(path_info, "select", folder_name1, file_name)
+    return _build_full_data_path(path_info, "select", folder_name1, file_name)
 
 
 def build_full_locate_path(
@@ -78,4 +78,4 @@ def build_full_locate_path(
     """
     Returns the full path with the specified file name for the locate module.
     """
-    return __build_full_data_path(path_info, "locate", folder_name1, file_name)
+    return _build_full_data_path(path_info, "locate", folder_name1, file_name)
