@@ -1,19 +1,32 @@
 from abc import ABC, abstractmethod
+import polars as pl
 from dmqclib.utils.config import read_config
-from dmqclib.utils.dataset_path import build_full_input_path
-from dmqclib.utils.file_io import read_input_file
+from dmqclib.utils.dataset_path import build_full_select_path
 
 
-class InputDataSetBase(ABC):
+class ProfileSelectionBase(ABC):
     """
-    Base class for data set classes like InputDataSetA, InputDataSetB, InputDataSetC, etc.
+    Base class for profile selection data set classes like SelectDataSetA, SelectDataSetB, SelectDataSetC, etc.
     Child classes must define an 'expected_class_name' attribute, which is
     validated against the YAML entry's 'base_class' field.
+
+    Main steps:
+    1. Label Profiles:
+        Positive profiles are those that contain invalid value flags (e.g. 4) in at least one of the target variables.
+        Profiles that are similar to the positive profiles are marked as negative profiles.
+
+    2. Filter Profiles:
+        Profiles that do not have positive or negative labels are removed.
     """
 
     expected_class_name = None  # Must be overridden by child classes
 
-    def __init__(self, dataset_name: str, config_file: str = None):
+    def __init__(
+        self,
+        dataset_name: str,
+        config_file: str = None,
+        input_data: pl.DataFrame = None,
+    ):
         if not self.expected_class_name:
             raise NotImplementedError(
                 "Child class must define 'expected_class_name' attribute"
@@ -27,7 +40,7 @@ class InputDataSetBase(ABC):
         dataset_info = config[dataset_name]
 
         # Validate that the YAML's "class" matches the child's declared class name
-        base_class = dataset_info["input"].get("base_class")
+        base_class = dataset_info["select"].get("base_class")
         if base_class != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
@@ -40,51 +53,40 @@ class InputDataSetBase(ABC):
         self.base_class_name = base_class
         self.dataset_info = dataset_info
         self.path_info = config.get("path_info")
-        self.__build_input_file_name()
-        self.input_data = None
+        self.__build_output_file_name()
+        self.input_data = input_data
+        self.selected_profiles = None
 
-    def __build_input_file_name(self):
+    def __build_output_file_name(self):
         """
         Set the input file from configuration entries to the member variable 'self.input_file_name'.
         """
-        folder_name = self.dataset_info["input"].get("folder_name", "")
-        file_name = self.dataset_info["input"].get("file_name", "")
+        folder_name = self.dataset_info["select"].get("folder_name", "")
+        file_name = self.dataset_info["select"].get("file_name", "")
         if file_name is None or file_name == "":
             raise ValueError(
                 f"'input_file' not found or set to None in config file '{self.config_file_name}'"
             )
 
-        self.input_file_name = build_full_input_path(
+        self.output_file_name = build_full_select_path(
             self.path_info, folder_name, file_name
         )
 
-    def read_input_data(self):
-        """
-        Reads the input data from self.input_file_name using read_input_file,
-        with file type and options derived from self.dataset_info.
-        If either is missing or None, appropriate defaults (None for file_type,
-        and empty dict for options) are used. The resulting DataFrame is stored
-        in self.input_data.
-        """
-        input_file = self.input_file_name
-        file_type = self.dataset_info["input"].get("file_type") or None
-        options = self.dataset_info["input"].get("options") or {}
-
-        self.input_data = read_input_file(input_file, file_type, options)
-
     @abstractmethod
-    def select(self):
+    def label_profiles(self):
         """
-        Selects columns of the data frame in self.input_data
+        Label profiles in terms of positive and negative candidates
         """
         pass
 
-    @abstractmethod
-    def filter(self):
+    def write_selected_profiles(self):
         """
-        Filter rows of the data frame in self.input_data
+        Write selected profiles to parquet file
         """
-        pass
+        if self.selected_profiles is None:
+            raise ValueError("'selected_profiles' is empty.")
+
+        self.selected_profiles.write_parquet(self.output_file_name)
 
     def __repr__(self):
         # Provide a simple representation

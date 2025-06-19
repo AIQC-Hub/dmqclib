@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from dmqclib.utils.config import read_config
 from dmqclib.utils.dataset_path import build_full_input_path
-from dmqclib.utils.dataset_path import build_full_data_path
+from dmqclib.utils.dataset_path import build_full_select_path
 
 
 class TestBuildFullInputPath(unittest.TestCase):
@@ -27,16 +27,14 @@ class TestBuildFullInputPath(unittest.TestCase):
 
     def test_empty_input_folder_arg(self):
         """
-        Test when the input_folder argument is an empty string.
-        Should skip including it in the path.
+        Test when the folder_name2 argument is an empty string.
         """
         result = build_full_input_path(self.config["path_info"], "", "something.txt")
         self.assertEqual(result, "/path/to/data/input/something.txt")
 
     def test_none_input_folder_arg(self):
         """
-        Test when the input_folder argument is None.
-        Should skip including it in the path.
+        Test when the folder_name2 argument is None.
         """
         result = build_full_input_path(
             self.config["path_info"], None, "something_else.txt"
@@ -47,7 +45,7 @@ class TestBuildFullInputPath(unittest.TestCase):
         """
         Test when config['path_info']['input_folder'] is an empty string.
         """
-        self.config["path_info"]["input_folder"] = ""
+        self.config["path_info"]["input"]["folder_name"] = ""
         result = build_full_input_path(
             self.config["path_info"], "some_folder", "file.csv"
         )
@@ -57,7 +55,7 @@ class TestBuildFullInputPath(unittest.TestCase):
         """
         Test when config['path_info']['input_folder'] is None.
         """
-        self.config["path_info"]["input_folder"] = None
+        self.config["path_info"]["input"]["folder_name"] = None
         result = build_full_input_path(
             self.config["path_info"], "another_subfolder", "info.txt"
         )
@@ -76,12 +74,12 @@ class TestBuildFullInputPath(unittest.TestCase):
         """
         Test if the user sets both config['path_info']['input_folder'] and input_folder to empty.
         """
-        self.config["path_info"]["input_folder"] = ""
+        self.config["path_info"]["input"]["folder_name"] = ""
         result = build_full_input_path(self.config["path_info"], "", "filename.txt")
         self.assertEqual(result, "/path/to/data/filename.txt")
 
 
-class TestBuildFullDataPath(unittest.TestCase):
+class TestBuildFullSelectPath(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We create a config file here for reuse.
@@ -93,66 +91,59 @@ class TestBuildFullDataPath(unittest.TestCase):
 
     def test_normal_usage(self):
         """
-        Test that a normal call (with non-empty data_folder, data_type, file_name)
-        produces the expected path.
+        Test that a normal call produces the expected path.
         """
-        result = build_full_data_path(
-            self.config["path_info"], "my_data", "train", "datafile.csv"
+        result = build_full_select_path(
+            self.config["path_info"], "my_data", "datafile.csv"
         )
-        expected = "/path/to/data/my_data/train/datafile.csv"
+        expected = "/path/to/data/my_data/select/datafile.csv"
         self.assertEqual(result, expected)
 
     def test_empty_data_folder(self):
         """
-        Test when data_folder is an empty string. It should skip appending
-        the data_folder level.
+        Test when folder_name1 is an empty string.
         """
-        result = build_full_data_path(
-            self.config["path_info"], "", "validate", "val.csv"
-        )
-        expected = "/path/to/data/validate/val.csv"
+        result = build_full_select_path(self.config["path_info"], "", "val.csv")
+        expected = "/path/to/data/select/val.csv"
         self.assertEqual(result, expected)
 
-    def test_none_data_folder(self):
+    def test_none_folder_name(self):
         """
-        Test when data_folder is None. It should skip appending the data_folder level.
+        Test when folder_name1 is None.
         """
-        result = build_full_data_path(
-            self.config["path_info"], None, "test", "testfile.csv"
-        )
-        expected = "/path/to/data/test/testfile.csv"
+        result = build_full_select_path(self.config["path_info"], None, "testfile.csv")
+        expected = "/path/to/data/select/testfile.csv"
         self.assertEqual(result, expected)
 
-    def test_empty_data_type_folder(self):
+    def test_empty_select_folder_name(self):
         """
-        Test when config["path_info"][data_type] is an empty string.
+        Test when config["path_info"]["select"]["folder_name"] is an empty string.
         """
-        # Make "train" key empty to simulate having an empty folder name
-        self.config["path_info"]["train_folder"] = ""
-        result = build_full_data_path(
-            self.config["path_info"], "subfolder", "train", "somefile.txt"
+        self.config["path_info"]["select"]["folder_name"] = ""
+        result = build_full_select_path(
+            self.config["path_info"], "subfolder", "somefile.txt"
         )
         expected = "/path/to/data/subfolder/somefile.txt"
         self.assertEqual(result, expected)
 
-    def test_none_data_type_folder(self):
+    def test_none_select_folder_name(self):
         """
-        Test when config["path_info"][data_type] is None.
+        Test when config["path_info"]["select"]["folder_name"] is None.
         """
-        self.config["path_info"]["train_folder"] = None
-        result = build_full_data_path(
-            self.config["path_info"], "subfolder", "train", "anotherfile.txt"
+        self.config["path_info"]["select"]["folder_name"] = None
+        result = build_full_select_path(
+            self.config["path_info"], "subfolder", "anotherfile.txt"
         )
         expected = "/path/to/data/subfolder/anotherfile.txt"
         self.assertEqual(result, expected)
 
     def test_relative_paths(self):
         """
-        Test when data_folder or config["path_info"][data_type] includes relative segments like '..'.
+        Test when folder_name1 or config["path_info"]["select"]["folder_name"] includes relative segments like '..'.
         """
-        self.config["path_info"]["validate_folder"] = "../valid"
-        result = build_full_data_path(
-            self.config["path_info"], "../archive", "validate", "mydata.csv"
+        self.config["path_info"]["select"]["folder_name"] = "../valid"
+        result = build_full_select_path(
+            self.config["path_info"], "../archive", "mydata.csv"
         )
         expected = "/path/to/valid/mydata.csv"
         self.assertEqual(result, expected)

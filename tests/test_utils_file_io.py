@@ -66,15 +66,11 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_pass_additional_options(self):
         """
-        Demonstrates passing extra options, e.g., has_header=False for CSV, if desired.
-        Adjust logic/test according to how your data is formatted.
+        Demonstrates passing extra options: has_header=False for CSV.
         """
         file_name = "nrt_cora_bo_test_2023.csv.gz"
         file_path = os.path.join(self.test_data_dir, file_name)
-        # For demonstration, suppose we test with has_header=False (likely incorrect for real data).
         df = read_input_file(
             file_path, file_type="csv.gz", options={"has_header": False}
         )
         self.assertIsInstance(df, pl.DataFrame)
-        # Insert additional assertions if your data truly lacks a header or you want to test specific behaviors.
-        # self.assertEqual(df.shape[0], ...) etc.
