@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 import polars as pl
@@ -8,10 +9,7 @@ from dmqclib.datasets.locate.dataset_a import LocateDataSetA
 
 class TestLocateDataSetA(unittest.TestCase):
     def setUp(self):
-        """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
-        """
+        """Set up test environment and load input and selected datasets."""
         self.config_file_path = str(
             Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
         )
@@ -31,41 +29,39 @@ class TestLocateDataSetA(unittest.TestCase):
         self.ds_select.label_profiles()
 
     def test_init_valid_label(self):
-        """Test that we can properly construct a SelectDataSetA instance from the YAML."""
+        """Ensure LocateDataSetA constructs correctly with a valid label."""
         ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_init_invalid_label(self):
-        """Test that constructing SelectDataSetA with an invalid label raises ValueError."""
+        """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
             LocateDataSetA("NON_EXISTENT_LABEL", str(self.config_file_path))
 
     def test_config_file(self):
-        """Test that config file is properly set in the corresponding member variable"""
+        """Verify the config file is correctly set in the member variable."""
         ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_output_file_names(self):
-        """Test that config file is properly set in the corresponding member variable"""
+        """Ensure output file names are set correctly."""
         ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/temp_positions.parquet",
+            "/path/to/data/nrt_bo_001/select/temp_rows.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/psal_positions.parquet",
+            "/path/to/data/nrt_bo_001/select/psal_rows.parquet",
             str(ds.output_file_names["psal"]),
         )
 
     def test_no_input_file_name(self):
-        """Test that config file is properly set in the corresponding member variable"""
+        """Ensure ValueError is raised if no input file name is provided."""
         with self.assertRaises(ValueError):
             _ = LocateDataSetA("NRT_BO_002", str(self.config_file_path))
 
     def test_input_data_and_selected_profiles(self):
-        """
-        Tests that data is read correctly when the dataset_config specifies the file type explicitly.
-        """
+        """Ensure input data and selected profiles are read correctly."""
         ds = LocateDataSetA(
             "NRT_BO_001",
             str(self.config_file_path),
@@ -80,3 +76,82 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
         self.assertEqual(ds.selected_profiles.shape[0], 44)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+    def test_positive_rows(self):
+        """Ensure positive row data is set correctly."""
+        ds = LocateDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+        )
+        ds.select_positive_rows("temp", {"variable": "temp_qc"})
+        ds.select_positive_rows("psal", {"variable": "psal_qc"})
+
+        self.assertIsInstance(ds.positive_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.positive_rows["temp"].shape[0], 64)
+        self.assertEqual(ds.positive_rows["temp"].shape[1], 10)
+
+        self.assertIsInstance(ds.positive_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.positive_rows["psal"].shape[0], 70)
+        self.assertEqual(ds.positive_rows["psal"].shape[1], 10)
+
+    def test_negative_rows(self):
+        """Ensure negative row data is set correctly."""
+        ds = LocateDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+        )
+        ds.select_positive_rows("temp", {"variable": "temp_qc"})
+        ds.select_positive_rows("psal", {"variable": "psal_qc"})
+        ds.select_negative_rows("temp", {"variable": "temp_qc"})
+        ds.select_negative_rows("psal", {"variable": "psal_qc"})
+
+        self.assertIsInstance(ds.negative_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.negative_rows["temp"].shape[0], 64)
+        self.assertEqual(ds.negative_rows["temp"].shape[1], 10)
+
+        self.assertIsInstance(ds.negative_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.negative_rows["psal"].shape[0], 70)
+        self.assertEqual(ds.negative_rows["psal"].shape[1], 10)
+
+    def test_target_rows(self):
+        """Ensure target rows are selected and set correctly."""
+        ds = LocateDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+        )
+
+        ds.process_targets()
+
+        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.target_rows["temp"].shape[0], 128)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 10)
+
+        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.target_rows["psal"].shape[0], 140)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 10)
+
+    def test_write_target_rows(self):
+        """Ensure target rows are written to parquet files correctly."""
+        ds = LocateDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "select"
+        ds.output_file_names["temp"] = data_path / "temp_temp_rows.parquet"
+        ds.output_file_names["psal"] = data_path / "temp_psal_rows.parquet"
+
+        ds.process_targets()
+        ds.write_target_rows()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
+        os.remove(ds.output_file_names["temp"])
+        os.remove(ds.output_file_names["psal"])

@@ -32,6 +32,13 @@ class SelectDataSetA(ProfileSelectionBase):
 
         self.pos_profile_df = None
         self.neg_profile_df = None
+        self.key_col_names = [
+            "platform_code",
+            "profile_no",
+            "profile_timestamp",
+            "longitude",
+            "latitude",
+        ]
 
     def select_positive_profiles(self):
         """
@@ -43,24 +50,8 @@ class SelectDataSetA(ProfileSelectionBase):
                 | (pl.col("psal_qc") == 4)
                 | (pl.col("pres_qc") == 4)
             )
-            .select(
-                [
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
-            .unique(
-                subset=[
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
+            .select(self.key_col_names)
+            .unique(subset=self.key_col_names)
             .with_row_index("profile_id", offset=1)
             .with_columns(
                 pl.col("profile_timestamp").dt.ordinal_day().alias("pos_day_of_year")
@@ -72,15 +63,7 @@ class SelectDataSetA(ProfileSelectionBase):
         Select profiles with all good flags as negative profiles.
         """
         self.neg_profile_df = (
-            self.input_data.group_by(
-                [
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
+            self.input_data.group_by(self.key_col_names)
             .agg(
                 [
                     pl.col("temp_qc").max().alias("max_temp_qc"),
@@ -99,15 +82,7 @@ class SelectDataSetA(ProfileSelectionBase):
                 & (pl.col("max_psal_qc_dm") == 1)
                 & (pl.col("max_pres_qc_dm") == 1)
             )
-            .select(
-                [
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
+            .select(self.key_col_names)
             .with_row_index("profile_id", offset=self.pos_profile_df.shape[0] + 1)
             .with_columns(
                 pl.col("profile_timestamp").dt.ordinal_day().alias("neg_day_of_year")

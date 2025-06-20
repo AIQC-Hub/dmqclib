@@ -121,7 +121,10 @@ class TestLocateClassLoader(unittest.TestCase):
         ds_select.label_profiles()
 
         ds = load_locate_dataset(
-            "NRT_BO_001", str(self.config_file_path), ds_input.input_data, ds_select.selected_profiles
+            "NRT_BO_001",
+            str(self.config_file_path),
+            ds_input.input_data,
+            ds_select.selected_profiles,
         )
 
         self.assertIsInstance(ds, LocateDataSetA)

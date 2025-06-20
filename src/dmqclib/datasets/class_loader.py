@@ -54,8 +54,10 @@ def load_select_dataset(
 
 
 def load_locate_dataset(
-    label: str, config_file: str = None, input_data: pl.DataFrame = None,
-    selected_profiles: pl.DataFrame = None
+    label: str,
+    config_file: str = None,
+    input_data: pl.DataFrame = None,
+    selected_profiles: pl.DataFrame = None,
 ) -> LocatePositionBase:
     """
     Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
@@ -64,5 +66,9 @@ def load_locate_dataset(
     dataset_info = _get_dataset_info(label, config_file)
     dataset_class = _get_class(dataset_info["locate"], LOCATE_DATASET_REGISTRY)
 
-    return dataset_class(label, config_file=config_file, input_data=input_data,
-                         selected_profiles = selected_profiles)
+    return dataset_class(
+        label,
+        config_file=config_file,
+        input_data=input_data,
+        selected_profiles=selected_profiles,
+    )

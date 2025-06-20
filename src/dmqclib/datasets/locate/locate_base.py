@@ -8,7 +8,7 @@ from dmqclib.utils.dataset_path import build_full_locate_path
 
 class LocatePositionBase(DataSetBase):
     """
-    Base class to identify training data chunks
+    Base class to identify training data rows
     """
 
     def __init__(
@@ -24,7 +24,7 @@ class LocatePositionBase(DataSetBase):
         self._build_output_file_names()
         self.input_data = input_data
         self.selected_profiles = selected_profiles
-        self.target_locations = None
+        self.target_rows = {}
 
     def _build_output_file_names(self):
         """
@@ -43,26 +43,24 @@ class LocatePositionBase(DataSetBase):
 
     def process_targets(self):
         """
-        Iterate all targets to locate training data chunks.
+        Iterate all targets to locate training data rows.
         """
-        self.target_locations = {
-            k: self.locate_target_chunks(k, v)
-            for k, v in self.dataset_info["locate"]["targets"].items()
-        }
+        for k, v in self.dataset_info["locate"]["targets"].items():
+            self.locate_target_rows(k, v)
 
     @abstractmethod
-    def locate_target_chunks(self, target_name: str, target_value: Dict):
+    def locate_target_rows(self, target_name: str, target_value: Dict):
         """
-        Locate training data chunks.
+        Locate training data rows.
         """
         pass
 
-    def write_target_locations(self):
+    def write_target_rows(self):
         """
-        Write target_locations to parquet files
+        Write target_rows to parquet files
         """
-        if self.target_locations is None:
-            raise ValueError("Member variable 'target_locations' must not be empty.")
+        if self.target_rows is None:
+            raise ValueError("Member variable 'target_rows' must not be empty.")
 
-        for k, v in self.target_locations.items():
+        for k, v in self.target_rows.items():
             v.write_parquet(self.output_file_names[k])

@@ -22,10 +22,10 @@ NRT_BO_001:
     folder_name: nrt_bo_001
     targets:
       temp:
-        file_name: temp_positions.parquet
+        file_name: temp_rows.parquet
         variable: temp_qc
       psal:
-        file_name: psal_positions.parquet
+        file_name: psal_rows.parquet
         variable: psal_qc
 
 NRT_BO_002:
