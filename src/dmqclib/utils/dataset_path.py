@@ -79,3 +79,12 @@ def build_full_locate_path(
     Returns the full path with the specified file name for the locate module.
     """
     return _build_full_data_path(path_info, "locate", folder_name1, file_name)
+
+
+def build_full_extract_path(
+    path_info: Dict, folder_name1: Optional[str], file_name: str
+) -> str:
+    """
+    Returns the full path with the specified file name for the extract module.
+    """
+    return _build_full_data_path(path_info, "extract", folder_name1, file_name)

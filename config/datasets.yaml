@@ -8,6 +8,9 @@ path_info:
   locate:
     base_path: /path/to/data
     folder_name: select
+  extract:
+    base_path: /path/to/data
+    folder_name: select
 
 NRT_BO_001:
   input:
@@ -27,14 +30,13 @@ NRT_BO_001:
       psal:
         file_name: psal_rows.parquet
         variable: psal_qc
-
-NRT_BO_002:
-  input:
-    base_class: InputDataSetA
-  select:
-    base_class: SelectDataSetA
-  locate:
-    base_class: LocateDataSetA
+  extract:
+    base_class: ExtractDataSetA
+    folder_name: nrt_bo_001
     targets:
       temp:
+        file_name: temp_features.parquet
         variable: temp_qc
+      psal:
+        file_name: psal_features.parquet
+        variable: psal_qc

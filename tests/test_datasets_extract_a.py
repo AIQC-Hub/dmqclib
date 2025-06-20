@@ -1,0 +1,89 @@
+import os
+import unittest
+from pathlib import Path
+import polars as pl
+from dmqclib.datasets.class_loader import load_input_dataset
+from dmqclib.datasets.class_loader import load_select_dataset
+from dmqclib.datasets.class_loader import load_locate_dataset
+from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
+
+
+class TestExtractDataSetA(unittest.TestCase):
+    def setUp(self):
+        """Set up test environment and load input and selected datasets."""
+        self.config_file_path = str(
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+        self.test_data_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "input"
+            / "nrt_cora_bo_test.parquet"
+        )
+        self.ds_input = load_input_dataset("NRT_BO_001", str(self.config_file_path))
+        self.ds_input.input_file_name = str(self.test_data_file)
+        self.ds_input.read_input_data()
+
+        self.ds_select = load_select_dataset(
+            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+        )
+        self.ds_select.label_profiles()
+
+        self.ds_locate = load_locate_dataset(
+            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data, self.ds_select.selected_profiles
+        )
+        self.ds_locate.process_targets()
+
+
+    def test_init_valid_label(self):
+        """Ensure ExtractDataSetA constructs correctly with a valid label."""
+        ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
+        self.assertEqual(ds.dataset_name, "NRT_BO_001")
+
+    def test_init_invalid_label(self):
+        """Ensure ValueError is raised for an invalid label."""
+        with self.assertRaises(ValueError):
+            ExtractDataSetA("NON_EXISTENT_LABEL", str(self.config_file_path))
+
+    def test_config_file(self):
+        """Verify the config file is correctly set in the member variable."""
+        ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
+        self.assertTrue("datasets.yaml" in ds.config_file_name)
+
+    def test_output_file_names(self):
+        """Ensure output file names are set correctly."""
+        ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
+        self.assertEqual(
+            "/path/to/data/nrt_bo_001/select/temp_features.parquet",
+            str(ds.output_file_names["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/data/nrt_bo_001/select/psal_features.parquet",
+            str(ds.output_file_names["psal"]),
+        )
+
+    def test_no_input_file_name(self):
+        """Ensure ValueError is raised if no input file name is provided."""
+        with self.assertRaises(ValueError):
+            _ = ExtractDataSetA("NRT_BO_002", str(self.config_file_path))
+
+    def test_input_data_and_selected_profiles(self):
+        """Ensure input data and selected profiles are read correctly."""
+        ds = ExtractDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_locate.target_rows,
+        )
+
+        self.assertIsInstance(ds.input_data, pl.DataFrame)
+        self.assertEqual(ds.input_data.shape[0], 132342)
+        self.assertEqual(ds.input_data.shape[1], 30)
+
+        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.target_rows["temp"].shape[0], 128)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 10)
+
+        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.target_rows["psal"].shape[0], 140)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 10)
