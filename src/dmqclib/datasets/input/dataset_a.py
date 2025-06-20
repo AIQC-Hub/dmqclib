@@ -3,7 +3,7 @@ from dmqclib.datasets.input.input_base import InputDataSetBase
 
 class InputDataSetA(InputDataSetBase):
     """
-    InputDataSetA inherits from DataSetBase and sets the 'expected_class_name' to 'InputDataSetA'.
+    InputDataSetA reads BO NRT+Cora test data.
     """
 
     expected_class_name = "InputDataSetA"
@@ -13,12 +13,12 @@ class InputDataSetA(InputDataSetBase):
 
     def select(self):
         """
-        Selects columns of the data frame in self.input_data
+        Selects columns of the data frame in self.input_data.
         """
         pass
 
     def filter(self):
         """
-        Filter rows of the data frame in self.input_data
+        Filter rows of the data frame in self.input_data.
         """
         pass

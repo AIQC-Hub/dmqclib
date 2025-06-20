@@ -33,3 +33,13 @@ def read_config(
     data["config_file_name"] = config_file
 
     return data
+
+
+def get_file_name_from_config(v: Dict, config_file_name: str) -> str:
+    file_name = v.get("file_name", "")
+    if file_name is None or file_name == "":
+        raise ValueError(
+            f"'input_file' not found or set to None in config file '{config_file_name}'"
+        )
+
+    return file_name

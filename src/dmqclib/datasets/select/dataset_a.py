@@ -4,7 +4,20 @@ from dmqclib.datasets.select.select_base import ProfileSelectionBase
 
 class SelectDataSetA(ProfileSelectionBase):
     """
-    SelectDataSetA inherits from ProfileSelectionBase and sets the 'expected_class_name' to 'SelectDataSetA'.
+    SelectDataSetA defines negative and positive profiles from BO NRT+Cora test data.
+
+    Main steps:
+    1. Select positive profiles:
+        Select profiles that have values 4 in at least one of temp_qc, psal_qc, and pres_qc.
+
+    2. Select negative profiles:
+        Select profiles that have values 1 in all of temp_qc, psal_qc, pres_qc, temp_qc_dm, psal_qc_dm, pres_qc_dm.
+
+    3. Identify pairs from positive and negative datasets:
+        To reduce negative profiles, identify and keep only profiles having close dates to those of positive profiles.
+
+    4. Combine dataframes:
+        Combine positive and negative datasets.
     """
 
     expected_class_name = "SelectDataSetA"
@@ -19,10 +32,17 @@ class SelectDataSetA(ProfileSelectionBase):
 
         self.pos_profile_df = None
         self.neg_profile_df = None
+        self.key_col_names = [
+            "platform_code",
+            "profile_no",
+            "profile_timestamp",
+            "longitude",
+            "latitude",
+        ]
 
     def select_positive_profiles(self):
         """
-        Select profiles with invalid value flags as positive profiles
+        Select profiles with bad flags as positive profiles.
         """
         self.pos_profile_df = (
             self.input_data.filter(
@@ -30,24 +50,8 @@ class SelectDataSetA(ProfileSelectionBase):
                 | (pl.col("psal_qc") == 4)
                 | (pl.col("pres_qc") == 4)
             )
-            .select(
-                [
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
-            .unique(
-                subset=[
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
+            .select(self.key_col_names)
+            .unique(subset=self.key_col_names)
             .with_row_index("profile_id", offset=1)
             .with_columns(
                 pl.col("profile_timestamp").dt.ordinal_day().alias("pos_day_of_year")
@@ -56,18 +60,10 @@ class SelectDataSetA(ProfileSelectionBase):
 
     def select_negative_profiles(self):
         """
-        Select profiles with all valid value flags as negative profiles
+        Select profiles with all good flags as negative profiles.
         """
         self.neg_profile_df = (
-            self.input_data.group_by(
-                [
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
+            self.input_data.group_by(self.key_col_names)
             .agg(
                 [
                     pl.col("temp_qc").max().alias("max_temp_qc"),
@@ -86,15 +82,7 @@ class SelectDataSetA(ProfileSelectionBase):
                 & (pl.col("max_psal_qc_dm") == 1)
                 & (pl.col("max_pres_qc_dm") == 1)
             )
-            .select(
-                [
-                    "platform_code",
-                    "profile_no",
-                    "profile_timestamp",
-                    "longitude",
-                    "latitude",
-                ]
-            )
+            .select(self.key_col_names)
             .with_row_index("profile_id", offset=self.pos_profile_df.shape[0] + 1)
             .with_columns(
                 pl.col("profile_timestamp").dt.ordinal_day().alias("neg_day_of_year")
@@ -102,6 +90,9 @@ class SelectDataSetA(ProfileSelectionBase):
         )
 
     def find_profile_pairs(self):
+        """
+        Identify pairs from positive and negative datasets.
+        """
         closest_neg_id = (
             self.pos_profile_df.join(self.neg_profile_df, how="cross", suffix="_neg")
             .with_columns(
@@ -136,6 +127,9 @@ class SelectDataSetA(ProfileSelectionBase):
         )
 
     def label_profiles(self):
+        """
+        Select and filter positive and negative datasets and combine them.
+        """
         self.select_positive_profiles()
         self.select_negative_profiles()
         self.find_profile_pairs()

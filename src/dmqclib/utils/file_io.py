@@ -1,6 +1,6 @@
 import os
-import polars as pl
 from typing import Dict
+import polars as pl
 
 
 def read_input_file(
