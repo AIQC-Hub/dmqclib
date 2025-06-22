@@ -15,10 +15,8 @@ NRT_BO_001:
     locate: LocateDataSetA
     extract: ExtractDataSetA
   select:
-    base_class: SelectDataSetA
     file_name: selected_profiles.parquet
   locate:
-    base_class: LocateDataSetA
     targets:
       temp:
         file_name: temp_rows.parquet
@@ -27,7 +25,6 @@ NRT_BO_001:
         file_name: psal_rows.parquet
         variable: psal_qc
   extract:
-    base_class: ExtractDataSetA
     targets:
       temp:
         file_name: temp_features.parquet

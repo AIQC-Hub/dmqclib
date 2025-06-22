@@ -35,7 +35,7 @@ class LocatePositionBase(DataSetBase):
                 self.path_info,
                 self.dataset_info,
                 "locate",
-                get_file_name_from_config(v, self.config_file_name),
+                get_file_name_from_config(v),
             )
             for k, v in self.dataset_info["locate"]["targets"].items()
         }

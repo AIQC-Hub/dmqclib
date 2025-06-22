@@ -41,7 +41,7 @@ class TestSelectDataSetA(unittest.TestCase):
         """Ensure output file name is set correctly."""
         ds = SelectDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data3/nrt_bo_001_test/select/selected_profiles.parquet",
+            "/path/to/data3/nrt_bo_001_test/select/selected_profiles2.parquet",
             str(ds.output_file_name),
         )
 

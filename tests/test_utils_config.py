@@ -143,7 +143,7 @@ class TestGetFileName(unittest.TestCase):
         config = read_config(config_file=str(self.explicit_config_file_path))
 
         file_name = get_file_name_from_config(
-            config["NRT_BO_001"]["input"], "config_file_name"
+            config["NRT_BO_001"]["input"]
         )
         self.assertEqual("nrt_cora_bo_test.parquet", file_name)
 
@@ -155,5 +155,5 @@ class TestGetFileName(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             _ = get_file_name_from_config(
-                config["NRT_BO_002"]["input"], "config_file_name"
+                config["NRT_BO_002"]["input"]
             )

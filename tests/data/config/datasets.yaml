@@ -22,7 +22,7 @@ NRT_BO_001:
     extract: ExtractDataSetA
   select:
     folder_name: nrt_bo_001_test
-    file_name: selected_profiles.parquet
+    file_name: selected_profiles2.parquet
   locate:
     targets:
       temp:

@@ -19,6 +19,7 @@ class ProfileSelectionBase(DataSetBase):
         super().__init__("select", dataset_name, config_file=config_file)
 
         # Set member variables
+        self.default_file_name = "selected_profiles.parquet"
         self._build_output_file_name()
         self.input_data = input_data
         self.selected_profiles = None
@@ -28,7 +29,7 @@ class ProfileSelectionBase(DataSetBase):
         Set the output file based on configuration entries.
         """
         file_name = get_file_name_from_config(
-            self.dataset_info["select"], self.config_file_name
+            self.dataset_info["select"], self.default_file_name
         )
 
         self.output_file_name = build_full_data_path(

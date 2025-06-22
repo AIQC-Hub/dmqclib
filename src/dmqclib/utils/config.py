@@ -72,11 +72,27 @@ def get_dataset_folder_name_from_config(
     return folder_name
 
 
-def get_file_name_from_config(v: Dict, config_file_name: str) -> str:
+def get_file_name_from_config(v: Dict, default_name: str=None) -> str:
     file_name = v.get("file_name", "")
     if file_name is None or file_name == "":
-        raise ValueError(
-            f"'input_file' not found or set to None in config file '{config_file_name}'"
-        )
+        if default_name is None:
+            raise ValueError(
+                "'input_file' not found or set to None in the config file"
+            )
+        else:
+            file_name = default_name
+
+    return file_name
+
+
+def get_target_file_name(v: Dict, target_name: str, default_name: str=None) -> str:
+    file_name = v.get("file_name", "")
+    if file_name is None or file_name == "":
+        if default_name is None:
+            raise ValueError(
+                "'input_file' not found or set to None in the config file"
+            )
+        else:
+            file_name = default_name
 
     return file_name

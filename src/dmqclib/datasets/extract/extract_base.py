@@ -35,7 +35,7 @@ class ExtractFeatureBase(DataSetBase):
                 self.path_info,
                 self.dataset_info,
                 "extract",
-                get_file_name_from_config(v, self.config_file_name),
+                get_file_name_from_config(v),
             )
             for k, v in self.dataset_info["extract"]["targets"].items()
         }
