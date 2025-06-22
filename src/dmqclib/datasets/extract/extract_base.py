@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase
-from dmqclib.utils.config import get_file_name_from_config
+from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.dataset_path import build_full_data_path
 
 
@@ -21,6 +21,7 @@ class ExtractFeatureBase(DataSetBase):
         super().__init__("extract", dataset_name, config_file=config_file)
 
         # Set member variables
+        self.default_file_name = "{target_name}_features.parquet"
         self._build_output_file_names()
         self.input_data = input_data
         self.target_rows = target_rows
@@ -35,7 +36,7 @@ class ExtractFeatureBase(DataSetBase):
                 self.path_info,
                 self.dataset_info,
                 "extract",
-                get_file_name_from_config(v),
+                get_target_file_name(v, k, self.default_file_name),
             )
             for k, v in self.dataset_info["extract"]["targets"].items()
         }

@@ -63,11 +63,6 @@ class TestExtractDataSetA(unittest.TestCase):
             str(ds.output_file_names["psal"]),
         )
 
-    def test_no_input_file_name(self):
-        """Ensure ValueError is raised if no input file name is provided."""
-        with self.assertRaises(ValueError):
-            _ = ExtractDataSetA("NRT_BO_002", str(self.config_file_path))
-
     def test_input_data_and_selected_profiles(self):
         """Ensure input data and selected profiles are read correctly."""
         ds = ExtractDataSetA(

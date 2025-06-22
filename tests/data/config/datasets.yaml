@@ -10,6 +10,13 @@ path_info:
   locate:
     folder_name: select
 
+targets: &default_targets
+  targets:
+    temp:
+      variable: temp_qc
+    psal:
+      variable: psal_qc
+
 NRT_BO_001:
   common:
     folder_name: nrt_bo_001
@@ -23,24 +30,12 @@ NRT_BO_001:
   select:
     folder_name: nrt_bo_001_test
     file_name: selected_profiles2.parquet
-  locate:
-    targets:
-      temp:
-        file_name: temp_rows.parquet
-        variable: temp_qc
-      psal:
-        file_name: psal_rows.parquet
-        variable: psal_qc
-  extract:
-    targets:
-      temp:
-        file_name: temp_features.parquet
-        variable: temp_qc
-      psal:
-        file_name: psal_features.parquet
-        variable: psal_qc
+  locate: *default_targets
+  extract: *default_targets
 
 NRT_BO_002:
+  common:
+    folder_name: nrt_bo_002
   base_class:
     input: InputDataSetA
     select: SelectDataSetA
@@ -48,11 +43,5 @@ NRT_BO_002:
     extract: ExtractDataSetA
   input:
     folder_name:
-  locate:
-    targets:
-      temp:
-        variable: temp_qc
-  extract:
-    targets:
-      temp:
-        variable: temp_qc
+  locate: *default_targets
+  extract: *default_targets

@@ -29,7 +29,7 @@ class ProfileSelectionBase(DataSetBase):
         Set the output file based on configuration entries.
         """
         file_name = get_file_name_from_config(
-            self.dataset_info["select"], self.default_file_name
+            self.dataset_info, "select", self.default_file_name
         )
 
         self.output_file_name = build_full_data_path(
