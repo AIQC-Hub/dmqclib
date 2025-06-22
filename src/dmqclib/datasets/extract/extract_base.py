@@ -3,6 +3,7 @@ from typing import Dict
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_target_file_name
+from dmqclib.utils.config import get_targets
 from dmqclib.utils.dataset_path import build_full_data_path
 
 
@@ -31,6 +32,7 @@ class ExtractFeatureBase(DataSetBase):
         """
         Set the output files based on configuration entries.
         """
+        targets = get_targets(self.dataset_info,"locate", self.targets)
         self.output_file_names = {
             k: build_full_data_path(
                 self.path_info,
@@ -38,7 +40,7 @@ class ExtractFeatureBase(DataSetBase):
                 "extract",
                 get_target_file_name(v, k, self.default_file_name),
             )
-            for k, v in self.dataset_info["extract"]["targets"].items()
+            for k, v in targets.items()
         }
 
     def process_targets(self):

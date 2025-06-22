@@ -96,3 +96,17 @@ def get_target_file_name(v: Dict, target_name: str, default_name: str=None) -> s
             file_name = default_name.format(target_name = target_name)
 
     return file_name
+
+
+def get_targets(dataset_info: Dict, data_type: str, default_targets: Dict=None) -> Dict:
+    if data_type in dataset_info and "targets" in dataset_info[data_type]:
+        targets = dataset_info[data_type]["targets"]
+    else:
+        targets = default_targets
+
+    if targets is None:
+        raise ValueError(
+            "'targets' not found or set to None in the config file"
+        )
+
+    return targets

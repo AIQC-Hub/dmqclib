@@ -30,8 +30,6 @@ NRT_BO_001:
   select:
     folder_name: nrt_bo_001_test
     file_name: selected_profiles2.parquet
-  locate: *default_targets
-  extract: *default_targets
 
 NRT_BO_002:
   common:
