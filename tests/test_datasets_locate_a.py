@@ -47,11 +47,11 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure output file names are set correctly."""
         ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/temp_rows.parquet",
+            "/path/to/data1/nrt_bo_001/select/temp_rows.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/psal_rows.parquet",
+            "/path/to/data1/nrt_bo_001/select/psal_rows.parquet",
             str(ds.output_file_names["psal"]),
         )
 

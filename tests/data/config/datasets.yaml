@@ -1,28 +1,29 @@
 path_info:
+  common:
+    base_path: /path/to/data1
   input:
-    base_path: /path/to/data
+    base_path: /path/to/data2
     folder_name: input
   select:
-    base_path: /path/to/data
+    base_path: /path/to/data3
     folder_name: select
   locate:
-    base_path: /path/to/data
-    folder_name: select
-  extract:
-    base_path: /path/to/data
     folder_name: select
 
 NRT_BO_001:
-  input:
-    base_class: InputDataSetA
-    file_name: nrt_cora_bo_test.parquet
-  select:
-    base_class: SelectDataSetA
+  common:
     folder_name: nrt_bo_001
+  input:
+    file_name: nrt_cora_bo_test.parquet
+  base_class:
+    input: InputDataSetA
+    select: SelectDataSetA
+    locate: LocateDataSetA
+    extract: ExtractDataSetA
+  select:
+    folder_name: nrt_bo_001_test
     file_name: selected_profiles.parquet
   locate:
-    base_class: LocateDataSetA
-    folder_name: nrt_bo_001
     targets:
       temp:
         file_name: temp_rows.parquet
@@ -31,8 +32,6 @@ NRT_BO_001:
         file_name: psal_rows.parquet
         variable: psal_qc
   extract:
-    base_class: ExtractDataSetA
-    folder_name: nrt_bo_001
     targets:
       temp:
         file_name: temp_features.parquet
@@ -42,17 +41,18 @@ NRT_BO_001:
         variable: psal_qc
 
 NRT_BO_002:
+  base_class:
+    input: InputDataSetA
+    select: SelectDataSetA
+    locate: LocateDataSetA
+    extract: ExtractDataSetA
   input:
-    base_class: InputDataSetA
-  select:
-    base_class: SelectDataSetA
+    folder_name:
   locate:
-    base_class: LocateDataSetA
     targets:
       temp:
         variable: temp_qc
   extract:
-    base_class: LocateDataSetA
     targets:
       temp:
         variable: temp_qc

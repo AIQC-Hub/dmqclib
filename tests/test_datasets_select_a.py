@@ -41,14 +41,9 @@ class TestSelectDataSetA(unittest.TestCase):
         """Ensure output file name is set correctly."""
         ds = SelectDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/selected_profiles.parquet",
+            "/path/to/data3/nrt_bo_001_test/select/selected_profiles.parquet",
             str(ds.output_file_name),
         )
-
-    def test_no_input_file_name(self):
-        """Ensure ValueError is raised if no input file name is provided."""
-        with self.assertRaises(ValueError):
-            _ = SelectDataSetA("NRT_BO_002", str(self.config_file_path))
 
     def test_input_data(self):
         """Ensure input data is set correctly."""

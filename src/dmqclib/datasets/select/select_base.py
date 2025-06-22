@@ -2,7 +2,7 @@ from abc import abstractmethod
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_file_name_from_config
-from dmqclib.utils.dataset_path import build_full_select_path
+from dmqclib.utils.dataset_path import build_full_data_path
 
 
 class ProfileSelectionBase(DataSetBase):
@@ -27,13 +27,12 @@ class ProfileSelectionBase(DataSetBase):
         """
         Set the output file based on configuration entries.
         """
-        folder_name = self.dataset_info["select"].get("folder_name", "")
         file_name = get_file_name_from_config(
             self.dataset_info["select"], self.config_file_name
         )
 
-        self.output_file_name = build_full_select_path(
-            self.path_info, folder_name, file_name
+        self.output_file_name = build_full_data_path(
+            self.path_info, self.dataset_info, "select", file_name
         )
 
     @abstractmethod

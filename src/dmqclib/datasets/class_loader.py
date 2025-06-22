@@ -22,8 +22,8 @@ def _get_dataset_info(label: str, config_file: str = None) -> Dict:
     return dataset_info
 
 
-def _get_class(dataset_info: Dict, registry: Dict) -> DataSetBase:
-    class_name = dataset_info.get("base_class")
+def _get_class(dataset_info: Dict, data_type: str, registry: Dict) -> DataSetBase:
+    class_name = dataset_info["base_class"].get(data_type)
     dataset_class = registry.get(class_name)
     if not dataset_class:
         raise ValueError(f"Unknown dataset class specified: {class_name}")
@@ -37,7 +37,7 @@ def load_input_dataset(label: str, config_file: str = None) -> InputDataSetBase:
     YAML config and instantiate the appropriate class, returning it.
     """
     dataset_info = _get_dataset_info(label, config_file)
-    dataset_class = _get_class(dataset_info["input"], INPUT_DATASET_REGISTRY)
+    dataset_class = _get_class(dataset_info, "input", INPUT_DATASET_REGISTRY)
 
     return dataset_class(label, config_file=config_file)
 
@@ -50,7 +50,7 @@ def load_select_dataset(
     YAML config and instantiate the appropriate class, returning it.
     """
     dataset_info = _get_dataset_info(label, config_file)
-    dataset_class = _get_class(dataset_info["select"], SELECT_DATASET_REGISTRY)
+    dataset_class = _get_class(dataset_info, "select", SELECT_DATASET_REGISTRY)
 
     return dataset_class(label, config_file=config_file, input_data=input_data)
 
@@ -66,7 +66,7 @@ def load_locate_dataset(
     YAML config and instantiate the appropriate class, returning it.
     """
     dataset_info = _get_dataset_info(label, config_file)
-    dataset_class = _get_class(dataset_info["locate"], LOCATE_DATASET_REGISTRY)
+    dataset_class = _get_class(dataset_info, "locate", LOCATE_DATASET_REGISTRY)
 
     return dataset_class(
         label,
@@ -87,7 +87,7 @@ def load_extract_dataset(
     YAML config and instantiate the appropriate class, returning it.
     """
     dataset_info = _get_dataset_info(label, config_file)
-    dataset_class = _get_class(dataset_info["extract"], EXTRACT_DATASET_REGISTRY)
+    dataset_class = _get_class(dataset_info, "extract", EXTRACT_DATASET_REGISTRY)
 
     return dataset_class(
         label,

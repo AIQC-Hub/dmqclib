@@ -21,13 +21,12 @@ class InputDataSetBase(DataSetBase):
         """
         Set the input file based on configuration entries.
         """
-        folder_name = self.dataset_info["input"].get("folder_name", "")
         file_name = get_file_name_from_config(
             self.dataset_info["input"], self.config_file_name
         )
 
         self.input_file_name = build_full_input_path(
-            self.path_info, folder_name, file_name
+            self.path_info, self.dataset_info, file_name
         )
 
     def read_input_data(self):

@@ -219,4 +219,3 @@ class TestExractClassLoader(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             load_extract_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
-

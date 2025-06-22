@@ -1,4 +1,3 @@
-import os
 import unittest
 from pathlib import Path
 import polars as pl
@@ -30,10 +29,12 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_select.label_profiles()
 
         self.ds_locate = load_locate_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data, self.ds_select.selected_profiles
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
         )
         self.ds_locate.process_targets()
-
 
     def test_init_valid_label(self):
         """Ensure ExtractDataSetA constructs correctly with a valid label."""
@@ -54,11 +55,11 @@ class TestExtractDataSetA(unittest.TestCase):
         """Ensure output file names are set correctly."""
         ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/temp_features.parquet",
+            "/path/to/data1/nrt_bo_001/extract/temp_features.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/psal_features.parquet",
+            "/path/to/data1/nrt_bo_001/extract/psal_features.parquet",
             str(ds.output_file_names["psal"]),
         )
 

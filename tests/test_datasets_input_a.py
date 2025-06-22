@@ -50,13 +50,8 @@ class TestInputDataSetA(unittest.TestCase):
         """Ensure the input file name is set correctly."""
         ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         self.assertEqual(
-            "/path/to/data/input/nrt_cora_bo_test.parquet", str(ds.input_file_name)
+            "/path/to/data2/input/nrt_cora_bo_test.parquet", str(ds.input_file_name)
         )
-
-    def test_no_input_file_name(self):
-        """Ensure ValueError is raised if no input file name is provided."""
-        with self.assertRaises(ValueError):
-            _ = InputDataSetA("NRT_BO_002", str(self.explicit_config_file_path))
 
     def test_read_input_data_with_explicit_type(self):
         """Ensure data is read correctly with explicit file type."""

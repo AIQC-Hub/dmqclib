@@ -25,7 +25,7 @@ class DataSetBase(ABC):
         dataset_info = config[dataset_name]
 
         # Validate that the YAML's "class" matches the child's declared class name
-        base_class = dataset_info[dataset_type].get("base_class")
+        base_class = dataset_info["base_class"].get(dataset_type)
         if base_class != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "

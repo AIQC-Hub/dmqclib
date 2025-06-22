@@ -35,6 +35,43 @@ def read_config(
     return data
 
 
+def get_base_path_from_config(v: Dict, data_type: str) -> str:
+    if data_type not in v or (data_type in v and "base_path" not in v[data_type]):
+        data_type = "common"
+    base_path = v[data_type].get("base_path", "")
+
+    if base_path is None or base_path == "":
+        raise ValueError("'base_path' not found or set to None in the config file")
+
+    return base_path
+
+
+def get_folder_name_from_config(
+    v: Dict, data_type: str, folder_name_auto: bool = True
+) -> str:
+    orig_data_type = data_type
+    if data_type not in v or (data_type in v and "folder_name" not in v[data_type]):
+        data_type = "common"
+    folder_name = v[data_type].get("folder_name")
+
+    if folder_name is None:
+        folder_name = orig_data_type if folder_name_auto else ""
+
+    return folder_name
+
+
+def get_dataset_folder_name_from_config(
+    v: Dict, data_type: str, use_common=True
+) -> str:
+    if use_common and (
+        data_type not in v or (data_type in v and "folder_name" not in v[data_type])
+    ):
+        data_type = "common"
+    folder_name = v[data_type].get("folder_name") or ""
+
+    return folder_name
+
+
 def get_file_name_from_config(v: Dict, config_file_name: str) -> str:
     file_name = v.get("file_name", "")
     if file_name is None or file_name == "":

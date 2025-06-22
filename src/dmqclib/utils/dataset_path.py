@@ -1,9 +1,15 @@
 import os
-from typing import Dict, Optional
+from typing import Dict
+from dmqclib.utils.config import get_base_path_from_config
+from dmqclib.utils.config import get_folder_name_from_config
+from dmqclib.utils.config import get_dataset_folder_name_from_config
 
 
 def build_full_input_path(
-    path_info: Dict, folder_name2: Optional[str], file_name: str
+    path_info: Dict,
+    dataset_info: Dict,
+    file_name: str,
+    folder_name_auto: bool = True,
 ) -> str:
     """
     Build a full input path based on the fields in the 'config' dictionary and
@@ -19,21 +25,29 @@ def build_full_input_path(
     :param path_info: A dictionary that must contain:
                       path_info["input"]["base_path"] (str)
                       path_info["input"]["folder_name"] (str or None)
+    :param dataset_info: A dictionary that contains dataset_info["input"]["folder_name"]
     :param folder_name2: The input folder name (can be None or empty string).
     :param file_name: The name of the file to append at the end of the path.
+    :param folder_name_auto: use "input" as folder name if no entries are found in config
     :return: A string representing the full path.
     """
-    base_path = path_info["input"]["base_path"]
-    folder_name1 = path_info["input"].get("folder_name", "") or ""
-    folder_name2 = folder_name2 or ""
+    base_path = get_base_path_from_config(path_info, "input")
+    folder_name1 = get_folder_name_from_config(path_info, "input", folder_name_auto)
+    folder_name2 = get_dataset_folder_name_from_config(
+        dataset_info, "input", use_common=False
+    )
 
     return os.path.normpath(
         os.path.join(base_path, folder_name1, folder_name2, file_name)
     )
 
 
-def _build_full_data_path(
-    path_info: Dict, data_type: str, folder_name1: Optional[str], file_name: str
+def build_full_data_path(
+    path_info: Dict,
+    dataset_info: Dict,
+    data_type: str,
+    file_name: str,
+    folder_name_auto: bool = True,
 ) -> str:
     """
     Build a full data path based on the fields in the 'config' dictionary and
@@ -49,42 +63,16 @@ def _build_full_data_path(
     :param path_info: A dictionary that must contain:
                    path_info[data_type]["base_path"] (str)
                    path_info[data_type]["folder_name"] (str or None)
-    :param folder_name1: The data folder name (can be None or empty string).
+    :param dataset_info: A dictionary that contains dataset_info[data_type]["folder_name"]
     :param file_name: The name of the file to append at the end of the path.
+    :param folder_name_auto: use data_type as folder name if no entries are found in config
 
     :return: A string representing the full path.
     """
-    base_path = path_info[data_type]["base_path"]
-    folder_name1 = folder_name1 or ""
-    folder_name2 = path_info[data_type].get("folder_name", "") or ""
+    base_path = get_base_path_from_config(path_info, data_type)
+    folder_name1 = get_dataset_folder_name_from_config(dataset_info, data_type)
+    folder_name2 = get_folder_name_from_config(path_info, data_type, folder_name_auto)
 
     return os.path.normpath(
         os.path.join(base_path, folder_name1, folder_name2, file_name)
     )
-
-
-def build_full_select_path(
-    path_info: Dict, folder_name1: Optional[str], file_name: str
-) -> str:
-    """
-    Returns the full path with the specified file name for the select module.
-    """
-    return _build_full_data_path(path_info, "select", folder_name1, file_name)
-
-
-def build_full_locate_path(
-    path_info: Dict, folder_name1: Optional[str], file_name: str
-) -> str:
-    """
-    Returns the full path with the specified file name for the locate module.
-    """
-    return _build_full_data_path(path_info, "locate", folder_name1, file_name)
-
-
-def build_full_extract_path(
-    path_info: Dict, folder_name1: Optional[str], file_name: str
-) -> str:
-    """
-    Returns the full path with the specified file name for the extract module.
-    """
-    return _build_full_data_path(path_info, "extract", folder_name1, file_name)
