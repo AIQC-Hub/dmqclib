@@ -72,41 +72,37 @@ def get_dataset_folder_name_from_config(
     return folder_name
 
 
-def get_file_name_from_config(v: Dict, data_type: str, default_name: str=None) -> str:
+def get_file_name_from_config(v: Dict, data_type: str, default_name: str = None) -> str:
     file_name = default_name
     if data_type in v and "file_name" in v[data_type]:
         file_name = v[data_type].get("file_name", "")
 
     if file_name is None:
-        raise ValueError(
-            "'input_file' not found or set to None in the config file"
-        )
+        raise ValueError("'input_file' not found or set to None in the config file")
 
     return file_name
 
 
-def get_target_file_name(v: Dict, target_name: str, default_name: str=None) -> str:
+def get_target_file_name(v: Dict, target_name: str, default_name: str = None) -> str:
     file_name = v.get("file_name", "")
     if file_name is None or file_name == "":
         if default_name is None:
-            raise ValueError(
-                "'input_file' not found or set to None in the config file"
-            )
+            raise ValueError("'input_file' not found or set to None in the config file")
         else:
-            file_name = default_name.format(target_name = target_name)
+            file_name = default_name.format(target_name=target_name)
 
     return file_name
 
 
-def get_targets(dataset_info: Dict, data_type: str, default_targets: Dict=None) -> Dict:
+def get_targets(
+    dataset_info: Dict, data_type: str, default_targets: Dict = None
+) -> Dict:
     if data_type in dataset_info and "targets" in dataset_info[data_type]:
         targets = dataset_info[data_type]["targets"]
     else:
         targets = default_targets
 
     if targets is None:
-        raise ValueError(
-            "'targets' not found or set to None in the config file"
-        )
+        raise ValueError("'targets' not found or set to None in the config file")
 
     return targets

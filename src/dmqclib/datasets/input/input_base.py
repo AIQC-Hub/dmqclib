@@ -21,9 +21,7 @@ class InputDataSetBase(DataSetBase):
         """
         Set the input file based on configuration entries.
         """
-        file_name = get_file_name_from_config(
-            self.dataset_info, "input"
-        )
+        file_name = get_file_name_from_config(self.dataset_info, "input")
 
         self.input_file_name = build_full_input_path(
             self.path_info, self.dataset_info, file_name

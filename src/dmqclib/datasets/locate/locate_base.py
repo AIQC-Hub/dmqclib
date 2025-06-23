@@ -33,7 +33,7 @@ class LocatePositionBase(DataSetBase):
         """
         Set the output files based on configuration entries.
         """
-        targets = get_targets(self.dataset_info,"locate", self.targets)
+        targets = get_targets(self.dataset_info, "locate", self.targets)
         self.output_file_names = {
             k: build_full_data_path(
                 self.path_info,

@@ -24,82 +24,102 @@ class SummaryDataSetA(SummaryStatsBase):
             "psal",
             "pres",
             "dist2coast",
-            "bath"
+            "bath",
         ]
         self.profile_col_names = ["platform_code", "profile_no"]
 
-    def calculate_global_stats(self, val_col_name:str) -> pl.DataFrame:
+    def calculate_global_stats(self, val_col_name: str) -> pl.DataFrame:
         """
         Calculate profile summary stats.
         """
         return (
-            self.input_data
-            .select([
-                pl.col(val_col_name).min().cast(pl.Float64).alias('min'),
-                pl.col(val_col_name).max().cast(pl.Float64).alias('max'),
-                pl.col(val_col_name).mean().cast(pl.Float64).alias('mean'),
-                pl.col(val_col_name).median().cast(pl.Float64).alias('median'),
-                pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias('25%'),
-                pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias('75%'),
-                pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias('2.5%'),
-                pl.col(val_col_name).quantile(0.975).cast(pl.Float64).alias('97.5%'),
-            ])
-            .with_columns(pl.lit("all").alias('platform_code'),
-                          pl.lit(0).alias('profile_no'),
-                          pl.lit(val_col_name).alias('variable'))
-            .select([
-                pl.col('platform_code'),
-                pl.col('profile_no'),
-                pl.col('variable'),
-                pl.col('min'),
-                pl.col('2.5%'),
-                pl.col('25%'),
-                pl.col('mean'),
-                pl.col('median'),
-                pl.col('75%'),
-                pl.col('97.5%'),
-                pl.col('max'),
-            ])
+            self.input_data.select(
+                [
+                    pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
+                    pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
+                    pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
+                    pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
+                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("25%"),
+                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("75%"),
+                    pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias("2.5%"),
+                    pl.col(val_col_name)
+                    .quantile(0.975)
+                    .cast(pl.Float64)
+                    .alias("97.5%"),
+                ]
+            )
+            .with_columns(
+                pl.lit("all").alias("platform_code"),
+                pl.lit(0).alias("profile_no"),
+                pl.lit(val_col_name).alias("variable"),
+            )
+            .select(
+                [
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                    pl.col("variable"),
+                    pl.col("min"),
+                    pl.col("2.5%"),
+                    pl.col("25%"),
+                    pl.col("mean"),
+                    pl.col("median"),
+                    pl.col("75%"),
+                    pl.col("97.5%"),
+                    pl.col("max"),
+                ]
+            )
         )
 
-    def calculate_profile_stats(self, grouped_df: pl.DataFrame, val_col_name:str) -> pl.DataFrame:
+    def calculate_profile_stats(
+        self, grouped_df: pl.DataFrame, val_col_name: str
+    ) -> pl.DataFrame:
         """
         Calculate global summary stats.
         """
         return (
-            grouped_df
-            .agg([
-                pl.col(val_col_name).min().cast(pl.Float64).alias('min'),
-                pl.col(val_col_name).max().cast(pl.Float64).alias('max'),
-                pl.col(val_col_name).mean().cast(pl.Float64).alias('mean'),
-                pl.col(val_col_name).median().cast(pl.Float64).alias('median'),
-                pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias('25%'),
-                pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias('75%'),
-                pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias('2.5%'),
-                pl.col(val_col_name).quantile(0.975).cast(pl.Float64).alias('97.5%'),
-            ])
-            .with_columns(pl.lit(val_col_name).alias('variable'))
-            .select([
-                pl.col('platform_code'),
-                pl.col('profile_no'),
-                pl.col('variable'),
-                pl.col('min'),
-                pl.col('2.5%'),
-                pl.col('25%'),
-                pl.col('mean'),
-                pl.col('median'),
-                pl.col('75%'),
-                pl.col('97.5%'),
-                pl.col('max'),
-            ])
+            grouped_df.agg(
+                [
+                    pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
+                    pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
+                    pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
+                    pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
+                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("25%"),
+                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("75%"),
+                    pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias("2.5%"),
+                    pl.col(val_col_name)
+                    .quantile(0.975)
+                    .cast(pl.Float64)
+                    .alias("97.5%"),
+                ]
+            )
+            .with_columns(pl.lit(val_col_name).alias("variable"))
+            .select(
+                [
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                    pl.col("variable"),
+                    pl.col("min"),
+                    pl.col("2.5%"),
+                    pl.col("25%"),
+                    pl.col("mean"),
+                    pl.col("median"),
+                    pl.col("75%"),
+                    pl.col("97.5%"),
+                    pl.col("max"),
+                ]
+            )
         )
 
     def calculate_stats(self):
         """
         Calculate summary stats.
         """
-        global_stats = pl.concat([self.calculate_global_stats(x) for x in self.val_col_names])
+        global_stats = pl.concat(
+            [self.calculate_global_stats(x) for x in self.val_col_names]
+        )
         grouped_df = self.input_data.group_by(self.profile_col_names)
-        profile_stats = pl.concat([self.calculate_profile_stats(grouped_df, x) for x in self.val_col_names])
+        profile_stats = pl.concat(
+            [self.calculate_profile_stats(grouped_df, x) for x in self.val_col_names]
+        )
 
         self.summary_stats = global_stats.vstack(profile_stats)
