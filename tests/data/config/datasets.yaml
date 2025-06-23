@@ -24,6 +24,7 @@ NRT_BO_001:
     file_name: nrt_cora_bo_test.parquet
   base_class:
     input: InputDataSetA
+    summary: SummaryDataSetA
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA
@@ -36,6 +37,7 @@ NRT_BO_002:
     folder_name: nrt_bo_002
   base_class:
     input: InputDataSetA
+    summary: SummaryDataSetA
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA

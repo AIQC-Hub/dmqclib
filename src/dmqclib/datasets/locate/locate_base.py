@@ -1,3 +1,4 @@
+import os
 from abc import abstractmethod
 from typing import Dict
 import polars as pl
@@ -66,4 +67,5 @@ class LocatePositionBase(DataSetBase):
             raise ValueError("Member variable 'target_rows' must not be empty.")
 
         for k, v in self.target_rows.items():
+            os.makedirs(os.path.dirname(self.output_file_names[k]), exist_ok=True)
             v.write_parquet(self.output_file_names[k])

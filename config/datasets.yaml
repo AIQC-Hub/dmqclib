@@ -18,6 +18,7 @@ NRT_BO_001:
     file_name: nrt_cora_bo_test.parquet
   base_class:
     input: InputDataSetA
+    summary: SummaryDataSetA
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA
