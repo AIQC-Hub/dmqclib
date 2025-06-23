@@ -53,17 +53,14 @@ class ExtractFeatureBase(DataSetBase):
         }
 
     def _filter_input(self):
-        self.filtered_input = (
-            self.input_data
-            .join(
-                (
-                    self.selected_profiles.select(
-                        pl.col("platform_code"),
-                        pl.col("profile_no"),
-                    )
-                ),
-                on=["platform_code", "profile_no"],
-            )
+        self.filtered_input = self.input_data.join(
+            (
+                self.selected_profiles.select(
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                )
+            ),
+            on=["platform_code", "profile_no"],
         )
 
     def process_targets(self):

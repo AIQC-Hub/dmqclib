@@ -10,12 +10,33 @@ path_info:
   locate:
     folder_name: select
 
-targets: &default_targets
+target_set1: &target_set1
   targets:
     temp:
       variable: temp_qc
     psal:
       variable: psal_qc
+
+feature_set1: &feature_set1
+  features:
+    - {class: location,
+       scales: {longitude: {min: 0, max: 1},
+                latitude: {min: 0, max: 1}}}
+    - {class: day_of_year,
+       convert: sine,
+       scales:{day_of_year: {min: 0, max: 1}}}
+    - {class: profile_summary_stats5,
+       scales: {mean: {min: 0, max: 1},
+                median: {min: 0, max: 1},
+                sd: {min: 0, max: 1},
+                p25: {min: 0, max: 1},
+                p75: {min: 0, max: 1}}}
+    - {class: basic_values3_plus_flanks,
+       flank_up: 5,
+       flank_down: 0,
+       scales: {temp: {min: 0, max: 1},
+                psal: {min: 0, max: 1},
+                pres: {min: 0, max: 1}}}
 
 NRT_BO_001:
   common:
@@ -28,9 +49,12 @@ NRT_BO_001:
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA
+  <<: *target_set1
   select:
     folder_name: nrt_bo_001_test
     file_name: selected_profiles2.parquet
+  extract:
+    <<: *feature_set1
 
 NRT_BO_002:
   common:
@@ -43,5 +67,7 @@ NRT_BO_002:
     extract: ExtractDataSetA
   input:
     folder_name:
-  locate: *default_targets
-  extract: *default_targets
+  locate: *target_set1
+  extract:
+    <<: *target_set1
+    <<: *feature_set1

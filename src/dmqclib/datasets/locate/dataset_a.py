@@ -127,6 +127,8 @@ class LocateDataSetA(LocatePositionBase):
         self.select_positive_rows(target_name, target_value)
         self.select_negative_rows(target_name, target_value)
 
-        self.target_rows[target_name] = (self.positive_rows[target_name].vstack(
-            self.negative_rows[target_name]
-        ).with_row_index("row_id", offset=1))
+        self.target_rows[target_name] = (
+            self.positive_rows[target_name]
+            .vstack(self.negative_rows[target_name])
+            .with_row_index("row_id", offset=1)
+        )
