@@ -5,9 +5,9 @@ from dmqclib.utils.config import get_file_name_from_config
 from dmqclib.utils.dataset_path import build_full_data_path
 
 
-class ProfileSelectionBase(DataSetBase):
+class SummaryStatsBase(DataSetBase):
     """
-    Base class for profile selection and group labeling classes
+    Base class to calculate summary stats
     """
 
     def __init__(
@@ -16,38 +16,38 @@ class ProfileSelectionBase(DataSetBase):
         config_file: str = None,
         input_data: pl.DataFrame = None,
     ):
-        super().__init__("select", dataset_name, config_file=config_file)
+        super().__init__("summary", dataset_name, config_file=config_file)
 
         # Set member variables
-        self.default_file_name = "selected_profiles.parquet"
+        self.default_file_name = "summary_stats.tsv"
         self._build_output_file_name()
         self.input_data = input_data
-        self.selected_profiles = None
+        self.summary_stats = None
 
     def _build_output_file_name(self):
         """
         Set the output file based on configuration entries.
         """
         file_name = get_file_name_from_config(
-            self.dataset_info, "select", self.default_file_name
+            self.dataset_info, "summary", self.default_file_name
         )
 
         self.output_file_name = build_full_data_path(
-            self.path_info, self.dataset_info, "select", file_name
+            self.path_info, self.dataset_info, "summary", file_name
         )
 
     @abstractmethod
-    def label_profiles(self):
+    def calculate_stats(self):
         """
-        Label profiles to identify positive and negative groups.
+        Calculate summary stats.
         """
         pass
 
-    def write_selected_profiles(self):
+    def write_summary_stats(self):
         """
-        Write selected profiles to parquet file
+        Write selected profiles to tsv file.
         """
-        if self.selected_profiles is None:
-            raise ValueError("Member variable 'selected_profiles' must not be empty.")
+        if self.summary_stats is None:
+            raise ValueError("Member variable 'summary_stats' must not be empty.")
 
-        self.selected_profiles.write_parquet(self.output_file_name)
+        self.summary_stats.write_csv(self.output_file_name, separator="\t")

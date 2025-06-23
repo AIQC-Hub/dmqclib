@@ -8,9 +8,9 @@ from dmqclib.utils.config import get_targets
 from dmqclib.utils.dataset_path import build_full_data_path
 
 
-class LocatePositionBase(DataSetBase):
+class ExtractFeatureBase(DataSetBase):
     """
-    Base class to identify training data rows
+    Base class to extract features
     """
 
     def __init__(
@@ -18,16 +18,16 @@ class LocatePositionBase(DataSetBase):
         dataset_name: str,
         config_file: str = None,
         input_data: pl.DataFrame = None,
-        selected_profiles: pl.DataFrame = None,
+        target_rows: pl.DataFrame = None,
     ):
-        super().__init__("locate", dataset_name, config_file=config_file)
+        super().__init__("extract", dataset_name, config_file=config_file)
 
         # Set member variables
-        self.default_file_name = "{target_name}_rows.parquet"
+        self.default_file_name = "{target_name}_features.parquet"
         self._build_output_file_names()
         self.input_data = input_data
-        self.selected_profiles = selected_profiles
-        self.target_rows = {}
+        self.target_rows = target_rows
+        self.target_features = {}
 
     def _build_output_file_names(self):
         """
@@ -38,7 +38,7 @@ class LocatePositionBase(DataSetBase):
             k: build_full_data_path(
                 self.path_info,
                 self.dataset_info,
-                "locate",
+                "extract",
                 get_target_file_name(v, k, self.default_file_name),
             )
             for k, v in targets.items()
@@ -48,24 +48,23 @@ class LocatePositionBase(DataSetBase):
         """
         Iterate all targets to locate training data rows.
         """
-        targets = get_targets(self.dataset_info, "locate", self.targets)
-        for k, v in targets.items():
-            self.locate_target_rows(k, v)
+        for k, v in self.dataset_info["extract"]["targets"].items():
+            self.extract_target_features(k, v)
 
     @abstractmethod
-    def locate_target_rows(self, target_name: str, target_value: Dict):
+    def extract_target_features(self, target_name: str, target_value: Dict):
         """
-        Locate training data rows.
+        Extract target features.
         """
         pass
 
-    def write_target_rows(self):
+    def write_target_features(self):
         """
         Write target_rows to parquet files
         """
-        if len(self.target_rows) == 0:
-            raise ValueError("Member variable 'target_rows' must not be empty.")
+        if len(self.target_features) == 0:
+            raise ValueError("Member variable 'target_features' must not be empty.")
 
-        for k, v in self.target_rows.items():
+        for k, v in self.target_features.items():
             os.makedirs(os.path.dirname(self.output_file_names[k]), exist_ok=True)
             v.write_parquet(self.output_file_names[k])

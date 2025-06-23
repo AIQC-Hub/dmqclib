@@ -1,12 +1,16 @@
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.class_loader import load_input_dataset
 from dmqclib.datasets.input.dataset_a import InputDataSetA
-from dmqclib.datasets.class_loader import load_select_dataset
+from dmqclib.datasets.summary.dataset_a import SummaryDataSetA
 from dmqclib.datasets.select.dataset_a import SelectDataSetA
-from dmqclib.datasets.class_loader import load_locate_dataset
 from dmqclib.datasets.locate.dataset_a import LocateDataSetA
+from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
+from dmqclib.datasets.class_loader import load_input_dataset
+from dmqclib.datasets.class_loader import load_summary_dataset
+from dmqclib.datasets.class_loader import load_select_dataset
+from dmqclib.datasets.class_loader import load_locate_dataset
+from dmqclib.datasets.class_loader import load_extract_dataset
 
 
 class TestInputClassLoader(unittest.TestCase):
@@ -33,6 +37,54 @@ class TestInputClassLoader(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             load_input_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
+
+
+class TestSummaryClassLoader(unittest.TestCase):
+    def setUp(self):
+        """
+        Called before each test method. We define the explicit path to
+        the test data config file here for reuse.
+        """
+        self.config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+        self.test_data_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "input"
+            / "nrt_cora_bo_test.parquet"
+        )
+
+    def test_load_dataset_valid_label(self):
+        """
+        Test that load_dataset returns an instance of SummaryDataSetA for the known label.
+        """
+        ds = load_summary_dataset("NRT_BO_001", str(self.config_file_path))
+        self.assertIsInstance(ds, SummaryDataSetA)
+        self.assertEqual(ds.dataset_name, "NRT_BO_001")
+
+    def test_load_dataset_input_data(self):
+        """
+        Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
+        """
+        ds_input = load_input_dataset("NRT_BO_001", str(self.config_file_path))
+        ds_input.input_file_name = str(self.test_data_file)
+        ds_input.read_input_data()
+
+        ds = load_summary_dataset(
+            "NRT_BO_001", str(self.config_file_path), ds_input.input_data
+        )
+        self.assertIsInstance(ds, SummaryDataSetA)
+        self.assertIsInstance(ds.input_data, pl.DataFrame)
+        self.assertEqual(ds.input_data.shape[0], 132342)
+        self.assertEqual(ds.input_data.shape[1], 30)
+
+    def test_load_dataset_invalid_label(self):
+        """
+        Test that calling load_dataset with an invalid label raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_summary_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
 
 
 class TestSelectClassLoader(unittest.TestCase):
@@ -143,3 +195,77 @@ class TestLocateClassLoader(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             load_locate_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
+
+
+class TestExractClassLoader(unittest.TestCase):
+    def setUp(self):
+        """
+        Called before each test method. We define the explicit path to
+        the test data config file here for reuse.
+        """
+        self.config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+        self.test_data_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "input"
+            / "nrt_cora_bo_test.parquet"
+        )
+
+    def test_load_dataset_valid_label(self):
+        """
+        Test that load_dataset returns an instance of LocateDataSetA for the known label.
+        """
+        ds = load_extract_dataset("NRT_BO_001", str(self.config_file_path))
+        self.assertIsInstance(ds, ExtractDataSetA)
+        self.assertEqual(ds.dataset_name, "NRT_BO_001")
+
+    def test_load_dataset_input_data_and_profiles(self):
+        """
+        Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
+        """
+        ds_input = load_input_dataset("NRT_BO_001", str(self.config_file_path))
+        ds_input.input_file_name = str(self.test_data_file)
+        ds_input.read_input_data()
+
+        ds_select = load_select_dataset(
+            "NRT_BO_001", str(self.config_file_path), ds_input.input_data
+        )
+        ds_select.label_profiles()
+
+        ds_locate = load_locate_dataset(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            ds_input.input_data,
+            ds_select.selected_profiles,
+        )
+        ds_locate.process_targets()
+
+        ds = load_extract_dataset(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            ds_input.input_data,
+            ds_locate.target_rows,
+        )
+
+        self.assertIsInstance(ds, ExtractDataSetA)
+
+        self.assertIsInstance(ds.input_data, pl.DataFrame)
+        self.assertEqual(ds.input_data.shape[0], 132342)
+        self.assertEqual(ds.input_data.shape[1], 30)
+
+        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.target_rows["temp"].shape[0], 128)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 10)
+
+        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.target_rows["psal"].shape[0], 140)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 10)
+
+    def test_load_dataset_invalid_label(self):
+        """
+        Test that calling load_dataset with an invalid label raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_extract_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))

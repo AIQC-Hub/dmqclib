@@ -1,6 +1,8 @@
 import unittest
 from pathlib import Path
 from dmqclib.utils.config import read_config
+from dmqclib.utils.config import get_base_path_from_config
+from dmqclib.utils.config import get_folder_name_from_config
 from dmqclib.utils.config import get_file_name_from_config
 
 
@@ -20,9 +22,9 @@ class TestReadConfig(unittest.TestCase):
         config = read_config(config_file=str(self.explicit_config_file_path))
         self.assertIsNotNone(config, "Data should not be None")
         self.assertIn("path_info", config, "Key 'path_info' should be in the YAML")
-        self.assertEqual(config["path_info"]["input"]["base_path"], "/path/to/data")
+        self.assertEqual(config["path_info"]["input"]["base_path"], "/path/to/data2")
         self.assertEqual(config["path_info"]["input"]["folder_name"], "input")
-        self.assertEqual(config["path_info"]["select"]["base_path"], "/path/to/data")
+        self.assertEqual(config["path_info"]["select"]["base_path"], "/path/to/data3")
         self.assertEqual(config["path_info"]["select"]["folder_name"], "select")
 
     def test_read_config_with_config_name(self):
@@ -49,6 +51,82 @@ class TestReadConfig(unittest.TestCase):
             read_config(config_file="non_existent.yaml")
 
 
+class TestBasePathName(unittest.TestCase):
+    def setUp(self):
+        """
+        Set the test data config file.
+        """
+        self.explicit_config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+
+    def test_common_base_path(self):
+        """
+        Test file name with a correct entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        base_path = get_base_path_from_config(config["path_info"], "common")
+        self.assertEqual("/path/to/data1", base_path)
+
+    def test_input_base_path(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        base_path = get_base_path_from_config(config["path_info"], "input")
+        self.assertEqual("/path/to/data2", base_path)
+
+    def test_locate_base_path(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        base_path = get_base_path_from_config(config["path_info"], "locate")
+        self.assertEqual("/path/to/data1", base_path)
+
+
+class TestGetFolderName(unittest.TestCase):
+    def setUp(self):
+        """
+        Set the test data config file.
+        """
+        self.explicit_config_file_path = (
+            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        )
+
+    def test_input_folder_name(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        folder_name = get_folder_name_from_config(config["path_info"], "input")
+        self.assertEqual("input", folder_name)
+
+    def test_select_folder_name(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        folder_name = get_folder_name_from_config(config["path_info"], "select")
+        self.assertEqual("select", folder_name)
+
+    def test_locate_folder_name(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        folder_name = get_folder_name_from_config(config["path_info"], "locate")
+        self.assertEqual("select", folder_name)
+
+    def test_extract_folder_name(self):
+        """
+        Test file name without an entry.
+        """
+        config = read_config(config_file=str(self.explicit_config_file_path))
+        folder_name = get_folder_name_from_config(config["path_info"], "exract")
+        self.assertEqual("exract", folder_name)
+
+
 class TestGetFileName(unittest.TestCase):
     def setUp(self):
         """
@@ -65,7 +143,7 @@ class TestGetFileName(unittest.TestCase):
         config = read_config(config_file=str(self.explicit_config_file_path))
 
         file_name = get_file_name_from_config(
-            config["NRT_BO_001"]["input"], "config_file_name"
+            config["NRT_BO_001"], "input"
         )
         self.assertEqual("nrt_cora_bo_test.parquet", file_name)
 
@@ -77,5 +155,5 @@ class TestGetFileName(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             _ = get_file_name_from_config(
-                config["NRT_BO_002"]["input"], "config_file_name"
+                config["NRT_BO_002"], "input"
             )
