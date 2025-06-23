@@ -18,6 +18,7 @@ class ExtractFeatureBase(DataSetBase):
         dataset_name: str,
         config_file: str = None,
         input_data: pl.DataFrame = None,
+        selected_profiles: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
         summary_stats: pl.DataFrame = None,
     ):
@@ -27,6 +28,11 @@ class ExtractFeatureBase(DataSetBase):
         self.default_file_name = "{target_name}_features.parquet"
         self._build_output_file_names()
         self.input_data = input_data
+        self.selected_profiles = selected_profiles
+        if input_data is not None and selected_profiles is not None:
+            self._filter_input()
+        else:
+            self.filtered_input = None
         self.target_rows = target_rows
         self.summary_stats = summary_stats
         self.target_features = {}
@@ -45,6 +51,20 @@ class ExtractFeatureBase(DataSetBase):
             )
             for k, v in targets.items()
         }
+
+    def _filter_input(self):
+        self.filtered_input = (
+            self.input_data
+            .join(
+                (
+                    self.selected_profiles.select(
+                        pl.col("platform_code"),
+                        pl.col("profile_no"),
+                    )
+                ),
+                on=["platform_code", "profile_no"],
+            )
+        )
 
     def process_targets(self):
         """

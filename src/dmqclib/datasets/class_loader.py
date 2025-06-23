@@ -95,6 +95,7 @@ def load_extract_dataset(
     label: str,
     config_file: str = None,
     input_data: pl.DataFrame = None,
+    selected_profiles: pl.DataFrame = None,
     target_rows: pl.DataFrame = None,
     summary_stats: pl.DataFrame = None,
 ) -> LocatePositionBase:
@@ -109,6 +110,7 @@ def load_extract_dataset(
         label,
         config_file=config_file,
         input_data=input_data,
+        selected_profiles=selected_profiles,
         target_rows=target_rows,
         summary_stats=summary_stats,
     )

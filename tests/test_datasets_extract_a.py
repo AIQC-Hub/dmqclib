@@ -75,6 +75,7 @@ class TestExtractDataSetA(unittest.TestCase):
             "NRT_BO_001",
             str(self.config_file_path),
             self.ds_input.input_data,
+            self.ds_select.selected_profiles,
             self.ds_locate.target_rows,
             self.ds_summary.summary_stats,
         )
@@ -86,6 +87,14 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
         self.assertEqual(ds.summary_stats.shape[0], 3528)
         self.assertEqual(ds.summary_stats.shape[1], 11)
+
+        self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
+        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+        self.assertIsInstance(ds.filtered_input, pl.DataFrame)
+        self.assertEqual(ds.filtered_input.shape[0], 9841)
+        self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)

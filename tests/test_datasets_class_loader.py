@@ -251,6 +251,7 @@ class TestExractClassLoader(unittest.TestCase):
             "NRT_BO_001",
             str(self.config_file_path),
             ds_input.input_data,
+            ds_select.selected_profiles,
             ds_locate.target_rows,
             ds_summary.summary_stats,
         )
@@ -264,6 +265,14 @@ class TestExractClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
         self.assertEqual(ds.summary_stats.shape[0], 3528)
         self.assertEqual(ds.summary_stats.shape[1], 11)
+
+        self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
+        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+        self.assertIsInstance(ds.filtered_input, pl.DataFrame)
+        self.assertEqual(ds.filtered_input.shape[0], 9841)
+        self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
