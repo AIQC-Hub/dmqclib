@@ -3,10 +3,12 @@ import polars as pl
 from dmqclib.utils.config import read_config
 from dmqclib.datasets.base.dataset_base import DataSetBase
 from dmqclib.datasets.input.input_base import InputDataSetBase
+from dmqclib.datasets.summary.summary_base import SummaryStatsBase
 from dmqclib.datasets.select.select_base import ProfileSelectionBase
 from dmqclib.datasets.locate.locate_base import LocatePositionBase
 from dmqclib.datasets.extract.extract_base import ExtractFeatureBase
 from dmqclib.datasets.registry import INPUT_DATASET_REGISTRY
+from dmqclib.datasets.registry import SUMMARY_DATASET_REGISTRY
 from dmqclib.datasets.registry import SELECT_DATASET_REGISTRY
 from dmqclib.datasets.registry import LOCATE_DATASET_REGISTRY
 from dmqclib.datasets.registry import EXTRACT_DATASET_REGISTRY
@@ -40,6 +42,19 @@ def load_input_dataset(label: str, config_file: str = None) -> InputDataSetBase:
     dataset_class = _get_class(dataset_info, "input", INPUT_DATASET_REGISTRY)
 
     return dataset_class(label, config_file=config_file)
+
+
+def load_summary_dataset(
+    label: str, config_file: str = None, input_data: pl.DataFrame = None
+) -> SummaryStatsBase:
+    """
+    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    YAML config and instantiate the appropriate class, returning it.
+    """
+    dataset_info = _get_dataset_info(label, config_file)
+    dataset_class = _get_class(dataset_info, "summary", SUMMARY_DATASET_REGISTRY)
+
+    return dataset_class(label, config_file=config_file, input_data=input_data)
 
 
 def load_select_dataset(
