@@ -70,7 +70,7 @@ class TestSelectDataSetA(unittest.TestCase):
         df = ds.calculate_global_stats("temp")
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 1)
-        self.assertEqual(df.shape[1], 11)
+        self.assertEqual(df.shape[1], 12)
 
     def test_profile_stats(self):
         """Ensure profile pairs are found correctly."""
@@ -80,7 +80,7 @@ class TestSelectDataSetA(unittest.TestCase):
         grouped_df = ds.input_data.group_by(ds.profile_col_names)
         df = ds.calculate_profile_stats(grouped_df, "temp")
         self.assertEqual(df.shape[0], 503)
-        self.assertEqual(df.shape[1], 11)
+        self.assertEqual(df.shape[1], 12)
 
     def test_summary_stats(self):
         """Ensure profile pairs are found correctly."""
@@ -89,7 +89,7 @@ class TestSelectDataSetA(unittest.TestCase):
         )
         ds.calculate_stats()
         self.assertEqual(ds.summary_stats.shape[0], 3528)
-        self.assertEqual(ds.summary_stats.shape[1], 11)
+        self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):
         """Ensure selected profiles are written to parquet file correctly."""

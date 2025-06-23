@@ -46,6 +46,7 @@ class SummaryDataSetA(SummaryStatsBase):
                     .quantile(0.975)
                     .cast(pl.Float64)
                     .alias("97.5%"),
+                    pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
                 ]
             )
             .with_columns(
@@ -66,6 +67,7 @@ class SummaryDataSetA(SummaryStatsBase):
                     pl.col("75%"),
                     pl.col("97.5%"),
                     pl.col("max"),
+                    pl.col("sd"),
                 ]
             )
         )
@@ -90,6 +92,7 @@ class SummaryDataSetA(SummaryStatsBase):
                     .quantile(0.975)
                     .cast(pl.Float64)
                     .alias("97.5%"),
+                    pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
                 ]
             )
             .with_columns(pl.lit(val_col_name).alias("variable"))
@@ -106,6 +109,7 @@ class SummaryDataSetA(SummaryStatsBase):
                     pl.col("75%"),
                     pl.col("97.5%"),
                     pl.col("max"),
+                    pl.col("sd"),
                 ]
             )
         )

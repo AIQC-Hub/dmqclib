@@ -27,9 +27,3 @@ class ExtractDataSetA(ExtractFeatureBase):
             target_rows=target_rows,
             summary_stats=summary_stats,
         )
-
-    def extract_target_features(self, target_name: str, target_value: Dict):
-        """
-        Extract target features.
-        """
-        pass

@@ -3,6 +3,7 @@ from abc import abstractmethod
 from typing import Dict
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase
+from dmqclib.datasets.class_loader.feature_loader import load_feature_class
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
 from dmqclib.utils.dataset_path import build_full_data_path
@@ -35,6 +36,7 @@ class ExtractFeatureBase(DataSetBase):
             self.filtered_input = None
         self.target_rows = target_rows
         self.summary_stats = summary_stats
+        self.feature_info = self.dataset_info.get("extract").get("features")
         self.target_features = {}
 
     def _build_output_file_names(self):
@@ -65,18 +67,40 @@ class ExtractFeatureBase(DataSetBase):
 
     def process_targets(self):
         """
-        Iterate all targets to locate training data rows.
+        Iterate all targets to generate features.
         """
         targets = get_targets(self.dataset_info, "extract", self.targets)
-        for k, v in targets.items():
-            self.extract_target_features(k, v)
+        for k in targets.keys():
+            self.extract_target_features(k)
 
-    @abstractmethod
-    def extract_target_features(self, target_name: str, target_value: Dict):
+    def extract_target_features(self, k):
+        """
+        Iterate all feature entries to generate features.
+        """
+        self.target_features[k] = pl.concat(
+            [self.extract_features(k, x) for x in self.feature_info], how="align_left"
+        )
+
+    def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:
         """
         Extract target features.
         """
-        pass
+        print(target_name)
+        print(feature_info)
+        ds = load_feature_class(
+            target_name,
+            feature_info,
+            self.selected_profiles,
+            self.filtered_input,
+            self.target_rows,
+            self.summary_stats,
+        )
+
+        ds.scale_first()
+        ds.extract_features()
+        ds.scale_second()
+
+        return ds.features
 
     def write_target_features(self):
         """

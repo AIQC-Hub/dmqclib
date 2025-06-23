@@ -14,8 +14,9 @@ def _get_feature_class(feature_info: Dict, registry: Dict) -> FeatureBase:
 
 
 def load_feature_class(
+    target_name: str,
     feature_info: Dict,
-    target_name: str = None,
+    selected_profiles: pl.DataFrame = None,
     filtered_input: pl.DataFrame = None,
     target_rows: pl.DataFrame = None,
     summary_stats: pl.DataFrame = None,
@@ -27,5 +28,10 @@ def load_feature_class(
     feature_class = _get_feature_class(feature_info, FEATURE_REGISTRY)
 
     return feature_class(
-        target_name, filtered_input, target_rows, summary_stats, feature_info
+        target_name,
+        feature_info,
+        selected_profiles,
+        filtered_input,
+        target_rows,
+        summary_stats,
     )

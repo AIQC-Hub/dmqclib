@@ -10,6 +10,7 @@ class ProfileSummaryStats5(FeatureBase):
     def __init__(
         self,
         target_name: str = None,
+        selected_profiles: pl.DataFrame = None,
         filtered_input: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
         summary_stats: pl.DataFrame = None,
@@ -17,6 +18,7 @@ class ProfileSummaryStats5(FeatureBase):
     ):
         super().__init__(
             target_name,
+            selected_profiles,
             filtered_input,
             target_rows,
             summary_stats,
@@ -24,6 +26,18 @@ class ProfileSummaryStats5(FeatureBase):
         )
 
     def extract_features(self):
+        """
+        Extract features.
+        """
+        self.features = self.target_rows[self.target_name]
+
+    def scale_first(self):
+        """
+        Extract features.
+        """
+        pass
+
+    def scale_second(self):
         """
         Extract features.
         """

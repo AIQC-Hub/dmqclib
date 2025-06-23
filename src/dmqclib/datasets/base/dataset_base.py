@@ -43,4 +43,4 @@ class DataSetBase(ABC):
 
     def __repr__(self):
         # Provide a simple representation
-        return f"{self.dataset_type}(dataset=={self.dataset_name}, class={self.base_class_name})"
+        return f"{self.dataset_type}(dataset={self.dataset_name}, class={self.base_class_name})"

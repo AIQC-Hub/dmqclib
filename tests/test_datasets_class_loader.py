@@ -197,7 +197,7 @@ class TestLocateClassLoader(unittest.TestCase):
             load_locate_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
 
 
-class TestExractClassLoader(unittest.TestCase):
+class TestExtractClassLoader(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We define the explicit path to
@@ -264,7 +264,7 @@ class TestExractClassLoader(unittest.TestCase):
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
         self.assertEqual(ds.summary_stats.shape[0], 3528)
-        self.assertEqual(ds.summary_stats.shape[1], 11)
+        self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
         self.assertEqual(ds.selected_profiles.shape[0], 44)

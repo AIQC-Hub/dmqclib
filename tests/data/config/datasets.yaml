@@ -22,9 +22,7 @@ feature_set1: &feature_set1
     - {class: location,
        scales: {longitude: {min: 0, max: 1},
                 latitude: {min: 0, max: 1}}}
-    - {class: day_of_year,
-       convert: sine,
-       scales:{day_of_year: {min: 0, max: 1}}}
+    - {class: day_of_year, convert: sine}
     - {class: profile_summary_stats5,
        scales: {mean: {min: 0, max: 1},
                 median: {min: 0, max: 1},
@@ -33,7 +31,6 @@ feature_set1: &feature_set1
                 p75: {min: 0, max: 1}}}
     - {class: basic_values3_plus_flanks,
        flank_up: 5,
-       flank_down: 0,
        scales: {temp: {min: 0, max: 1},
                 psal: {min: 0, max: 1},
                 pres: {min: 0, max: 1}}}

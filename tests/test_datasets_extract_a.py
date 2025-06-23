@@ -86,7 +86,7 @@ class TestExtractDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
         self.assertEqual(ds.summary_stats.shape[0], 3528)
-        self.assertEqual(ds.summary_stats.shape[1], 11)
+        self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
         self.assertEqual(ds.selected_profiles.shape[0], 44)
@@ -103,3 +103,27 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
         self.assertEqual(ds.target_rows["psal"].shape[1], 11)
+
+    def test_location_features(self):
+        """Ensure input data and selected profiles are read correctly."""
+        ds = ExtractDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+            self.ds_locate.target_rows,
+            self.ds_summary.summary_stats,
+        )
+
+        feature_info = {
+            "class": "location",
+            "scales": {
+                "longitude": {"min": 0, "max": 1},
+                "latitude": {"min": 0, "max": 1},
+            },
+        }
+
+        print()
+        print(ds)
+        #        ds.process_targets()
+        print()

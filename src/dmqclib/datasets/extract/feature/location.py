@@ -10,6 +10,7 @@ class LocationFeat(FeatureBase):
     def __init__(
         self,
         target_name: str = None,
+        selected_profiles: pl.DataFrame = None,
         filtered_input: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
         summary_stats: pl.DataFrame = None,
@@ -17,6 +18,7 @@ class LocationFeat(FeatureBase):
     ):
         super().__init__(
             target_name,
+            selected_profiles,
             filtered_input,
             target_rows,
             summary_stats,
@@ -24,6 +26,38 @@ class LocationFeat(FeatureBase):
         )
 
     def extract_features(self):
+        """
+        Extract features.
+        """
+        self.features = (
+            self.target_rows[self.target_name]
+            .select(
+                [
+                    pl.col("row_id"),
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                ]
+            )
+            .join(
+                self.selected_profiles.select(
+                    [
+                        pl.col("platform_code"),
+                        pl.col("profile_no"),
+                        pl.col("longitude"),
+                        pl.col("latitude"),
+                    ]
+                ), on=["platform_code", "profile_no"], maintain_order ="left",
+            )
+            .drop(["platform_code", "profile_no"])
+        )
+
+    def scale_first(self):
+        """
+        Extract features.
+        """
+        pass
+
+    def scale_second(self):
         """
         Extract features.
         """
