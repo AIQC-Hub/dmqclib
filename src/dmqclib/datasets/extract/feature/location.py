@@ -63,4 +63,9 @@ class LocationFeat(FeatureBase):
         """
         Extract features.
         """
-        pass
+        for k, v in self.feature_info["scales"].items():
+            self.features = self.features.with_columns(
+                [
+                    ((pl.col(k) - v["min"]) / (v["max"] - v["min"])).alias(k),
+                ]
+            )

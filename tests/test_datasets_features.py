@@ -8,6 +8,7 @@ from dmqclib.datasets.class_loader.dataset_loader import load_locate_dataset
 from dmqclib.datasets.class_loader.dataset_loader import load_extract_dataset
 from dmqclib.datasets.extract.feature.location import LocationFeat
 from dmqclib.datasets.extract.feature.day_of_year import DayOfYearFeat
+from dmqclib.datasets.extract.feature.profile_summary import ProfileSummaryStats5
 
 
 class _TestFeatureBase(unittest.TestCase):
@@ -96,8 +97,8 @@ class TestLocationFeature(_TestFeatureBase):
         feature_info = {
             "class": "location",
             "scales": {
-                "longitude": {"min": 0, "max": 1},
-                "latitude": {"min": 0, "max": 1},
+                "longitude": {"min": 14.5, "max": 23.5},
+                "latitude": {"min": 55, "max": 66},
             },
         }
         super()._test_init_arguments(feature_info)
@@ -107,8 +108,8 @@ class TestLocationFeature(_TestFeatureBase):
         feature_info = {
             "class": "location",
             "scales": {
-                "longitude": {"min": 0, "max": 1},
-                "latitude": {"min": 0, "max": 1},
+                "longitude": {"min": 14.5, "max": 23.5},
+                "latitude": {"min": 55, "max": 66},
             },
         }
         ds = LocationFeat(
@@ -120,6 +121,10 @@ class TestLocationFeature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
+        print(ds.features)
+
+        ds.scale_second()
+        print(ds.features)
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
@@ -153,7 +158,71 @@ class TestDayOfYearFeature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
+        print(ds.features)
+
+        ds.scale_second()
+        print(ds.features)
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
         self.assertEqual(ds.features.shape[1], 2)
+
+
+class TestProfileSummaryStats5Feature(_TestFeatureBase):
+    def setUp(self):
+        super()._setup(ProfileSummaryStats5)
+
+    def test_init_arguments(self):
+        """Ensure input data and selected profiles are read correctly."""
+        feature_info = {
+            "class": "day_of_year",
+            "convert": "sine",
+        }
+        super()._test_init_arguments(feature_info)
+
+    def test_profile_summary_stats5_features(self):
+        """Ensure input data and selected profiles are read correctly."""
+        feature_info = {
+            "class": "profile_summary_stats5",
+            "scales": {
+                "temp": {
+                    "mean": {"min": 0, "max": 12.5},
+                    "median": {"min": 0, "max": 15},
+                    "sd": {"min": 0, "max": 6.5},
+                    "pct25": {"min": 0, "max": 12},
+                    "pct75": {"min": 1, "max": 19},
+                },
+                "psal": {
+                    "mean": {"min": 2.9, "max": 12},
+                    "median": {"min": 2.9, "max": 12},
+                    "sd": {"min": 0, "max": 4},
+                    "pct25": {"min": 2.5, "max": 8.5},
+                    "pct75": {"min": 3, "max": 16},
+                },
+                "pres": {
+                    "mean": {"min": 24, "max": 105},
+                    "median": {"min": 24, "max": 105},
+                    "sd": {"min": 13, "max": 60},
+                    "pct25": {"min": 12, "max": 53},
+                    "pct75": {"min": 35, "max": 156},
+                },
+            },
+        }
+
+        ds = ProfileSummaryStats5(
+            "temp",
+            feature_info,
+            self.ds_select.selected_profiles,
+            self.ds_extract.filtered_input,
+            self.ds_locate.target_rows,
+            self.ds_summary.summary_stats,
+        )
+        ds.extract_features()
+        print(ds.features)
+
+        ds.scale_second()
+        print(ds.features)
+
+        self.assertIsInstance(ds.features, pl.DataFrame)
+        self.assertEqual(ds.features.shape[0], 128)
+        self.assertEqual(ds.features.shape[1], 16)

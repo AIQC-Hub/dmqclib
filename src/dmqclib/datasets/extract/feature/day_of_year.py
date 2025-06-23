@@ -56,16 +56,6 @@ class DayOfYearFeat(FeatureBase):
             .drop(["platform_code", "profile_no", "profile_timestamp"])
         )
 
-        if "convert" in self.feature_info and self.feature_info["convert"] == "sine":
-            self._sine_transform()
-
-    def _sine_transform(self):
-        self.features = self.features.with_columns(
-            ((np.sin(pl.col("day_of_year") * 2 * np.pi / 365) + 1) / 2).alias(
-                "day_of_year"
-            ),
-        )
-
     def scale_first(self):
         """
         Extract features.
@@ -76,4 +66,9 @@ class DayOfYearFeat(FeatureBase):
         """
         Extract features.
         """
-        pass
+        if "convert" in self.feature_info and self.feature_info["convert"] == "sine":
+            self.features = self.features.with_columns(
+                ((np.sin(pl.col("day_of_year") * 2 * np.pi / 365) + 1) / 2).alias(
+                    "day_of_year"
+                ),
+            )
