@@ -6,11 +6,11 @@ from dmqclib.datasets.summary.dataset_a import SummaryDataSetA
 from dmqclib.datasets.select.dataset_a import SelectDataSetA
 from dmqclib.datasets.locate.dataset_a import LocateDataSetA
 from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
-from dmqclib.datasets.class_loader.class_loader import load_input_dataset
-from dmqclib.datasets.class_loader.class_loader import load_summary_dataset
-from dmqclib.datasets.class_loader.class_loader import load_select_dataset
-from dmqclib.datasets.class_loader.class_loader import load_locate_dataset
-from dmqclib.datasets.class_loader.class_loader import load_extract_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_input_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_summary_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_select_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_locate_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_extract_dataset
 
 
 class TestInputClassLoader(unittest.TestCase):
