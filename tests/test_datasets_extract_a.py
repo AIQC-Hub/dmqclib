@@ -1,10 +1,10 @@
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.class_loader import load_input_dataset
-from dmqclib.datasets.class_loader import load_summary_dataset
-from dmqclib.datasets.class_loader import load_select_dataset
-from dmqclib.datasets.class_loader import load_locate_dataset
+from dmqclib.datasets.class_loader.class_loader import load_input_dataset
+from dmqclib.datasets.class_loader.class_loader import load_summary_dataset
+from dmqclib.datasets.class_loader.class_loader import load_select_dataset
+from dmqclib.datasets.class_loader.class_loader import load_locate_dataset
 from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
 
 
