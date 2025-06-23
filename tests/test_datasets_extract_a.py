@@ -2,6 +2,7 @@ import unittest
 from pathlib import Path
 import polars as pl
 from dmqclib.datasets.class_loader import load_input_dataset
+from dmqclib.datasets.class_loader import load_summary_dataset
 from dmqclib.datasets.class_loader import load_select_dataset
 from dmqclib.datasets.class_loader import load_locate_dataset
 from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
@@ -22,6 +23,11 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_input = load_input_dataset("NRT_BO_001", str(self.config_file_path))
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
+
+        self.ds_summary = load_summary_dataset(
+            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+        )
+        self.ds_summary.calculate_stats()
 
         self.ds_select = load_select_dataset(
             "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
@@ -63,18 +69,23 @@ class TestExtractDataSetA(unittest.TestCase):
             str(ds.output_file_names["psal"]),
         )
 
-    def test_input_data_and_selected_profiles(self):
+    def test_init_arguments(self):
         """Ensure input data and selected profiles are read correctly."""
         ds = ExtractDataSetA(
             "NRT_BO_001",
             str(self.config_file_path),
             self.ds_input.input_data,
             self.ds_locate.target_rows,
+            self.ds_summary.summary_stats,
         )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
+
+        self.assertIsInstance(ds.summary_stats, pl.DataFrame)
+        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[1], 11)
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)

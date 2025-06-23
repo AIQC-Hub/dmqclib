@@ -96,6 +96,7 @@ def load_extract_dataset(
     config_file: str = None,
     input_data: pl.DataFrame = None,
     target_rows: pl.DataFrame = None,
+    summary_stats: pl.DataFrame = None,
 ) -> LocatePositionBase:
     """
     Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
@@ -109,4 +110,5 @@ def load_extract_dataset(
         config_file=config_file,
         input_data=input_data,
         target_rows=target_rows,
+        summary_stats=summary_stats,
     )

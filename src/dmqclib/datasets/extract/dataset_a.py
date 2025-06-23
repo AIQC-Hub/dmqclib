@@ -16,12 +16,14 @@ class ExtractDataSetA(ExtractFeatureBase):
         config_file: str = None,
         input_data: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
+        summary_stats: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
             config_file=config_file,
             input_data=input_data,
             target_rows=target_rows,
+            summary_stats=summary_stats,
         )
 
     def extract_target_features(self, target_name: str, target_value: Dict):

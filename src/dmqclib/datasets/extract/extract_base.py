@@ -19,6 +19,7 @@ class ExtractFeatureBase(DataSetBase):
         config_file: str = None,
         input_data: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
+        summary_stats: pl.DataFrame = None,
     ):
         super().__init__("extract", dataset_name, config_file=config_file)
 
@@ -27,13 +28,14 @@ class ExtractFeatureBase(DataSetBase):
         self._build_output_file_names()
         self.input_data = input_data
         self.target_rows = target_rows
+        self.summary_stats = summary_stats
         self.target_features = {}
 
     def _build_output_file_names(self):
         """
         Set the output files based on configuration entries.
         """
-        targets = get_targets(self.dataset_info, "locate", self.targets)
+        targets = get_targets(self.dataset_info, "extract", self.targets)
         self.output_file_names = {
             k: build_full_data_path(
                 self.path_info,
@@ -48,7 +50,8 @@ class ExtractFeatureBase(DataSetBase):
         """
         Iterate all targets to locate training data rows.
         """
-        for k, v in self.dataset_info["extract"]["targets"].items():
+        targets = get_targets(self.dataset_info, "extract", self.targets)
+        for k, v in targets.items():
             self.extract_target_features(k, v)
 
     @abstractmethod
