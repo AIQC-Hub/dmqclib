@@ -125,11 +125,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 10)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 11)
 
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 10)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 11)
 
     def test_write_target_rows(self):
         """Ensure target rows are written to parquet files correctly."""
