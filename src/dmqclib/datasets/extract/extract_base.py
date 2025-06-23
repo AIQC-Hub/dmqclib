@@ -1,5 +1,4 @@
 import os
-from abc import abstractmethod
 from typing import Dict
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase

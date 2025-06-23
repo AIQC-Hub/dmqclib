@@ -115,14 +115,6 @@ class TestExtractDataSetA(unittest.TestCase):
             self.ds_summary.summary_stats,
         )
 
-        feature_info = {
-            "class": "location",
-            "scales": {
-                "longitude": {"min": 0, "max": 1},
-                "latitude": {"min": 0, "max": 1},
-            },
-        }
-
         print()
         print(ds)
         #        ds.process_targets()

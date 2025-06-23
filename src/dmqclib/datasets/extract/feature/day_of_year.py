@@ -1,4 +1,5 @@
 import polars as pl
+import numpy as np
 from dmqclib.datasets.base.feature_base import FeatureBase
 
 
@@ -29,7 +30,41 @@ class DayOfYearFeat(FeatureBase):
         """
         Extract features.
         """
-        self.features = self.target_rows[self.target_name]
+        self.features = (
+            self.target_rows[self.target_name]
+            .select(
+                [
+                    pl.col("row_id"),
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                ]
+            )
+            .join(
+                self.selected_profiles.select(
+                    [
+                        pl.col("platform_code"),
+                        pl.col("profile_no"),
+                        pl.col("profile_timestamp"),
+                    ]
+                ),
+                on=["platform_code", "profile_no"],
+                maintain_order="left",
+            )
+            .with_columns(
+                pl.col("profile_timestamp").dt.ordinal_day().alias("day_of_year"),
+            )
+            .drop(["platform_code", "profile_no", "profile_timestamp"])
+        )
+
+        if "convert" in self.feature_info and self.feature_info["convert"] == "sine":
+            self._sine_transform()
+
+    def _sine_transform(self):
+        self.features = self.features.with_columns(
+            ((np.sin(pl.col("day_of_year") * 2 * np.pi / 365) + 1) / 2).alias(
+                "day_of_year"
+            ),
+        )
 
     def scale_first(self):
         """

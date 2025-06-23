@@ -1,4 +1,3 @@
-from typing import Dict
 import polars as pl
 from dmqclib.datasets.extract.extract_base import ExtractFeatureBase
 

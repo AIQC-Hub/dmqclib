@@ -46,7 +46,9 @@ class LocationFeat(FeatureBase):
                         pl.col("longitude"),
                         pl.col("latitude"),
                     ]
-                ), on=["platform_code", "profile_no"], maintain_order ="left",
+                ),
+                on=["platform_code", "profile_no"],
+                maintain_order="left",
             )
             .drop(["platform_code", "profile_no"])
         )
