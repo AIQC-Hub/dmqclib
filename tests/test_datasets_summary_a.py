@@ -41,7 +41,7 @@ class TestSelectDataSetA(unittest.TestCase):
         """Ensure output file name is set correctly."""
         ds = SummaryDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data1/nrt_bo_001/summary/summary_stats.tsv.gz",
+            "/path/to/data1/nrt_bo_001/summary/summary_stats.tsv",
             str(ds.output_file_name),
         )
 
@@ -49,7 +49,7 @@ class TestSelectDataSetA(unittest.TestCase):
         """Ensure output file name is set correctly."""
         ds = SummaryDataSetA("NRT_BO_002", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data1/nrt_bo_002/summary/summary_stats.tsv.gz",
+            "/path/to/data1/nrt_bo_002/summary/summary_stats.tsv",
             str(ds.output_file_name),
         )
 
@@ -92,3 +92,19 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(df.shape[0], 503)
         self.assertEqual(df.shape[1], 11)
 
+    def test_write_summary_stats(self):
+        """Ensure selected profiles are written to parquet file correctly."""
+        ds = SummaryDataSetA(
+            "NRT_BO_001", str(self.config_file_path), self.ds.input_data
+        )
+        ds.output_file_name = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "summary"
+            / "temp_summary_stats.tsv"
+        )
+
+        ds.calculate_stats()
+        ds.write_summary_stats()
+        self.assertTrue(os.path.exists(ds.output_file_name))
+        os.remove(ds.output_file_name)

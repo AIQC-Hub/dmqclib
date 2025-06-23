@@ -19,7 +19,7 @@ class SummaryStatsBase(DataSetBase):
         super().__init__("summary", dataset_name, config_file=config_file)
 
         # Set member variables
-        self.default_file_name = "summary_stats.tsv.gz"
+        self.default_file_name = "summary_stats.tsv"
         self._build_output_file_name()
         self.input_data = input_data
         self.summary_stats = None

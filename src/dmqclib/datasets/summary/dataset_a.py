@@ -35,17 +35,17 @@ class SummaryDataSetA(SummaryStatsBase):
         return (
             self.input_data
             .select([
-                pl.col(val_col_name).min().alias('min'),
-                pl.col(val_col_name).max().alias('max'),
-                pl.col(val_col_name).mean().alias('mean'),
-                pl.col(val_col_name).median().alias('median'),
-                pl.col(val_col_name).quantile(0.25).alias('25%'),
-                pl.col(val_col_name).quantile(0.75).alias('75%'),
-                pl.col(val_col_name).quantile(0.025).alias('2.5%'),
-                pl.col(val_col_name).quantile(0.975).alias('97.5%'),
+                pl.col(val_col_name).min().cast(pl.Float64).alias('min'),
+                pl.col(val_col_name).max().cast(pl.Float64).alias('max'),
+                pl.col(val_col_name).mean().cast(pl.Float64).alias('mean'),
+                pl.col(val_col_name).median().cast(pl.Float64).alias('median'),
+                pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias('25%'),
+                pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias('75%'),
+                pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias('2.5%'),
+                pl.col(val_col_name).quantile(0.975).cast(pl.Float64).alias('97.5%'),
             ])
             .with_columns(pl.lit("all").alias('platform_code'),
-                          pl.lit("all").alias('profile_no'),
+                          pl.lit(0).alias('profile_no'),
                           pl.lit(val_col_name).alias('variable'))
             .select([
                 pl.col('platform_code'),
@@ -69,14 +69,14 @@ class SummaryDataSetA(SummaryStatsBase):
         return (
             grouped_df
             .agg([
-                pl.col(val_col_name).min().alias('min'),
-                pl.col(val_col_name).max().alias('max'),
-                pl.col(val_col_name).mean().alias('mean'),
-                pl.col(val_col_name).median().alias('median'),
-                pl.col(val_col_name).quantile(0.25).alias('25%'),
-                pl.col(val_col_name).quantile(0.75).alias('75%'),
-                pl.col(val_col_name).quantile(0.025).alias('2.5%'),
-                pl.col(val_col_name).quantile(0.975).alias('97.5%'),
+                pl.col(val_col_name).min().cast(pl.Float64).alias('min'),
+                pl.col(val_col_name).max().cast(pl.Float64).alias('max'),
+                pl.col(val_col_name).mean().cast(pl.Float64).alias('mean'),
+                pl.col(val_col_name).median().cast(pl.Float64).alias('median'),
+                pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias('25%'),
+                pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias('75%'),
+                pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias('2.5%'),
+                pl.col(val_col_name).quantile(0.975).cast(pl.Float64).alias('97.5%'),
             ])
             .with_columns(pl.lit(val_col_name).alias('variable'))
             .select([
