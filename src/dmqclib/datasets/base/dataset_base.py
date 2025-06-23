@@ -25,7 +25,7 @@ class DataSetBase(ABC):
         dataset_info = config[dataset_name]
 
         # Validate that the YAML's "class" matches the child's declared class name
-        base_class = dataset_info[dataset_type].get("base_class")
+        base_class = dataset_info["base_class"].get(dataset_type)
         if base_class != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
@@ -39,6 +39,7 @@ class DataSetBase(ABC):
         self.base_class_name = base_class
         self.dataset_info = dataset_info
         self.path_info = config.get("path_info")
+        self.targets = config.get("targets").get("targets")
 
     def __repr__(self):
         # Provide a simple representation

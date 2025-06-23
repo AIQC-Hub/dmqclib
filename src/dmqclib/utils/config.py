@@ -35,11 +35,74 @@ def read_config(
     return data
 
 
-def get_file_name_from_config(v: Dict, config_file_name: str) -> str:
-    file_name = v.get("file_name", "")
-    if file_name is None or file_name == "":
-        raise ValueError(
-            f"'input_file' not found or set to None in config file '{config_file_name}'"
-        )
+def get_base_path_from_config(v: Dict, data_type: str) -> str:
+    if data_type not in v or (data_type in v and "base_path" not in v[data_type]):
+        data_type = "common"
+    base_path = v[data_type].get("base_path", "")
+
+    if base_path is None or base_path == "":
+        raise ValueError("'base_path' not found or set to None in the config file")
+
+    return base_path
+
+
+def get_folder_name_from_config(
+    v: Dict, data_type: str, folder_name_auto: bool = True
+) -> str:
+    orig_data_type = data_type
+    if data_type not in v or (data_type in v and "folder_name" not in v[data_type]):
+        data_type = "common"
+    folder_name = v[data_type].get("folder_name")
+
+    if folder_name is None:
+        folder_name = orig_data_type if folder_name_auto else ""
+
+    return folder_name
+
+
+def get_dataset_folder_name_from_config(
+    v: Dict, data_type: str, use_common=True
+) -> str:
+    if use_common and (
+        data_type not in v or (data_type in v and "folder_name" not in v[data_type])
+    ):
+        data_type = "common"
+    folder_name = v[data_type].get("folder_name") or ""
+
+    return folder_name
+
+
+def get_file_name_from_config(v: Dict, data_type: str, default_name: str = None) -> str:
+    file_name = default_name
+    if data_type in v and "file_name" in v[data_type]:
+        file_name = v[data_type].get("file_name", "")
+
+    if file_name is None:
+        raise ValueError("'input_file' not found or set to None in the config file")
 
     return file_name
+
+
+def get_target_file_name(v: Dict, target_name: str, default_name: str = None) -> str:
+    file_name = v.get("file_name", "")
+    if file_name is None or file_name == "":
+        if default_name is None:
+            raise ValueError("'input_file' not found or set to None in the config file")
+        else:
+            file_name = default_name.format(target_name=target_name)
+
+    return file_name
+
+
+def get_targets(
+    dataset_info: Dict, data_type: str, default_targets: Dict = None
+) -> Dict:
+    if data_type in dataset_info and "targets" in dataset_info[data_type]:
+        targets = dataset_info[data_type]["targets"]
+    else:
+        targets = default_targets
+
+    if targets is None:
+        raise ValueError("'targets' not found or set to None in the config file")
+
+    return targets

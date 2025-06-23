@@ -47,18 +47,13 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure output file names are set correctly."""
         ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/temp_rows.parquet",
+            "/path/to/data1/nrt_bo_001/select/temp_rows.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/select/psal_rows.parquet",
+            "/path/to/data1/nrt_bo_001/select/psal_rows.parquet",
             str(ds.output_file_names["psal"]),
         )
-
-    def test_no_input_file_name(self):
-        """Ensure ValueError is raised if no input file name is provided."""
-        with self.assertRaises(ValueError):
-            _ = LocateDataSetA("NRT_BO_002", str(self.config_file_path))
 
     def test_input_data_and_selected_profiles(self):
         """Ensure input data and selected profiles are read correctly."""
