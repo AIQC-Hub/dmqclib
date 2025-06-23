@@ -115,7 +115,4 @@ class TestExtractDataSetA(unittest.TestCase):
             self.ds_summary.summary_stats,
         )
 
-        print()
-        print(ds)
-        #        ds.process_targets()
-        print()
+        ds.process_targets()

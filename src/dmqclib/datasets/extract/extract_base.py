@@ -84,8 +84,6 @@ class ExtractFeatureBase(DataSetBase):
         """
         Extract target features.
         """
-        print(target_name)
-        print(feature_info)
         ds = load_feature_class(
             target_name,
             feature_info,

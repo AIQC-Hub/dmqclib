@@ -9,6 +9,7 @@ from dmqclib.datasets.class_loader.dataset_loader import load_extract_dataset
 from dmqclib.datasets.extract.feature.location import LocationFeat
 from dmqclib.datasets.extract.feature.day_of_year import DayOfYearFeat
 from dmqclib.datasets.extract.feature.profile_summary import ProfileSummaryStats5
+from dmqclib.datasets.extract.feature.basic_values import BasicValues3PlusFlanks
 
 
 class _TestFeatureBase(unittest.TestCase):
@@ -91,30 +92,23 @@ class _TestFeatureBase(unittest.TestCase):
 class TestLocationFeature(_TestFeatureBase):
     def setUp(self):
         super()._setup(LocationFeat)
+        self.feature_info = {
+            "class": "location",
+            "scales": {
+                "longitude": {"min": 14.5, "max": 23.5},
+                "latitude": {"min": 55, "max": 66},
+            },
+        }
 
     def test_init_arguments(self):
         """Ensure input data and selected profiles are read correctly."""
-        feature_info = {
-            "class": "location",
-            "scales": {
-                "longitude": {"min": 14.5, "max": 23.5},
-                "latitude": {"min": 55, "max": 66},
-            },
-        }
-        super()._test_init_arguments(feature_info)
+        super()._test_init_arguments(self.feature_info)
 
     def test_location_features(self):
         """Ensure input data and selected profiles are read correctly."""
-        feature_info = {
-            "class": "location",
-            "scales": {
-                "longitude": {"min": 14.5, "max": 23.5},
-                "latitude": {"min": 55, "max": 66},
-            },
-        }
         ds = LocationFeat(
             "temp",
-            feature_info,
+            self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
             self.ds_locate.target_rows,
@@ -134,24 +128,20 @@ class TestLocationFeature(_TestFeatureBase):
 class TestDayOfYearFeature(_TestFeatureBase):
     def setUp(self):
         super()._setup(DayOfYearFeat)
+        self.feature_info = {
+            "class": "day_of_year",
+            "convert": "sine",
+        }
 
     def test_init_arguments(self):
         """Ensure input data and selected profiles are read correctly."""
-        feature_info = {
-            "class": "day_of_year",
-            "convert": "sine",
-        }
-        super()._test_init_arguments(feature_info)
+        super()._test_init_arguments(self.feature_info)
 
     def test_day_of_year_features(self):
         """Ensure input data and selected profiles are read correctly."""
-        feature_info = {
-            "class": "day_of_year",
-            "convert": "sine",
-        }
         ds = DayOfYearFeat(
             "temp",
-            feature_info,
+            self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
             self.ds_locate.target_rows,
@@ -171,18 +161,7 @@ class TestDayOfYearFeature(_TestFeatureBase):
 class TestProfileSummaryStats5Feature(_TestFeatureBase):
     def setUp(self):
         super()._setup(ProfileSummaryStats5)
-
-    def test_init_arguments(self):
-        """Ensure input data and selected profiles are read correctly."""
-        feature_info = {
-            "class": "day_of_year",
-            "convert": "sine",
-        }
-        super()._test_init_arguments(feature_info)
-
-    def test_profile_summary_stats5_features(self):
-        """Ensure input data and selected profiles are read correctly."""
-        feature_info = {
+        self.feature_info = {
             "class": "profile_summary_stats5",
             "scales": {
                 "temp": {
@@ -209,9 +188,15 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
             },
         }
 
+    def test_init_arguments(self):
+        """Ensure input data and selected profiles are read correctly."""
+        super()._test_init_arguments(self.feature_info)
+
+    def test_profile_summary_stats5_features(self):
+        """Ensure input data and selected profiles are read correctly."""
         ds = ProfileSummaryStats5(
             "temp",
-            feature_info,
+            self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
             self.ds_locate.target_rows,
@@ -226,3 +211,39 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
         self.assertEqual(ds.features.shape[1], 16)
+
+
+class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
+    def setUp(self):
+        super()._setup(BasicValues3PlusFlanks)
+        self.feature_info = {
+            "class": "basic_values3_plus_flanks",
+            "flank_up": 5,
+            "scales": {
+                "temp": {"min": 0, "max": 20},
+                "psal": {"min": 0, "max": 20},
+                "pres": {"min": 0, "max": 200},
+            },
+        }
+
+    def test_init_arguments(self):
+        """Ensure input data and selected profiles are read correctly."""
+        super()._test_init_arguments(self.feature_info)
+
+    def test_basic_values3_plus_flanks_features(self):
+        """Ensure input data and selected profiles are read correctly."""
+        ds = BasicValues3PlusFlanks(
+            "temp",
+            self.feature_info,
+            self.ds_select.selected_profiles,
+            self.ds_extract.filtered_input,
+            self.ds_locate.target_rows,
+            self.ds_summary.summary_stats,
+        )
+
+        ds.scale_first()
+        ds.extract_features()
+
+        self.assertIsInstance(ds.features, pl.DataFrame)
+        self.assertEqual(ds.features.shape[0], 128)
+        self.assertEqual(ds.features.shape[1], 19)
