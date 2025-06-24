@@ -123,8 +123,8 @@ class TestGetFolderName(unittest.TestCase):
         Test file name without an entry.
         """
         config = read_config(config_file=str(self.explicit_config_file_path))
-        folder_name = get_folder_name_from_config(config["path_info"], "exract")
-        self.assertEqual("exract", folder_name)
+        folder_name = get_folder_name_from_config(config["path_info"], "extract")
+        self.assertEqual("extract", folder_name)
 
 
 class TestGetFileName(unittest.TestCase):

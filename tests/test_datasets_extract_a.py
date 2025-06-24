@@ -136,7 +136,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.ds_locate.target_rows,
             self.ds_summary.summary_stats,
         )
-        data_path = Path(__file__).resolve().parent / "data" / "exract"
+        data_path = Path(__file__).resolve().parent / "data" / "extract"
         ds.output_file_names["temp"] = data_path / "temp_temp_features.parquet"
         ds.output_file_names["psal"] = data_path / "temp_psal_features.parquet"
 
