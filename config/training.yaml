@@ -12,5 +12,6 @@ NRT_BO_001:
   <<: *target_set1
   base_class:
     input: InputTrainingSetA
+    model: EmptyModel
   validate:
     k_fold: 3

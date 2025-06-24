@@ -14,3 +14,14 @@ NRT_BO_001:
     input: InputTrainingSetA
   validate:
     k_fold: 3
+
+NRT_BO_002:
+  common:
+    folder_name: nrt_bo_002
+  <<: *target_set1
+  base_class:
+    input: InputTrainingSetA
+    model: EmptyModel
+  validate:
+    k_fold: 3
+

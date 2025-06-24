@@ -1,6 +1,9 @@
 from abc import abstractmethod
 
+import polars as pl
+
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.common.base.model_base import ModelBase
 from dmqclib.utils.config import get_file_name_from_config
 from dmqclib.utils.file import read_input_file
 from dmqclib.utils.path import build_full_input_path
@@ -11,12 +14,23 @@ class ValidationBase(DataSetBase):
     Base class for validation classes.
     """
 
-    def __init__(self, dataset_name: str, config_file: str = None):
-        super().__init__("input", dataset_name, config_file=config_file)
+    def __init__(
+        self,
+        dataset_name: str,
+        config_file: str = None,
+        training_sets: pl.DataFrame = None,
+        model: ModelBase = None,
+    ):
+        super().__init__(
+            "validate",
+            dataset_name,
+            config_file=config_file,
+            config_file_name="training.yaml",
+        )
 
         # Set member variables
-        self._build_input_file_names()
-        self.input_data = None
+        self.training_sets = training_sets
+        self.model = model
 
     def _build_input_file_name(self):
         """
