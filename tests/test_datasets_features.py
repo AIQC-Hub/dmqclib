@@ -8,10 +8,10 @@ from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
 from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
 from dmqclib.common.loader.dataset_loader import load_step5_extract_dataset
-from dmqclib.datasets.step5_extract.feature.basic_values import BasicValues3PlusFlanks
-from dmqclib.datasets.step5_extract.feature.day_of_year import DayOfYearFeat
-from dmqclib.datasets.step5_extract.feature.location import LocationFeat
-from dmqclib.datasets.step5_extract.feature.profile_summary import ProfileSummaryStats5
+from dmqclib.datasets.features.basic_values import BasicValues3PlusFlanks
+from dmqclib.datasets.features.day_of_year import DayOfYearFeat
+from dmqclib.datasets.features.location import LocationFeat
+from dmqclib.datasets.features.profile_summary import ProfileSummaryStats5
 
 
 class _TestFeatureBase(unittest.TestCase):

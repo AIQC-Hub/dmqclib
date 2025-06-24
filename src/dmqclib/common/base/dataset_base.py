@@ -14,7 +14,7 @@ class DataSetBase(ABC):
 
     def __init__(
         self,
-        dataset_type: str,
+        step_name: str,
         dataset_name: str,
         config_file: str = None,
         config_file_name: str = "datasets.yaml",
@@ -32,7 +32,7 @@ class DataSetBase(ABC):
         dataset_info = config[dataset_name]
 
         # Validate that the YAML's "class" matches the child's declared class name
-        base_class = dataset_info["base_class"].get(dataset_type)
+        base_class = dataset_info["base_class"].get(step_name)
         if base_class != self.expected_class_name:
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
@@ -40,7 +40,7 @@ class DataSetBase(ABC):
             )
 
         # Set member variables
-        self.dataset_type = dataset_type
+        self.step_name = step_name
         self.dataset_name = dataset_name
         self.config_file_name = config.get("config_file_name")
         self.base_class_name = base_class
@@ -50,4 +50,4 @@ class DataSetBase(ABC):
 
     def __repr__(self):
         # Provide a simple representation
-        return f"{self.dataset_type}(dataset={self.dataset_name}, class={self.base_class_name})"
+        return f"{self.step_name}(dataset={self.dataset_name}, class={self.base_class_name})"
