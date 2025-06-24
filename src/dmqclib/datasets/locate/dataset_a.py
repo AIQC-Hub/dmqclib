@@ -159,5 +159,12 @@ class LocateDataSetA(LocatePositionBase):
                 )
                 .alias("pair_id"),
             )
-            .drop(["neg_profile_id", "pos_platform_code", "pos_profile_no", "pos_observation_no"])
+            .drop(
+                [
+                    "neg_profile_id",
+                    "pos_platform_code",
+                    "pos_profile_no",
+                    "pos_observation_no",
+                ]
+            )
         )
