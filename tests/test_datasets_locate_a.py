@@ -85,11 +85,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.positive_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["temp"].shape[0], 64)
-        self.assertEqual(ds.positive_rows["temp"].shape[1], 10)
+        self.assertEqual(ds.positive_rows["temp"].shape[1], 11)
 
         self.assertIsInstance(ds.positive_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["psal"].shape[0], 70)
-        self.assertEqual(ds.positive_rows["psal"].shape[1], 10)
+        self.assertEqual(ds.positive_rows["psal"].shape[1], 11)
 
     def test_negative_rows(self):
         """Ensure negative row data is set correctly."""
@@ -106,11 +106,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.negative_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["temp"].shape[0], 64)
-        self.assertEqual(ds.negative_rows["temp"].shape[1], 10)
+        self.assertEqual(ds.negative_rows["temp"].shape[1], 11)
 
         self.assertIsInstance(ds.negative_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["psal"].shape[0], 70)
-        self.assertEqual(ds.negative_rows["psal"].shape[1], 10)
+        self.assertEqual(ds.negative_rows["psal"].shape[1], 11)
 
     def test_target_rows(self):
         """Ensure target rows are selected and set correctly."""
@@ -125,11 +125,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 11)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
 
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 11)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
 
     def test_write_target_rows(self):
         """Ensure target rows are written to parquet files correctly."""

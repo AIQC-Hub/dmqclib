@@ -276,11 +276,11 @@ class TestExtractClassLoader(unittest.TestCase):
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 11)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
 
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 11)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
 
     def test_load_dataset_invalid_label(self):
         """
