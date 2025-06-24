@@ -2,12 +2,12 @@ from typing import Dict
 import polars as pl
 from dmqclib.utils.config import read_config
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.datasets.input.input_base import InputDataSetBase
-from dmqclib.datasets.summary.summary_base import SummaryStatsBase
-from dmqclib.datasets.select.select_base import ProfileSelectionBase
-from dmqclib.datasets.locate.locate_base import LocatePositionBase
-from dmqclib.datasets.extract.extract_base import ExtractFeatureBase
-from dmqclib.datasets.split.split_base import SplitDataSetBase
+from dmqclib.datasets.step1_input.input_base import InputDataSetBase
+from dmqclib.datasets.step2_summary.summary_base import SummaryStatsBase
+from dmqclib.datasets.step3_select.select_base import ProfileSelectionBase
+from dmqclib.datasets.step4_locate.locate_base import LocatePositionBase
+from dmqclib.datasets.step5_extract.extract_base import ExtractFeatureBase
+from dmqclib.datasets.step6_split.split_base import SplitDataSetBase
 from dmqclib.common.loader.dataset_registry import INPUT_DATASET_REGISTRY
 from dmqclib.common.loader.dataset_registry import SUMMARY_DATASET_REGISTRY
 from dmqclib.common.loader.dataset_registry import SELECT_DATASET_REGISTRY
@@ -35,7 +35,7 @@ def _get_class(dataset_info: Dict, data_type: str, registry: Dict) -> DataSetBas
     return dataset_class
 
 
-def load_input_dataset(label: str, config_file: str = None) -> InputDataSetBase:
+def load_step1_input_dataset(label: str, config_file: str = None) -> InputDataSetBase:
     """
     Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
@@ -46,7 +46,7 @@ def load_input_dataset(label: str, config_file: str = None) -> InputDataSetBase:
     return dataset_class(label, config_file=config_file)
 
 
-def load_summary_dataset(
+def load_step2_summary_dataset(
     label: str, config_file: str = None, input_data: pl.DataFrame = None
 ) -> SummaryStatsBase:
     """
@@ -59,7 +59,7 @@ def load_summary_dataset(
     return dataset_class(label, config_file=config_file, input_data=input_data)
 
 
-def load_select_dataset(
+def load_step3_select_dataset(
     label: str, config_file: str = None, input_data: pl.DataFrame = None
 ) -> ProfileSelectionBase:
     """
@@ -72,7 +72,7 @@ def load_select_dataset(
     return dataset_class(label, config_file=config_file, input_data=input_data)
 
 
-def load_locate_dataset(
+def load_step4_locate_dataset(
     label: str,
     config_file: str = None,
     input_data: pl.DataFrame = None,
@@ -93,7 +93,7 @@ def load_locate_dataset(
     )
 
 
-def load_extract_dataset(
+def load_step5_extract_dataset(
     label: str,
     config_file: str = None,
     input_data: pl.DataFrame = None,
@@ -118,7 +118,7 @@ def load_extract_dataset(
     )
 
 
-def load_split_dataset(
+def load_step6_split_dataset(
     label: str,
     config_file: str = None,
     target_features: pl.DataFrame = None,

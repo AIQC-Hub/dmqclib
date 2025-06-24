@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.input.dataset_a import InputDataSetA
+from dmqclib.datasets.step1_input.dataset_a import InputDataSetA
 
 
 class TestInputDataSetA(unittest.TestCase):

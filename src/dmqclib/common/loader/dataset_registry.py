@@ -1,9 +1,9 @@
-from dmqclib.datasets.input.dataset_a import InputDataSetA
-from dmqclib.datasets.summary.dataset_a import SummaryDataSetA
-from dmqclib.datasets.select.dataset_a import SelectDataSetA
-from dmqclib.datasets.locate.dataset_a import LocateDataSetA
-from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
-from dmqclib.datasets.split.dataset_a import SplitDataSetA
+from dmqclib.datasets.step1_input.dataset_a import InputDataSetA
+from dmqclib.datasets.step2_summary.dataset_a import SummaryDataSetA
+from dmqclib.datasets.step3_select.dataset_a import SelectDataSetA
+from dmqclib.datasets.step4_locate.dataset_a import LocateDataSetA
+from dmqclib.datasets.step5_extract.dataset_a import ExtractDataSetA
+from dmqclib.datasets.step6_split.dataset_a import SplitDataSetA
 
 INPUT_DATASET_REGISTRY = {
     "InputDataSetA": InputDataSetA,

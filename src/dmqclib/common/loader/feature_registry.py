@@ -1,7 +1,7 @@
-from dmqclib.datasets.extract.feature.location import LocationFeat
-from dmqclib.datasets.extract.feature.day_of_year import DayOfYearFeat
-from dmqclib.datasets.extract.feature.profile_summary import ProfileSummaryStats5
-from dmqclib.datasets.extract.feature.basic_values import BasicValues3PlusFlanks
+from dmqclib.datasets.step5_extract.feature.location import LocationFeat
+from dmqclib.datasets.step5_extract.feature.day_of_year import DayOfYearFeat
+from dmqclib.datasets.step5_extract.feature.profile_summary import ProfileSummaryStats5
+from dmqclib.datasets.step5_extract.feature.basic_values import BasicValues3PlusFlanks
 
 
 FEATURE_REGISTRY = {

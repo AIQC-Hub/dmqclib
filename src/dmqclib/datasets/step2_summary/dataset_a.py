@@ -1,5 +1,5 @@
 import polars as pl
-from dmqclib.datasets.summary.summary_base import SummaryStatsBase
+from dmqclib.datasets.step2_summary.summary_base import SummaryStatsBase
 
 
 class SummaryDataSetA(SummaryStatsBase):

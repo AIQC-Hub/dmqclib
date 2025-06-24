@@ -1,6 +1,6 @@
 from typing import Dict
 import polars as pl
-from dmqclib.datasets.locate.locate_base import LocatePositionBase
+from dmqclib.datasets.step4_locate.locate_base import LocatePositionBase
 
 
 class LocateDataSetA(LocatePositionBase):

@@ -1,5 +1,5 @@
 import polars as pl
-from dmqclib.datasets.extract.extract_base import ExtractFeatureBase
+from dmqclib.datasets.step5_extract.extract_base import ExtractFeatureBase
 
 
 class ExtractDataSetA(ExtractFeatureBase):

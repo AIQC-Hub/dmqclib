@@ -2,11 +2,11 @@ import os
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.common.loader.dataset_loader import load_input_dataset
-from dmqclib.common.loader.dataset_loader import load_summary_dataset
-from dmqclib.common.loader.dataset_loader import load_select_dataset
-from dmqclib.common.loader.dataset_loader import load_locate_dataset
-from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
+from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
+from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
+from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
+from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
+from dmqclib.datasets.step5_extract.dataset_a import ExtractDataSetA
 
 
 class TestExtractDataSetA(unittest.TestCase):
@@ -21,21 +21,21 @@ class TestExtractDataSetA(unittest.TestCase):
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds_input = load_input_dataset("NRT_BO_001", str(self.config_file_path))
+        self.ds_input = load_step1_input_dataset("NRT_BO_001", str(self.config_file_path))
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
-        self.ds_summary = load_summary_dataset(
+        self.ds_summary = load_step2_summary_dataset(
             "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
         )
         self.ds_summary.calculate_stats()
 
-        self.ds_select = load_select_dataset(
+        self.ds_select = load_step3_select_dataset(
             "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
         )
         self.ds_select.label_profiles()
 
-        self.ds_locate = load_locate_dataset(
+        self.ds_locate = load_step4_locate_dataset(
             "NRT_BO_001",
             str(self.config_file_path),
             self.ds_input.input_data,
