@@ -1,7 +1,7 @@
 import os
 from abc import abstractmethod
 import polars as pl
-from dmqclib.datasets.base.dataset_base import DataSetBase
+from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
 from dmqclib.utils.dataset_path import build_full_data_path

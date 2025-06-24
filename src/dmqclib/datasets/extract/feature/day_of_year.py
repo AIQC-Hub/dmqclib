@@ -1,6 +1,6 @@
 import polars as pl
 import numpy as np
-from dmqclib.datasets.base.feature_base import FeatureBase
+from dmqclib.common.base.feature_base import FeatureBase
 
 
 class DayOfYearFeat(FeatureBase):

@@ -1,5 +1,5 @@
 import polars as pl
-from dmqclib.datasets.base.feature_base import FeatureBase
+from dmqclib.common.base.feature_base import FeatureBase
 
 
 class LocationFeat(FeatureBase):

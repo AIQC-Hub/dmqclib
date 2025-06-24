@@ -1,7 +1,7 @@
 from typing import Dict
 import polars as pl
-from dmqclib.datasets.base.feature_base import FeatureBase
-from dmqclib.datasets.class_loader.feature_registry import FEATURE_REGISTRY
+from dmqclib.common.base.feature_base import FeatureBase
+from dmqclib.common.class_loader.feature_registry import FEATURE_REGISTRY
 
 
 def _get_feature_class(feature_info: Dict, registry: Dict) -> FeatureBase:
