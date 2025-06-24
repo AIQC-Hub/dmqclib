@@ -143,16 +143,16 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["temp"]["train"] = data_path / "temp_train.parquet"
-        ds.output_file_names["psal"]["train"] = data_path / "psal_train.parquet"
+        ds.output_file_names["temp"]["train"] = data_path / "temp_temp_train.parquet"
+        ds.output_file_names["psal"]["train"] = data_path / "temp_psal_train.parquet"
 
         ds.process_targets()
         ds.write_training_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["temp"]["train"]))
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]["train"]))
-        # os.remove(ds.output_file_names["temp"]["train"])
-        # os.remove(ds.output_file_names["psal"]["train"])
+        os.remove(ds.output_file_names["temp"]["train"])
+        os.remove(ds.output_file_names["psal"]["train"])
 
     def test_write_test_sets(self):
         """Ensure target rows are written to parquet files correctly."""
