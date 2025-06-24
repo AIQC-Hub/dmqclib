@@ -16,18 +16,18 @@ from dmqclib.common.loader.dataset_registry import EXTRACT_DATASET_REGISTRY
 from dmqclib.common.loader.dataset_registry import SPLIT_DATASET_REGISTRY
 
 
-def _get_dataset_info(label: str, config_file: str = None) -> Dict:
+def _get_dataset_info(dataset_name: str, config_file: str = None) -> Dict:
     config = read_config(config_file, "datasets.yaml")
 
-    dataset_info = config.get(label)
+    dataset_info = config.get(dataset_name)
     if dataset_info is None:
-        raise ValueError(f"No dataset configuration found for label '{label}'")
+        raise ValueError(f"No dataset configuration found for the dataset '{dataset_name}'")
 
     return dataset_info
 
 
-def _get_class(dataset_info: Dict, data_type: str, registry: Dict) -> DataSetBase:
-    class_name = dataset_info["base_class"].get(data_type)
+def _get_class(dataset_info: Dict, step_name: str, registry: Dict) -> DataSetBase:
+    class_name = dataset_info["base_class"].get(step_name)
     dataset_class = registry.get(class_name)
     if not dataset_class:
         raise ValueError(f"Unknown dataset class specified: {class_name}")
@@ -35,58 +35,58 @@ def _get_class(dataset_info: Dict, data_type: str, registry: Dict) -> DataSetBas
     return dataset_class
 
 
-def load_step1_input_dataset(label: str, config_file: str = None) -> InputDataSetBase:
+def load_step1_input_dataset(dataset_name: str, config_file: str = None) -> InputDataSetBase:
     """
-    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    dataset_info = _get_dataset_info(label, config_file)
+    dataset_info = _get_dataset_info(dataset_name, config_file)
     dataset_class = _get_class(dataset_info, "input", INPUT_DATASET_REGISTRY)
 
-    return dataset_class(label, config_file=config_file)
+    return dataset_class(dataset_name, config_file=config_file)
 
 
 def load_step2_summary_dataset(
-    label: str, config_file: str = None, input_data: pl.DataFrame = None
+    dataset_name: str, config_file: str = None, input_data: pl.DataFrame = None
 ) -> SummaryStatsBase:
     """
-    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    dataset_info = _get_dataset_info(label, config_file)
+    dataset_info = _get_dataset_info(dataset_name, config_file)
     dataset_class = _get_class(dataset_info, "summary", SUMMARY_DATASET_REGISTRY)
 
-    return dataset_class(label, config_file=config_file, input_data=input_data)
+    return dataset_class(dataset_name, config_file=config_file, input_data=input_data)
 
 
 def load_step3_select_dataset(
-    label: str, config_file: str = None, input_data: pl.DataFrame = None
+    dataset_name: str, config_file: str = None, input_data: pl.DataFrame = None
 ) -> ProfileSelectionBase:
     """
-    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    dataset_info = _get_dataset_info(label, config_file)
+    dataset_info = _get_dataset_info(dataset_name, config_file)
     dataset_class = _get_class(dataset_info, "select", SELECT_DATASET_REGISTRY)
 
-    return dataset_class(label, config_file=config_file, input_data=input_data)
+    return dataset_class(dataset_name, config_file=config_file, input_data=input_data)
 
 
 def load_step4_locate_dataset(
-    label: str,
+    dataset_name: str,
     config_file: str = None,
     input_data: pl.DataFrame = None,
     selected_profiles: pl.DataFrame = None,
 ) -> ExtractFeatureBase:
     """
-    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    dataset_info = _get_dataset_info(label, config_file)
+    dataset_info = _get_dataset_info(dataset_name, config_file)
     dataset_class = _get_class(dataset_info, "locate", LOCATE_DATASET_REGISTRY)
 
     return dataset_class(
-        label,
+        dataset_name,
         config_file=config_file,
         input_data=input_data,
         selected_profiles=selected_profiles,
@@ -94,7 +94,7 @@ def load_step4_locate_dataset(
 
 
 def load_step5_extract_dataset(
-    label: str,
+    dataset_name: str,
     config_file: str = None,
     input_data: pl.DataFrame = None,
     selected_profiles: pl.DataFrame = None,
@@ -102,14 +102,14 @@ def load_step5_extract_dataset(
     summary_stats: pl.DataFrame = None,
 ) -> LocatePositionBase:
     """
-    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    dataset_info = _get_dataset_info(label, config_file)
+    dataset_info = _get_dataset_info(dataset_name, config_file)
     dataset_class = _get_class(dataset_info, "extract", EXTRACT_DATASET_REGISTRY)
 
     return dataset_class(
-        label,
+        dataset_name,
         config_file=config_file,
         input_data=input_data,
         selected_profiles=selected_profiles,
@@ -119,19 +119,19 @@ def load_step5_extract_dataset(
 
 
 def load_step6_split_dataset(
-    label: str,
+    dataset_name: str,
     config_file: str = None,
     target_features: pl.DataFrame = None,
 ) -> SplitDataSetBase:
     """
-    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
     """
-    dataset_info = _get_dataset_info(label, config_file)
+    dataset_info = _get_dataset_info(dataset_name, config_file)
     dataset_class = _get_class(dataset_info, "split", SPLIT_DATASET_REGISTRY)
 
     return dataset_class(
-        label,
+        dataset_name,
         config_file=config_file,
         target_features=target_features,
     )

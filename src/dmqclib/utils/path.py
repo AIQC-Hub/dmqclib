@@ -45,33 +45,33 @@ def build_full_input_path(
 def build_full_data_path(
     path_info: Dict,
     dataset_info: Dict,
-    data_type: str,
+    step_name: str,
     file_name: str,
     folder_name_auto: bool = True,
 ) -> str:
     """
     Build a full data path based on the fields in the 'config' dictionary and
     the provided arguments. The assembled path is:
-        path_info[data_type]["base_path"] +
+        path_info[step_name]["base_path"] +
         "/" + folder_name1 +
-        "/" + path_info[data_type]["folder_name"] +
+        "/" + path_info[step_name]["folder_name"] +
         "/" + file_name
 
-    Both folder_name1 and path_info[data_type]["folder_name"]
+    Both folder_name1 and path_info[step_name]["folder_name"]
     can be None or an empty string. They can also include "..".
 
     :param path_info: A dictionary that must contain:
-                   path_info[data_type]["base_path"] (str)
-                   path_info[data_type]["folder_name"] (str or None)
-    :param dataset_info: A dictionary that contains dataset_info[data_type]["folder_name"]
+                   path_info[step_name]["base_path"] (str)
+                   path_info[step_name]["folder_name"] (str or None)
+    :param dataset_info: A dictionary that contains dataset_info[step_name]["folder_name"]
     :param file_name: The name of the file to append at the end of the path.
-    :param folder_name_auto: use data_type as folder name if no entries are found in config
+    :param folder_name_auto: use step_name as folder name if no entries are found in config
 
     :return: A string representing the full path.
     """
-    base_path = get_base_path_from_config(path_info, data_type)
-    folder_name1 = get_dataset_folder_name_from_config(dataset_info, data_type)
-    folder_name2 = get_folder_name_from_config(path_info, data_type, folder_name_auto)
+    base_path = get_base_path_from_config(path_info, step_name)
+    folder_name1 = get_dataset_folder_name_from_config(dataset_info, step_name)
+    folder_name2 = get_folder_name_from_config(path_info, step_name, folder_name_auto)
 
     return os.path.normpath(
         os.path.join(base_path, folder_name1, folder_name2, file_name)
