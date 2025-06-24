@@ -1,3 +1,4 @@
+import os
 import unittest
 from pathlib import Path
 import polars as pl
@@ -116,3 +117,33 @@ class TestExtractDataSetA(unittest.TestCase):
         )
 
         ds.process_targets()
+
+        self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
+        self.assertEqual(ds.target_features["temp"].shape[0], 128)
+        self.assertEqual(ds.target_features["temp"].shape[1], 40)
+
+        self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
+        self.assertEqual(ds.target_features["psal"].shape[0], 140)
+        self.assertEqual(ds.target_features["psal"].shape[1], 40)
+
+    def test_write_target_features(self):
+        """Ensure target rows are written to parquet files correctly."""
+        ds = ExtractDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+            self.ds_locate.target_rows,
+            self.ds_summary.summary_stats,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "exract"
+        ds.output_file_names["temp"] = data_path / "temp_temp_features.parquet"
+        ds.output_file_names["psal"] = data_path / "temp_psal_features.parquet"
+
+        ds.process_targets()
+        ds.write_target_features()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
+        os.remove(ds.output_file_names["temp"])
+        os.remove(ds.output_file_names["psal"])

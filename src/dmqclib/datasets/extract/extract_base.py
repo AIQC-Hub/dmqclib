@@ -76,8 +76,37 @@ class ExtractFeatureBase(DataSetBase):
         """
         Iterate all feature entries to generate features.
         """
-        self.target_features[k] = pl.concat(
-            [self.extract_features(k, x) for x in self.feature_info], how="align_left"
+        self.target_features[k] = (
+            self.target_rows[k]
+            .select(
+                [
+                    pl.col("row_id"),
+                    pl.col("label"),
+                    pl.col("profile_id"),
+                    pl.col("observation_no"),
+                    pl.col("pos_profile_id"),
+                    pl.col("pos_observation_no"),
+                ]
+            )
+            .with_columns(
+                pl.when(pl.col("label") == 1)
+                .then(pl.col("profile_id"))
+                .otherwise(pl.col("pos_profile_id"))
+                .alias("profile_id"),
+                pl.when(pl.col("label") == 1)
+                .then(pl.col("observation_no"))
+                .otherwise(pl.col("pos_observation_no"))
+                .alias("observation_no"),
+            )
+            .drop(["pos_profile_id", "pos_observation_no"])
+            .join(
+                pl.concat(
+                    [self.extract_features(k, x) for x in self.feature_info],
+                    how="align_left",
+                ),
+                on=["row_id"],
+                maintain_order="left",
+            )
         )
 
     def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:
