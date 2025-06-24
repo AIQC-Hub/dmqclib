@@ -50,7 +50,8 @@ class LocateDataSetA(LocatePositionBase):
                 on=["platform_code", "profile_no"],
             )
             .with_columns(
-                pl.lit(0, dtype=pl.UInt32).alias("pos_profile_id"),
+                pl.lit("0").alias("pos_platform_code"),
+                pl.lit(0, dtype=pl.Int32).alias("pos_profile_no"),
                 pl.lit(0).alias("pos_observation_no"),
                 pl.lit(1).alias("label"),
             )
@@ -61,7 +62,8 @@ class LocateDataSetA(LocatePositionBase):
         self.negative_rows[target_name] = (
             self.positive_rows[target_name]
             .select(
-                pl.col("profile_id").alias("pos_profile_id"),
+                pl.col("platform_code").alias("pos_platform_code"),
+                pl.col("profile_no").alias("pos_profile_no"),
                 pl.col("neg_profile_id"),
                 pl.col("observation_no").alias("pos_observation_no"),
                 pl.col("pres").alias("pos_pres"),
@@ -92,7 +94,8 @@ class LocateDataSetA(LocatePositionBase):
             )
             .group_by(
                 [
-                    "pos_profile_id",
+                    "pos_platform_code",
+                    "pos_profile_no",
                     "neg_profile_id",
                     "pos_observation_no",
                     "platform_code",
@@ -113,7 +116,8 @@ class LocateDataSetA(LocatePositionBase):
                     pl.col("neg_observation_no").alias("observation_no"),
                     pl.col("neg_pres").alias("pres"),
                     pl.col("flag"),
-                    pl.col("pos_profile_id"),
+                    pl.col("pos_platform_code"),
+                    pl.col("pos_profile_no"),
                     pl.col("pos_observation_no"),
                     pl.col("label"),
                 ]
@@ -131,4 +135,36 @@ class LocateDataSetA(LocatePositionBase):
             self.positive_rows[target_name]
             .vstack(self.negative_rows[target_name])
             .with_row_index("row_id", offset=1)
+            .with_columns(
+                pl.when(pl.col("label") == 1)
+                .then(
+                    pl.concat_str(
+                        [
+                            pl.col("platform_code"),
+                            pl.col("profile_no"),
+                            pl.col("observation_no"),
+                        ],
+                        separator="|",
+                    )
+                )
+                .otherwise(
+                    pl.concat_str(
+                        [
+                            pl.col("pos_platform_code"),
+                            pl.col("pos_profile_no"),
+                            pl.col("pos_observation_no"),
+                        ],
+                        separator="|",
+                    )
+                )
+                .alias("pair_id"),
+            )
+            .drop(
+                [
+                    "neg_profile_id",
+                    "pos_platform_code",
+                    "pos_profile_no",
+                    "pos_observation_no",
+                ]
+            )
         )

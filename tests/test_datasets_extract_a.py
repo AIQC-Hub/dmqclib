@@ -99,11 +99,11 @@ class TestExtractDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 11)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
 
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 11)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
 
     def test_location_features(self):
         """Ensure input data and selected profiles are read correctly."""
@@ -120,11 +120,11 @@ class TestExtractDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
         self.assertEqual(ds.target_features["temp"].shape[0], 128)
-        self.assertEqual(ds.target_features["temp"].shape[1], 40)
+        self.assertEqual(ds.target_features["temp"].shape[1], 43)
 
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 140)
-        self.assertEqual(ds.target_features["psal"].shape[1], 40)
+        self.assertEqual(ds.target_features["psal"].shape[1], 43)
 
     def test_write_target_features(self):
         """Ensure target rows are written to parquet files correctly."""
@@ -136,7 +136,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.ds_locate.target_rows,
             self.ds_summary.summary_stats,
         )
-        data_path = Path(__file__).resolve().parent / "data" / "exract"
+        data_path = Path(__file__).resolve().parent / "data" / "extract"
         ds.output_file_names["temp"] = data_path / "temp_temp_features.parquet"
         ds.output_file_names["psal"] = data_path / "temp_psal_features.parquet"
 

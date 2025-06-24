@@ -3,6 +3,8 @@ path_info:
     base_path: /path/to/data
   input:
     base_path: /path/to/data
+  split:
+    folder_name: training
 
 target_set1: &target_set1
   targets:
@@ -50,6 +52,10 @@ NRT_BO_001:
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA
+    split: SplitDataSetA
   <<: *target_set1
   extract:
     <<: *feature_set1
+  split:
+    test_set_fraction: 0.1
+    k_fold: 3

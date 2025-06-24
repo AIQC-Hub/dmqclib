@@ -7,11 +7,13 @@ from dmqclib.datasets.summary.summary_base import SummaryStatsBase
 from dmqclib.datasets.select.select_base import ProfileSelectionBase
 from dmqclib.datasets.locate.locate_base import LocatePositionBase
 from dmqclib.datasets.extract.extract_base import ExtractFeatureBase
+from dmqclib.datasets.split.split_base import SplitDataSetBase
 from dmqclib.datasets.class_loader.dataset_registry import INPUT_DATASET_REGISTRY
 from dmqclib.datasets.class_loader.dataset_registry import SUMMARY_DATASET_REGISTRY
 from dmqclib.datasets.class_loader.dataset_registry import SELECT_DATASET_REGISTRY
 from dmqclib.datasets.class_loader.dataset_registry import LOCATE_DATASET_REGISTRY
 from dmqclib.datasets.class_loader.dataset_registry import EXTRACT_DATASET_REGISTRY
+from dmqclib.datasets.class_loader.dataset_registry import SPLIT_DATASET_REGISTRY
 
 
 def _get_dataset_info(label: str, config_file: str = None) -> Dict:
@@ -113,4 +115,23 @@ def load_extract_dataset(
         selected_profiles=selected_profiles,
         target_rows=target_rows,
         summary_stats=summary_stats,
+    )
+
+
+def load_split_dataset(
+    label: str,
+    config_file: str = None,
+    target_features: pl.DataFrame = None,
+) -> SplitDataSetBase:
+    """
+    Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
+    YAML config and instantiate the appropriate class, returning it.
+    """
+    dataset_info = _get_dataset_info(label, config_file)
+    dataset_class = _get_class(dataset_info, "split", SPLIT_DATASET_REGISTRY)
+
+    return dataset_class(
+        label,
+        config_file=config_file,
+        target_features=target_features,
     )

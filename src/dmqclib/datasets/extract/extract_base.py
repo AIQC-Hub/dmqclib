@@ -80,25 +80,15 @@ class ExtractFeatureBase(DataSetBase):
             self.target_rows[k]
             .select(
                 [
-                    pl.col("row_id"),
                     pl.col("label"),
+                    pl.col("row_id"),
                     pl.col("profile_id"),
+                    pl.col("pair_id"),
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
                     pl.col("observation_no"),
-                    pl.col("pos_profile_id"),
-                    pl.col("pos_observation_no"),
                 ]
             )
-            .with_columns(
-                pl.when(pl.col("label") == 1)
-                .then(pl.col("profile_id"))
-                .otherwise(pl.col("pos_profile_id"))
-                .alias("profile_id"),
-                pl.when(pl.col("label") == 1)
-                .then(pl.col("observation_no"))
-                .otherwise(pl.col("pos_observation_no"))
-                .alias("observation_no"),
-            )
-            .drop(["pos_profile_id", "pos_observation_no"])
             .join(
                 pl.concat(
                     [self.extract_features(k, x) for x in self.feature_info],
