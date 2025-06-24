@@ -2,8 +2,8 @@ import os
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.class_loader import load_input_dataset
-from dmqclib.datasets.class_loader import load_select_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_input_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_select_dataset
 from dmqclib.datasets.locate.dataset_a import LocateDataSetA
 
 
@@ -125,11 +125,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 10)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 11)
 
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 10)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 11)
 
     def test_write_target_rows(self):
         """Ensure target rows are written to parquet files correctly."""

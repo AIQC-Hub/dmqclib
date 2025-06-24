@@ -1,8 +1,8 @@
 import os
-from abc import abstractmethod
 from typing import Dict
 import polars as pl
 from dmqclib.datasets.base.dataset_base import DataSetBase
+from dmqclib.datasets.class_loader.feature_loader import load_feature_class
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
 from dmqclib.utils.dataset_path import build_full_data_path
@@ -18,7 +18,9 @@ class ExtractFeatureBase(DataSetBase):
         dataset_name: str,
         config_file: str = None,
         input_data: pl.DataFrame = None,
+        selected_profiles: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
+        summary_stats: pl.DataFrame = None,
     ):
         super().__init__("extract", dataset_name, config_file=config_file)
 
@@ -26,14 +28,21 @@ class ExtractFeatureBase(DataSetBase):
         self.default_file_name = "{target_name}_features.parquet"
         self._build_output_file_names()
         self.input_data = input_data
+        self.selected_profiles = selected_profiles
+        if input_data is not None and selected_profiles is not None:
+            self._filter_input()
+        else:
+            self.filtered_input = None
         self.target_rows = target_rows
+        self.summary_stats = summary_stats
+        self.feature_info = self.dataset_info.get("extract").get("features")
         self.target_features = {}
 
     def _build_output_file_names(self):
         """
         Set the output files based on configuration entries.
         """
-        targets = get_targets(self.dataset_info, "locate", self.targets)
+        targets = get_targets(self.dataset_info, "extract", self.targets)
         self.output_file_names = {
             k: build_full_data_path(
                 self.path_info,
@@ -44,19 +53,80 @@ class ExtractFeatureBase(DataSetBase):
             for k, v in targets.items()
         }
 
+    def _filter_input(self):
+        self.filtered_input = self.input_data.join(
+            (
+                self.selected_profiles.select(
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                )
+            ),
+            on=["platform_code", "profile_no"],
+        )
+
     def process_targets(self):
         """
-        Iterate all targets to locate training data rows.
+        Iterate all targets to generate features.
         """
-        for k, v in self.dataset_info["extract"]["targets"].items():
-            self.extract_target_features(k, v)
+        targets = get_targets(self.dataset_info, "extract", self.targets)
+        for k in targets.keys():
+            self.extract_target_features(k)
 
-    @abstractmethod
-    def extract_target_features(self, target_name: str, target_value: Dict):
+    def extract_target_features(self, k):
+        """
+        Iterate all feature entries to generate features.
+        """
+        self.target_features[k] = (
+            self.target_rows[k]
+            .select(
+                [
+                    pl.col("row_id"),
+                    pl.col("label"),
+                    pl.col("profile_id"),
+                    pl.col("observation_no"),
+                    pl.col("pos_profile_id"),
+                    pl.col("pos_observation_no"),
+                ]
+            )
+            .with_columns(
+                pl.when(pl.col("label") == 1)
+                .then(pl.col("profile_id"))
+                .otherwise(pl.col("pos_profile_id"))
+                .alias("profile_id"),
+                pl.when(pl.col("label") == 1)
+                .then(pl.col("observation_no"))
+                .otherwise(pl.col("pos_observation_no"))
+                .alias("observation_no"),
+            )
+            .drop(["pos_profile_id", "pos_observation_no"])
+            .join(
+                pl.concat(
+                    [self.extract_features(k, x) for x in self.feature_info],
+                    how="align_left",
+                ),
+                on=["row_id"],
+                maintain_order="left",
+            )
+        )
+
+    def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:
         """
         Extract target features.
         """
-        pass
+        ds = load_feature_class(
+            target_name,
+            feature_info,
+            self.selected_profiles,
+            self.filtered_input,
+            self.target_rows,
+            self.summary_stats,
+        )
+
+        ds.scale_first()
+        ds.extract_features()
+        ds.scale_second()
+
+        return ds.features
 
     def write_target_features(self):
         """

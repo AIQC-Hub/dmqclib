@@ -6,11 +6,11 @@ from dmqclib.datasets.summary.dataset_a import SummaryDataSetA
 from dmqclib.datasets.select.dataset_a import SelectDataSetA
 from dmqclib.datasets.locate.dataset_a import LocateDataSetA
 from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
-from dmqclib.datasets.class_loader import load_input_dataset
-from dmqclib.datasets.class_loader import load_summary_dataset
-from dmqclib.datasets.class_loader import load_select_dataset
-from dmqclib.datasets.class_loader import load_locate_dataset
-from dmqclib.datasets.class_loader import load_extract_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_input_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_summary_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_select_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_locate_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_extract_dataset
 
 
 class TestInputClassLoader(unittest.TestCase):
@@ -197,7 +197,7 @@ class TestLocateClassLoader(unittest.TestCase):
             load_locate_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
 
 
-class TestExractClassLoader(unittest.TestCase):
+class TestExtractClassLoader(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We define the explicit path to
@@ -234,6 +234,11 @@ class TestExractClassLoader(unittest.TestCase):
         )
         ds_select.label_profiles()
 
+        ds_summary = load_summary_dataset(
+            "NRT_BO_001", str(self.config_file_path), ds_input.input_data
+        )
+        ds_summary.calculate_stats()
+
         ds_locate = load_locate_dataset(
             "NRT_BO_001",
             str(self.config_file_path),
@@ -246,7 +251,9 @@ class TestExractClassLoader(unittest.TestCase):
             "NRT_BO_001",
             str(self.config_file_path),
             ds_input.input_data,
+            ds_select.selected_profiles,
             ds_locate.target_rows,
+            ds_summary.summary_stats,
         )
 
         self.assertIsInstance(ds, ExtractDataSetA)
@@ -255,13 +262,25 @@ class TestExractClassLoader(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
 
+        self.assertIsInstance(ds.summary_stats, pl.DataFrame)
+        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[1], 12)
+
+        self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
+        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+        self.assertIsInstance(ds.filtered_input, pl.DataFrame)
+        self.assertEqual(ds.filtered_input.shape[0], 9841)
+        self.assertEqual(ds.filtered_input.shape[1], 30)
+
         self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 10)
+        self.assertEqual(ds.target_rows["temp"].shape[1], 11)
 
         self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 10)
+        self.assertEqual(ds.target_rows["psal"].shape[1], 11)
 
     def test_load_dataset_invalid_label(self):
         """

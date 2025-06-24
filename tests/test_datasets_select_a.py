@@ -2,7 +2,7 @@ import os
 import unittest
 from pathlib import Path
 import polars as pl
-from dmqclib.datasets.class_loader import load_input_dataset
+from dmqclib.datasets.class_loader.dataset_loader import load_input_dataset
 from dmqclib.datasets.select.dataset_a import SelectDataSetA
 
 
