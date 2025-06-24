@@ -26,9 +26,7 @@ def _get_model_class(dataset_info: Dict, registry: Dict) -> ModelBase:
     return model_class
 
 
-def load_model_class(
-    dataset_name: str, config_file: str = None
-) -> ModelBase:
+def load_model_class(dataset_name: str, config_file: str = None) -> ModelBase:
     """
     Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.

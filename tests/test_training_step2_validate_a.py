@@ -26,7 +26,9 @@ class TestKFoldValidation(unittest.TestCase):
             },
         }
 
-        self.ds_input = load_step1_input_training_set("NRT_BO_002", str(self.config_file_path))
+        self.ds_input = load_step1_input_training_set(
+            "NRT_BO_002", str(self.config_file_path)
+        )
         self.ds_input.input_file_names = self.input_file_names
         self.ds_input.process_targets()
 
@@ -52,8 +54,9 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_training_sets(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation("NRT_BO_002", str(self.config_file_path),
-                             self.ds_input.training_sets)
+        ds = KFoldValidation(
+            "NRT_BO_002", str(self.config_file_path), self.ds_input.training_sets
+        )
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
@@ -65,11 +68,12 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_process_targets(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation("NRT_BO_002", str(self.config_file_path),
-                             self.ds_input.training_sets)
+        ds = KFoldValidation(
+            "NRT_BO_002", str(self.config_file_path), self.ds_input.training_sets
+        )
 
         ds.process_targets()
 
-        self.assertEqual(ds.built_models, {'temp': [1, 2, 3], 'psal': [1, 2, 3]})
-        self.assertEqual(ds.results, {'temp': [10, 11, 12], 'psal': [10, 11, 12]})
-        self.assertEqual(ds.summary,  {'temp': 100, 'psal': 100})
+        self.assertEqual(ds.built_models, {"temp": [1, 2, 3], "psal": [1, 2, 3]})
+        self.assertEqual(ds.results, {"temp": [10, 11, 12], "psal": [10, 11, 12]})
+        self.assertEqual(ds.summary, {"temp": 100, "psal": 100})

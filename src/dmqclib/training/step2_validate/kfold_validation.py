@@ -25,7 +25,10 @@ class KFoldValidation(ValidationBase):
         self.k_fold = 10
 
     def _get_k_fold(self) -> str:
-        if "validate" in self.dataset_info and "k_fold" in self.dataset_info["validate"]:
+        if (
+            "validate" in self.dataset_info
+            and "k_fold" in self.dataset_info["validate"]
+        ):
             k_fold = self.dataset_info["validate"].get("k_fold", self.k_fold)
         else:
             k_fold = self.k_fold
@@ -42,14 +45,18 @@ class KFoldValidation(ValidationBase):
         k_fold = self._get_k_fold()
         for k in range(k_fold):
             training_set = (
-                self.training_sets[target_name].filter(pl.col("k_fold") != (k + 1)).drop("k_fold")
+                self.training_sets[target_name]
+                .filter(pl.col("k_fold") != (k + 1))
+                .drop("k_fold")
             )
             self.base_model.training_set = training_set
             self.base_model.build()
             self.built_models[target_name].append(self.base_model.built_model)
 
             test_set = (
-                self.training_sets[target_name].filter(pl.col("k_fold") == (k + 1)).drop("k_fold")
+                self.training_sets[target_name]
+                .filter(pl.col("k_fold") == (k + 1))
+                .drop("k_fold")
             )
             self.base_model.test_set = test_set
             self.base_model.test()
@@ -59,4 +66,3 @@ class KFoldValidation(ValidationBase):
         self.base_model.raw_results = self.results[target_name]
         self.base_model.summarise()
         self.summary[target_name] = self.base_model.summary
-
