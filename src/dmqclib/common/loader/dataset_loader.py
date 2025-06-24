@@ -1,19 +1,21 @@
 from typing import Dict
+
 import polars as pl
-from dmqclib.utils.config import read_config
+
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.common.loader.dataset_registry import EXTRACT_DATASET_REGISTRY
+from dmqclib.common.loader.dataset_registry import INPUT_DATASET_REGISTRY
+from dmqclib.common.loader.dataset_registry import LOCATE_DATASET_REGISTRY
+from dmqclib.common.loader.dataset_registry import SELECT_DATASET_REGISTRY
+from dmqclib.common.loader.dataset_registry import SPLIT_DATASET_REGISTRY
+from dmqclib.common.loader.dataset_registry import SUMMARY_DATASET_REGISTRY
 from dmqclib.datasets.step1_input.input_base import InputDataSetBase
 from dmqclib.datasets.step2_summary.summary_base import SummaryStatsBase
 from dmqclib.datasets.step3_select.select_base import ProfileSelectionBase
 from dmqclib.datasets.step4_locate.locate_base import LocatePositionBase
 from dmqclib.datasets.step5_extract.extract_base import ExtractFeatureBase
 from dmqclib.datasets.step6_split.split_base import SplitDataSetBase
-from dmqclib.common.loader.dataset_registry import INPUT_DATASET_REGISTRY
-from dmqclib.common.loader.dataset_registry import SUMMARY_DATASET_REGISTRY
-from dmqclib.common.loader.dataset_registry import SELECT_DATASET_REGISTRY
-from dmqclib.common.loader.dataset_registry import LOCATE_DATASET_REGISTRY
-from dmqclib.common.loader.dataset_registry import EXTRACT_DATASET_REGISTRY
-from dmqclib.common.loader.dataset_registry import SPLIT_DATASET_REGISTRY
+from dmqclib.utils.config import read_config
 
 
 def _get_dataset_info(dataset_name: str, config_file: str = None) -> Dict:
@@ -21,7 +23,9 @@ def _get_dataset_info(dataset_name: str, config_file: str = None) -> Dict:
 
     dataset_info = config.get(dataset_name)
     if dataset_info is None:
-        raise ValueError(f"No dataset configuration found for the dataset '{dataset_name}'")
+        raise ValueError(
+            f"No dataset configuration found for the dataset '{dataset_name}'"
+        )
 
     return dataset_info
 
@@ -35,7 +39,9 @@ def _get_class(dataset_info: Dict, step_name: str, registry: Dict) -> DataSetBas
     return dataset_class
 
 
-def load_step1_input_dataset(dataset_name: str, config_file: str = None) -> InputDataSetBase:
+def load_step1_input_dataset(
+    dataset_name: str, config_file: str = None
+) -> InputDataSetBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.

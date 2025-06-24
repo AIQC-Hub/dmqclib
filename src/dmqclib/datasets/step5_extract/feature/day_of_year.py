@@ -1,5 +1,6 @@
-import polars as pl
 import numpy as np
+import polars as pl
+
 from dmqclib.common.base.feature_base import FeatureBase
 
 

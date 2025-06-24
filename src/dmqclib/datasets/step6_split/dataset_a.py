@@ -1,5 +1,6 @@
-import polars as pl
 import numpy as np
+import polars as pl
+
 from dmqclib.datasets.step6_split.split_base import SplitDataSetBase
 
 

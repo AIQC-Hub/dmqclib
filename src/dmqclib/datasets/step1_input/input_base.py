@@ -1,8 +1,9 @@
 from abc import abstractmethod
+
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_file_name_from_config
-from dmqclib.utils.path import build_full_input_path
 from dmqclib.utils.file import read_input_file
+from dmqclib.utils.path import build_full_input_path
 
 
 class InputDataSetBase(DataSetBase):

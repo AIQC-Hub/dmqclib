@@ -1,4 +1,5 @@
 from abc import ABC
+
 from dmqclib.utils.config import read_config
 
 
@@ -11,13 +12,19 @@ class DataSetBase(ABC):
 
     expected_class_name = None  # Must be overridden by child classes
 
-    def __init__(self, dataset_type: str, dataset_name: str, config_file: str = None):
+    def __init__(
+        self,
+        dataset_type: str,
+        dataset_name: str,
+        config_file: str = None,
+        config_file_name: str = "datasets.yaml",
+    ):
         if not self.expected_class_name:
             raise NotImplementedError(
                 "Child class must define 'expected_class_name' attribute"
             )
 
-        config = read_config(config_file, "datasets.yaml")
+        config = read_config(config_file, config_file_name)
         if dataset_name not in config:
             raise ValueError(
                 f"Dataset name '{dataset_name}' not found in config file '{config_file}'"

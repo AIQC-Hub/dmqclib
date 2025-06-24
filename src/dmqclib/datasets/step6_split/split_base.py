@@ -1,6 +1,8 @@
 import os
 from abc import abstractmethod
+
 import polars as pl
+
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
@@ -119,3 +121,11 @@ class SplitDataSetBase(DataSetBase):
                 os.path.dirname(self.output_file_names[k]["test"]), exist_ok=True
             )
             v.write_parquet(self.output_file_names[k]["test"])
+
+    def write_data_sets(self):
+        """
+        Write both training and test sets
+        """
+
+        self.write_test_sets()
+        self.write_training_sets()

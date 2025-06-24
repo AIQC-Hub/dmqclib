@@ -1,7 +1,9 @@
 import os
-from pathlib import Path
 import unittest
+from pathlib import Path
+
 import polars as pl
+
 from dmqclib.utils.file import read_input_file
 
 

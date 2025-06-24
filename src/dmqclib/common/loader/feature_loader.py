@@ -1,5 +1,7 @@
 from typing import Dict
+
 import polars as pl
+
 from dmqclib.common.base.feature_base import FeatureBase
 from dmqclib.common.loader.feature_registry import FEATURE_REGISTRY
 

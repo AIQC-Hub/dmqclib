@@ -1,6 +1,8 @@
 import unittest
 from pathlib import Path
+
 import polars as pl
+
 from dmqclib.datasets.step1_input.dataset_a import InputDataSetA
 
 
@@ -31,12 +33,12 @@ class TestInputDataSetA(unittest.TestCase):
         ds.read_input_data()
         return ds.input_data
 
-    def test_init_valid_label(self):
+    def test_init_valid_dataset_name(self):
         """Ensure InputDataSetA constructs correctly with a valid label."""
         ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
-    def test_init_invalid_label(self):
+    def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
             InputDataSetA("NON_EXISTENT_LABEL", str(self.explicit_config_file_path))

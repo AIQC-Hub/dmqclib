@@ -1,8 +1,9 @@
 import os
 from typing import Dict
+
 from dmqclib.utils.config import get_base_path_from_config
-from dmqclib.utils.config import get_folder_name_from_config
 from dmqclib.utils.config import get_dataset_folder_name_from_config
+from dmqclib.utils.config import get_folder_name_from_config
 
 
 def build_full_input_path(

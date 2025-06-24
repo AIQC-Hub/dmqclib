@@ -1,6 +1,7 @@
-import yaml
 from pathlib import Path
 from typing import Dict
+
+import yaml
 
 
 def read_config(

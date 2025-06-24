@@ -1,15 +1,17 @@
 import unittest
 from pathlib import Path
+
 import polars as pl
+
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
 from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
 from dmqclib.common.loader.dataset_loader import load_step5_extract_dataset
-from dmqclib.datasets.step5_extract.feature.location import LocationFeat
-from dmqclib.datasets.step5_extract.feature.day_of_year import DayOfYearFeat
-from dmqclib.datasets.step5_extract.feature.profile_summary import ProfileSummaryStats5
 from dmqclib.datasets.step5_extract.feature.basic_values import BasicValues3PlusFlanks
+from dmqclib.datasets.step5_extract.feature.day_of_year import DayOfYearFeat
+from dmqclib.datasets.step5_extract.feature.location import LocationFeat
+from dmqclib.datasets.step5_extract.feature.profile_summary import ProfileSummaryStats5
 
 
 class _TestFeatureBase(unittest.TestCase):
@@ -24,7 +26,9 @@ class _TestFeatureBase(unittest.TestCase):
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds_input = load_step1_input_dataset("NRT_BO_001", str(self.config_file_path))
+        self.ds_input = load_step1_input_dataset(
+            "NRT_BO_001", str(self.config_file_path)
+        )
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 

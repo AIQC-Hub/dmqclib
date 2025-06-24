@@ -1,7 +1,9 @@
 import os
 import unittest
 from pathlib import Path
+
 import polars as pl
+
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
@@ -22,7 +24,9 @@ class TestSplitDataSetA(unittest.TestCase):
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds_input = load_step1_input_dataset("NRT_BO_001", str(self.config_file_path))
+        self.ds_input = load_step1_input_dataset(
+            "NRT_BO_001", str(self.config_file_path)
+        )
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
@@ -54,12 +58,12 @@ class TestSplitDataSetA(unittest.TestCase):
         )
         self.ds_extract.process_targets()
 
-    def test_init_valid_label(self):
+    def test_init_valid_dataset_name(self):
         """Ensure LocateDataSetA constructs correctly with a valid label."""
         ds = SplitDataSetA("NRT_BO_001", str(self.config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
-    def test_init_invalid_label(self):
+    def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
             SplitDataSetA("NON_EXISTENT_LABEL", str(self.config_file_path))
