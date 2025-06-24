@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import unittest
 import polars as pl
-from dmqclib.utils.file_io import read_input_file
+from dmqclib.utils.file import read_input_file
 
 
 class TestReadInputFile(unittest.TestCase):

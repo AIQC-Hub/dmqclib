@@ -2,7 +2,7 @@ from abc import abstractmethod
 import polars as pl
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.utils.config import get_file_name_from_config
-from dmqclib.utils.dataset_path import build_full_data_path
+from dmqclib.utils.path import build_full_data_path
 
 
 class SummaryStatsBase(DataSetBase):

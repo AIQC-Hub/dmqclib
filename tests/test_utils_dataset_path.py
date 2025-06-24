@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 from dmqclib.utils.config import read_config
-from dmqclib.utils.dataset_path import build_full_input_path
-from dmqclib.utils.dataset_path import build_full_data_path
+from dmqclib.utils.path import build_full_input_path
+from dmqclib.utils.path import build_full_data_path
 
 
 class TestBuildFullInputPath(unittest.TestCase):

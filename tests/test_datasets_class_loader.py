@@ -7,12 +7,12 @@ from dmqclib.datasets.select.dataset_a import SelectDataSetA
 from dmqclib.datasets.locate.dataset_a import LocateDataSetA
 from dmqclib.datasets.extract.dataset_a import ExtractDataSetA
 from dmqclib.datasets.split.dataset_a import SplitDataSetA
-from dmqclib.common.class_loader.dataset_loader import load_input_dataset
-from dmqclib.common.class_loader.dataset_loader import load_summary_dataset
-from dmqclib.common.class_loader.dataset_loader import load_select_dataset
-from dmqclib.common.class_loader.dataset_loader import load_locate_dataset
-from dmqclib.common.class_loader.dataset_loader import load_extract_dataset
-from dmqclib.common.class_loader.dataset_loader import load_split_dataset
+from dmqclib.common.loader.dataset_loader import load_input_dataset
+from dmqclib.common.loader.dataset_loader import load_summary_dataset
+from dmqclib.common.loader.dataset_loader import load_select_dataset
+from dmqclib.common.loader.dataset_loader import load_locate_dataset
+from dmqclib.common.loader.dataset_loader import load_extract_dataset
+from dmqclib.common.loader.dataset_loader import load_split_dataset
 
 
 class TestInputClassLoader(unittest.TestCase):
