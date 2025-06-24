@@ -3,10 +3,8 @@ from abc import abstractmethod
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.base.model_base import ModelBase
-from dmqclib.utils.config import get_file_name_from_config
-from dmqclib.utils.file import read_input_file
-from dmqclib.utils.path import build_full_input_path
+from dmqclib.common.loader.model_loader import load_model_class
+from dmqclib.utils.config import get_targets
 
 
 class ValidationBase(DataSetBase):
@@ -19,7 +17,6 @@ class ValidationBase(DataSetBase):
         dataset_name: str,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
-        model: ModelBase = None,
     ):
         super().__init__(
             "validate",
@@ -28,40 +25,35 @@ class ValidationBase(DataSetBase):
             config_file_name="training.yaml",
         )
 
+        base_model = load_model_class(dataset_name, config_file)
+
         # Set member variables
         self.training_sets = training_sets
-        self.model = model
+        self.base_model = base_model
+        self.built_models = {}
+        self.results = {}
+        self.summary = {}
 
-    def _build_input_file_name(self):
+    def process_targets(self):
         """
-        Set the input file based on configuration entries.
+        Iterate all targets to locate training data rows.
         """
-        file_name = get_file_name_from_config(self.dataset_info, "input")
-
-        self.input_file_name = build_full_input_path(
-            self.path_info, self.dataset_info, file_name
-        )
-
-    def read_input_data(self):
-        """
-        Reads the input data specified by the dataset entry in configuration file.
-        """
-        input_file = self.input_file_name
-        file_type = self.dataset_info["input"].get("file_type") or None
-        options = self.dataset_info["input"].get("options") or {}
-
-        self.input_data = read_input_file(input_file, file_type, options)
+        targets = get_targets(self.dataset_info, "validate", self.targets)
+        for k in targets.keys():
+            self.validate(k)
+            self.summarise(k)
+            self.base_model.clear()
 
     @abstractmethod
-    def select(self):
+    def validate(self, target_name: str):
         """
-        Selects columns of the data frame in self.input_data.
+        Validate models
         """
         pass
 
     @abstractmethod
-    def filter(self):
+    def summarise(self, target_name: str):
         """
-        Filter rows of the data frame in self.input_data.
+        Summarise results
         """
         pass

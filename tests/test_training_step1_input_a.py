@@ -26,8 +26,8 @@ class TestInputTrainingSetA(unittest.TestCase):
 
     def test_init_valid_dataset_name(self):
         """Ensure ExtractDataSetA constructs correctly with a valid label."""
-        ds = InputTrainingSetA("NRT_BO_001", str(self.config_file_path))
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
+        ds = InputTrainingSetA("NRT_BO_002", str(self.config_file_path))
+        self.assertEqual(ds.dataset_name, "NRT_BO_002")
 
     def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
@@ -36,32 +36,32 @@ class TestInputTrainingSetA(unittest.TestCase):
 
     def test_config_file(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = InputTrainingSetA("NRT_BO_001", str(self.config_file_path))
+        ds = InputTrainingSetA("NRT_BO_002", str(self.config_file_path))
         self.assertTrue("training.yaml" in ds.config_file_name)
 
     def test_input_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = InputTrainingSetA("NRT_BO_001", str(self.config_file_path))
+        ds = InputTrainingSetA("NRT_BO_002", str(self.config_file_path))
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/training/temp_train.parquet",
+            "/path/to/data/nrt_bo_002/training/temp_train.parquet",
             str(ds.input_file_names["temp"]["train"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/training/psal_train.parquet",
+            "/path/to/data/nrt_bo_002/training/psal_train.parquet",
             str(ds.input_file_names["psal"]["train"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/training/temp_test.parquet",
+            "/path/to/data/nrt_bo_002/training/temp_test.parquet",
             str(ds.input_file_names["temp"]["test"]),
         )
         self.assertEqual(
-            "/path/to/data/nrt_bo_001/training/psal_test.parquet",
+            "/path/to/data/nrt_bo_002/training/psal_test.parquet",
             str(ds.input_file_names["psal"]["test"]),
         )
 
     def test_read_files(self):
         """Ensure input data and selected profiles are read correctly."""
-        ds = InputTrainingSetA("NRT_BO_001", str(self.config_file_path))
+        ds = InputTrainingSetA("NRT_BO_002", str(self.config_file_path))
         ds.input_file_names = self.input_file_names
 
         ds.process_targets()

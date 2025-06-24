@@ -10,23 +10,41 @@ class EmptyModel(ModelBase):
             config_file=config_file,
         )
 
-        self.training_data_set = None
-        self.test_data_set = None
-        self.model = None
-
     def build(self):
         """
         Build model
         """
-        if self.training_data_set is None:
-            raise ValueError("Member variable 'training_data_set' must not be empty.")
+        if self.training_set is None:
+            raise ValueError("Member variable 'training_set' must not be empty.")
+
+        self.built_model = 1 if self.built_model is None else self.built_model + 1
+
+        print()
+        print("#Build", self.built_model)
+        print(self.training_set)
 
     def test(self):
         """
         Test model.
         """
-        if self.model is None:
-            raise ValueError("Member variable 'model' must not be empty.")
+        if self.built_model is None:
+            raise ValueError("Member variable 'built_model' must not be empty.")
 
-        if self.test_data_set is None:
-            raise ValueError("Member variable 'training_data_set' must not be empty.")
+        if self.test_set is None:
+            raise ValueError("Member variable 'test_set' must not be empty.")
+
+        self.result = 10 if self.result is None else self.result + 1
+
+        print()
+        print("#Test", self.result)
+        print(self.built_model)
+        print(self.test_set)
+
+    def summarise(self):
+        """
+        Summarise test results.
+        """
+        if self.raw_results is None:
+            raise ValueError("Member variable 'raw_results' must not be empty.")
+
+        self.summary = 100 if self.summary is None else self.summary + 1

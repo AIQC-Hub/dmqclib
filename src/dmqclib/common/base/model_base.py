@@ -45,9 +45,12 @@ class ModelBase(ABC):
         self.path_info = config.get("path_info")
         self.model_params = model_params
 
-        self.training_data_set = None
-        self.test_data_set = None
-        self.model = None
+        self.training_set = None
+        self.test_set = None
+        self.built_model = None
+        self.result = None
+        self.raw_results = None
+        self.summary = None
 
     @abstractmethod
     def build(self):
@@ -62,3 +65,18 @@ class ModelBase(ABC):
         Test model.
         """
         pass
+
+    @abstractmethod
+    def summarise(self):
+        """
+        Summarise results.
+        """
+        pass
+
+    def clear(self):
+        self.training_set = None
+        self.test_set = None
+        self.built_model = None
+        self.result = None
+        self.raw_results = None
+        self.summary = None
