@@ -1,9 +1,10 @@
 import unittest
 from pathlib import Path
-from dmqclib.utils.config import read_config
+
 from dmqclib.utils.config import get_base_path_from_config
-from dmqclib.utils.config import get_folder_name_from_config
 from dmqclib.utils.config import get_file_name_from_config
+from dmqclib.utils.config import get_folder_name_from_config
+from dmqclib.utils.config import read_config
 
 
 class TestReadConfig(unittest.TestCase):
