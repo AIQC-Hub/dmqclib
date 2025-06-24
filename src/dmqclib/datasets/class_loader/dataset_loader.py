@@ -7,11 +7,11 @@ from dmqclib.datasets.summary.summary_base import SummaryStatsBase
 from dmqclib.datasets.select.select_base import ProfileSelectionBase
 from dmqclib.datasets.locate.locate_base import LocatePositionBase
 from dmqclib.datasets.extract.extract_base import ExtractFeatureBase
-from dmqclib.datasets.registry import INPUT_DATASET_REGISTRY
-from dmqclib.datasets.registry import SUMMARY_DATASET_REGISTRY
-from dmqclib.datasets.registry import SELECT_DATASET_REGISTRY
-from dmqclib.datasets.registry import LOCATE_DATASET_REGISTRY
-from dmqclib.datasets.registry import EXTRACT_DATASET_REGISTRY
+from dmqclib.datasets.class_loader.dataset_registry import INPUT_DATASET_REGISTRY
+from dmqclib.datasets.class_loader.dataset_registry import SUMMARY_DATASET_REGISTRY
+from dmqclib.datasets.class_loader.dataset_registry import SELECT_DATASET_REGISTRY
+from dmqclib.datasets.class_loader.dataset_registry import LOCATE_DATASET_REGISTRY
+from dmqclib.datasets.class_loader.dataset_registry import EXTRACT_DATASET_REGISTRY
 
 
 def _get_dataset_info(label: str, config_file: str = None) -> Dict:
@@ -95,7 +95,9 @@ def load_extract_dataset(
     label: str,
     config_file: str = None,
     input_data: pl.DataFrame = None,
+    selected_profiles: pl.DataFrame = None,
     target_rows: pl.DataFrame = None,
+    summary_stats: pl.DataFrame = None,
 ) -> LocatePositionBase:
     """
     Given a label (e.g., 'NRT_BO_001'), look up the class specified in the
@@ -108,5 +110,7 @@ def load_extract_dataset(
         label,
         config_file=config_file,
         input_data=input_data,
+        selected_profiles=selected_profiles,
         target_rows=target_rows,
+        summary_stats=summary_stats,
     )

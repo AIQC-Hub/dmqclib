@@ -52,6 +52,7 @@ class SelectDataSetA(ProfileSelectionBase):
             )
             .select(self.key_col_names)
             .unique(subset=self.key_col_names)
+            .sort(["platform_code", "profile_no"])
             .with_row_index("profile_id", offset=1)
             .with_columns(
                 pl.col("profile_timestamp").dt.ordinal_day().alias("pos_day_of_year")
@@ -83,6 +84,7 @@ class SelectDataSetA(ProfileSelectionBase):
                 & (pl.col("max_pres_qc_dm") == 1)
             )
             .select(self.key_col_names)
+            .sort(["platform_code", "profile_no"])
             .with_row_index("profile_id", offset=self.pos_profile_df.shape[0] + 1)
             .with_columns(
                 pl.col("profile_timestamp").dt.ordinal_day().alias("neg_day_of_year")
@@ -103,7 +105,7 @@ class SelectDataSetA(ProfileSelectionBase):
             .group_by("profile_id")
             .agg(
                 pl.col("profile_id_neg")
-                .sort_by("day_diff")
+                .sort_by(["day_diff", "profile_id"])
                 .first()
                 .alias("neg_profile_id")
             )

@@ -39,13 +39,17 @@ class SummaryDataSetA(SummaryStatsBase):
                     pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
                     pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
                     pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
-                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("25%"),
-                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("75%"),
-                    pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias("2.5%"),
+                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("pct25"),
+                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("pct75"),
+                    pl.col(val_col_name)
+                    .quantile(0.025)
+                    .cast(pl.Float64)
+                    .alias("pct2.5"),
                     pl.col(val_col_name)
                     .quantile(0.975)
                     .cast(pl.Float64)
-                    .alias("97.5%"),
+                    .alias("pct97.5"),
+                    pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
                 ]
             )
             .with_columns(
@@ -59,13 +63,14 @@ class SummaryDataSetA(SummaryStatsBase):
                     pl.col("profile_no"),
                     pl.col("variable"),
                     pl.col("min"),
-                    pl.col("2.5%"),
-                    pl.col("25%"),
+                    pl.col("pct2.5"),
+                    pl.col("pct25"),
                     pl.col("mean"),
                     pl.col("median"),
-                    pl.col("75%"),
-                    pl.col("97.5%"),
+                    pl.col("pct75"),
+                    pl.col("pct97.5"),
                     pl.col("max"),
+                    pl.col("sd"),
                 ]
             )
         )
@@ -83,13 +88,17 @@ class SummaryDataSetA(SummaryStatsBase):
                     pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
                     pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
                     pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
-                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("25%"),
-                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("75%"),
-                    pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias("2.5%"),
+                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("pct25"),
+                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("pct75"),
+                    pl.col(val_col_name)
+                    .quantile(0.025)
+                    .cast(pl.Float64)
+                    .alias("pct2.5"),
                     pl.col(val_col_name)
                     .quantile(0.975)
                     .cast(pl.Float64)
-                    .alias("97.5%"),
+                    .alias("pct97.5"),
+                    pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
                 ]
             )
             .with_columns(pl.lit(val_col_name).alias("variable"))
@@ -99,13 +108,14 @@ class SummaryDataSetA(SummaryStatsBase):
                     pl.col("profile_no"),
                     pl.col("variable"),
                     pl.col("min"),
-                    pl.col("2.5%"),
-                    pl.col("25%"),
+                    pl.col("pct2.5"),
+                    pl.col("pct25"),
                     pl.col("mean"),
                     pl.col("median"),
-                    pl.col("75%"),
-                    pl.col("97.5%"),
+                    pl.col("pct75"),
+                    pl.col("pct97.5"),
                     pl.col("max"),
+                    pl.col("sd"),
                 ]
             )
         )
