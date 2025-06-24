@@ -9,6 +9,8 @@ path_info:
     folder_name: select
   locate:
     folder_name: select
+  split:
+    folder_name: training
 
 target_set1: &target_set1
   targets:
@@ -56,12 +58,16 @@ NRT_BO_001:
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA
+    split: SplitDataSetA
   <<: *target_set1
   select:
     folder_name: nrt_bo_001_test
     file_name: selected_profiles2.parquet
   extract:
     <<: *feature_set1
+  split:
+    test_set_fraction: 0.1
+    k_fold: 3
 
 NRT_BO_002:
   common:
@@ -72,6 +78,7 @@ NRT_BO_002:
     select: SelectDataSetA
     locate: LocateDataSetA
     extract: ExtractDataSetA
+    split: SplitDataSetA
   input:
     folder_name:
   locate: *target_set1
