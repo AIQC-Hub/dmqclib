@@ -1,8 +1,12 @@
 from typing import Dict
 
+import polars as pl
+
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.training_registry import INPUT_TRAINING_SET_REGISTRY
+from dmqclib.common.loader.training_registry import MODEL_VALIDATION_REGISTRY
 from dmqclib.training.step1_input.input_base import InputTrainingSetBase
+from dmqclib.training.step2_validate.validate_base import ValidationBase
 from dmqclib.utils.config import read_config
 
 
@@ -42,3 +46,20 @@ def load_step1_input_training_set(
     )
 
     return dataset_class(dataset_name, config_file=config_file)
+
+
+def load_step2_model_validation_class(
+    dataset_name: str, config_file: str = None, training_sets: pl.DataFrame = None
+) -> ValidationBase:
+    """
+    Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
+    YAML config and instantiate the appropriate class, returning it.
+    """
+    dataset_info = _get_training_set_info(dataset_name, config_file)
+    dataset_class = _get_training_class(
+        dataset_info, "validate", MODEL_VALIDATION_REGISTRY
+    )
+
+    return dataset_class(
+        dataset_name, config_file=config_file, training_sets=training_sets
+    )
