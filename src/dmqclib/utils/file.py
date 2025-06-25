@@ -25,6 +25,9 @@ def read_input_file(
     pl.DataFrame
         The Polars DataFrame loaded with the file contents.
     """
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"The file '{input_file}' does not exist.")
+
     if options is None:
         options = {}
 

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Dict
 
@@ -27,6 +28,9 @@ def read_config(
         config_file = (
             Path(__file__).resolve().parents[parent_level] / "config" / config_file_name
         )
+
+    if not os.path.exists(config_file):
+        raise FileNotFoundError(f"The file '{config_file}' does not exist.")
 
     with open(config_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)

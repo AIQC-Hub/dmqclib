@@ -1,3 +1,4 @@
+import os
 from abc import abstractmethod
 
 import polars as pl
@@ -52,4 +53,5 @@ class SummaryStatsBase(DataSetBase):
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")
 
+        os.makedirs(os.path.dirname(self.output_file_name), exist_ok=True)
         self.summary_stats.write_csv(self.output_file_name, separator="\t")
