@@ -1,7 +1,8 @@
-from dmqclib.common.base.model_base import ModelBase
 import polars as pl
 import xgboost as xgb
 from sklearn.metrics import accuracy_score, classification_report
+
+from dmqclib.common.base.model_base import ModelBase
 
 
 class XGBoost(ModelBase):
@@ -50,7 +51,9 @@ class XGBoost(ModelBase):
         y_pred = self.built_model.predict(x_test)
 
         accuracy_val = accuracy_score(y_test, y_pred)
-        self.result = pl.DataFrame({"k": [self.k], "metric": ["accuracy"], "value": [accuracy_val]})
+        self.result = pl.DataFrame(
+            {"k": [self.k], "metric": ["accuracy"], "value": [accuracy_val]}
+        )
 
         report_rows = [
             {

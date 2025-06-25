@@ -1,5 +1,5 @@
-from abc import abstractmethod
 import os
+from abc import abstractmethod
 
 import polars as pl
 
@@ -119,4 +119,3 @@ class ValidationBase(DataSetBase):
         """
         self.write_results()
         self.write_reports()
-

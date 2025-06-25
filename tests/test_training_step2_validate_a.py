@@ -1,11 +1,12 @@
+import os
 import unittest
 from pathlib import Path
-import os
+
 import polars as pl
 
-from dmqclib.training.step2_validate.kfold_validation import KFoldValidation
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.training.models.empty_model import EmptyModel
+from dmqclib.training.step2_validate.kfold_validation import KFoldValidation
 
 
 class TestKFoldValidation(unittest.TestCase):
@@ -131,8 +132,12 @@ class TestKFoldValidation(unittest.TestCase):
         )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["temp"]["result"] = data_path / "temp_temp_validation_result.tsv"
-        ds.output_file_names["psal"]["result"] = data_path / "temp_psal_validation_result.tsv"
+        ds.output_file_names["temp"]["result"] = (
+            data_path / "temp_temp_validation_result.tsv"
+        )
+        ds.output_file_names["psal"]["result"] = (
+            data_path / "temp_psal_validation_result.tsv"
+        )
 
         ds.process_targets()
         ds.write_results()
@@ -149,8 +154,12 @@ class TestKFoldValidation(unittest.TestCase):
         )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["temp"]["report"] = data_path / "temp_temp_validation_report.tsv"
-        ds.output_file_names["psal"]["report"] = data_path / "temp_psal_validation_report.tsv"
+        ds.output_file_names["temp"]["report"] = (
+            data_path / "temp_temp_validation_report.tsv"
+        )
+        ds.output_file_names["psal"]["report"] = (
+            data_path / "temp_psal_validation_report.tsv"
+        )
 
         ds.process_targets()
         ds.write_reports()
@@ -159,4 +168,3 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]["report"]))
         os.remove(ds.output_file_names["temp"]["report"])
         os.remove(ds.output_file_names["psal"]["report"])
-

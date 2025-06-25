@@ -4,7 +4,7 @@ path_info:
     folder_name: training
 
 target_set1: &target_set1
-  targets: {temp: {}, psal: {}}
+  targets: { temp: { }, psal: { } }
 
 NRT_BO_001:
   common:
