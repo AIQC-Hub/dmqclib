@@ -1,2 +1,3 @@
-def hello() -> str:
-    return "Hello from dmqclib!"
+from importlib.metadata import version
+
+__version__ = version("dmqclib")
