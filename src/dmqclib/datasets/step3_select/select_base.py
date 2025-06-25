@@ -1,3 +1,4 @@
+import os
 from abc import abstractmethod
 
 import polars as pl
@@ -52,4 +53,5 @@ class ProfileSelectionBase(DataSetBase):
         if self.selected_profiles is None:
             raise ValueError("Member variable 'selected_profiles' must not be empty.")
 
+        os.makedirs(os.path.dirname(self.output_file_name), exist_ok=True)
         self.selected_profiles.write_parquet(self.output_file_name)
