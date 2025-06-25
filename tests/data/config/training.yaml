@@ -13,6 +13,7 @@ NRT_BO_001:
   base_class:
     input: InputTrainingSetA
     validate: KFoldValidation
+    model: XGBoost
   validate:
     k_fold: 3
 

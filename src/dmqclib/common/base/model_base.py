@@ -49,8 +49,12 @@ class ModelBase(ABC):
         self.test_set = None
         self.built_model = None
         self.result = None
-        self.raw_results = None
-        self.summary = None
+        self.report = None
+        self.result_list = None
+        self.report_list = None
+        self.summarised_results = None
+        self.summarised_reports = None
+        self.k = None
 
     @abstractmethod
     def build(self):
@@ -78,5 +82,9 @@ class ModelBase(ABC):
         self.test_set = None
         self.built_model = None
         self.result = None
-        self.raw_results = None
-        self.summary = None
+        self.report = None
+        self.result_list = None
+        self.report_list = None
+        self.summarised_results = None
+        self.summarised_reports = None
+        self.k = None
