@@ -61,21 +61,21 @@ class ProfileSummaryStats5(FeatureBase):
 
     def scale_first(self):
         """
-        Extract features.
+        Scale features.
         """
         pass
 
     def scale_second(self):
         """
-        Extract features.
+        Scale features.
         """
-        for target_name, v1 in self.feature_info["scales"].items():
-            for var_name, v2 in v1.items():
+        for col_name, v1 in self.feature_info["scales"].items():
+            for stat_name, v2 in v1.items():
                 self.features = self.features.with_columns(
                     [
                         (
-                            (pl.col(f"{target_name}_{var_name}") - v2["min"])
+                            (pl.col(f"{col_name}_{stat_name}") - v2["min"])
                             / (v2["max"] - v2["min"])
-                        ).alias(f"{target_name}_{var_name}"),
+                        ).alias(f"{col_name}_{stat_name}"),
                     ]
                 )

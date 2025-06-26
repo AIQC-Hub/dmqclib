@@ -56,13 +56,13 @@ class LocationFeat(FeatureBase):
 
     def scale_first(self):
         """
-        Extract features.
+        Scale features.
         """
         pass
 
     def scale_second(self):
         """
-        Extract features.
+        Scale features.
         """
         for k, v in self.feature_info["scales"].items():
             self.features = self.features.with_columns(
