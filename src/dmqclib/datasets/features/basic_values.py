@@ -28,7 +28,7 @@ class BasicValues3PlusFlanks(FeatureBase):
 
         self._expanded_observations = None
         self._feature_wide = None
-    
+
     def extract_features(self):
         """
         Extract features.
@@ -48,10 +48,11 @@ class BasicValues3PlusFlanks(FeatureBase):
                 pl.col("profile_no"),
             ]
         )
-        
+
     def _expand_observations(self):
         self._expanded_observations = (
-            self.target_rows[self.target_name].select(
+            self.target_rows[self.target_name]
+            .select(
                 [
                     pl.col("row_id"),
                     pl.col("platform_code"),
