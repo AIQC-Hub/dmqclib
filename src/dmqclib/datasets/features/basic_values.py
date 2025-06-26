@@ -27,38 +27,47 @@ class BasicValues3PlusFlanks(FeatureBase):
         )
 
         self._expanded_observations = None
+        self._feature_wide = None
 
     def extract_features(self):
         """
         Extract features.
         """
+        self._init_features()
         self._expand_observations()
-        for target_name in self.feature_info["scales"].keys():
-            self._pivot_features(target_name)
+        for col_name in self.feature_info["scales"].keys():
+            self._pivot_features(col_name)
+            self._add_features()
+        self._clean_features()
 
-        self.features = self.features.drop(
-            ["platform_code", "profile_no", "platform_code"]
-        )
-
-    def _expand_observations(self):
+    def _init_features(self):
         self.features = self.target_rows[self.target_name].select(
             [
                 pl.col("row_id"),
                 pl.col("platform_code"),
                 pl.col("profile_no"),
-                pl.col("observation_no"),
             ]
         )
 
-        self.expanded_observations = (
-            self.features.join(
+    def _expand_observations(self):
+        self._expanded_observations = (
+            self.target_rows[self.target_name]
+            .select(
+                [
+                    pl.col("row_id"),
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                    pl.col("observation_no"),
+                ]
+            )
+            .join(
                 pl.DataFrame(
-                    {"flank_id": list(range(0, self.feature_info.get("flank_up") + 1))}
+                    {"flank_seq": list(range(0, self.feature_info.get("flank_up") + 1))}
                 ),
                 how="cross",
             )
             .with_columns(
-                (pl.col("observation_no") - pl.col("flank_id")).alias("observation_no")
+                (pl.col("observation_no") - pl.col("flank_seq")).alias("observation_no")
             )
             .with_columns(
                 pl.when(pl.col("observation_no") < 1)
@@ -68,17 +77,15 @@ class BasicValues3PlusFlanks(FeatureBase):
             )
         )
 
-        self.features = self.features.drop("observation_no")
-
-    def _pivot_features(self, target_name: str):
-        feature_wide = (
-            self.expanded_observations.join(
+    def _pivot_features(self, col_name: str):
+        self._feature_wide = (
+            self._expanded_observations.join(
                 self.filtered_input.select(
                     [
                         pl.col("platform_code"),
                         pl.col("profile_no"),
                         pl.col("observation_no"),
-                        pl.col(target_name).alias("value"),
+                        pl.col(col_name).alias("value"),
                     ]
                 ),
                 on=["platform_code", "profile_no", "observation_no"],
@@ -87,13 +94,13 @@ class BasicValues3PlusFlanks(FeatureBase):
             .with_columns(
                 pl.concat_str(
                     [
-                        pl.lit(f"{target_name}_up"),
-                        pl.col("flank_id").cast(pl.String),
+                        pl.lit(f"{col_name}_up"),
+                        pl.col("flank_seq").cast(pl.String),
                     ],
                     separator="_",
                 ).alias("col_name")
             )
-            .drop(["observation_no", "flank_id"])
+            .drop(["observation_no", "flank_seq"])
             .pivot(
                 "col_name",
                 index=["row_id", "platform_code", "profile_no"],
@@ -101,27 +108,33 @@ class BasicValues3PlusFlanks(FeatureBase):
             )
         )
 
+    def _add_features(self):
         self.features = self.features.join(
-            feature_wide,
+            self._feature_wide,
             on=["row_id", "platform_code", "profile_no"],
             maintain_order="left",
         )
 
+    def _clean_features(self):
+        self.features = self.features.drop(
+            ["platform_code", "profile_no", "platform_code"]
+        )
+
     def scale_first(self):
         """
-        Extract features.
+        Scale features.
         """
-        for target_name, v in self.feature_info["scales"].items():
+        for col_name, v in self.feature_info["scales"].items():
             self.filtered_input = self.filtered_input.with_columns(
                 [
-                    ((pl.col(target_name) - v["min"]) / (v["max"] - v["min"])).alias(
-                        target_name
+                    ((pl.col(col_name) - v["min"]) / (v["max"] - v["min"])).alias(
+                        col_name
                     ),
                 ]
             )
 
     def scale_second(self):
         """
-        Extract features.
+        Scale features.
         """
         pass
