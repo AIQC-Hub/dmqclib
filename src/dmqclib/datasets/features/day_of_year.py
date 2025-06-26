@@ -59,13 +59,13 @@ class DayOfYearFeat(FeatureBase):
 
     def scale_first(self):
         """
-        Extract features.
+        Scale features.
         """
         pass
 
     def scale_second(self):
         """
-        Extract features.
+        Scale features.
         """
         if "convert" in self.feature_info and self.feature_info["convert"] == "sine":
             self.features = self.features.with_columns(
