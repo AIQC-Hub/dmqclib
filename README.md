@@ -3,6 +3,8 @@
 ![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)
 [![Anaconda-Server Badge](https://anaconda.org/takayasaito/dmqclib/badges/version.svg)](https://anaconda.org/takayasaito/dmqclib)
 [![Check Package](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml/badge.svg)](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml)
+[![codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
+[![CodeFactor](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib/badge)](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib)
 
 The *DMQCLib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
 
@@ -135,6 +137,7 @@ This creates a meta.yaml file in the dmqclib/ directory.
 ```bash
 cd dmqclib
 conda build .
+cd ..
 ```
 
 This creates a .conda package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
@@ -149,8 +152,6 @@ anaconda upload /full/path/to/conda-bld/noarch/dmqclib-<version>-<build>.conda
 #### 4. Keep the recipe under version control
 
 ```bash
-mkdir -p ../conda
-cp meta.yaml ../conda/meta.yaml
-cd ..
+cp dmqclib/meta.yaml conda/meta.yaml
 rm -r dmqclib
 ```
