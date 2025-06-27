@@ -137,4 +137,4 @@ class BasicValues3PlusFlanks(FeatureBase):
         """
         Scale features.
         """
-        pass
+        pass  # pragma: no cover

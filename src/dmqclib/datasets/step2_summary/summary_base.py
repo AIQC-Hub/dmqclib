@@ -44,7 +44,7 @@ class SummaryStatsBase(DataSetBase):
         """
         Calculate summary stats.
         """
-        pass
+        pass  # pragma: no cover
 
     def write_summary_stats(self):
         """

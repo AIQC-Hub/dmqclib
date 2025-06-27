@@ -57,3 +57,15 @@ class EmptyModel(ModelBase):
         self.summarised_reports = (
             200 if self.summarised_reports is None else self.summarised_reports + 1
         )
+
+    def read_model(self):
+        """
+        Read model.
+        """
+        pass  # pragma: no cover
+
+    def write_model(self, file_name: str):
+        """
+        Write model.
+        """
+        pass  # pragma: no cover

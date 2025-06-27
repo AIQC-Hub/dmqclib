@@ -54,29 +54,43 @@ class ModelBase(ABC):
         self.report_list = None
         self.summarised_results = None
         self.summarised_reports = None
-        self.k = None
+        self.k = 0
 
     @abstractmethod
     def build(self):
         """
         Build model
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def test(self):
         """
         Test model.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def summarise(self):
         """
         Summarise results.
         """
-        pass
+        pass  # pragma: no cover
 
+    @abstractmethod
+    def read_model(self):
+        """
+        Read model.
+        """
+        pass  # pragma: no cover
+
+    @abstractmethod
+    def write_model(self, file_name: str):
+        """
+        Write model.
+        """
+        pass  # pragma: no cover
+    
     def clear(self):
         self.training_set = None
         self.test_set = None
@@ -87,4 +101,4 @@ class ModelBase(ABC):
         self.report_list = None
         self.summarised_results = None
         self.summarised_reports = None
-        self.k = None
+        self.k = 0

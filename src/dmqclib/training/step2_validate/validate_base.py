@@ -78,14 +78,14 @@ class ValidationBase(DataSetBase):
         """
         Validate models
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def summarise(self, target_name: str):
         """
         Summarise results
         """
-        pass
+        pass  # pragma: no cover
 
     def write_results(self):
         """

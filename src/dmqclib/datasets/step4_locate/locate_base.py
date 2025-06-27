@@ -59,7 +59,7 @@ class LocatePositionBase(DataSetBase):
         """
         Locate training data rows.
         """
-        pass
+        pass  # pragma: no cover
 
     def write_target_rows(self):
         """
