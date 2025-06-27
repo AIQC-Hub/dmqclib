@@ -2,9 +2,9 @@ name: Code Coverage
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 jobs:
   build:
@@ -28,9 +28,10 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Run code coverage
-        run: pytest --cov --cov-branch --cov-report=xml
+        run: uv run pytest --cov --cov-branch --cov-report=xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: AIQC-Hub/dmqclib
