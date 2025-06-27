@@ -131,7 +131,10 @@ From the project root, run:
 grayskull pypi dmqclib
 ```
 
-This creates a meta.yaml file in the dmqclib/ directory.
+This creates a *meta.yaml* file in the *dmqclib/* directory.
+
+> [!NOTE]
+> Make sure to review the *meta.yaml* file before building the package.
 
 #### 2. Build the package
 ```bash
@@ -140,7 +143,7 @@ conda build .
 cd ..
 ```
 
-This creates a .conda package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
+This creates a *.conda* package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
 
 #### 3. Upload to Anaconda.org
 
