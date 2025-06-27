@@ -27,7 +27,7 @@ You can create a new environment using any package management system, such as *c
 
 Additionally, using *uv* is recommended when contributing modifications to the package.
 
- - uv (https://docs.astral.sh/uv/)
+ - [uv](https://docs.astral.sh/uv/)
 
 After the installation of *uv*, running `uv sync` inside the project will create the environment.
 
