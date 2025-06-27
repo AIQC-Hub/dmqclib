@@ -121,7 +121,7 @@ Install them (preferably in a dedicated environment):
 conda install -c conda-forge conda-build anaconda-client grayskull
 ```
 
-### 1. Generate the conda recipe with Grayskull
+#### 1. Generate the conda recipe with Grayskull
 
 From the project root, run:
 ```bash
@@ -131,7 +131,7 @@ grayskull pypi dmqclib
 
 This creates a meta.yaml file in the dmqclib/ directory.
 
-### 2. Build the package
+#### 2. Build the package
 ```bash
 cd dmqclib
 conda build .
@@ -139,14 +139,14 @@ conda build .
 
 This creates a .conda package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
 
-### 3. Upload to Anaconda.org
+#### 3. Upload to Anaconda.org
 
 ```bash
 anaconda login
 anaconda upload /full/path/to/conda-bld/noarch/dmqclib-<version>-<build>.conda
 ```
 
-### 4. Keep the recipe under version control
+#### 4. Keep the recipe under version control
 
 ```bash
 mkdir -p ../conda
