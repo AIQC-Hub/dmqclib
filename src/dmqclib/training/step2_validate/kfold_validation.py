@@ -41,34 +41,26 @@ class KFoldValidation(ValidationBase):
         """
 
         self.built_models[target_name] = list()
-        self.results[target_name] = list()
-        self.reports[target_name] = list()
+        results = list()
 
         k_fold = self._get_k_fold()
         for k in range(k_fold):
             self.base_model.k = k + 1
-            training_set = (
+            self.base_model.training_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") != (k + 1))
                 .drop("k_fold")
             )
-            self.base_model.training_set = training_set
             self.base_model.build()
             self.built_models[target_name].append(self.base_model.built_model)
 
-            test_set = (
+            self.base_model.test_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") == (k + 1))
                 .drop("k_fold")
             )
-            self.base_model.test_set = test_set
             self.base_model.test()
-            self.results[target_name].append(self.base_model.result)
-            self.reports[target_name].append(self.base_model.report)
-
-    def summarise(self, target_name: str):
-        self.base_model.result_list = self.results[target_name]
-        self.base_model.report_list = self.reports[target_name]
-        self.base_model.summarise()
-        self.summarised_results[target_name] = self.base_model.summarised_results
-        self.summarised_reports[target_name] = self.base_model.summarised_reports
+            results.append(self.base_model.result)
+    
+        self.results[target_name] = pl.concat(results)
+        

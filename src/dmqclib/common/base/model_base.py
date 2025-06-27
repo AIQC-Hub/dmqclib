@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+from joblib import dump, load
+
+import os
 
 from dmqclib.utils.config import read_config
 
@@ -49,11 +52,6 @@ class ModelBase(ABC):
         self.test_set = None
         self.built_model = None
         self.result = None
-        self.report = None
-        self.result_list = None
-        self.report_list = None
-        self.summarised_results = None
-        self.summarised_reports = None
         self.k = 0
 
     @abstractmethod
@@ -70,35 +68,25 @@ class ModelBase(ABC):
         """
         pass  # pragma: no cover
 
-    @abstractmethod
-    def summarise(self):
-        """
-        Summarise results.
-        """
-        pass  # pragma: no cover
-
-    @abstractmethod
-    def read_model(self):
+    def read_model(self, file_name: str):
         """
         Read model.
         """
-        pass  # pragma: no cover
+        if not os.path.exists(file_name):
+            raise FileNotFoundError(f"The file '{file_name}' does not exist.")
 
-    @abstractmethod
+        self.built_model = load(file_name)
+
     def write_model(self, file_name: str):
         """
         Write model.
         """
-        pass  # pragma: no cover
-    
+        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        dump(self.built_model, file_name)
+
     def clear(self):
         self.training_set = None
         self.test_set = None
         self.built_model = None
         self.result = None
-        self.report = None
-        self.result_list = None
-        self.report_list = None
-        self.summarised_results = None
-        self.summarised_reports = None
         self.k = 0

@@ -33,7 +33,6 @@ class ValidationBase(DataSetBase):
         # Set member variables
         self.default_file_names = {
             "result": "{target_name}_validation_result.tsv",
-            "report": "{target_name}_validation_report.tsv",
         }
         self._build_output_file_names()
         self.training_sets = training_sets
@@ -41,9 +40,7 @@ class ValidationBase(DataSetBase):
         self.base_model = base_model
         self.built_models = {}
         self.results = {}
-        self.reports = {}
         self.summarised_results = {}
-        self.summarised_reports = {}
 
     def _build_output_file_names(self):
         """
@@ -70,7 +67,6 @@ class ValidationBase(DataSetBase):
         targets = get_targets(self.dataset_info, "validate", self.targets)
         for k in targets.keys():
             self.validate(k)
-            self.summarise(k)
             self.base_model.clear()
 
     @abstractmethod
@@ -80,42 +76,15 @@ class ValidationBase(DataSetBase):
         """
         pass  # pragma: no cover
 
-    @abstractmethod
-    def summarise(self, target_name: str):
-        """
-        Summarise results
-        """
-        pass  # pragma: no cover
-
     def write_results(self):
         """
         Write results
         """
-        if len(self.summarised_results) == 0:
+        if self.results is None:
             raise ValueError("Member variable 'summarised_results' must not be empty.")
 
-        for k, v in self.summarised_results.items():
+        for k, v in self.results.items():
             os.makedirs(
                 os.path.dirname(self.output_file_names[k]["result"]), exist_ok=True
             )
             v.write_csv(self.output_file_names[k]["result"], separator="\t")
-
-    def write_reports(self):
-        """
-        Write test sets to parquet files
-        """
-        if len(self.summarised_reports) == 0:
-            raise ValueError("Member variable 'summarised_reports' must not be empty.")
-
-        for k, v in self.summarised_reports.items():
-            os.makedirs(
-                os.path.dirname(self.output_file_names[k]["report"]), exist_ok=True
-            )
-            v.write_csv(self.output_file_names[k]["report"], separator="\t")
-
-    def write_all_results(self):
-        """
-        Write both results and reports
-        """
-        self.write_results()
-        self.write_reports()

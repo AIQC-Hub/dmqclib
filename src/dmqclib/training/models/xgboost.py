@@ -1,6 +1,10 @@
 import polars as pl
 import xgboost as xgb
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    classification_report,
+)
 
 from dmqclib.common.base.model_base import ModelBase
 
@@ -50,35 +54,38 @@ class XGBoost(ModelBase):
 
         y_pred = self.built_model.predict(x_test)
 
-        accuracy_val = accuracy_score(y_test, y_pred)
         self.result = pl.DataFrame(
-            {"k": [self.k], "metric": ["accuracy"], "value": [accuracy_val]}
+            [
+                {"k": self.k, "label": "0", "accuracy": None},
+                {"k": self.k, "label": "1", "accuracy": None},
+                {
+                    "k": self.k,
+                    "label": "macro avg",
+                    "accuracy": accuracy_score(y_test, y_pred),
+                },
+                {
+                    "k": self.k,
+                    "label": "weighted avg",
+                    "accuracy": balanced_accuracy_score(y_test, y_pred),
+                },
+            ]
+        ).join(
+            pl.DataFrame(
+                [
+                    {
+                        "k": self.k,
+                        "label": k,
+                        "precision": v["precision"],
+                        "recall": v["recall"],
+                        "f1-score": v["f1-score"],
+                        "support": v["support"],
+                    }
+                    for k, v in classification_report(
+                        y_test, y_pred, output_dict=True
+                    ).items()
+                    if isinstance(v, dict)
+                ]
+            ),
+            on=["k", "label"],
+            how="left",
         )
-
-        report_rows = [
-            {
-                "k": self.k,
-                "label": k,
-                "precision": v["precision"],
-                "recall": v["recall"],
-                "f1-score": v["f1-score"],
-                "support": v["support"],
-            }
-            for k, v in classification_report(y_test, y_pred, output_dict=True).items()
-            if isinstance(v, dict)
-        ]
-
-        self.report = pl.DataFrame(report_rows)
-
-    def summarise(self):
-        """
-        Summarise test results.
-        """
-        if self.result_list is None:
-            raise ValueError("Member variable 'result_list' must not be empty.")
-
-        if self.report_list is None:
-            raise ValueError("Member variable 'report_list' must not be empty.")
-
-        self.summarised_results = pl.concat(self.result_list)
-        self.summarised_reports = pl.concat(self.report_list)
