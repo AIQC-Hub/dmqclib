@@ -10,9 +10,9 @@ from dmqclib.utils.config import get_targets
 from dmqclib.utils.path import build_full_data_path
 
 
-class ValidationBase(DataSetBase):
+class BuildModelBase(DataSetBase):
     """
-    Base class for validation classes.
+    Base class for building models.
     """
 
     def __init__(
@@ -20,9 +20,10 @@ class ValidationBase(DataSetBase):
         dataset_name: str,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
+        test_sets: pl.DataFrame = None,
     ):
         super().__init__(
-            "validate",
+            "build",
             dataset_name,
             config_file=config_file,
             config_file_name="training.yaml",
@@ -31,28 +32,30 @@ class ValidationBase(DataSetBase):
         base_model = load_model_class(dataset_name, config_file)
 
         # Set member variables
+        self.default_file_name = "{target_name}_model.json"
         self.default_file_names = {
-            "result": "{target_name}_validation_result.tsv",
+            "model": "{target_name}_model.joblib",
+            "result": "{target_name}_test_result.tsv",
         }
         self._build_output_file_names()
         self.training_sets = training_sets
+        self.test_sets = test_sets
 
         self.base_model = base_model
         self.built_models = {}
         self.results = {}
-        self.summarised_results = {}
 
     def _build_output_file_names(self):
         """
         Set the output files based on configuration entries.
         """
-        targets = get_targets(self.dataset_info, "validate", self.targets)
+        targets = get_targets(self.dataset_info, "build", self.targets)
         self.output_file_names = {
             k1: {
                 k2: build_full_data_path(
                     self.path_info,
                     self.dataset_info,
-                    "validate",
+                    "build",
                     get_target_file_name(v1, k1, v2),
                 )
                 for k2, v2 in self.default_file_names.items()
@@ -60,19 +63,38 @@ class ValidationBase(DataSetBase):
             for k1, v1 in targets.items()
         }
 
-    def process_targets(self):
+    def build_targets(self):
         """
         Iterate all targets to locate training data rows.
         """
-        targets = get_targets(self.dataset_info, "validate", self.targets)
+        targets = get_targets(self.dataset_info, "build", self.targets)
         for k in targets.keys():
-            self.validate(k)
-            self.base_model.clear()
+            self.build(k)
+            if self.test_sets is not None and k in self.test_sets:
+                self.test(k)
+
+    def test_targets(self):
+        """
+        Iterate all targets to locate training data rows.
+        """
+        targets = get_targets(self.dataset_info, "build", self.targets)
+        for k in targets.keys():
+            if k not in self.built_models:
+                self.base_model.read_model(self.output_file_names[k]["model"])
+                self.built_models[k] = self.base_model.built_model
+            self.test(k)
 
     @abstractmethod
-    def validate(self, target_name: str):
+    def build(self, target_name: str):
         """
-        Validate models
+        Build models
+        """
+        pass  # pragma: no cover
+
+    @abstractmethod
+    def test(self, target_name: str):
+        """
+        Build models
         """
         pass  # pragma: no cover
 
@@ -83,7 +105,7 @@ class ValidationBase(DataSetBase):
         if self.results is None:
             raise ValueError("Member variable 'results' must not be empty.")
 
-        for k, v in self.results.items():
+        for k, v in self.summarised_results.items():
             os.makedirs(
                 os.path.dirname(self.output_file_names[k]["result"]), exist_ok=True
             )
