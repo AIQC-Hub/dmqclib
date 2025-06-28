@@ -10,9 +10,9 @@ from dmqclib.utils.config import get_targets
 from dmqclib.utils.path import build_full_data_path
 
 
-class ValidationBase(DataSetBase):
+class BuildModelBase(DataSetBase):
     """
-    Base class for validation classes.
+    Base class for building models.
     """
 
     def __init__(
@@ -20,9 +20,10 @@ class ValidationBase(DataSetBase):
         dataset_name: str,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
+        test_sets: pl.DataFrame = None,
     ):
         super().__init__(
-            "validate",
+            "build",
             dataset_name,
             config_file=config_file,
             config_file_name="training.yaml",
@@ -30,29 +31,31 @@ class ValidationBase(DataSetBase):
 
         # Set member variables
         self.config_file = config_file
+        self.default_file_name = "{target_name}_model.json"
         self.default_file_names = {
-            "result": "{target_name}_validation_result.tsv",
+            "model": "{target_name}_model.joblib",
+            "result": "{target_name}_test_result.tsv",
         }
         self._build_output_file_names()
         self.training_sets = training_sets
+        self.test_sets = test_sets
 
         self.base_model = None
         self.load_base_model()
         self.models = {}
         self.results = {}
-        self.summarised_results = {}
 
     def _build_output_file_names(self):
         """
         Set the output files based on configuration entries.
         """
-        targets = get_targets(self.dataset_info, "validate", self.targets)
+        targets = get_targets(self.dataset_info, "build", self.targets)
         self.output_file_names = {
             k1: {
                 k2: build_full_data_path(
                     self.path_info,
                     self.dataset_info,
-                    "validate",
+                    "build",
                     get_target_file_name(v1, k1, v2),
                 )
                 for k2, v2 in self.default_file_names.items()
@@ -63,18 +66,39 @@ class ValidationBase(DataSetBase):
     def load_base_model(self):
         self.base_model = load_model_class(self.dataset_name, self.config_file)
 
-    def process_targets(self):
+    def build_targets(self):
         """
         Iterate all targets to locate training data rows.
         """
-        targets = get_targets(self.dataset_info, "validate", self.targets)
+        targets = get_targets(self.dataset_info, "build", self.targets)
         for k in targets.keys():
-            self.validate(k)
+            self.build(k)
+            if self.test_sets is not None and k in self.test_sets:
+                self.test(k)
+
+    def test_targets(self):
+        """
+        Iterate all targets to locate training data rows.
+        """
+        targets = get_targets(self.dataset_info, "build", self.targets)
+        for k in targets.keys():
+            if k not in self.models:
+                self.load_base_model()
+                self.base_model.read_model(self.output_file_names[k]["model"])
+                self.models[k] = self.base_model
+            self.test(k)
 
     @abstractmethod
-    def validate(self, target_name: str):
+    def build(self, target_name: str):
         """
-        Validate models
+        Build models
+        """
+        pass  # pragma: no cover
+
+    @abstractmethod
+    def test(self, target_name: str):
+        """
+        Build models
         """
         pass  # pragma: no cover
 
@@ -90,3 +114,29 @@ class ValidationBase(DataSetBase):
                 os.path.dirname(self.output_file_names[k]["result"]), exist_ok=True
             )
             v.write_csv(self.output_file_names[k]["result"], separator="\t")
+
+    def write_models(self):
+        """
+        Write models
+        """
+        if self.models is None:
+            raise ValueError("Member variable 'built_models' must not be empty.")
+
+        for k, v in self.models.items():
+            os.makedirs(
+                os.path.dirname(self.output_file_names[k]["model"]), exist_ok=True
+            )
+            self.base_model.save_model(self.output_file_names[k]["model"])
+
+    def read_models(self):
+        """
+        Read models
+        """
+
+        for k, v in self.output_file_names.items():
+            if not os.path.exists(v["model"]):
+                raise FileNotFoundError(f"The file '{v['model']}' does not exist.")
+
+            self.load_base_model()
+            self.base_model.load_model(v["model"])
+            self.models[k] = self.base_model

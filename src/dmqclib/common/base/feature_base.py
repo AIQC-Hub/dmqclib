@@ -31,18 +31,18 @@ class FeatureBase(ABC):
         """
         Extract features.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def scale_first(self):
         """
         Scale features.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def scale_second(self):
         """
         Scale features.
         """
-        pass
+        pass  # pragma: no cover

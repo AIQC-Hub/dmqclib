@@ -63,7 +63,7 @@ class ProfileSummaryStats5(FeatureBase):
         """
         Scale features.
         """
-        pass
+        pass  # pragma: no cover
 
     def scale_second(self):
         """

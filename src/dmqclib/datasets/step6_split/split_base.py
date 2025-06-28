@@ -86,15 +86,15 @@ class SplitDataSetBase(DataSetBase):
 
     @abstractmethod
     def split_test_set(self, target_name: str):
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def add_k_fold(self, target_name: str):
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def drop_columns(self, target_name: str):
-        pass
+        pass  # pragma: no cover
 
     def write_training_sets(self):
         """
