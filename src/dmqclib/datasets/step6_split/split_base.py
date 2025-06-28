@@ -32,8 +32,8 @@ class SplitDataSetBase(DataSetBase):
         self.training_sets = {}
         self.test_sets = {}
 
-        self.test_set_fraction = 0.1
-        self.k_fold = 10
+        self.default_test_set_fraction = 0.1
+        self.default_k_fold = 10
 
     def _build_output_file_names(self):
         """
@@ -53,24 +53,24 @@ class SplitDataSetBase(DataSetBase):
             for k1, v1 in targets.items()
         }
 
-    def _get_test_set_fraction(self) -> str:
+    def get_test_set_fraction(self) -> str:
         if (
             "split" in self.dataset_info
             and "test_set_fraction" in self.dataset_info["split"]
         ):
             test_set_fraction = self.dataset_info["split"].get(
-                "test_set_fraction", self.test_set_fraction
+                "test_set_fraction", self.default_test_set_fraction
             )
         else:
-            test_set_fraction = self.test_set_fraction
+            test_set_fraction = self.default_test_set_fraction
 
         return test_set_fraction
 
-    def _get_k_fold(self) -> str:
+    def get_k_fold(self) -> str:
         if "split" in self.dataset_info and "k_fold" in self.dataset_info["split"]:
-            k_fold = self.dataset_info["split"].get("k_fold", self.k_fold)
+            k_fold = self.dataset_info["split"].get("k_fold", self.default_k_fold)
         else:
-            k_fold = self.k_fold
+            k_fold = self.default_k_fold
 
         return k_fold
 

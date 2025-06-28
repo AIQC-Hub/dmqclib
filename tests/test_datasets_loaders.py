@@ -42,6 +42,13 @@ class TestInputClassLoader(unittest.TestCase):
         with self.assertRaises(ValueError):
             load_step1_input_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
 
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step1_input_dataset("NRT_BO_003", str(self.config_file_path))
+
 
 class TestSummaryClassLoader(unittest.TestCase):
     def setUp(self):
@@ -90,6 +97,13 @@ class TestSummaryClassLoader(unittest.TestCase):
         with self.assertRaises(ValueError):
             load_step2_summary_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
 
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step2_summary_dataset("NRT_BO_003", str(self.config_file_path))
+
 
 class TestSelectClassLoader(unittest.TestCase):
     def setUp(self):
@@ -137,6 +151,13 @@ class TestSelectClassLoader(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             load_step3_select_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
+
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step3_select_dataset("NRT_BO_003", str(self.config_file_path))
 
 
 class TestLocateClassLoader(unittest.TestCase):
@@ -199,6 +220,13 @@ class TestLocateClassLoader(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             load_step4_locate_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
+
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step4_locate_dataset("NRT_BO_003", str(self.config_file_path))
 
 
 class TestExtractClassLoader(unittest.TestCase):
@@ -293,6 +321,13 @@ class TestExtractClassLoader(unittest.TestCase):
         with self.assertRaises(ValueError):
             load_step5_extract_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
 
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step5_extract_dataset("NRT_BO_003", str(self.config_file_path))
+
 
 class TestSplitClassLoader(unittest.TestCase):
     def setUp(self):
@@ -374,3 +409,10 @@ class TestSplitClassLoader(unittest.TestCase):
         """
         with self.assertRaises(ValueError):
             load_step6_split_dataset("NON_EXISTENT_LABEL", str(self.config_file_path))
+
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step6_split_dataset("NRT_BO_003", str(self.config_file_path))

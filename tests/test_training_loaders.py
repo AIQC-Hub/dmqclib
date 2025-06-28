@@ -38,6 +38,13 @@ class TestTrainingInputClassLoader(unittest.TestCase):
                 "NON_EXISTENT_LABEL", str(self.config_file_path)
             )
 
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step1_input_training_set("NRT_BO_003", str(self.config_file_path))
+
 
 class TestModelValidationClassLoader(unittest.TestCase):
     def setUp(self):
@@ -99,6 +106,13 @@ class TestModelValidationClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
         self.assertEqual(ds.training_sets["psal"].shape[1], 38)
+
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step2_model_validation_class("NRT_BO_003", str(self.config_file_path))
 
 
 class TestBuildModelClassLoader(unittest.TestCase):
@@ -172,3 +186,10 @@ class TestBuildModelClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 37)
+
+    def test_load_dataset_invalid_class(self):
+        """
+        Test that calling load_dataset with an invalid class raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            load_step4_build_model_class("NRT_BO_003", str(self.config_file_path))

@@ -83,9 +83,7 @@ class BuildModelBase(DataSetBase):
         targets = get_targets(self.dataset_info, "build", self.targets)
         for k in targets.keys():
             if k not in self.models:
-                self.load_base_model()
-                self.base_model.read_model(self.output_file_names[k]["model"])
-                self.models[k] = self.base_model
+                raise ValueError(f"No valid model found for the variable '{k}'.")
             self.test(k)
 
     @abstractmethod
@@ -106,7 +104,7 @@ class BuildModelBase(DataSetBase):
         """
         Write results
         """
-        if self.results is None:
+        if len(self.results) == 0:
             raise ValueError("Member variable 'results' must not be empty.")
 
         for k, v in self.results.items():
@@ -119,7 +117,7 @@ class BuildModelBase(DataSetBase):
         """
         Write models
         """
-        if self.models is None:
+        if len(self.models) == 0:
             raise ValueError("Member variable 'built_models' must not be empty.")
 
         for k, v in self.models.items():

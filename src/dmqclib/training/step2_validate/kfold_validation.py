@@ -22,16 +22,16 @@ class KFoldValidation(ValidationBase):
             training_sets=training_sets,
         )
 
-        self.k_fold = 10
+        self.default_k_fold = 10
 
-    def _get_k_fold(self) -> str:
+    def get_k_fold(self) -> str:
         if (
             "validate" in self.dataset_info
             and "k_fold" in self.dataset_info["validate"]
         ):
-            k_fold = self.dataset_info["validate"].get("k_fold", self.k_fold)
+            k_fold = self.dataset_info["validate"].get("k_fold", self.default_k_fold)
         else:
-            k_fold = self.k_fold
+            k_fold = self.default_k_fold
 
         return k_fold
 
@@ -43,7 +43,7 @@ class KFoldValidation(ValidationBase):
         self.models[target_name] = list()
         results = list()
 
-        k_fold = self._get_k_fold()
+        k_fold = self.get_k_fold()
         for k in range(k_fold):
             self.load_base_model()
             self.base_model.k = k + 1

@@ -79,6 +79,15 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
         self.assertEqual(ds.training_sets["psal"].shape[1], 38)
 
+    def test_default_k_fold(self):
+        """Ensure k_fold is set to default value when no config entry is found."""
+        ds = KFoldValidation(
+            "NRT_BO_002", str(self.config_file_path), self.ds_input.training_sets
+        )
+
+        k_fold = ds.get_k_fold()
+        self.assertEqual(k_fold, 10)
+
     def test_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
         ds = KFoldValidation(

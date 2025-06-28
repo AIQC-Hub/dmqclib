@@ -123,3 +123,18 @@ class TestSelectDataSetA(unittest.TestCase):
         ds.write_selected_profiles()
         self.assertTrue(os.path.exists(ds.output_file_name))
         os.remove(ds.output_file_name)
+
+    def test_write_empty_selected_profiles(self):
+        """ "Ensure ValueError is raised for empty profiles."""
+        ds = SelectDataSetA(
+            "NRT_BO_001", str(self.config_file_path), self.ds.input_data
+        )
+        ds.output_file_name = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "select"
+            / "temp_selected_profiles.parquet"
+        )
+
+        with self.assertRaises(ValueError):
+            ds.write_selected_profiles()

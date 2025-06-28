@@ -109,3 +109,12 @@ class TestSelectDataSetA(unittest.TestCase):
         ds.write_summary_stats()
         self.assertTrue(os.path.exists(ds.output_file_name))
         os.remove(ds.output_file_name)
+
+    def test_write_no_summary_stats(self):
+        """ "Ensure ValueError is raised for empty summary stats."""
+        ds = SummaryDataSetA(
+            "NRT_BO_001", str(self.config_file_path), self.ds.input_data
+        )
+
+        with self.assertRaises(ValueError):
+            ds.write_summary_stats()

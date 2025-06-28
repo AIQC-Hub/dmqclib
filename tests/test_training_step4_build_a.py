@@ -133,6 +133,18 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 37)
 
+    def test_test_without_model(self):
+        """Verify the config file is correctly set in the member variable."""
+        ds = BuildModel(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
+        )
+
+        with self.assertRaises(ValueError):
+            ds.test_targets()
+
     def test_write_results(self):
         """Ensure target rows are written to parquet files correctly."""
         ds = BuildModel(
@@ -154,6 +166,30 @@ class TestBuildModel(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]["result"]))
         os.remove(ds.output_file_names["temp"]["result"])
         os.remove(ds.output_file_names["psal"]["result"])
+
+    def test_write_no_results(self):
+        """Ensure ValueError is raised for an empty result list."""
+        ds = BuildModel(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
+        )
+
+        with self.assertRaises(ValueError):
+            ds.write_results()
+
+    def test_write_no_models(self):
+        """Ensure ValueError is raised for an empty model list."""
+        ds = BuildModel(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
+        )
+
+        with self.assertRaises(ValueError):
+            ds.write_models()
 
     def test_write_models(self):
         """Ensure models are saved correctly."""
@@ -200,3 +236,16 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 37)
+
+    def test_read_models_no_file(self):
+        """ "Ensure FileNotFoundError is raised for an invalid file name."""
+        ds = BuildModel(
+            "NRT_BO_001", str(self.config_file_path), None, self.ds_input.test_sets
+        )
+
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.output_file_names["temp"]["model"] = data_path / "model.joblib"
+        ds.output_file_names["psal"]["model"] = data_path / "model.joblib"
+
+        with self.assertRaises(FileNotFoundError):
+            ds.read_models()

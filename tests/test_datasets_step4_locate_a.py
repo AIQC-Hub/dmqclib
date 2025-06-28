@@ -154,3 +154,15 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
         os.remove(ds.output_file_names["temp"])
         os.remove(ds.output_file_names["psal"])
+
+    def test_write_no_target_rows(self):
+        """ "Ensure ValueError is raised for empty profiles."""
+        ds = LocateDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.input_data,
+            self.ds_select.selected_profiles,
+        )
+
+        with self.assertRaises(ValueError):
+            ds.write_target_rows()

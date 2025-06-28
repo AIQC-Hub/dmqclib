@@ -33,7 +33,7 @@ class SplitDataSetA(SplitDataSetBase):
         ]
 
     def split_test_set(self, target_name: str):
-        test_set_fraction = self._get_test_set_fraction()
+        test_set_fraction = self.get_test_set_fraction()
 
         pos_test_set = (
             self.target_features[target_name]
@@ -55,7 +55,7 @@ class SplitDataSetA(SplitDataSetBase):
         )
 
     def add_k_fold(self, target_name: str):
-        k_fold = self._get_k_fold()
+        k_fold = self.get_k_fold()
         pos_training_set = self.training_sets[target_name].filter(pl.col("label") == 1)
         df_size = pos_training_set.shape[0]
 

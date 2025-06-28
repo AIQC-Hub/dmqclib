@@ -136,6 +136,28 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 37)
 
+    def test_default_test_set_fraction(self):
+        """Ensure set_fraction is set to default value when no config entry is found."""
+        ds = SplitDataSetA(
+            "NRT_BO_002",
+            str(self.config_file_path),
+            self.ds_extract.target_features,
+        )
+
+        test_set_fraction = ds.get_test_set_fraction()
+        self.assertEqual(test_set_fraction, 0.1)
+
+    def test_default_k_fold(self):
+        """Ensure k_fold is set to default value when no config entry is found."""
+        ds = SplitDataSetA(
+            "NRT_BO_002",
+            str(self.config_file_path),
+            self.ds_extract.target_features,
+        )
+
+        k_fold = ds.get_k_fold()
+        self.assertEqual(k_fold, 10)
+
     def test_write_training_sets(self):
         """Ensure target rows are written to parquet files correctly."""
         ds = SplitDataSetA(
@@ -177,5 +199,33 @@ class TestSplitDataSetA(unittest.TestCase):
 
         self.assertTrue(os.path.exists(ds.output_file_names["temp"]["test"]))
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]["test"]))
+        os.remove(ds.output_file_names["temp"]["test"])
+        os.remove(ds.output_file_names["psal"]["test"])
+
+    def test_write_data_sets(self):
+        """Ensure target rows are written to parquet files correctly."""
+        ds = SplitDataSetA(
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_extract.target_features,
+        )
+
+        ds.process_targets()
+
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.output_file_names["temp"]["train"] = data_path / "temp_temp_train.parquet"
+        ds.output_file_names["psal"]["train"] = data_path / "temp_psal_train.parquet"
+        ds.output_file_names["temp"]["test"] = data_path / "temp_temp_test.parquet"
+        ds.output_file_names["psal"]["test"] = data_path / "temp_psal_test.parquet"
+
+        ds.process_targets()
+        ds.write_data_sets()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["temp"]["train"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["psal"]["train"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["temp"]["test"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["psal"]["test"]))
+        os.remove(ds.output_file_names["temp"]["train"])
+        os.remove(ds.output_file_names["psal"]["train"])
         os.remove(ds.output_file_names["temp"]["test"])
         os.remove(ds.output_file_names["psal"]["test"])

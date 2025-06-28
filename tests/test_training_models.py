@@ -4,7 +4,7 @@ from pathlib import Path
 from dmqclib.training.models.xgboost import XGBoost
 
 
-class TestEmptyModel(unittest.TestCase):
+class TestXGBoost(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We define the explicit path to
