@@ -58,7 +58,7 @@ class LocationFeat(FeatureBase):
         """
         Scale features.
         """
-        pass
+        pass  # pragma: no cover
 
     def scale_second(self):
         """

@@ -44,7 +44,7 @@ class ProfileSelectionBase(DataSetBase):
         """
         Label profiles to identify positive and negative groups.
         """
-        pass
+        pass  # pragma: no cover
 
     def write_selected_profiles(self):
         """

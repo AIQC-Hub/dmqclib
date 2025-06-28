@@ -15,10 +15,10 @@ class InputDataSetA(InputDataSetBase):
         """
         Selects columns of the data frame in self.input_data.
         """
-        pass
+        pass  # pragma: no cover
 
     def filter(self):
         """
         Filter rows of the data frame in self.input_data.
         """
-        pass
+        pass  # pragma: no cover

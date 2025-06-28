@@ -1,9 +1,9 @@
 # DMQCLib
 
-![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)
-[![Anaconda-Server Badge](https://anaconda.org/takayasaito/dmqclib/badges/version.svg)](https://anaconda.org/takayasaito/dmqclib)
+[![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)](https://pypi.org/project/dmqclib/)
+[![Anaconda - Version](https://anaconda.org/takayasaito/dmqclib/badges/version.svg)](https://anaconda.org/takayasaito/dmqclib)
 [![Check Package](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml/badge.svg)](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml)
-[![codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
+[![Codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
 [![CodeFactor](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib/badge)](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib)
 
 The *DMQCLib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
@@ -45,17 +45,19 @@ uv sync
 ```
 
 ### Unit Test
-You may need to install the library in editable mode at least once before running unit tests.
+
+You can run unit tests using *pytest*.
+
+```bash
+uv run pytest -v
+```
+
+(Optional) You may need to install the library in editable mode at least once before running unit tests.
 
 ```bash
 uv pip install -e .
 ```
 
-After the library installation, you can run unit tests with *pytest*.
-
-```bash
-uv run pytest -v
-```
 
 ### Python Linter
 To lint the code under the *src* folder with [ruff](https://astral.sh/ruff), use the following command:
@@ -70,13 +72,6 @@ and the unit test code under the *tests* folder:
 uvx ruff check tests
 ```
 
-Alternatively, to lint the code with [flake8](https://flake8.pycqa.org), use the following command:
-
-```bash
-uvx flake8 src --max-line-length=100
-```
-
-
 ### Code Formatter
 To format the code under the *src* folder with [ruff](https://astral.sh/ruff), use the following command:
 
@@ -88,12 +83,6 @@ and the unit test code under the *tests* folder:
 
 ```bash
 uvx ruff format tests
-```
-
-Alternatively, to format the code with [black](https://pypi.org/project/black/), use the following command:
-
-```bash
-uvx black src
 ```
 
 ## Deployment
@@ -120,18 +109,20 @@ You’ll need the following tools:
 
 Install them (preferably in a dedicated environment):
 ```bash
-conda install -c conda-forge conda-build anaconda-client grayskull
+mamba install -c conda-forge conda-build anaconda-client grayskull
 ```
 
 #### 1. Generate the conda recipe with Grayskull
 
 From the project root, run:
 ```bash
-
 grayskull pypi dmqclib
 ```
 
-This creates a meta.yaml file in the dmqclib/ directory.
+This creates a *meta.yaml* file in the *dmqclib/* directory.
+
+> [!NOTE]
+> Make sure to review the *meta.yaml* file before building the package.
 
 #### 2. Build the package
 ```bash
@@ -140,7 +131,7 @@ conda build .
 cd ..
 ```
 
-This creates a .conda package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
+This creates a *.conda* package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
 
 #### 3. Upload to Anaconda.org
 
