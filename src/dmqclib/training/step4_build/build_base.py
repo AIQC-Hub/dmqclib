@@ -105,8 +105,34 @@ class BuildModelBase(DataSetBase):
         if self.results is None:
             raise ValueError("Member variable 'results' must not be empty.")
 
-        for k, v in self.summarised_results.items():
+        for k, v in self.results.items():
             os.makedirs(
                 os.path.dirname(self.output_file_names[k]["result"]), exist_ok=True
             )
             v.write_csv(self.output_file_names[k]["result"], separator="\t")
+
+    def write_models(self):
+        """
+        Write models
+        """
+        if self.built_models is None:
+            raise ValueError("Member variable 'built_models' must not be empty.")
+
+        for k, v in self.built_models.items():
+            os.makedirs(
+                os.path.dirname(self.output_file_names[k]["model"]), exist_ok=True
+            )
+            self.base_model.built_model = v
+            self.base_model.save_model(self.output_file_names[k]["model"])
+
+    def read_models(self):
+        """
+        Read models
+        """
+
+        for k, v in self.output_file_names.items():
+            if not os.path.exists(v["model"]):
+                raise FileNotFoundError(f"The file '{v["model"]}' does not exist.")
+
+            self.base_model.load_model(v["model"])
+            self.built_models[k] = self.base_model.built_model

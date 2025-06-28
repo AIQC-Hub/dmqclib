@@ -68,7 +68,7 @@ class ModelBase(ABC):
         """
         pass  # pragma: no cover
 
-    def read_model(self, file_name: str):
+    def load_model(self, file_name: str):
         """
         Read model.
         """
@@ -77,7 +77,7 @@ class ModelBase(ABC):
 
         self.built_model = load(file_name)
 
-    def write_model(self, file_name: str):
+    def save_model(self, file_name: str):
         """
         Write model.
         """

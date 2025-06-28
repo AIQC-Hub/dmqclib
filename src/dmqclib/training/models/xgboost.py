@@ -89,3 +89,6 @@ class XGBoost(ModelBase):
             on=["k", "label"],
             how="left",
         )
+
+        if self.k == 0:
+            self.result = self.result.drop(["k"])
