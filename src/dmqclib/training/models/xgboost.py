@@ -36,15 +36,13 @@ class XGBoost(ModelBase):
         x_train = self.training_set.select(pl.exclude("label")).to_pandas()
         y_train = self.training_set["label"].to_pandas()
 
-        self.built_model = xgb.XGBClassifier(**self.model_params)
-        self.built_model.fit(x_train, y_train)
+        self.model = xgb.XGBClassifier(**self.model_params)
+        self.model.fit(x_train, y_train)
 
     def test(self):
         """
         Test model.
         """
-        if self.built_model is None:
-            raise ValueError("Member variable 'built_model' must not be empty.")
 
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty.")
@@ -52,7 +50,7 @@ class XGBoost(ModelBase):
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
         y_test = self.test_set["label"].to_pandas()
 
-        y_pred = self.built_model.predict(x_test)
+        y_pred = self.model.predict(x_test)
 
         self.result = pl.DataFrame(
             [

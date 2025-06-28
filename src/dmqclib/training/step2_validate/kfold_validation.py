@@ -40,11 +40,12 @@ class KFoldValidation(ValidationBase):
         Validate models
         """
 
-        self.built_models[target_name] = list()
+        self.models[target_name] = list()
         results = list()
 
         k_fold = self._get_k_fold()
         for k in range(k_fold):
+            self.load_base_model()
             self.base_model.k = k + 1
             self.base_model.training_set = (
                 self.training_sets[target_name]
@@ -52,7 +53,7 @@ class KFoldValidation(ValidationBase):
                 .drop("k_fold")
             )
             self.base_model.build()
-            self.built_models[target_name].append(self.base_model.built_model)
+            self.models[target_name].append(self.base_model)
 
             self.base_model.test_set = (
                 self.training_sets[target_name]

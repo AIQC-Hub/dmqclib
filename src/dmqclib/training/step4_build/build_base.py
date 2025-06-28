@@ -29,9 +29,8 @@ class BuildModelBase(DataSetBase):
             config_file_name="training.yaml",
         )
 
-        base_model = load_model_class(dataset_name, config_file)
-
         # Set member variables
+        self.config_file = config_file
         self.default_file_name = "{target_name}_model.json"
         self.default_file_names = {
             "model": "{target_name}_model.joblib",
@@ -41,8 +40,9 @@ class BuildModelBase(DataSetBase):
         self.training_sets = training_sets
         self.test_sets = test_sets
 
-        self.base_model = base_model
-        self.built_models = {}
+        self.base_model = None
+        self.load_base_model()
+        self.models = {}
         self.results = {}
 
     def _build_output_file_names(self):
@@ -63,6 +63,9 @@ class BuildModelBase(DataSetBase):
             for k1, v1 in targets.items()
         }
 
+    def load_base_model(self):
+        self.base_model = load_model_class(self.dataset_name, self.config_file)
+
     def build_targets(self):
         """
         Iterate all targets to locate training data rows.
@@ -79,9 +82,10 @@ class BuildModelBase(DataSetBase):
         """
         targets = get_targets(self.dataset_info, "build", self.targets)
         for k in targets.keys():
-            if k not in self.built_models:
+            if k not in self.models:
+                self.load_base_model()
                 self.base_model.read_model(self.output_file_names[k]["model"])
-                self.built_models[k] = self.base_model.built_model
+                self.models[k] = self.base_model
             self.test(k)
 
     @abstractmethod
@@ -115,14 +119,13 @@ class BuildModelBase(DataSetBase):
         """
         Write models
         """
-        if self.built_models is None:
+        if self.models is None:
             raise ValueError("Member variable 'built_models' must not be empty.")
 
-        for k, v in self.built_models.items():
+        for k, v in self.models.items():
             os.makedirs(
                 os.path.dirname(self.output_file_names[k]["model"]), exist_ok=True
             )
-            self.base_model.built_model = v
             self.base_model.save_model(self.output_file_names[k]["model"])
 
     def read_models(self):
@@ -134,5 +137,6 @@ class BuildModelBase(DataSetBase):
             if not os.path.exists(v["model"]):
                 raise FileNotFoundError(f"The file '{v["model"]}' does not exist.")
 
+            self.load_base_model()
             self.base_model.load_model(v["model"])
-            self.built_models[k] = self.base_model.built_model
+            self.models[k] = self.base_model

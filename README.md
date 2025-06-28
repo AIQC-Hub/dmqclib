@@ -45,17 +45,19 @@ uv sync
 ```
 
 ### Unit Test
-You may need to install the library in editable mode at least once before running unit tests.
+
+You can run unit tests using *pytest*.
+
+```bash
+uv run pytest -v
+```
+
+(Optional) You may need to install the library in editable mode at least once before running unit tests.
 
 ```bash
 uv pip install -e .
 ```
 
-After the library installation, you can run unit tests with *pytest*.
-
-```bash
-uv run pytest -v
-```
 
 ### Python Linter
 To lint the code under the *src* folder with [ruff](https://astral.sh/ruff), use the following command:
@@ -70,13 +72,6 @@ and the unit test code under the *tests* folder:
 uvx ruff check tests
 ```
 
-Alternatively, to lint the code with [flake8](https://flake8.pycqa.org), use the following command:
-
-```bash
-uvx flake8 src --max-line-length=100
-```
-
-
 ### Code Formatter
 To format the code under the *src* folder with [ruff](https://astral.sh/ruff), use the following command:
 
@@ -88,12 +83,6 @@ and the unit test code under the *tests* folder:
 
 ```bash
 uvx ruff format tests
-```
-
-Alternatively, to format the code with [black](https://pypi.org/project/black/), use the following command:
-
-```bash
-uvx black src
 ```
 
 ## Deployment
@@ -120,7 +109,7 @@ You’ll need the following tools:
 
 Install them (preferably in a dedicated environment):
 ```bash
-conda install -c conda-forge conda-build anaconda-client grayskull
+mamba install -c conda-forge conda-build anaconda-client grayskull
 ```
 
 #### 1. Generate the conda recipe with Grayskull

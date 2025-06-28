@@ -28,17 +28,17 @@ class ValidationBase(DataSetBase):
             config_file_name="training.yaml",
         )
 
-        base_model = load_model_class(dataset_name, config_file)
-
         # Set member variables
+        self.config_file = config_file
         self.default_file_names = {
             "result": "{target_name}_validation_result.tsv",
         }
         self._build_output_file_names()
         self.training_sets = training_sets
 
-        self.base_model = base_model
-        self.built_models = {}
+        self.base_model = None
+        self.load_base_model()
+        self.models = {}
         self.results = {}
         self.summarised_results = {}
 
@@ -60,6 +60,9 @@ class ValidationBase(DataSetBase):
             for k1, v1 in targets.items()
         }
 
+    def load_base_model(self):
+        self.base_model = load_model_class(self.dataset_name, self.config_file)
+
     def process_targets(self):
         """
         Iterate all targets to locate training data rows.
@@ -67,7 +70,6 @@ class ValidationBase(DataSetBase):
         targets = get_targets(self.dataset_info, "validate", self.targets)
         for k in targets.keys():
             self.validate(k)
-            self.base_model.clear()
 
     @abstractmethod
     def validate(self, target_name: str):

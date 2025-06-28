@@ -6,7 +6,6 @@ import polars as pl
 
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.training.models.xgboost import XGBoost
-from xgboost import XGBClassifier
 from dmqclib.training.step4_build.build_model import BuildModel
 
 
@@ -107,8 +106,8 @@ class TestBuildModel(unittest.TestCase):
 
         ds.build_targets()
 
-        self.assertIsInstance(ds.built_models["temp"], XGBClassifier)
-        self.assertIsInstance(ds.built_models["psal"], XGBClassifier)
+        self.assertIsInstance(ds.models["temp"], XGBoost)
+        self.assertIsInstance(ds.models["psal"], XGBoost)
 
 
     def test_test_with_xgboost(self):
@@ -193,8 +192,8 @@ class TestBuildModel(unittest.TestCase):
 
         ds.read_models()
 
-        self.assertIsInstance(ds.built_models["temp"], XGBClassifier)
-        self.assertIsInstance(ds.built_models["psal"], XGBClassifier)
+        self.assertIsInstance(ds.models["temp"], XGBoost)
+        self.assertIsInstance(ds.models["psal"], XGBoost)
 
         ds.test_targets()
 

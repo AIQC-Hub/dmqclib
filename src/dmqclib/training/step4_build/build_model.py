@@ -1,7 +1,5 @@
 import polars as pl
 
-import os
-
 from dmqclib.training.step4_build.build_base import BuildModelBase
 
 
@@ -30,14 +28,16 @@ class BuildModel(BuildModelBase):
         """
         Build model
         """
+        self.load_base_model()
         self.base_model.training_set = self.training_sets[target_name].drop("k_fold")
         self.base_model.build()
-        self.built_models[target_name] = self.base_model.built_model
+        self.models[target_name] = self.base_model
 
     def test(self, target_name: str):
         """
         Test model
         """
+        self.base_model = self.models[target_name]
         self.base_model.test_set = self.test_sets[target_name]
         self.base_model.test()
         self.results[target_name] = self.base_model.result
