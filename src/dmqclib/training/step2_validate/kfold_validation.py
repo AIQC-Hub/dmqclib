@@ -62,6 +62,5 @@ class KFoldValidation(ValidationBase):
             )
             self.base_model.test()
             results.append(self.base_model.result)
-    
+
         self.results[target_name] = pl.concat(results)
-        

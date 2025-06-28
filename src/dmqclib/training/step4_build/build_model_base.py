@@ -135,7 +135,7 @@ class BuildModelBase(DataSetBase):
 
         for k, v in self.output_file_names.items():
             if not os.path.exists(v["model"]):
-                raise FileNotFoundError(f"The file '{v["model"]}' does not exist.")
+                raise FileNotFoundError(f"The file '{v['model']}' does not exist.")
 
             self.load_base_model()
             self.base_model.load_model(v["model"])

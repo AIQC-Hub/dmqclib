@@ -77,8 +77,10 @@ class TestBuildModel(unittest.TestCase):
     def test_training_sets(self):
         """Verify the config file is correctly set in the member variable."""
         ds = BuildModel(
-            "NRT_BO_002", str(self.config_file_path), self.ds_input.training_sets,
-            self.ds_input.test_sets
+            "NRT_BO_002",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
         )
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
@@ -100,8 +102,10 @@ class TestBuildModel(unittest.TestCase):
     def test_train_with_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
         ds = BuildModel(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.training_sets,
-            self.ds_input.test_sets
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
         )
 
         ds.build_targets()
@@ -109,12 +113,13 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["temp"], XGBoost)
         self.assertIsInstance(ds.models["psal"], XGBoost)
 
-
     def test_test_with_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
         ds = BuildModel(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.training_sets,
-            self.ds_input.test_sets
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
         )
 
         ds.build_targets()
@@ -131,17 +136,15 @@ class TestBuildModel(unittest.TestCase):
     def test_write_results(self):
         """Ensure target rows are written to parquet files correctly."""
         ds = BuildModel(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.training_sets,
-            self.ds_input.test_sets
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
         )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["temp"]["result"] = (
-            data_path / "temp_temp_test_result.tsv"
-        )
-        ds.output_file_names["psal"]["result"] = (
-            data_path / "temp_psal_test_result.tsv"
-        )
+        ds.output_file_names["temp"]["result"] = data_path / "temp_temp_test_result.tsv"
+        ds.output_file_names["psal"]["result"] = data_path / "temp_psal_test_result.tsv"
 
         ds.build_targets()
         ds.test_targets()
@@ -155,17 +158,15 @@ class TestBuildModel(unittest.TestCase):
     def test_write_models(self):
         """Ensure models are saved correctly."""
         ds = BuildModel(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.training_sets,
-            self.ds_input.test_sets
+            "NRT_BO_001",
+            str(self.config_file_path),
+            self.ds_input.training_sets,
+            self.ds_input.test_sets,
         )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["temp"]["model"] = (
-            data_path / "temp_temp_model.joblib"
-        )
-        ds.output_file_names["psal"]["model"] = (
-            data_path / "temp_psal_model.joblib"
-        )
+        ds.output_file_names["temp"]["model"] = data_path / "temp_temp_model.joblib"
+        ds.output_file_names["psal"]["model"] = data_path / "temp_psal_model.joblib"
 
         ds.build_targets()
         ds.write_models()
@@ -178,17 +179,12 @@ class TestBuildModel(unittest.TestCase):
     def test_read_models(self):
         """Ensure models are loaded correctly."""
         ds = BuildModel(
-            "NRT_BO_001", str(self.config_file_path), None,
-            self.ds_input.test_sets
+            "NRT_BO_001", str(self.config_file_path), None, self.ds_input.test_sets
         )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["temp"]["model"] = (
-            data_path / "temp_model.joblib"
-        )
-        ds.output_file_names["psal"]["model"] = (
-            data_path / "psal_model.joblib"
-        )
+        ds.output_file_names["temp"]["model"] = data_path / "temp_model.joblib"
+        ds.output_file_names["psal"]["model"] = data_path / "psal_model.joblib"
 
         ds.read_models()
 
