@@ -50,4 +50,4 @@ class DataSetBase(ABC):
 
     def __repr__(self):
         # Provide a simple representation
-        return f"{self.step_name}(dataset={self.dataset_name}, class={self.base_class_name})"
+        return f"DataSetBase(step={self.step_name}, dataset={self.dataset_name}, class={self.base_class_name})"
