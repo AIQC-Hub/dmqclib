@@ -1,4 +1,4 @@
-from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.config.training_config import TrainingConfig
 from dmqclib.training.step1_input.input_base import InputTrainingSetBase
 
 
@@ -12,7 +12,7 @@ class InputTrainingSetA(InputTrainingSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: ConfigBase = None,
+        config: TrainingConfig = None,
         config_file: str = None,
     ):
         super().__init__(

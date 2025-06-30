@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import List
 import jsonschema
 import os
 from jsonschema import validate
@@ -18,7 +19,7 @@ class ConfigBase(ABC):
 
     def __init__(
         self,
-        module_name: str,
+        section_name: str,
         config_file: str = None,
         config_file_name: str = None,
     ):
@@ -29,13 +30,13 @@ class ConfigBase(ABC):
 
         # Set member variables
         yaml_schemas = {
-            "DataSet": "config_data_set_schema.yaml",
-            "Training": "config_training_schema.yaml",
+            "data_sets": "config_data_set_schema.yaml",
+            "training_sets": "config_training_schema.yaml",
         }
 
-        self.module_name = module_name
+        self.section_name = section_name
         self.yaml_schema = read_config(
-            config_file_name=yaml_schemas[module_name], add_config_file_name=False
+            config_file_name=yaml_schemas[section_name], add_config_file_name=False
         )
         self.full_config = read_config(
             config_file, config_file_name, add_config_file_name=False
@@ -58,7 +59,7 @@ class ConfigBase(ABC):
         if not self.valid_yaml:
             raise ValueError("YAML file is invalid")
 
-        self.config = get_config_item(self.full_config, "data_sets", dataset_name)
+        self.config = get_config_item(self.full_config, self.section_name, dataset_name)
         self.config["path_info"] = get_config_item(
             self.full_config, "path_info_sets", self.config["path_info"]
         )
@@ -142,6 +143,26 @@ class ConfigBase(ABC):
             os.path.join(base_path, dataset_folder_name, folder_name, file_name)
         )
 
+    def get_base_class(self, step_name: str) -> str:
+        return self.config["step_class_set"]["steps"][step_name]
+
+    def get_target_variables(self) -> List:
+        return self.config["target_set"]["variables"]
+
+    def get_target_names(self) -> List:
+        return [x["name"] for x in self.get_target_variables()]
+
+    def get_target_file_names(
+        self,
+        step_name: str,
+        default_file_name: str = None,
+        use_dataset_folder: bool = True,
+        folder_name_auto: bool = True):
+
+        full_file_name = self.get_full_file_name(step_name, default_file_name, use_dataset_folder, folder_name_auto)
+
+        return {x:full_file_name.format(target_name=x) for x in self.get_target_names()}
+
     def __repr__(self):
         # Provide a simple representation
-        return f"ConfigBase(module_name={self.module_name})"
+        return f"ConfigBase(section_name={self.section_name})"

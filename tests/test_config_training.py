@@ -1,10 +1,10 @@
 import unittest
 from pathlib import Path
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.config.training_config import TrainingConfig
 
 
-class TestDataSetConfig(unittest.TestCase):
+class TestTrainingConfig(unittest.TestCase):
     def setUp(self):
         """
         Called before each test method. We define the explicit path to
@@ -14,14 +14,14 @@ class TestDataSetConfig(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "config"
-            / "test_dataset_001.yaml"
+            / "test_training_001.yaml"
         )
 
     def test_valid_config(self):
         """
         Test valid config
         """
-        ds = DataSetConfig(str(self.config_file_path))
+        ds = TrainingConfig(str(self.config_file_path))
         msg = ds.validate()
         self.assertIn("valid", msg)
 
@@ -35,22 +35,20 @@ class TestDataSetConfig(unittest.TestCase):
             / "config"
             / "test_dataset_invalid.yaml"
         )
-        ds = DataSetConfig(str(config_file_path))
+        ds = TrainingConfig(str(config_file_path))
         msg = ds.validate()
         self.assertIn("invalid", msg)
 
     def test_load_dataset_config(self):
-        ds = DataSetConfig(str(self.config_file_path))
+        ds = TrainingConfig(str(self.config_file_path))
         ds.load_dataset_config("NRT_BO_001")
 
-        self.assertEqual(len(ds.config["path_info"]), 6)
+        self.assertEqual(len(ds.config["path_info"]), 5)
         self.assertEqual(len(ds.config["target_set"]), 2)
-        self.assertEqual(len(ds.config["feature_set"]), 2)
-        self.assertEqual(len(ds.config["feature_param_set"]), 2)
         self.assertEqual(len(ds.config["step_class_set"]), 2)
         self.assertEqual(len(ds.config["step_param_set"]), 2)
 
     def test_invalid_dataset_name(self):
-        ds = DataSetConfig(str(self.config_file_path))
+        ds = TrainingConfig(str(self.config_file_path))
         with self.assertRaises(ValueError):
             ds.load_dataset_config("INVALID_NAME")

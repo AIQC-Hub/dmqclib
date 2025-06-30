@@ -4,7 +4,7 @@ from abc import abstractmethod
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.config.training_config import TrainingConfig
 from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
@@ -19,7 +19,7 @@ class ValidationBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: ConfigBase = None,
+        config: TrainingConfig = None,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
     ):

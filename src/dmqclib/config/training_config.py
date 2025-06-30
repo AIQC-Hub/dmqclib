@@ -2,12 +2,12 @@ from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.utils.config import get_config_item
 
 
-class DataSetConfig(ConfigBase):
+class TrainingConfig(ConfigBase):
     """
-    DataSetConfig provides dataset config interfaces
+    TrainingConfig provides training config interfaces
     """
 
-    expected_class_name = "DataSetConfig"
+    expected_class_name = "TrainingConfig"
 
     def __init__(
         self,
@@ -15,19 +15,13 @@ class DataSetConfig(ConfigBase):
         config_file_name: str = None,
     ):
         super().__init__(
-            "data_sets", config_file=config_file, config_file_name=config_file_name
+            "training_sets", config_file=config_file, config_file_name=config_file_name
         )
 
     def load_dataset_config(self, dataset_name: str):
         super().load_dataset_config(dataset_name)
         self.config["target_set"] = get_config_item(
             self.full_config, "target_sets", self.config["target_set"]
-        )
-        self.config["feature_set"] = get_config_item(
-            self.full_config, "feature_sets", self.config["feature_set"]
-        )
-        self.config["feature_param_set"] = get_config_item(
-            self.full_config, "feature_param_sets", self.config["feature_param_set"]
         )
         self.config["step_class_set"] = get_config_item(
             self.full_config, "step_class_sets", self.config["step_class_set"]

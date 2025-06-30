@@ -26,6 +26,10 @@ class DataSetBase(ABC):
                 "Child class must define 'expected_class_name' attribute"
             )
 
+        self.config = config
+        if self.config is not None:
+            self.config.load_dataset_config(dataset_name)
+
         config = read_config(config_file, config_file_name)
         if dataset_name not in config:
             raise ValueError(
