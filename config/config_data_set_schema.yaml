@@ -201,7 +201,7 @@ properties:
       properties:
         name:
           type: string
-        folder_name:
+        dataset_folder_name:
           type: string
         input_file_name:
           type: string
@@ -219,7 +219,7 @@ properties:
           type: string
       required:
         - name
-        - folder_name
+        - dataset_folder_name
         - input_file_name
         - path_info
         - target_set

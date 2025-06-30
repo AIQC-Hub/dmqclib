@@ -101,7 +101,7 @@ step_param_sets:
 
 data_sets:
   - name: NRT_BO_001
-    folder_name: nrt_bo_001
+    dataset_folder_name: nrt_bo_001
     input_file_name: nrt_cora_bo_test.parquet
     path_info: data_set_1
     target_set: target_set_1_3

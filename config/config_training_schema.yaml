@@ -143,7 +143,7 @@ properties:
       properties:
         name:
           type: string
-        folder_name:
+        dataset_folder_name:
           type: string
         path_info:
           type: string
@@ -155,7 +155,7 @@ properties:
           type: string
       required:
         - name
-        - folder_name
+        - dataset_folder_name
         - path_info
         - target_set
         - step_class_set

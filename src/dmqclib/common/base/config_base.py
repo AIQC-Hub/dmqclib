@@ -1,8 +1,10 @@
 from abc import ABC
 import jsonschema
+import os
 from jsonschema import validate
 
 from dmqclib.utils.config import read_config
+from dmqclib.utils.config import get_config_item
 
 
 class ConfigBase(ABC):
@@ -26,25 +28,119 @@ class ConfigBase(ABC):
             )
 
         # Set member variables
-        yaml_schemas = {"DataSet": "config_data_set_schema.yaml",
-                        "Training": "config_training_schema.yaml"}
+        yaml_schemas = {
+            "DataSet": "config_data_set_schema.yaml",
+            "Training": "config_training_schema.yaml",
+        }
 
         self.module_name = module_name
-        self.yaml_schema = read_config(config_file_name=yaml_schemas[module_name],
-                                       add_config_file_name = False)
-        self.config = read_config(config_file, config_file_name,
-                                       add_config_file_name = False)
-        self.dataset_name = None
+        self.yaml_schema = read_config(
+            config_file_name=yaml_schemas[module_name], add_config_file_name=False
+        )
+        self.full_config = read_config(
+            config_file, config_file_name, add_config_file_name=False
+        )
         self.valid_yaml = False
+        self.config = None
+        self.dataset_name = None
 
     def validate(self) -> str:
         try:
-            validate(instance=self.config, schema=self.yaml_schema)
+            validate(instance=self.full_config, schema=self.yaml_schema)
             self.valid_yaml = True
-            return ("YAML file is valid")
+            return "YAML file is valid"
         except jsonschema.exceptions.ValidationError as e:
             self.valid_yaml = False
-            return(f"YAML file is invalid: {e.message}")
+            return f"YAML file is invalid: {e.message}"
+
+    def load_dataset_config(self, dataset_name: str):
+        self.validate()
+        if not self.valid_yaml:
+            raise ValueError("YAML file is invalid")
+
+        self.config = get_config_item(self.full_config, "data_sets", dataset_name)
+        self.config["path_info"] = get_config_item(
+            self.full_config, "path_info_sets", self.config["path_info"]
+        )
+        self.dataset_name = dataset_name
+
+    def get_base_path(self, step_name: str):
+        if step_name not in self.config["path_info"] or (
+            step_name in self.config["path_info"]
+            and "folder_name" not in self.config["path_info"][step_name]
+        ):
+            step_name = "common"
+        base_path = self.config["path_info"][step_name].get("base_path")
+
+        if base_path is None:
+            raise ValueError(
+                "'base_path' for '{step_name}' not found or set to None in the config file"
+            )
+
+        return base_path
+
+    def get_dataset_folder_name(self, step_name: str) -> str:
+        dataset_folder_name = self.config.get("dataset_folder_name", "")
+
+        if (
+            step_name in self.config["step_param_set"]["steps"]
+            and "dataset_folder_name"
+            in self.config["step_param_set"]["steps"][step_name]
+        ):
+            dataset_folder_name = self.config["step_param_set"]["steps"][step_name].get(
+                "dataset_folder_name", ""
+            )
+
+        return dataset_folder_name
+
+    def get_folder_name(self, step_name: str, folder_name_auto=True) -> str:
+        orig_step_name = step_name
+        if step_name not in self.config["path_info"] or (
+            step_name in self.config["path_info"]
+            and "folder_name" not in self.config["path_info"][step_name]
+        ):
+            step_name = "common"
+        folder_name = self.config["path_info"][step_name].get("folder_name")
+
+        if folder_name is None:
+            folder_name = orig_step_name if folder_name_auto else ""
+
+        return folder_name
+
+    def get_file_name(self, step_name: str, default_name: str = None) -> str:
+        file_name = default_name
+        if (
+            step_name in self.config["step_param_set"]["steps"]
+            and "file_name" in self.config["step_param_set"]["steps"][step_name]
+        ):
+            file_name = self.config["step_param_set"]["steps"][step_name].get(
+                "file_name", ""
+            )
+
+        if file_name is None:
+            raise ValueError(
+                f"'file_name' for '{step_name}' not found or set to None in the config file"
+            )
+
+        return file_name
+
+    def get_full_file_name(
+        self,
+        step_name: str,
+        default_file_name: str = None,
+        use_dataset_folder: bool = True,
+        folder_name_auto: bool = True,
+    ) -> str:
+        base_path = self.get_base_path(step_name)
+        dataset_folder_name = (
+            self.get_dataset_folder_name(step_name) if use_dataset_folder else ""
+        )
+        folder_name = self.get_folder_name(step_name, folder_name_auto)
+        file_name = self.get_file_name(step_name, default_file_name)
+
+        return os.path.normpath(
+            os.path.join(base_path, dataset_folder_name, folder_name, file_name)
+        )
 
     def __repr__(self):
         # Provide a simple representation

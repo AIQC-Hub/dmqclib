@@ -5,7 +5,9 @@ from typing import Dict
 import yaml
 
 
-def get_config_file(config_file: str = None, config_file_name: str = None, parent_level: int = 3) -> str:
+def get_config_file(
+    config_file: str = None, config_file_name: str = None, parent_level: int = 3
+) -> str:
     if config_file is None:
         if config_file_name is None:
             raise ValueError(
@@ -22,8 +24,10 @@ def get_config_file(config_file: str = None, config_file_name: str = None, paren
 
 
 def read_config(
-    config_file: str = None, config_file_name: str = None, parent_level: int = 3,
-        add_config_file_name = True
+    config_file: str = None,
+    config_file_name: str = None,
+    parent_level: int = 3,
+    add_config_file_name=True,
 ) -> Dict:
     """
     Reads either a YAML configuration file specified in config_file
@@ -50,7 +54,6 @@ def read_config(
 
 
 def get_config_item(config: Dict, section: str, name: str) -> Dict:
-
     """
     Get a specific item from a given section in a YAML configuration file.
 
@@ -61,7 +64,7 @@ def get_config_item(config: Dict, section: str, name: str) -> Dict:
     """
 
     for item in config[section]:
-        if item.get('name') == name:
+        if item.get("name") == name:
             return item
 
     raise ValueError(f"Item with name '{name}' not found in section '{section}'.")
