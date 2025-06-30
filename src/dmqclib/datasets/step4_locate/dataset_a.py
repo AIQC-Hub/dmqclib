@@ -2,6 +2,7 @@ from typing import Dict
 
 import polars as pl
 
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.datasets.step4_locate.locate_base import LocatePositionBase
 
 
@@ -15,12 +16,14 @@ class LocateDataSetA(LocatePositionBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
+            config=config,
             config_file=config_file,
             input_data=input_data,
             selected_profiles=selected_profiles,

@@ -4,6 +4,7 @@ from abc import abstractmethod
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
@@ -18,6 +19,7 @@ class BuildModelBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
         test_sets: pl.DataFrame = None,
@@ -25,6 +27,7 @@ class BuildModelBase(DataSetBase):
         super().__init__(
             "build",
             dataset_name,
+            config=config,
             config_file=config_file,
             config_file_name="training.yaml",
         )

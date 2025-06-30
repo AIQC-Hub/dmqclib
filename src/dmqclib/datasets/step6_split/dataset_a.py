@@ -1,6 +1,7 @@
 import numpy as np
 import polars as pl
 
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.datasets.step6_split.split_base import SplitDataSetBase
 
 
@@ -14,11 +15,13 @@ class SplitDataSetA(SplitDataSetBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         target_features: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
+            config=config,
             config_file=config_file,
             target_features=target_features,
         )

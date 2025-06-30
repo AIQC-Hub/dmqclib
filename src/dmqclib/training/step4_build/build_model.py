@@ -1,5 +1,6 @@
 import polars as pl
 
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.training.step4_build.build_model_base import BuildModelBase
 
 
@@ -13,12 +14,14 @@ class BuildModel(BuildModelBase):
     def __init__(
         self,
         dataset_name: str,
+        config: ConfigBase = None,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
         test_sets: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
+            config=config,
             config_file=config_file,
             training_sets=training_sets,
             test_sets=test_sets,

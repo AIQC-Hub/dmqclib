@@ -1,5 +1,6 @@
 import polars as pl
 
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.datasets.step3_select.select_base import ProfileSelectionBase
 
 
@@ -26,10 +27,11 @@ class SelectDataSetA(ProfileSelectionBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         input_data: pl.DataFrame = None,
     ):
-        super().__init__(dataset_name, config_file=config_file, input_data=input_data)
+        super().__init__(dataset_name, config=config, config_file=config_file, input_data=input_data)
 
         self.pos_profile_df = None
         self.neg_profile_df = None

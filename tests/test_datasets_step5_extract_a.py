@@ -30,41 +30,41 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_input.read_input_data()
 
         self.ds_summary = load_step2_summary_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", config_file=str(self.config_file_path), input_data=self.ds_input.input_data
         )
         self.ds_summary.calculate_stats()
 
         self.ds_select = load_step3_select_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", config_file=str(self.config_file_path), input_data=self.ds_input.input_data
         )
         self.ds_select.label_profiles()
 
         self.ds_locate = load_step4_locate_dataset(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
         self.ds_locate.process_targets()
 
     def test_init_valid_dataset_name(self):
         """Ensure ExtractDataSetA constructs correctly with a valid label."""
-        ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = ExtractDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
-            ExtractDataSetA("NON_EXISTENT_LABEL", str(self.config_file_path))
+            ExtractDataSetA("NON_EXISTENT_LABEL", config_file=str(self.config_file_path))
 
     def test_config_file(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = ExtractDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = ExtractDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = ExtractDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertEqual(
             "/path/to/data1/nrt_bo_001/extract/temp_features.parquet",
             str(ds.output_file_names["temp"]),
@@ -78,11 +78,11 @@ class TestExtractDataSetA(unittest.TestCase):
         """Ensure input data and selected profiles are read correctly."""
         ds = ExtractDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
-            self.ds_summary.summary_stats,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
         )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
@@ -113,11 +113,11 @@ class TestExtractDataSetA(unittest.TestCase):
         """Ensure input data and selected profiles are read correctly."""
         ds = ExtractDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
-            self.ds_summary.summary_stats,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
         )
 
         ds.process_targets()
@@ -134,11 +134,11 @@ class TestExtractDataSetA(unittest.TestCase):
         """Ensure target rows are written to parquet files correctly."""
         ds = ExtractDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
-            self.ds_summary.summary_stats,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
         ds.output_file_names["temp"] = data_path / "temp_temp_features.parquet"
@@ -156,11 +156,11 @@ class TestExtractDataSetA(unittest.TestCase):
         """Ensure ValueError is raised for empty profiles."""
         ds = ExtractDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
-            self.ds_summary.summary_stats,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
         )
 
         with self.assertRaises(ValueError):

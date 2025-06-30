@@ -28,28 +28,28 @@ class TestLocateDataSetA(unittest.TestCase):
         self.ds_input.read_input_data()
 
         self.ds_select = load_step3_select_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", config_file=str(self.config_file_path), input_data=self.ds_input.input_data
         )
         self.ds_select.label_profiles()
 
     def test_init_valid_dataset_name(self):
         """Ensure LocateDataSetA constructs correctly with a valid label."""
-        ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = LocateDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
-            LocateDataSetA("NON_EXISTENT_LABEL", str(self.config_file_path))
+            LocateDataSetA("NON_EXISTENT_LABEL", config_file=str(self.config_file_path))
 
     def test_config_file(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = LocateDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = LocateDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = LocateDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertEqual(
             "/path/to/data1/nrt_bo_001/select/temp_rows.parquet",
             str(ds.output_file_names["temp"]),
@@ -63,9 +63,9 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure input data and selected profiles are read correctly."""
         ds = LocateDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
@@ -80,9 +80,9 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure positive row data is set correctly."""
         ds = LocateDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
         ds.select_positive_rows("temp", {"variable": "temp_qc"})
         ds.select_positive_rows("psal", {"variable": "psal_qc"})
@@ -99,9 +99,9 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure negative row data is set correctly."""
         ds = LocateDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
         ds.select_positive_rows("temp", {"variable": "temp_qc"})
         ds.select_positive_rows("psal", {"variable": "psal_qc"})
@@ -120,9 +120,9 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure target rows are selected and set correctly."""
         ds = LocateDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
 
         ds.process_targets()
@@ -139,9 +139,9 @@ class TestLocateDataSetA(unittest.TestCase):
         """Ensure target rows are written to parquet files correctly."""
         ds = LocateDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
         data_path = Path(__file__).resolve().parent / "data" / "select"
         ds.output_file_names["temp"] = data_path / "temp_temp_rows.parquet"
@@ -159,9 +159,9 @@ class TestLocateDataSetA(unittest.TestCase):
         """ "Ensure ValueError is raised for empty profiles."""
         ds = LocateDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
 
         with self.assertRaises(ValueError):

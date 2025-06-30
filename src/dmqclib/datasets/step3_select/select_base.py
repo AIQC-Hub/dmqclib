@@ -4,6 +4,7 @@ from abc import abstractmethod
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.utils.config import get_file_name_from_config
 from dmqclib.utils.path import build_full_data_path
 
@@ -16,10 +17,11 @@ class ProfileSelectionBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         input_data: pl.DataFrame = None,
     ):
-        super().__init__("select", dataset_name, config_file=config_file)
+        super().__init__("select", dataset_name, config=config, config_file=config_file)
 
         # Set member variables
         self.default_file_name = "selected_profiles.parquet"

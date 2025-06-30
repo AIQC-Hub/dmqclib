@@ -1,5 +1,6 @@
 import polars as pl
 
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.training.step2_validate.validate_base import ValidationBase
 
 
@@ -13,11 +14,13 @@ class KFoldValidation(ValidationBase):
     def __init__(
         self,
         dataset_name: str,
+        config: ConfigBase = None,
         config_file: str = None,
         training_sets: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
+            config=config,
             config_file=config_file,
             training_sets=training_sets,
         )

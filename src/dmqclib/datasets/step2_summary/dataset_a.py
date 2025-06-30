@@ -1,5 +1,6 @@
 import polars as pl
 
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.datasets.step2_summary.summary_base import SummaryStatsBase
 
 
@@ -13,10 +14,11 @@ class SummaryDataSetA(SummaryStatsBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         input_data: pl.DataFrame = None,
     ):
-        super().__init__(dataset_name, config_file=config_file, input_data=input_data)
+        super().__init__(dataset_name, config=config, config_file=config_file, input_data=input_data)
 
         self.val_col_names = [
             "longitude",

@@ -25,57 +25,57 @@ class TestSplitDataSetA(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
         self.ds_input = load_step1_input_dataset(
-            "NRT_BO_001", str(self.config_file_path)
+            "NRT_BO_001", config_file=str(self.config_file_path)
         )
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
         self.ds_summary = load_step2_summary_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", config_file=str(self.config_file_path), input_data=self.ds_input.input_data
         )
         self.ds_summary.calculate_stats()
 
         self.ds_select = load_step3_select_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", config_file=str(self.config_file_path), input_data=self.ds_input.input_data
         )
         self.ds_select.label_profiles()
 
         self.ds_locate = load_step4_locate_dataset(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
         )
         self.ds_locate.process_targets()
 
         self.ds_extract = load_step5_extract_dataset(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
-            self.ds_summary.summary_stats,
+            config_file=str(self.config_file_path),
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
         )
         self.ds_extract.process_targets()
 
     def test_init_valid_dataset_name(self):
         """Ensure LocateDataSetA constructs correctly with a valid label."""
-        ds = SplitDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = SplitDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
-            SplitDataSetA("NON_EXISTENT_LABEL", str(self.config_file_path))
+            SplitDataSetA("NON_EXISTENT_LABEL", config_file=str(self.config_file_path))
 
     def test_config_file(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = SplitDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = SplitDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
         self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = SplitDataSetA("NRT_BO_001", str(self.config_file_path))
+        ds = SplitDataSetA("NRT_BO_001", config_file=str(self.config_file_path))
 
         self.assertEqual(
             "/path/to/data1/nrt_bo_001/training/temp_train.parquet",
@@ -98,8 +98,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure input data and selected profiles are read correctly."""
         ds = SplitDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
@@ -114,8 +114,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure input data and selected profiles are read correctly."""
         ds = SplitDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         ds.process_targets()
@@ -140,8 +140,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure set_fraction is set to default value when no config entry is found."""
         ds = SplitDataSetA(
             "NRT_BO_002",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         test_set_fraction = ds.get_test_set_fraction()
@@ -151,8 +151,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure k_fold is set to default value when no config entry is found."""
         ds = SplitDataSetA(
             "NRT_BO_002",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         k_fold = ds.get_k_fold()
@@ -162,8 +162,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure target rows are written to parquet files correctly."""
         ds = SplitDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         ds.process_targets()
@@ -184,8 +184,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure target rows are written to parquet files correctly."""
         ds = SplitDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         ds.process_targets()
@@ -206,8 +206,8 @@ class TestSplitDataSetA(unittest.TestCase):
         """Ensure target rows are written to parquet files correctly."""
         ds = SplitDataSetA(
             "NRT_BO_001",
-            str(self.config_file_path),
-            self.ds_extract.target_features,
+            config_file=str(self.config_file_path),
+            target_features=self.ds_extract.target_features,
         )
 
         ds.process_targets()

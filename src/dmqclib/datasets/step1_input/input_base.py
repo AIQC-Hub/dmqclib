@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.utils.config import get_file_name_from_config
 from dmqclib.utils.file import read_input_file
 from dmqclib.utils.path import build_full_input_path
@@ -11,8 +12,8 @@ class InputDataSetBase(DataSetBase):
     Base class for input data loading classes.
     """
 
-    def __init__(self, dataset_name: str, config_file: str = None):
-        super().__init__("input", dataset_name, config_file=config_file)
+    def __init__(self, dataset_name: str, config:DataSetConfig = None, config_file: str = None):
+        super().__init__("input", dataset_name, config=config, config_file=config_file)
 
         # Set member variables
         self._build_input_file_name()

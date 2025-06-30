@@ -1,6 +1,7 @@
 from abc import ABC
 
 from dmqclib.utils.config import read_config
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class DataSetBase(ABC):
@@ -16,6 +17,7 @@ class DataSetBase(ABC):
         self,
         step_name: str,
         dataset_name: str,
+        config:ConfigBase = None,
         config_file: str = None,
         config_file_name: str = "datasets.yaml",
     ):

@@ -1,6 +1,7 @@
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
 from dmqclib.utils.path import build_full_data_path
@@ -14,11 +15,13 @@ class InputTrainingSetBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
+        config: ConfigBase = None,
         config_file: str = None,
     ):
         super().__init__(
             "input",
             dataset_name,
+            config=config,
             config_file=config_file,
             config_file_name="training.yaml",
         )

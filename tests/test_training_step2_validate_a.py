@@ -35,22 +35,22 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_init_valid_dataset_name(self):
         """Ensure ExtractDataSetA constructs correctly with a valid label."""
-        ds = KFoldValidation("NRT_BO_002", str(self.config_file_path))
+        ds = KFoldValidation("NRT_BO_002", config_file=str(self.config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_002")
 
     def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
-            KFoldValidation("NON_EXISTENT_LABEL", str(self.config_file_path))
+            KFoldValidation("NON_EXISTENT_LABEL", config_file=str(self.config_file_path))
 
     def test_config_file(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation("NRT_BO_002", str(self.config_file_path))
+        ds = KFoldValidation("NRT_BO_002", config_file=str(self.config_file_path))
         self.assertTrue("training.yaml" in ds.config_file_name)
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = KFoldValidation("NRT_BO_002", str(self.config_file_path))
+        ds = KFoldValidation("NRT_BO_002", config_file=str(self.config_file_path))
         self.assertEqual(
             "/path/to/data/nrt_bo_002/training/temp_validation_result.tsv",
             str(ds.output_file_names["temp"]["result"]),
@@ -62,13 +62,13 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_base_model(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation("NRT_BO_002", str(self.config_file_path))
+        ds = KFoldValidation("NRT_BO_002", config_file=str(self.config_file_path))
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
         """Verify the config file is correctly set in the member variable."""
         ds = KFoldValidation(
-            "NRT_BO_002", str(self.config_file_path), self.ds_input.training_sets
+            "NRT_BO_002", config_file=str(self.config_file_path), training_sets=self.ds_input.training_sets
         )
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
@@ -82,7 +82,7 @@ class TestKFoldValidation(unittest.TestCase):
     def test_default_k_fold(self):
         """Ensure k_fold is set to default value when no config entry is found."""
         ds = KFoldValidation(
-            "NRT_BO_002", str(self.config_file_path), self.ds_input.training_sets
+            "NRT_BO_002", config_file=str(self.config_file_path), training_sets=self.ds_input.training_sets
         )
 
         k_fold = ds.get_k_fold()
@@ -91,7 +91,7 @@ class TestKFoldValidation(unittest.TestCase):
     def test_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
         ds = KFoldValidation(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.training_sets
+            "NRT_BO_001", config_file=str(self.config_file_path), training_sets=self.ds_input.training_sets
         )
 
         ds.process_targets()
@@ -107,7 +107,7 @@ class TestKFoldValidation(unittest.TestCase):
     def test_write_results(self):
         """Ensure target rows are written to parquet files correctly."""
         ds = KFoldValidation(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.training_sets
+            "NRT_BO_001", config_file=str(self.config_file_path), training_sets=self.ds_input.training_sets
         )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"

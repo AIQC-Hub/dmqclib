@@ -1,5 +1,6 @@
 import polars as pl
 
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.datasets.step5_extract.extract_base import ExtractFeatureBase
 
 
@@ -13,6 +14,7 @@ class ExtractDataSetA(ExtractFeatureBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
@@ -21,6 +23,7 @@ class ExtractDataSetA(ExtractFeatureBase):
     ):
         super().__init__(
             dataset_name,
+            config=config,
             config_file=config_file,
             input_data=input_data,
             selected_profiles=selected_profiles,

@@ -5,6 +5,7 @@ from typing import Dict
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.utils.config import get_target_file_name
 from dmqclib.utils.config import get_targets
 from dmqclib.utils.path import build_full_data_path
@@ -18,11 +19,12 @@ class LocatePositionBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
+        config: DataSetConfig = None,
         config_file: str = None,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
     ):
-        super().__init__("locate", dataset_name, config_file=config_file)
+        super().__init__("locate", dataset_name, config=config, config_file=config_file)
 
         # Set member variables
         self.default_file_name = "{target_name}_rows.parquet"

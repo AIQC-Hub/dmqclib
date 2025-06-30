@@ -21,7 +21,7 @@ class TestInputDataSetA(unittest.TestCase):
 
     def _get_input_data(self, file_type=None, options=None):
         """Helper to load input data with optional file type and options."""
-        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", config_file=str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file)
 
         if file_type is not None:
@@ -35,22 +35,22 @@ class TestInputDataSetA(unittest.TestCase):
 
     def test_init_valid_dataset_name(self):
         """Ensure InputDataSetA constructs correctly with a valid label."""
-        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", config_file=str(self.explicit_config_file_path))
         self.assertEqual(ds.dataset_name, "NRT_BO_001")
 
     def test_init_invalid_dataset_name(self):
         """Ensure ValueError is raised for an invalid label."""
         with self.assertRaises(ValueError):
-            InputDataSetA("NON_EXISTENT_LABEL", str(self.explicit_config_file_path))
+            InputDataSetA("NON_EXISTENT_LABEL", config_file=str(self.explicit_config_file_path))
 
     def test_config_file(self):
         """Verify the config file is set correctly in the member variable."""
-        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", config_file=str(self.explicit_config_file_path))
         self.assertTrue("datasets.yaml" in ds.config_file_name)
 
     def test_input_file_name(self):
         """Ensure the input file name is set correctly."""
-        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", config_file=str(self.explicit_config_file_path))
         self.assertEqual(
             "/path/to/data2/input/nrt_cora_bo_test.parquet", str(ds.input_file_name)
         )
@@ -81,7 +81,7 @@ class TestInputDataSetA(unittest.TestCase):
 
     def test_read_input_data_unsupported_file_type(self):
         """Ensure ValueError is raised for unsupported file types."""
-        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", config_file=str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file)
         ds.dataset_info["input"]["file_type"] = "foo"
         ds.dataset_info["input"]["options"] = {}
@@ -92,7 +92,7 @@ class TestInputDataSetA(unittest.TestCase):
 
     def test_read_input_data_file_not_found(self):
         """Ensure FileNotFoundError is raised for non-existent files."""
-        ds = InputDataSetA("NRT_BO_001", str(self.explicit_config_file_path))
+        ds = InputDataSetA("NRT_BO_001", config_file=str(self.explicit_config_file_path))
         ds.input_file_name = str(self.test_data_file) + "_not_found"
         ds.dataset_info["input"]["file_type"] = "parquet"
         ds.dataset_info["input"]["options"] = {}
