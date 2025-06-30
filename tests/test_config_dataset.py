@@ -91,17 +91,17 @@ class TesDataSetConfig(unittest.TestCase):
         base_path = ds.get_base_path("locate")
         self.assertEqual("/path/to/data_1", base_path)
 
-    def test_input_folder_name(self):
+    def test_input_step_folder_name(self):
         """
         Test file name without an entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.load_dataset_config("NRT_BO_001")
 
-        folder_name = ds.get_folder_name("input")
+        folder_name = ds.get_step_folder_name("input")
         self.assertEqual("input_folder_1", folder_name)
 
-    def test_auto_select_folder_name(self):
+    def test_auto_select_step_folder_name(self):
         """
         Test file name without an entry.
         """
@@ -114,10 +114,10 @@ class TesDataSetConfig(unittest.TestCase):
         ds = DataSetConfig(str(config_file_path))
         ds.load_dataset_config("NRT_BO_001")
 
-        folder_name = ds.get_folder_name("select")
+        folder_name = ds.get_step_folder_name("select")
         self.assertEqual("select", folder_name)
 
-    def test_no_auto_select_folder_name(self):
+    def test_no_auto_select_step_folder_name(self):
         """
         Test file name without an entry.
         """
@@ -130,7 +130,7 @@ class TesDataSetConfig(unittest.TestCase):
         ds = DataSetConfig(str(config_file_path))
         ds.load_dataset_config("NRT_BO_001")
 
-        folder_name = ds.get_folder_name("select", folder_name_auto=False)
+        folder_name = ds.get_step_folder_name("select", folder_name_auto=False)
         self.assertEqual("", folder_name)
 
     def test_common_dataset_folder_name(self):

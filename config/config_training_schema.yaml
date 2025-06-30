@@ -13,7 +13,7 @@ properties:
           properties:
             base_path:
               type: string
-            folder_name:
+            step_folder_name:
               type: string
           required:
             - base_path
@@ -23,18 +23,18 @@ properties:
           properties:
             base_path:
               type: string
-            folder_name:
+            step_folder_name:
               type: string
           required:
             - base_path
-            - folder_name
+            - step_folder_name
           additionalProperties: false
         validate:
           type: object
           properties:
             base_path:
               type: string
-            folder_name:
+            step_folder_name:
               type: string
           additionalProperties: false
         build:
@@ -42,7 +42,7 @@ properties:
           properties:
             base_path:
               type: string
-            folder_name:
+            step_folder_name:
               type: string
           additionalProperties: false
       required:

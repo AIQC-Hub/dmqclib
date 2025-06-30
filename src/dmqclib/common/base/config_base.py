@@ -67,7 +67,7 @@ class ConfigBase(ABC):
     def get_base_path(self, step_name: str):
         if step_name not in self.config["path_info"] or (
             step_name in self.config["path_info"]
-            and "folder_name" not in self.config["path_info"][step_name]
+            and "base_path" not in self.config["path_info"][step_name]
         ):
             step_name = "common"
         base_path = self.config["path_info"][step_name].get("base_path")
@@ -93,19 +93,19 @@ class ConfigBase(ABC):
 
         return dataset_folder_name
 
-    def get_folder_name(self, step_name: str, folder_name_auto=True) -> str:
+    def get_step_folder_name(self, step_name: str, folder_name_auto=True) -> str:
         orig_step_name = step_name
         if step_name not in self.config["path_info"] or (
             step_name in self.config["path_info"]
-            and "folder_name" not in self.config["path_info"][step_name]
+            and "step_folder_name" not in self.config["path_info"][step_name]
         ):
             step_name = "common"
-        folder_name = self.config["path_info"][step_name].get("folder_name")
+        step_folder_name = self.config["path_info"][step_name].get("step_folder_name")
 
-        if folder_name is None:
-            folder_name = orig_step_name if folder_name_auto else ""
+        if step_folder_name is None:
+            step_folder_name = orig_step_name if folder_name_auto else ""
 
-        return folder_name
+        return step_folder_name
 
     def get_file_name(self, step_name: str, default_name: str = None) -> str:
         file_name = default_name
@@ -135,7 +135,7 @@ class ConfigBase(ABC):
         dataset_folder_name = (
             self.get_dataset_folder_name(step_name) if use_dataset_folder else ""
         )
-        folder_name = self.get_folder_name(step_name, folder_name_auto)
+        folder_name = self.get_step_folder_name(step_name, folder_name_auto)
         file_name = self.get_file_name(step_name, default_file_name)
 
         return os.path.normpath(
