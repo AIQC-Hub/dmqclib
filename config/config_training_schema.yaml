@@ -27,7 +27,6 @@ properties:
               type: string
           required:
             - base_path
-            - step_folder_name
           additionalProperties: false
         validate:
           type: object

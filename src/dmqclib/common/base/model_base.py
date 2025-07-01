@@ -62,7 +62,7 @@ class ModelBase(ABC):
         Read model.
         """
         if not os.path.exists(file_name):
-            raise FileNotFoundError(f"The file '{file_name}' does not exist.")
+            raise FileNotFoundError(f"File '{file_name}' does not exist.")
 
         self.model = load(file_name)
 

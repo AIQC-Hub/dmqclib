@@ -1,0 +1,90 @@
+---
+path_info_sets:
+  - name: data_set_1
+    common:
+      base_path: /path/to/data # Need to modify
+    input:
+      base_path: /path/to/input # Need to modify
+      step_folder_name: ""
+    split:
+      step_folder_name: "training"
+
+target_sets:
+  - name: target_set_1_3
+    variables:
+      - name: temp
+        flag: temp_qc
+      - name: psal
+        flag: psal_qc
+      - name: pres
+        flag: pres_qc
+
+feature_sets:
+  - name: feature_set_1
+    features:
+      - location
+      - day_of_year
+      - profile_summary_stats5
+      - basic_values3_plus_flanks,
+
+feature_param_sets:
+  - name: feature_set_1_param_set_3
+    params:
+      - feature: location
+        stats: { longitude: { min: 14.5, max: 23.5 },
+                 latitude: { min: 55, max: 66 } }
+      - feature: day_of_year
+        convert: sine
+      - feature: profile_summary_stats5
+        stats: { temp: { mean: { min: 0, max: 12.5 },
+                         median: { min: 0, max: 15 },
+                         sd: { min: 0, max: 6.5 },
+                         pct25: { min: 0, max: 12 },
+                         pct75: { min: 1, max: 19 } },
+                 psal: { mean: { min: 2.9, max: 12 },
+                         median: { min: 2.9, max: 12 },
+                         sd: { min: 0, max: 4 },
+                         pct25: { min: 2.5, max: 8.5 },
+                         pct75: { min: 3, max: 16 } },
+                 pres: { mean: { min: 24, max: 105 },
+                         median: { min: 24, max: 105 },
+                         sd: { min: 13, max: 60 },
+                         pct25: { min: 12, max: 53 },
+                         pct75: { min: 35, max: 156 } } }
+      - feature: basic_values3_plus_flanks
+        flank_up: 5
+        stats: { temp: { min: 0, max: 20 },
+                 psal: { min: 0, max: 20 },
+                 pres: { min: 0, max: 200 } }
+
+step_class_sets:
+  - name: data_set_step_set_1
+    steps:
+      input: InputDataSetA
+      summary: SummaryDataSetA
+      select: SelectDataSetA
+      locate: LocateDataSetA
+      extract: ExtractDataSetA
+      split: SplitDataSetA
+
+step_param_sets:
+  - name: data_set_param_set_1
+    steps:
+      input: { }
+      summary: { }
+      select: { }
+      locate: { }
+      extract: { }
+      split: { test_set_fraction: 0.1,
+               k_fold: 10 }
+
+data_sets:
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+    input_file_name: nrt_cora_bo_test.parquet
+    path_info: data_set_1
+    target_set: target_set_1_3
+    feature_set: feature_set_1
+    feature_param_set: feature_set_1_param_set_3
+    step_class_set: data_set_step_set_1
+    step_param_set: data_set_param_set_1
