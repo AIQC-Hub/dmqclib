@@ -1,28 +1,19 @@
+import os
+
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.utils.config import get_target_file_name
-from dmqclib.utils.config import get_targets
-from dmqclib.utils.path import build_full_data_path
 
 
 class InputTrainingSetBase(DataSetBase):
     """
     Base class to import training data sets
     """
-
-    def __init__(
-        self,
-        dataset_name: str,
-        config: TrainingConfig
-    ):
-        super().__init__(
-            "input",
-            dataset_name,
-            config
-        )
-
+    
+    def __init__(self, dataset_name: str, config: TrainingConfig):
+        super().__init__("input", dataset_name, config)
+        
         # Set member variables
         self.default_file_names = {
             "train": "{target_name}_train.parquet",
@@ -34,7 +25,7 @@ class InputTrainingSetBase(DataSetBase):
         }
         self.training_sets = {}
         self.test_sets = {}
-
+    
     def process_targets(self):
         """
         Iterate all targets to locate training data rows.
@@ -42,19 +33,21 @@ class InputTrainingSetBase(DataSetBase):
         for k in self.config.get_target_names():
             self.read_training_set(k)
             self.read_test_sets(k)
-
+    
     def read_training_set(self, target_name: str):
         """
         Read training set from parquet file
         """
-        self.training_sets[target_name] = pl.read_parquet(
-            self.input_file_names["train"][target_name]
-        )
-
+        file_name = self.input_file_names["train"][target_name]
+        if not os.path.exists(file_name):
+            raise FileNotFoundError(f"File '{file_name}' does not exist.")
+        self.training_sets[target_name] = pl.read_parquet(file_name)
+    
     def read_test_sets(self, target_name: str):
         """
         Read test set from parquet files
         """
-        self.test_sets[target_name] = pl.read_parquet(
-            self.input_file_names["test"][target_name]
-        )
+        file_name = self.input_file_names["test"][target_name]
+        if not os.path.exists(file_name):
+            raise FileNotFoundError(f"File '{file_name}' does not exist.")
+        self.test_sets[target_name] = pl.read_parquet(file_name)

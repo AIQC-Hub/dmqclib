@@ -8,25 +8,23 @@ class BuildModel(BuildModelBase):
     """
     BuildModelBase builds models
     """
-
+    
     expected_class_name = "BuildModel"
-
+    
     def __init__(
-        self,
-        dataset_name: str,
-        config: TrainingConfig = None,
-        config_file: str = None,
-        training_sets: pl.DataFrame = None,
-        test_sets: pl.DataFrame = None,
+            self,
+            dataset_name: str,
+            config: TrainingConfig,
+            training_sets: pl.DataFrame = None,
+            test_sets: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
-            config=config,
-            config_file=config_file,
+            config,
             training_sets=training_sets,
             test_sets=test_sets,
         )
-
+    
     def build(self, target_name: str):
         """
         Build model
@@ -35,7 +33,7 @@ class BuildModel(BuildModelBase):
         self.base_model.training_set = self.training_sets[target_name].drop("k_fold")
         self.base_model.build()
         self.models[target_name] = self.base_model
-
+    
     def test(self, target_name: str):
         """
         Test model
