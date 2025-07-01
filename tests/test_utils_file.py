@@ -21,8 +21,10 @@ class TestReadInputFile(unittest.TestCase):
         """
         test_cases = [
             ("nrt_cora_bo_test.parquet", 132342, "parquet"),
-            ("nrt_cora_bo_test_2023.csv.gz", 19480, "csv.gz"),
-            ("nrt_cora_bo_test_2023.tsv.gz", 19480, "tsv.gz"),
+            ("nrt_cora_bo_test_2023_row1.csv", 1, "csv"),
+            ("nrt_cora_bo_test_2023_row1.tsv", 1, "tsv"),
+            ("nrt_cora_bo_test_2023_row1.csv.gz", 1, "csv.gz"),
+            ("nrt_cora_bo_test_2023_row1.tsv.gz", 1, "tsv.gz"),
         ]
         for file_name, expected_rows, file_type in test_cases:
             with self.subTest(file_name=file_name, file_type=file_type):
@@ -39,8 +41,10 @@ class TestReadInputFile(unittest.TestCase):
         """
         test_cases = [
             ("nrt_cora_bo_test.parquet", 132342),
-            ("nrt_cora_bo_test_2023.csv.gz", 19480),
-            ("nrt_cora_bo_test_2023.tsv.gz", 19480),
+            ("nrt_cora_bo_test_2023_row1.csv", 1),
+            ("nrt_cora_bo_test_2023_row1.tsv", 1),
+            ("nrt_cora_bo_test_2023_row1.csv.gz", 1),
+            ("nrt_cora_bo_test_2023_row1.tsv.gz", 1),
         ]
         for file_name, expected_rows in test_cases:
             with self.subTest(file_name=file_name):
@@ -70,7 +74,7 @@ class TestReadInputFile(unittest.TestCase):
         """
         Demonstrates passing extra options: has_header=False for CSV.
         """
-        file_name = "nrt_cora_bo_test_2023.csv.gz"
+        file_name = "nrt_cora_bo_test_2023_row1.csv.gz"
         file_path = os.path.join(self.test_data_dir, file_name)
         df = read_input_file(
             file_path, file_type="csv.gz", options={"has_header": False}

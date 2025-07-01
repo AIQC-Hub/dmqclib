@@ -1,3 +1,4 @@
+---
 path_info:
   common:
     base_path: /path/to/data
@@ -27,6 +28,10 @@ NRT_BO_002:
     validate: KFoldValidation
     model: XGBoost
     build: BuildModel
-  validate:
-    k_fold: 3
 
+NRT_BO_003:
+  base_class:
+    input: InvalidClass
+    validate: InvalidClass
+    model: InvalidClass
+    build: InvalidClass

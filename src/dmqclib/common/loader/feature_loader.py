@@ -7,7 +7,7 @@ from dmqclib.common.loader.feature_registry import FEATURE_REGISTRY
 
 
 def _get_feature_class(feature_info: Dict, registry: Dict) -> FeatureBase:
-    class_name = feature_info.get("class")
+    class_name = feature_info.get("feature")
     dataset_class = registry.get(class_name)
     if not dataset_class:
         raise ValueError(f"Unknown dataset class specified: {class_name}")

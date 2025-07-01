@@ -1,3 +1,4 @@
+---
 path_info:
   common:
     base_path: /path/to/data1
@@ -85,3 +86,12 @@ NRT_BO_002:
   extract:
     <<: *target_set1
     <<: *feature_set1
+
+NRT_BO_003:
+  base_class:
+    input: InvalidClass
+    summary: InvalidClass
+    select: InvalidClass
+    locate: InvalidClass
+    extract: InvalidClass
+    split: InvalidClass
