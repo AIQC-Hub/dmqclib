@@ -1,6 +1,6 @@
 [project]
 name = "dmqclib"
-version = "0.2.6"
+version = "0.3.0"
 description = "This package aims to offer helper functions that simplify model building and evaluation"
 readme = "README.md"
 license = "MIT"
@@ -11,6 +11,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "joblib>=1.4.2",
+    "jsonschema>=4.23.0",
     "numpy>=2.2",
     "pandas>=2.2",
     "polars>=1.30.0",
