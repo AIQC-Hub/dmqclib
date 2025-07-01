@@ -7,12 +7,12 @@ from dmqclib.common.loader.dataset_registry import SELECT_DATASET_REGISTRY
 from dmqclib.common.loader.dataset_registry import SPLIT_DATASET_REGISTRY
 from dmqclib.common.loader.dataset_registry import SUMMARY_DATASET_REGISTRY
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step1_input.input_base import InputDataSetBase
-from dmqclib.datasets.step2_summary.summary_base import SummaryStatsBase
-from dmqclib.datasets.step3_select.select_base import ProfileSelectionBase
-from dmqclib.datasets.step4_locate.locate_base import LocatePositionBase
-from dmqclib.datasets.step5_extract.extract_base import ExtractFeatureBase
-from dmqclib.datasets.step6_split.split_base import SplitDataSetBase
+from dmqclib.prepare.step1_input.input_base import InputDataSetBase
+from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
+from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
+from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
+from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
+from dmqclib.prepare.step6_split.split_base import SplitDataSetBase
 
 
 def load_step1_input_dataset(

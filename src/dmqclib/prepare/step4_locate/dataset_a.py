@@ -3,7 +3,7 @@ from typing import Dict
 import polars as pl
 
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step4_locate.locate_base import LocatePositionBase
+from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
 
 
 class LocateDataSetA(LocatePositionBase):

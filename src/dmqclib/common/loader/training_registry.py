@@ -1,6 +1,6 @@
-from dmqclib.training.step1_input.dataset_a import InputTrainingSetA
-from dmqclib.training.step2_validate.kfold_validation import KFoldValidation
-from dmqclib.training.step4_build.build_model import BuildModel
+from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
+from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
+from dmqclib.train.step4_build.build_model import BuildModel
 
 INPUT_TRAINING_SET_REGISTRY = {
     "InputTrainingSetA": InputTrainingSetA,

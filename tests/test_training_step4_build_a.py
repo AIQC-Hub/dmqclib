@@ -6,8 +6,8 @@ import polars as pl
 
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.models.xgboost import XGBoost
-from dmqclib.training.step4_build.build_model import BuildModel
+from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.step4_build.build_model import BuildModel
 
 
 class TestBuildModel(unittest.TestCase):

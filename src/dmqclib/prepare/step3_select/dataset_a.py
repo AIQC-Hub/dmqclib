@@ -1,7 +1,7 @@
 import polars as pl
 
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step3_select.select_base import ProfileSelectionBase
+from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
 
 
 class SelectDataSetA(ProfileSelectionBase):

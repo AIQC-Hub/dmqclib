@@ -10,7 +10,7 @@ from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
 from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
 from dmqclib.common.loader.dataset_loader import load_step5_extract_dataset
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step6_split.dataset_a import SplitDataSetA
+from dmqclib.prepare.step6_split.dataset_a import SplitDataSetA
 
 
 class TestSplitDataSetA(unittest.TestCase):

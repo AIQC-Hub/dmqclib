@@ -1,7 +1,7 @@
 import polars as pl
 
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.step4_build.build_model_base import BuildModelBase
+from dmqclib.train.step4_build.build_model_base import BuildModelBase
 
 
 class BuildModel(BuildModelBase):

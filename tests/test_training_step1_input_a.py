@@ -4,7 +4,7 @@ from pathlib import Path
 import polars as pl
 
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.step1_input.dataset_a import InputTrainingSetA
+from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
 
 
 class TestInputTrainingSetA(unittest.TestCase):

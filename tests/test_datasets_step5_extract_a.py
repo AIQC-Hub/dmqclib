@@ -9,7 +9,7 @@ from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
 from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step5_extract.dataset_a import ExtractDataSetA
+from dmqclib.prepare.step5_extract.dataset_a import ExtractDataSetA
 
 
 class TestExtractDataSetA(unittest.TestCase):

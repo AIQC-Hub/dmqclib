@@ -1,7 +1,7 @@
 import polars as pl
 
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.step2_validate.validate_base import ValidationBase
+from dmqclib.train.step2_validate.validate_base import ValidationBase
 
 
 class KFoldValidation(ValidationBase):

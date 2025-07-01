@@ -1,5 +1,5 @@
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step1_input.input_base import InputDataSetBase
+from dmqclib.prepare.step1_input.input_base import InputDataSetBase
 
 
 class InputDataSetA(InputDataSetBase):

@@ -6,7 +6,7 @@ import polars as pl
 
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.datasets.step2_summary.dataset_a import SummaryDataSetA
+from dmqclib.prepare.step2_summary.dataset_a import SummaryDataSetA
 
 
 class TestSelectDataSetA(unittest.TestCase):

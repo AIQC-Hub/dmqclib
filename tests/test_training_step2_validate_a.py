@@ -6,8 +6,8 @@ import polars as pl
 
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.models.xgboost import XGBoost
-from dmqclib.training.step2_validate.kfold_validation import KFoldValidation
+from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
 
 
 class TestKFoldValidation(unittest.TestCase):

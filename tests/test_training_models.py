@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.models.xgboost import XGBoost
+from dmqclib.train.models.xgboost import XGBoost
 
 
 class TestXGBoost(unittest.TestCase):

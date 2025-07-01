@@ -1,5 +1,5 @@
 from dmqclib.config.training_config import TrainingConfig
-from dmqclib.training.step1_input.input_base import InputTrainingSetBase
+from dmqclib.train.step1_input.input_base import InputTrainingSetBase
 
 
 class InputTrainingSetA(InputTrainingSetBase):
