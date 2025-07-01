@@ -16,14 +16,14 @@ class TestDataSetConfig(unittest.TestCase):
             / "config"
             / "test_dataset_001.yaml"
         )
-        
+
         self.template_file = (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "prepare_config_template.yaml"
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "prepare_config_template.yaml"
         )
-    
+
     def test_valid_config(self):
         """
         Test valid config
@@ -73,10 +73,14 @@ class TestDataSetConfig(unittest.TestCase):
         """
         ds = DataSetConfig(str(self.template_file))
         ds.load_dataset_config("NRT_BO_001")
-        input_file_name = ds.get_full_file_name("input", ds.data["input_file_name"],
-                                                use_dataset_folder=False, folder_name_auto=False)
+        input_file_name = ds.get_full_file_name(
+            "input",
+            ds.data["input_file_name"],
+            use_dataset_folder=False,
+            folder_name_auto=False,
+        )
         self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_test.parquet")
-    
+
     def test_summary_folder(self):
         """
         Test summary folder
@@ -85,7 +89,7 @@ class TestDataSetConfig(unittest.TestCase):
         ds.load_dataset_config("NRT_BO_001")
         input_file_name = ds.get_full_file_name("summary", "test.txt")
         self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/summary/test.txt")
-        
+
     def test_split_folder(self):
         """
         Test split folder
