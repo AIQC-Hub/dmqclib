@@ -21,17 +21,17 @@ class SelectDataSetA(ProfileSelectionBase):
     4. Combine dataframes:
         Combine positive and negative datasets.
     """
-    
+
     expected_class_name = "SelectDataSetA"
-    
+
     def __init__(
-            self,
-            dataset_name: str,
-            config: DataSetConfig,
-            input_data: pl.DataFrame = None,
+        self,
+        dataset_name: str,
+        config: DataSetConfig,
+        input_data: pl.DataFrame = None,
     ):
         super().__init__(dataset_name, config, input_data=input_data)
-        
+
         self.pos_profile_df = None
         self.neg_profile_df = None
         self.key_col_names = [
@@ -41,7 +41,7 @@ class SelectDataSetA(ProfileSelectionBase):
             "longitude",
             "latitude",
         ]
-    
+
     def select_positive_profiles(self):
         """
         Select profiles with bad flags as positive profiles.
@@ -60,7 +60,7 @@ class SelectDataSetA(ProfileSelectionBase):
                 pl.col("profile_timestamp").dt.ordinal_day().alias("pos_day_of_year")
             )
         )
-    
+
     def select_negative_profiles(self):
         """
         Select profiles with all good flags as negative profiles.
@@ -92,7 +92,7 @@ class SelectDataSetA(ProfileSelectionBase):
                 pl.col("profile_timestamp").dt.ordinal_day().alias("neg_day_of_year")
             )
         )
-    
+
     def find_profile_pairs(self):
         """
         Identify pairs from positive and negative datasets.
@@ -112,13 +112,13 @@ class SelectDataSetA(ProfileSelectionBase):
                 .alias("neg_profile_id")
             )
         )
-        
+
         self.pos_profile_df = (
             self.pos_profile_df.join(closest_neg_id, on="profile_id", how="left")
             .with_columns(pl.lit(1).alias("label"))
             .drop("pos_day_of_year")
         )
-        
+
         self.neg_profile_df = (
             self.neg_profile_df.filter(
                 pl.col("profile_id").is_in(closest_neg_id["neg_profile_id"].to_list())
@@ -129,7 +129,7 @@ class SelectDataSetA(ProfileSelectionBase):
             )
             .drop("neg_day_of_year")
         )
-    
+
     def label_profiles(self):
         """
         Select and filter positive and negative datasets and combine them.
@@ -137,5 +137,5 @@ class SelectDataSetA(ProfileSelectionBase):
         self.select_positive_profiles()
         self.select_negative_profiles()
         self.find_profile_pairs()
-        
+
         self.selected_profiles = self.pos_profile_df.vstack(self.neg_profile_df)

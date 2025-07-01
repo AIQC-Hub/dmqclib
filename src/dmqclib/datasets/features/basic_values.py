@@ -7,15 +7,15 @@ class BasicValues3PlusFlanks(FeatureBase):
     """
     BasicValues3PlusFlanks extracts target values and flanking values from BO NRT+Cora test data.
     """
-    
+
     def __init__(
-            self,
-            target_name: str = None,
-            selected_profiles: pl.DataFrame = None,
-            filtered_input: pl.DataFrame = None,
-            target_rows: pl.DataFrame = None,
-            summary_stats: pl.DataFrame = None,
-            feature_info: pl.DataFrame = None,
+        self,
+        target_name: str = None,
+        selected_profiles: pl.DataFrame = None,
+        filtered_input: pl.DataFrame = None,
+        target_rows: pl.DataFrame = None,
+        summary_stats: pl.DataFrame = None,
+        feature_info: pl.DataFrame = None,
     ):
         super().__init__(
             target_name,
@@ -25,10 +25,10 @@ class BasicValues3PlusFlanks(FeatureBase):
             summary_stats,
             feature_info,
         )
-        
+
         self._expanded_observations = None
         self._feature_wide = None
-    
+
     def extract_features(self):
         """
         Extract features.
@@ -39,7 +39,7 @@ class BasicValues3PlusFlanks(FeatureBase):
             self._pivot_features(col_name)
             self._add_features()
         self._clean_features()
-    
+
     def _init_features(self):
         self.features = self.target_rows[self.target_name].select(
             [
@@ -48,7 +48,7 @@ class BasicValues3PlusFlanks(FeatureBase):
                 pl.col("profile_no"),
             ]
         )
-    
+
     def _expand_observations(self):
         self._expanded_observations = (
             self.target_rows[self.target_name]
@@ -76,7 +76,7 @@ class BasicValues3PlusFlanks(FeatureBase):
                 .alias("observation_no")
             )
         )
-    
+
     def _pivot_features(self, col_name: str):
         self._feature_wide = (
             self._expanded_observations.join(
@@ -107,19 +107,19 @@ class BasicValues3PlusFlanks(FeatureBase):
                 values="value",
             )
         )
-    
+
     def _add_features(self):
         self.features = self.features.join(
             self._feature_wide,
             on=["row_id", "platform_code", "profile_no"],
             maintain_order="left",
         )
-    
+
     def _clean_features(self):
         self.features = self.features.drop(
             ["platform_code", "profile_no", "platform_code"]
         )
-    
+
     def scale_first(self):
         """
         Scale features.
@@ -132,7 +132,7 @@ class BasicValues3PlusFlanks(FeatureBase):
                     ),
                 ]
             )
-    
+
     def scale_second(self):
         """
         Scale features.

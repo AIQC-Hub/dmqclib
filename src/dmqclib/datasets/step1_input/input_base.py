@@ -9,10 +9,10 @@ class InputDataSetBase(DataSetBase):
     """
     Base class for input data loading classes.
     """
-    
+
     def __init__(self, dataset_name: str, config: DataSetConfig):
         super().__init__("input", dataset_name, config)
-        
+
         # Set member variables
         self.input_file_name = self.config.get_full_file_name(
             "input",
@@ -21,7 +21,7 @@ class InputDataSetBase(DataSetBase):
             folder_name_auto=False,
         )
         self.input_data = None
-    
+
     def read_input_data(self):
         """
         Reads the input data specified by the dataset entry in configuration file.
@@ -31,16 +31,16 @@ class InputDataSetBase(DataSetBase):
         read_file_options = self.config.get_step_params("input").get(
             "read_file_options", {}
         )
-        
+
         self.input_data = read_input_file(input_file, file_type, read_file_options)
-    
+
     @abstractmethod
     def select(self):
         """
         Selects columns of the data frame in self.input_data.
         """
         pass  # pragma: no cover
-    
+
     @abstractmethod
     def filter(self):
         """

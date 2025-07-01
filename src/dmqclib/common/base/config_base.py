@@ -37,9 +37,7 @@ class ConfigBase(ABC):
         self.yaml_schema = read_config(
             config_file_name=yaml_schemas[section_name], add_config_file_name=False
         )
-        self.full_config = read_config(
-            config_file, add_config_file_name=False
-        )
+        self.full_config = read_config(config_file, add_config_file_name=False)
         self.valid_yaml = False
         self.data = None
         self.dataset_name = None
@@ -58,7 +56,9 @@ class ConfigBase(ABC):
         if not self.valid_yaml:
             raise ValueError("YAML file is invalid")
 
-        self.data = get_config_item(self.full_config, self.section_name, dataset_name).copy()
+        self.data = get_config_item(
+            self.full_config, self.section_name, dataset_name
+        ).copy()
         self.data["path_info"] = get_config_item(
             self.full_config, "path_info_sets", self.data["path_info"]
         )
@@ -87,8 +87,7 @@ class ConfigBase(ABC):
 
         if (
             step_name in self.data["step_param_set"]["steps"]
-            and "dataset_folder_name"
-            in self.data["step_param_set"]["steps"][step_name]
+            and "dataset_folder_name" in self.data["step_param_set"]["steps"][step_name]
         ):
             dataset_folder_name = self.get_step_params(step_name).get(
                 "dataset_folder_name", ""
@@ -155,18 +154,22 @@ class ConfigBase(ABC):
         return [x["name"] for x in self.get_target_variables()]
 
     def get_target_dict(self) -> List:
-        return {x["name"]:x for x in self.get_target_variables()}
+        return {x["name"]: x for x in self.get_target_variables()}
 
     def get_target_file_names(
         self,
         step_name: str,
         default_file_name: str = None,
         use_dataset_folder: bool = True,
-        folder_name_auto: bool = True):
+        folder_name_auto: bool = True,
+    ):
+        full_file_name = self.get_full_file_name(
+            step_name, default_file_name, use_dataset_folder, folder_name_auto
+        )
 
-        full_file_name = self.get_full_file_name(step_name, default_file_name, use_dataset_folder, folder_name_auto)
-
-        return {x:full_file_name.format(target_name=x) for x in self.get_target_names()}
+        return {
+            x: full_file_name.format(target_name=x) for x in self.get_target_names()
+        }
 
     def __repr__(self):
         # Provide a simple representation

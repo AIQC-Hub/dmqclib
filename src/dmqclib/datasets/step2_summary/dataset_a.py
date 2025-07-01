@@ -8,17 +8,17 @@ class SummaryDataSetA(SummaryStatsBase):
     """
     SummaryDataSetA calculate summary stats for BO NRT+Cora test data.
     """
-    
+
     expected_class_name = "SummaryDataSetA"
-    
+
     def __init__(
-            self,
-            dataset_name: str,
-            config: DataSetConfig,
-            input_data: pl.DataFrame = None,
+        self,
+        dataset_name: str,
+        config: DataSetConfig,
+        input_data: pl.DataFrame = None,
     ):
         super().__init__(dataset_name, config, input_data=input_data)
-        
+
         self.val_col_names = [
             "longitude",
             "latitude",
@@ -29,7 +29,7 @@ class SummaryDataSetA(SummaryStatsBase):
             "bath",
         ]
         self.profile_col_names = ["platform_code", "profile_no"]
-    
+
     def calculate_global_stats(self, val_col_name: str) -> pl.DataFrame:
         """
         Calculate profile summary stats.
@@ -76,9 +76,9 @@ class SummaryDataSetA(SummaryStatsBase):
                 ]
             )
         )
-    
+
     def calculate_profile_stats(
-            self, grouped_df: pl.DataFrame, val_col_name: str
+        self, grouped_df: pl.DataFrame, val_col_name: str
     ) -> pl.DataFrame:
         """
         Calculate global summary stats.
@@ -121,7 +121,7 @@ class SummaryDataSetA(SummaryStatsBase):
                 ]
             )
         )
-    
+
     def calculate_stats(self):
         """
         Calculate summary stats.
@@ -133,5 +133,5 @@ class SummaryDataSetA(SummaryStatsBase):
         profile_stats = pl.concat(
             [self.calculate_profile_stats(grouped_df, x) for x in self.val_col_names]
         )
-        
+
         self.summary_stats = global_stats.vstack(profile_stats)

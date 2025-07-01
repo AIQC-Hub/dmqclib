@@ -6,12 +6,12 @@ class TrainingConfig(ConfigBase):
     """
     TrainingConfig provides training config interfaces
     """
-    
+
     expected_class_name = "TrainingConfig"
-    
+
     def __init__(self, config_file: str = None):
         super().__init__("training_sets", config_file=config_file)
-    
+
     def load_dataset_config(self, dataset_name: str):
         super().load_dataset_config(dataset_name)
         self.data["target_set"] = get_config_item(

@@ -6,9 +6,9 @@ class InputTrainingSetA(InputTrainingSetBase):
     """
     InputTrainingSetA reads training and test sets for BO NRT+Cora test data.
     """
-    
+
     expected_class_name = "InputTrainingSetA"
-    
+
     def __init__(self, dataset_name: str, config: TrainingConfig):
         super().__init__(
             dataset_name,

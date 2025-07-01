@@ -10,15 +10,15 @@ class LocateDataSetA(LocatePositionBase):
     """
     LocateDataSetA identifies training data rows from BO NRT+Cora test data.
     """
-    
+
     expected_class_name = "LocateDataSetA"
-    
+
     def __init__(
-            self,
-            dataset_name: str,
-            config: DataSetConfig,
-            input_data: pl.DataFrame = None,
-            selected_profiles: pl.DataFrame = None,
+        self,
+        dataset_name: str,
+        config: DataSetConfig,
+        input_data: pl.DataFrame = None,
+        selected_profiles: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
@@ -26,10 +26,10 @@ class LocateDataSetA(LocatePositionBase):
             input_data=input_data,
             selected_profiles=selected_profiles,
         )
-        
+
         self.positive_rows = {}
         self.negative_rows = {}
-    
+
     def select_positive_rows(self, target_name: str, target_value: Dict):
         flag_var_name = target_value["flag"]
         self.positive_rows[target_name] = (
@@ -59,7 +59,7 @@ class LocateDataSetA(LocatePositionBase):
                 pl.lit(1).alias("label"),
             )
         )
-    
+
     def select_negative_rows(self, target_name: str, target_value: Dict):
         flag_var_name = target_value["flag"]
         self.negative_rows[target_name] = (
@@ -126,14 +126,14 @@ class LocateDataSetA(LocatePositionBase):
                 ]
             )
         )
-    
+
     def locate_target_rows(self, target_name: str, target_value: Dict):
         """
         Locate training data rows.
         """
         self.select_positive_rows(target_name, target_value)
         self.select_negative_rows(target_name, target_value)
-        
+
         self.target_rows[target_name] = (
             self.positive_rows[target_name]
             .vstack(self.negative_rows[target_name])
