@@ -7,10 +7,10 @@ from dmqclib.utils.config import get_folder_name_from_config
 
 
 def build_full_input_path(
-    path_info: Dict,
-    dataset_info: Dict,
-    file_name: str,
-    folder_name_auto: bool = True,
+        path_info: Dict,
+        dataset_info: Dict,
+        file_name: str,
+        folder_name_auto: bool = True,
 ) -> str:
     """
     Build a full input path based on the fields in the 'config' dictionary and
@@ -37,18 +37,18 @@ def build_full_input_path(
     folder_name2 = get_dataset_folder_name_from_config(
         dataset_info, "input", use_common=False
     )
-
+    
     return os.path.normpath(
         os.path.join(base_path, folder_name1, folder_name2, file_name)
     )
 
 
 def build_full_data_path(
-    path_info: Dict,
-    dataset_info: Dict,
-    step_name: str,
-    file_name: str,
-    folder_name_auto: bool = True,
+        path_info: Dict,
+        dataset_info: Dict,
+        step_name: str,
+        file_name: str,
+        folder_name_auto: bool = True,
 ) -> str:
     """
     Build a full data path based on the fields in the 'config' dictionary and
@@ -73,7 +73,7 @@ def build_full_data_path(
     base_path = get_base_path_from_config(path_info, step_name)
     folder_name1 = get_dataset_folder_name_from_config(dataset_info, step_name)
     folder_name2 = get_folder_name_from_config(path_info, step_name, folder_name_auto)
-
+    
     return os.path.normpath(
         os.path.join(base_path, folder_name1, folder_name2, file_name)
     )

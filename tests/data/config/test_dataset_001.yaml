@@ -13,7 +13,7 @@ path_info_sets:
       base_path: /path/to/locate_1
       step_folder_name: locate_folder_1
     split:
-      base_path: /path/to/locate_1
+      base_path: /path/to/split_1
       step_folder_name: split_folder_1
 
 target_sets:
@@ -65,7 +65,7 @@ feature_param_sets:
                          pct25: { min: 12, max: 53 },
                          pct75: { min: 35, max: 156 } } }
       - feature: basic_values3_plus_flanks
-        flank_up: 5,
+        flank_up: 5
         stats: { temp: { min: 0, max: 20 },
                  psal: { min: 0, max: 20 },
                  pres: { min: 0, max: 200 } }
@@ -91,11 +91,11 @@ step_class_sets:
 step_param_sets:
   - name: data_set_param_set_1
     steps:
-      input: {}
-      summary: {}
-      select: {}
-      locate: {}
-      extract: {}
+      input: { }
+      summary: { }
+      select: { }
+      locate: { }
+      extract: { }
       split: { test_set_fraction: 0.1,
                k_fold: 3 }
 

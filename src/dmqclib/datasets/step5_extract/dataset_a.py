@@ -8,23 +8,21 @@ class ExtractDataSetA(ExtractFeatureBase):
     """
     ExtractDataSetA extracts features from BO NRT+Cora test data.
     """
-
+    
     expected_class_name = "ExtractDataSetA"
-
+    
     def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
-        input_data: pl.DataFrame = None,
-        selected_profiles: pl.DataFrame = None,
-        target_rows: pl.DataFrame = None,
-        summary_stats: pl.DataFrame = None,
+            self,
+            dataset_name: str,
+            config: DataSetConfig,
+            input_data: pl.DataFrame = None,
+            selected_profiles: pl.DataFrame = None,
+            target_rows: pl.DataFrame = None,
+            summary_stats: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
-            config=config,
-            config_file=config_file,
+            config,
             input_data=input_data,
             selected_profiles=selected_profiles,
             target_rows=target_rows,

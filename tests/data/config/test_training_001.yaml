@@ -46,10 +46,10 @@ step_class_sets:
 step_param_sets:
   - name: training_param_set_1
     steps:
-      input: {}
-      validate: {}
-      model: {}
-      build: {}
+      input: { }
+      validate: { k_fold: 3 }
+      model: { }
+      build: { }
 
 training_sets:
   - name: NRT_BO_001

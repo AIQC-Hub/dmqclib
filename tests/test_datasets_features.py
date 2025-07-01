@@ -8,6 +8,7 @@ from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
 from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
 from dmqclib.common.loader.dataset_loader import load_step5_extract_dataset
+from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.datasets.features.basic_values import BasicValues3PlusFlanks
 from dmqclib.datasets.features.day_of_year import DayOfYearFeat
 from dmqclib.datasets.features.location import LocationFeat
@@ -17,34 +18,36 @@ from dmqclib.datasets.features.profile_summary import ProfileSummaryStats5
 class _TestFeatureBase(unittest.TestCase):
     def _setup(self, class_name):
         """Set up test environment and load input and selected datasets."""
-        self.config_file_path = str(
-            Path(__file__).resolve().parent / "data" / "config" / "datasets.yaml"
+        self.config_file_path = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_dataset_001.yaml"
         )
+        self.config = DataSetConfig(str(self.config_file_path))
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds_input = load_step1_input_dataset(
-            "NRT_BO_001", str(self.config_file_path)
-        )
+        self.ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
         self.ds_summary = load_step2_summary_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", self.config, self.ds_input.input_data
         )
         self.ds_summary.calculate_stats()
 
         self.ds_select = load_step3_select_dataset(
-            "NRT_BO_001", str(self.config_file_path), self.ds_input.input_data
+            "NRT_BO_001", self.config, self.ds_input.input_data
         )
         self.ds_select.label_profiles()
 
         self.ds_locate = load_step4_locate_dataset(
             "NRT_BO_001",
-            str(self.config_file_path),
+            self.config,
             self.ds_input.input_data,
             self.ds_select.selected_profiles,
         )
@@ -52,7 +55,7 @@ class _TestFeatureBase(unittest.TestCase):
 
         self.ds_extract = load_step5_extract_dataset(
             "NRT_BO_001",
-            str(self.config_file_path),
+            self.config,
             self.ds_input.input_data,
             self.ds_select.selected_profiles,
             self.ds_locate.target_rows,
@@ -98,7 +101,7 @@ class TestLocationFeature(_TestFeatureBase):
         super()._setup(LocationFeat)
         self.feature_info = {
             "class": "location",
-            "scales": {
+            "stats": {
                 "longitude": {"min": 14.5, "max": 23.5},
                 "latitude": {"min": 55, "max": 66},
             },
@@ -167,7 +170,7 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
         super()._setup(ProfileSummaryStats5)
         self.feature_info = {
             "class": "profile_summary_stats5",
-            "scales": {
+            "stats": {
                 "temp": {
                     "mean": {"min": 0, "max": 12.5},
                     "median": {"min": 0, "max": 15},
@@ -223,7 +226,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         self.feature_info = {
             "class": "basic_values3_plus_flanks",
             "flank_up": 5,
-            "scales": {
+            "stats": {
                 "temp": {"min": 0, "max": 20},
                 "psal": {"min": 0, "max": 20},
                 "pres": {"min": 0, "max": 200},

@@ -15,15 +15,12 @@ class InputTrainingSetBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: TrainingConfig = None,
-        config_file: str = None,
+        config: TrainingConfig
     ):
         super().__init__(
             "input",
             dataset_name,
-            config=config,
-            config_file=config_file,
-            config_file_name="training.yaml",
+            config
         )
 
         # Set member variables
@@ -31,34 +28,18 @@ class InputTrainingSetBase(DataSetBase):
             "train": "{target_name}_train.parquet",
             "test": "{target_name}_test.parquet",
         }
-        self._build_input_file_names()
+        self.input_file_names = {
+            k: self.config.get_target_file_names("input", v)
+            for k, v in self.default_file_names.items()
+        }
         self.training_sets = {}
         self.test_sets = {}
-
-    def _build_input_file_names(self):
-        """
-        Set the input files based on configuration entries.
-        """
-        targets = get_targets(self.dataset_info, "input", self.targets)
-        self.input_file_names = {
-            k1: {
-                k2: build_full_data_path(
-                    self.path_info,
-                    self.dataset_info,
-                    "input",
-                    get_target_file_name(v1, k1, v2),
-                )
-                for k2, v2 in self.default_file_names.items()
-            }
-            for k1, v1 in targets.items()
-        }
 
     def process_targets(self):
         """
         Iterate all targets to locate training data rows.
         """
-        targets = get_targets(self.dataset_info, "input", self.targets)
-        for k in targets.keys():
+        for k in self.config.get_target_names():
             self.read_training_set(k)
             self.read_test_sets(k)
 
@@ -67,7 +48,7 @@ class InputTrainingSetBase(DataSetBase):
         Read training set from parquet file
         """
         self.training_sets[target_name] = pl.read_parquet(
-            self.input_file_names[target_name]["train"]
+            self.input_file_names["train"][target_name]
         )
 
     def read_test_sets(self, target_name: str):
@@ -75,5 +56,5 @@ class InputTrainingSetBase(DataSetBase):
         Read test set from parquet files
         """
         self.test_sets[target_name] = pl.read_parquet(
-            self.input_file_names[target_name]["test"]
+            self.input_file_names["test"][target_name]
         )

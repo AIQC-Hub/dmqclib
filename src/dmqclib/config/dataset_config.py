@@ -6,32 +6,26 @@ class DataSetConfig(ConfigBase):
     """
     DataSetConfig provides dataset config interfaces
     """
-
+    
     expected_class_name = "DataSetConfig"
-
-    def __init__(
-        self,
-        config_file: str = None,
-        config_file_name: str = None,
-    ):
-        super().__init__(
-            "data_sets", config_file=config_file, config_file_name=config_file_name
-        )
-
+    
+    def __init__(self, config_file: str):
+        super().__init__("data_sets", config_file=config_file)
+    
     def load_dataset_config(self, dataset_name: str):
         super().load_dataset_config(dataset_name)
-        self.config["target_set"] = get_config_item(
-            self.full_config, "target_sets", self.config["target_set"]
+        self.data["target_set"] = get_config_item(
+            self.full_config, "target_sets", self.data["target_set"]
         )
-        self.config["feature_set"] = get_config_item(
-            self.full_config, "feature_sets", self.config["feature_set"]
+        self.data["feature_set"] = get_config_item(
+            self.full_config, "feature_sets", self.data["feature_set"]
         )
-        self.config["feature_param_set"] = get_config_item(
-            self.full_config, "feature_param_sets", self.config["feature_param_set"]
+        self.data["feature_param_set"] = get_config_item(
+            self.full_config, "feature_param_sets", self.data["feature_param_set"]
         )
-        self.config["step_class_set"] = get_config_item(
-            self.full_config, "step_class_sets", self.config["step_class_set"]
+        self.data["step_class_set"] = get_config_item(
+            self.full_config, "step_class_sets", self.data["step_class_set"]
         )
-        self.config["step_param_set"] = get_config_item(
-            self.full_config, "step_param_sets", self.config["step_param_set"]
+        self.data["step_param_set"] = get_config_item(
+            self.full_config, "step_param_sets", self.data["step_param_set"]
         )
