@@ -14,11 +14,10 @@ class SummaryDataSetA(SummaryStatsBase):
     def __init__(
         self,
         dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
+        config: DataSetConfig,
         input_data: pl.DataFrame = None,
     ):
-        super().__init__(dataset_name, config=config, config_file=config_file, input_data=input_data)
+        super().__init__(dataset_name, config, input_data=input_data)
 
         self.val_col_names = [
             "longitude",

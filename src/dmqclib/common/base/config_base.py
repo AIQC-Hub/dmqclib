@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List
+from typing import List, Dict
 import jsonschema
 import os
 from jsonschema import validate
@@ -20,8 +20,7 @@ class ConfigBase(ABC):
     def __init__(
         self,
         section_name: str,
-        config_file: str = None,
-        config_file_name: str = None,
+        config_file: str,
     ):
         if not self.expected_class_name:
             raise NotImplementedError(
@@ -39,10 +38,10 @@ class ConfigBase(ABC):
             config_file_name=yaml_schemas[section_name], add_config_file_name=False
         )
         self.full_config = read_config(
-            config_file, config_file_name, add_config_file_name=False
+            config_file, add_config_file_name=False
         )
         self.valid_yaml = False
-        self.config = None
+        self.data = None
         self.dataset_name = None
 
     def validate(self) -> str:
@@ -59,19 +58,19 @@ class ConfigBase(ABC):
         if not self.valid_yaml:
             raise ValueError("YAML file is invalid")
 
-        self.config = get_config_item(self.full_config, self.section_name, dataset_name)
-        self.config["path_info"] = get_config_item(
-            self.full_config, "path_info_sets", self.config["path_info"]
+        self.data = get_config_item(self.full_config, self.section_name, dataset_name).copy()
+        self.data["path_info"] = get_config_item(
+            self.full_config, "path_info_sets", self.data["path_info"]
         )
         self.dataset_name = dataset_name
 
     def get_base_path(self, step_name: str):
-        if step_name not in self.config["path_info"] or (
-            step_name in self.config["path_info"]
-            and "base_path" not in self.config["path_info"][step_name]
+        if step_name not in self.data["path_info"] or (
+            step_name in self.data["path_info"]
+            and "base_path" not in self.data["path_info"][step_name]
         ):
             step_name = "common"
-        base_path = self.config["path_info"][step_name].get("base_path")
+        base_path = self.data["path_info"][step_name].get("base_path")
 
         if base_path is None:
             raise ValueError(
@@ -80,15 +79,18 @@ class ConfigBase(ABC):
 
         return base_path
 
+    def get_step_params(self, step_name: str) -> Dict:
+        return self.data["step_param_set"]["steps"][step_name]
+
     def get_dataset_folder_name(self, step_name: str) -> str:
-        dataset_folder_name = self.config.get("dataset_folder_name", "")
+        dataset_folder_name = self.data.get("dataset_folder_name", "")
 
         if (
-            step_name in self.config["step_param_set"]["steps"]
+            step_name in self.data["step_param_set"]["steps"]
             and "dataset_folder_name"
-            in self.config["step_param_set"]["steps"][step_name]
+            in self.data["step_param_set"]["steps"][step_name]
         ):
-            dataset_folder_name = self.config["step_param_set"]["steps"][step_name].get(
+            dataset_folder_name = self.get_step_params(step_name).get(
                 "dataset_folder_name", ""
             )
 
@@ -96,12 +98,12 @@ class ConfigBase(ABC):
 
     def get_step_folder_name(self, step_name: str, folder_name_auto=True) -> str:
         orig_step_name = step_name
-        if step_name not in self.config["path_info"] or (
-            step_name in self.config["path_info"]
-            and "step_folder_name" not in self.config["path_info"][step_name]
+        if step_name not in self.data["path_info"] or (
+            step_name in self.data["path_info"]
+            and "step_folder_name" not in self.data["path_info"][step_name]
         ):
             step_name = "common"
-        step_folder_name = self.config["path_info"][step_name].get("step_folder_name")
+        step_folder_name = self.data["path_info"][step_name].get("step_folder_name")
 
         if step_folder_name is None:
             step_folder_name = orig_step_name if folder_name_auto else ""
@@ -111,10 +113,10 @@ class ConfigBase(ABC):
     def get_file_name(self, step_name: str, default_name: str = None) -> str:
         file_name = default_name
         if (
-            step_name in self.config["step_param_set"]["steps"]
-            and "file_name" in self.config["step_param_set"]["steps"][step_name]
+            step_name in self.data["step_param_set"]["steps"]
+            and "file_name" in self.data["step_param_set"]["steps"][step_name]
         ):
-            file_name = self.config["step_param_set"]["steps"][step_name].get(
+            file_name = self.data["step_param_set"]["steps"][step_name].get(
                 "file_name", ""
             )
 
@@ -144,13 +146,16 @@ class ConfigBase(ABC):
         )
 
     def get_base_class(self, step_name: str) -> str:
-        return self.config["step_class_set"]["steps"][step_name]
+        return self.data["step_class_set"]["steps"][step_name]
 
     def get_target_variables(self) -> List:
-        return self.config["target_set"]["variables"]
+        return self.data["target_set"]["variables"]
 
     def get_target_names(self) -> List:
         return [x["name"] for x in self.get_target_variables()]
+
+    def get_target_dict(self) -> List:
+        return {x["name"]:x for x in self.get_target_variables()}
 
     def get_target_file_names(
         self,

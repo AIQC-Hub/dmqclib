@@ -16,15 +16,13 @@ class LocateDataSetA(LocatePositionBase):
     def __init__(
         self,
         dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
+        config: DataSetConfig,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
-            config=config,
-            config_file=config_file,
+            config,
             input_data=input_data,
             selected_profiles=selected_profiles,
         )
@@ -33,7 +31,7 @@ class LocateDataSetA(LocatePositionBase):
         self.negative_rows = {}
 
     def select_positive_rows(self, target_name: str, target_value: Dict):
-        var_name = target_value["variable"]
+        flag_var_name = target_value["flag"]
         self.positive_rows[target_name] = (
             self.selected_profiles.filter(pl.col("label") == 1)
             .select(
@@ -44,12 +42,12 @@ class LocateDataSetA(LocatePositionBase):
             )
             .join(
                 (
-                    self.input_data.filter(pl.col(var_name) == 4).select(
+                    self.input_data.filter(pl.col(flag_var_name) == 4).select(
                         pl.col("platform_code"),
                         pl.col("profile_no"),
                         pl.col("observation_no"),
                         pl.col("pres"),
-                        pl.col(var_name).alias("flag"),
+                        pl.col(flag_var_name).alias("flag"),
                     )
                 ),
                 on=["platform_code", "profile_no"],
@@ -63,7 +61,7 @@ class LocateDataSetA(LocatePositionBase):
         )
 
     def select_negative_rows(self, target_name: str, target_value: Dict):
-        var_name = target_value["variable"]
+        flag_var_name = target_value["flag"]
         self.negative_rows[target_name] = (
             self.positive_rows[target_name]
             .select(
@@ -89,7 +87,7 @@ class LocateDataSetA(LocatePositionBase):
                     pl.col("profile_no"),
                     pl.col("observation_no").alias("neg_observation_no"),
                     pl.col("pres").alias("neg_pres"),
-                    pl.col(var_name).alias("flag"),
+                    pl.col(flag_var_name).alias("flag"),
                 ),
                 how="inner",
                 on=["platform_code", "profile_no"],

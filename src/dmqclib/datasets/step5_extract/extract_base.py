@@ -19,18 +19,17 @@ class ExtractFeatureBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
+        config: DataSetConfig,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
         target_rows: pl.DataFrame = None,
         summary_stats: pl.DataFrame = None,
     ):
-        super().__init__("extract", dataset_name, config=config, config_file=config_file)
+        super().__init__("extract", dataset_name, config)
 
         # Set member variables
         self.default_file_name = "{target_name}_features.parquet"
-        self._build_output_file_names()
+        self.output_file_names = self.config.get_target_file_names("extract", self.default_file_name)
         self.input_data = input_data
         self.selected_profiles = selected_profiles
         if input_data is not None and selected_profiles is not None:
@@ -39,23 +38,8 @@ class ExtractFeatureBase(DataSetBase):
             self.filtered_input = None
         self.target_rows = target_rows
         self.summary_stats = summary_stats
-        self.feature_info = self.dataset_info.get("extract").get("features")
+        self.feature_info = self.config.data["feature_param_set"]["params"]
         self.target_features = {}
-
-    def _build_output_file_names(self):
-        """
-        Set the output files based on configuration entries.
-        """
-        targets = get_targets(self.dataset_info, "extract", self.targets)
-        self.output_file_names = {
-            k: build_full_data_path(
-                self.path_info,
-                self.dataset_info,
-                "extract",
-                get_target_file_name(v, k, self.default_file_name),
-            )
-            for k, v in targets.items()
-        }
 
     def _filter_input(self):
         self.filtered_input = self.input_data.join(
@@ -72,8 +56,7 @@ class ExtractFeatureBase(DataSetBase):
         """
         Iterate all targets to generate features.
         """
-        targets = get_targets(self.dataset_info, "extract", self.targets)
-        for k in targets.keys():
+        for k in self.config.get_target_names():
             self.extract_target_features(k)
 
     def extract_target_features(self, k):

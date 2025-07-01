@@ -266,6 +266,16 @@ class TestBaseConfigTargets(unittest.TestCase):
         target_names = ds.get_target_names()
         self.assertEqual(target_names, ['temp', 'psal', 'pres'])
 
+    def test_target_dict(self):
+
+        ds = DataSetConfig(str(self.config_file_path))
+        ds.load_dataset_config("NRT_BO_001")
+
+        target_dict = ds.get_target_dict()
+        self.assertEqual(target_dict["temp"], {'name': 'temp', 'flag': 'temp_qc'})
+        self.assertEqual(target_dict["psal"], {'name': 'psal', 'flag': 'psal_qc'})
+        self.assertEqual(target_dict["pres"], {'name': 'pres', 'flag': 'pres_qc'})
+
     def test_target_file_names(self):
 
         ds = DataSetConfig(str(self.config_file_path))

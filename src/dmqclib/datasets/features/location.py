@@ -64,7 +64,7 @@ class LocationFeat(FeatureBase):
         """
         Scale features.
         """
-        for k, v in self.feature_info["scales"].items():
+        for k, v in self.feature_info["stats"].items():
             self.features = self.features.with_columns(
                 [
                     ((pl.col(k) - v["min"]) / (v["max"] - v["min"])).alias(k),

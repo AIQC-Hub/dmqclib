@@ -31,7 +31,7 @@ class ProfileSummaryStats5(FeatureBase):
         Extract features.
         """
         self._filter_target_rows_cols()
-        for target_name, v1 in self.feature_info["scales"].items():
+        for target_name, v1 in self.feature_info["stats"].items():
             for var_name in v1.keys():
                 self._extract_single_summary(target_name, var_name)
 
@@ -69,7 +69,7 @@ class ProfileSummaryStats5(FeatureBase):
         """
         Scale features.
         """
-        for col_name, v1 in self.feature_info["scales"].items():
+        for col_name, v1 in self.feature_info["stats"].items():
             for stat_name, v2 in v1.items():
                 self.features = self.features.with_columns(
                     [

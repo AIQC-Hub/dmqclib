@@ -35,7 +35,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         """
         self._init_features()
         self._expand_observations()
-        for col_name in self.feature_info["scales"].keys():
+        for col_name in self.feature_info["stats"].keys():
             self._pivot_features(col_name)
             self._add_features()
         self._clean_features()
@@ -124,7 +124,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         """
         Scale features.
         """
-        for col_name, v in self.feature_info["scales"].items():
+        for col_name, v in self.feature_info["stats"].items():
             self.filtered_input = self.filtered_input.with_columns(
                 [
                     ((pl.col(col_name) - v["min"]) / (v["max"] - v["min"])).alias(

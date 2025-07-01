@@ -50,7 +50,7 @@ feature_param_sets:
                          pct25: { min: 12, max: 53 },
                          pct75: { min: 35, max: 156 } } }
       - feature: basic_values3_plus_flanks
-        flank_up: 5,
+        flank_up: 5
         stats: { temp: { min: 0, max: 20 },
                  psal: { min: 0, max: 20 },
                  pres: { min: 0, max: 200 } }

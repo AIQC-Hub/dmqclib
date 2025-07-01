@@ -43,10 +43,10 @@ class TestTrainingConfig(unittest.TestCase):
         ds = TrainingConfig(str(self.config_file_path))
         ds.load_dataset_config("NRT_BO_001")
 
-        self.assertEqual(len(ds.config["path_info"]), 5)
-        self.assertEqual(len(ds.config["target_set"]), 2)
-        self.assertEqual(len(ds.config["step_class_set"]), 2)
-        self.assertEqual(len(ds.config["step_param_set"]), 2)
+        self.assertEqual(len(ds.data["path_info"]), 5)
+        self.assertEqual(len(ds.data["target_set"]), 2)
+        self.assertEqual(len(ds.data["step_class_set"]), 2)
+        self.assertEqual(len(ds.data["step_param_set"]), 2)
 
     def test_invalid_dataset_name(self):
         ds = TrainingConfig(str(self.config_file_path))

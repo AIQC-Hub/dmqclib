@@ -19,41 +19,24 @@ class LocatePositionBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
+        config: DataSetConfig,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
     ):
-        super().__init__("locate", dataset_name, config=config, config_file=config_file)
+        super().__init__("locate", dataset_name, config)
 
         # Set member variables
         self.default_file_name = "{target_name}_rows.parquet"
-        self._build_output_file_names()
+        self.output_file_names = self.config.get_target_file_names("locate", self.default_file_name)
         self.input_data = input_data
         self.selected_profiles = selected_profiles
         self.target_rows = {}
-
-    def _build_output_file_names(self):
-        """
-        Set the output files based on configuration entries.
-        """
-        targets = get_targets(self.dataset_info, "locate", self.targets)
-        self.output_file_names = {
-            k: build_full_data_path(
-                self.path_info,
-                self.dataset_info,
-                "locate",
-                get_target_file_name(v, k, self.default_file_name),
-            )
-            for k, v in targets.items()
-        }
 
     def process_targets(self):
         """
         Iterate all targets to locate training data rows.
         """
-        targets = get_targets(self.dataset_info, "locate", self.targets)
-        for k, v in targets.items():
+        for k, v in self.config.get_target_dict().items():
             self.locate_target_rows(k, v)
 
     @abstractmethod

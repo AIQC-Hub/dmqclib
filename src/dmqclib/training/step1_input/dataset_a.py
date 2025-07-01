@@ -12,11 +12,9 @@ class InputTrainingSetA(InputTrainingSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: TrainingConfig = None,
-        config_file: str = None,
+        config: TrainingConfig
     ):
         super().__init__(
             dataset_name,
-            config=config,
-            config_file=config_file,
+            config,
         )

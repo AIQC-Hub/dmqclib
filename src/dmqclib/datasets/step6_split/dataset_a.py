@@ -15,14 +15,12 @@ class SplitDataSetA(SplitDataSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
+        config: DataSetConfig,
         target_features: pl.DataFrame = None,
     ):
         super().__init__(
             dataset_name,
-            config=config,
-            config_file=config_file,
+            config,
             target_features=target_features,
         )
 

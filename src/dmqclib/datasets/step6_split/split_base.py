@@ -18,18 +18,20 @@ class SplitDataSetBase(DataSetBase):
     def __init__(
         self,
         dataset_name: str,
-        config: DataSetConfig = None,
-        config_file: str = None,
+        config: DataSetConfig,
         target_features: pl.DataFrame = None,
     ):
-        super().__init__("split", dataset_name, config=config, config_file=config_file)
+        super().__init__("split", dataset_name, config)
 
         # Set member variables
         self.default_file_names = {
             "train": "{target_name}_train.parquet",
             "test": "{target_name}_test.parquet",
         }
-        self._build_output_file_names()
+        self.output_file_names = {
+            k: self.config.get_target_file_names("split", v)
+            for k, v in self.default_file_names.items()
+        }
         self.target_features = target_features
         self.training_sets = {}
         self.test_sets = {}
@@ -37,51 +39,17 @@ class SplitDataSetBase(DataSetBase):
         self.default_test_set_fraction = 0.1
         self.default_k_fold = 10
 
-    def _build_output_file_names(self):
-        """
-        Set the output files based on configuration entries.
-        """
-        targets = get_targets(self.dataset_info, "split", self.targets)
-        self.output_file_names = {
-            k1: {
-                k2: build_full_data_path(
-                    self.path_info,
-                    self.dataset_info,
-                    "split",
-                    get_target_file_name(v1, k1, v2),
-                )
-                for k2, v2 in self.default_file_names.items()
-            }
-            for k1, v1 in targets.items()
-        }
-
     def get_test_set_fraction(self) -> str:
-        if (
-            "split" in self.dataset_info
-            and "test_set_fraction" in self.dataset_info["split"]
-        ):
-            test_set_fraction = self.dataset_info["split"].get(
-                "test_set_fraction", self.default_test_set_fraction
-            )
-        else:
-            test_set_fraction = self.default_test_set_fraction
-
-        return test_set_fraction
+        return self.config.get_step_params("split").get("test_set_fraction", self.default_test_set_fraction) or self.default_test_set_fraction
 
     def get_k_fold(self) -> str:
-        if "split" in self.dataset_info and "k_fold" in self.dataset_info["split"]:
-            k_fold = self.dataset_info["split"].get("k_fold", self.default_k_fold)
-        else:
-            k_fold = self.default_k_fold
-
-        return k_fold
+        return self.config.get_step_params("split").get("k_fold", self.default_k_fold) or self.default_k_fold
 
     def process_targets(self):
         """
         Iterate all targets to locate training data rows.
         """
-        targets = get_targets(self.dataset_info, "split", self.targets)
-        for k in targets.keys():
+        for k in self.config.get_target_names():
             self.split_test_set(k)
             self.add_k_fold(k)
             self.drop_columns(k)
@@ -107,9 +75,9 @@ class SplitDataSetBase(DataSetBase):
 
         for k, v in self.training_sets.items():
             os.makedirs(
-                os.path.dirname(self.output_file_names[k]["train"]), exist_ok=True
+                os.path.dirname(self.output_file_names["train"][k]), exist_ok=True
             )
-            v.write_parquet(self.output_file_names[k]["train"])
+            v.write_parquet(self.output_file_names["train"][k])
 
     def write_test_sets(self):
         """
@@ -120,9 +88,9 @@ class SplitDataSetBase(DataSetBase):
 
         for k, v in self.test_sets.items():
             os.makedirs(
-                os.path.dirname(self.output_file_names[k]["test"]), exist_ok=True
+                os.path.dirname(self.output_file_names["test"][k]), exist_ok=True
             )
-            v.write_parquet(self.output_file_names[k]["test"])
+            v.write_parquet(self.output_file_names["test"][k])
 
     def write_data_sets(self):
         """
