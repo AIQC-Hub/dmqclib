@@ -262,9 +262,7 @@ This creates a *meta.yaml* file in the *dmqclib/* directory.
 
 #### 2. Build the package
 ```bash
-cd dmqclib
-conda build .
-cd ..
+conda build dmqclib
 ```
 
 This creates a *.conda* package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
