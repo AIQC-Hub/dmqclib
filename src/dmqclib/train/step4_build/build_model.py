@@ -11,8 +11,12 @@ class BuildModel(BuildModelBase):
 
     expected_class_name = "BuildModel"
 
-    def __init__(self, config: TrainingConfig, training_sets: pl.DataFrame = None,
-                 test_sets: pl.DataFrame = None):
+    def __init__(
+        self,
+        config: TrainingConfig,
+        training_sets: pl.DataFrame = None,
+        test_sets: pl.DataFrame = None,
+    ):
         super().__init__(config, training_sets=training_sets, test_sets=test_sets)
 
     def build(self, target_name: str):

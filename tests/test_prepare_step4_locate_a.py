@@ -31,7 +31,9 @@ class TestLocateDataSetA(unittest.TestCase):
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
-        self.ds_select = load_step3_select_dataset(self.config, input_data=self.ds_input.input_data)
+        self.ds_select = load_step3_select_dataset(
+            self.config, input_data=self.ds_input.input_data
+        )
         self.ds_select.label_profiles()
 
     def test_output_file_names(self):
@@ -49,12 +51,15 @@ class TestLocateDataSetA(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = LocateDataSetA(self.config)
-        self.assertEqual(ds.step_name,"locate")
+        self.assertEqual(ds.step_name, "locate")
 
     def test_input_data_and_selected_profiles(self):
         """Ensure input data and selected profiles are read correctly."""
-        ds = LocateDataSetA(self.config, input_data=self.ds_input.input_data,
-                            selected_profiles=self.ds_select.selected_profiles)
+        ds = LocateDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
@@ -66,8 +71,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_positive_rows(self):
         """Ensure positive row data is set correctly."""
-        ds = LocateDataSetA(self.config, input_data=self.ds_input.input_data,
-                            selected_profiles=self.ds_select.selected_profiles)
+        ds = LocateDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
         ds.select_positive_rows("temp", {"flag": "temp_qc"})
         ds.select_positive_rows("psal", {"flag": "psal_qc"})
 
@@ -81,8 +89,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_negative_rows(self):
         """Ensure negative row data is set correctly."""
-        ds = LocateDataSetA(self.config, input_data=self.ds_input.input_data,
-                            selected_profiles=self.ds_select.selected_profiles)
+        ds = LocateDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
         ds.select_positive_rows("temp", {"flag": "temp_qc"})
         ds.select_positive_rows("psal", {"flag": "psal_qc"})
         ds.select_negative_rows("temp", {"flag": "temp_qc"})
@@ -98,8 +109,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_target_rows(self):
         """Ensure target rows are selected and set correctly."""
-        ds = LocateDataSetA(self.config, input_data=self.ds_input.input_data,
-                            selected_profiles=self.ds_select.selected_profiles)
+        ds = LocateDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
 
         ds.process_targets()
 
@@ -113,8 +127,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_write_target_rows(self):
         """Ensure target rows are written to parquet files correctly."""
-        ds = LocateDataSetA(self.config, input_data=self.ds_input.input_data,
-                            selected_profiles=self.ds_select.selected_profiles)
+        ds = LocateDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
         data_path = Path(__file__).resolve().parent / "data" / "select"
         ds.output_file_names["temp"] = data_path / "temp_temp_rows.parquet"
         ds.output_file_names["psal"] = data_path / "temp_psal_rows.parquet"
@@ -132,8 +149,11 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_write_no_target_rows(self):
         """ "Ensure ValueError is raised for empty profiles."""
-        ds = LocateDataSetA(self.config, input_data=self.ds_input.input_data,
-                            selected_profiles=self.ds_select.selected_profiles)
+        ds = LocateDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
 
         with self.assertRaises(ValueError):
             ds.write_target_rows()

@@ -35,7 +35,7 @@ class TestInputTrainingSetA(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = InputTrainingSetA(self.config)
-        self.assertEqual(ds.step_name,"input")
+        self.assertEqual(ds.step_name, "input")
 
     def test_input_file_names(self):
         """Ensure output file names are set correctly."""

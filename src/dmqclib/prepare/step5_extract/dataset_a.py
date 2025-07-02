@@ -11,8 +11,18 @@ class ExtractDataSetA(ExtractFeatureBase):
 
     expected_class_name = "ExtractDataSetA"
 
-    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None,
-                 selected_profiles: pl.DataFrame = None, target_rows: pl.DataFrame = None,
-                 summary_stats: pl.DataFrame = None):
-        super().__init__(config, input_data=input_data, selected_profiles=selected_profiles,
-                         target_rows=target_rows, summary_stats=summary_stats)
+    def __init__(
+        self,
+        config: DataSetConfig,
+        input_data: pl.DataFrame = None,
+        selected_profiles: pl.DataFrame = None,
+        target_rows: pl.DataFrame = None,
+        summary_stats: pl.DataFrame = None,
+    ):
+        super().__init__(
+            config,
+            input_data=input_data,
+            selected_profiles=selected_profiles,
+            target_rows=target_rows,
+            summary_stats=summary_stats,
+        )

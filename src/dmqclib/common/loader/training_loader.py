@@ -20,7 +20,9 @@ def load_step1_input_training_set(config: TrainingConfig) -> InputTrainingSetBas
     return dataset_class(config)
 
 
-def load_step2_model_validation_class(config: TrainingConfig, training_sets: pl.DataFrame = None) -> ValidationBase:
+def load_step2_model_validation_class(
+    config: TrainingConfig, training_sets: pl.DataFrame = None
+) -> ValidationBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
@@ -31,8 +33,11 @@ def load_step2_model_validation_class(config: TrainingConfig, training_sets: pl.
     return dataset_class(config, training_sets=training_sets)
 
 
-def load_step4_build_model_class(config: TrainingConfig, training_sets: pl.DataFrame = None,
-                                 test_sets: pl.DataFrame = None) -> BuildModelBase:
+def load_step4_build_model_class(
+    config: TrainingConfig,
+    training_sets: pl.DataFrame = None,
+    test_sets: pl.DataFrame = None,
+) -> BuildModelBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.

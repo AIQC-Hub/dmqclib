@@ -40,12 +40,12 @@ class TestInputDataSetA(unittest.TestCase):
 
         ds.read_input_data()
         return ds.input_data
-     
+
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = InputDataSetA(self.config)
-        self.assertEqual(ds.step_name,"input")
-        
+        self.assertEqual(ds.step_name, "input")
+
     def test_input_file_name(self):
         """Ensure the input file name is set correctly."""
         ds = InputDataSetA(self.config)

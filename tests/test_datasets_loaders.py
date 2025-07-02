@@ -39,7 +39,7 @@ class TestInputClassLoader(unittest.TestCase):
         """
         ds = load_step1_input_dataset(self.config)
         self.assertIsInstance(ds, InputDataSetA)
-        self.assertEqual(ds.step_name,"input")
+        self.assertEqual(ds.step_name, "input")
 
 
 class TestSummaryClassLoader(unittest.TestCase):
@@ -69,8 +69,8 @@ class TestSummaryClassLoader(unittest.TestCase):
         """
         ds = load_step2_summary_dataset(self.config)
         self.assertIsInstance(ds, SummaryDataSetA)
-        self.assertEqual(ds.step_name,"summary")
-        
+        self.assertEqual(ds.step_name, "summary")
+
     def test_load_dataset_input_data(self):
         """
         Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
@@ -113,8 +113,8 @@ class TestSelectClassLoader(unittest.TestCase):
         """
         ds = load_step3_select_dataset(self.config)
         self.assertIsInstance(ds, SelectDataSetA)
-        self.assertEqual(ds.step_name,"select")
-        
+        self.assertEqual(ds.step_name, "select")
+
     def test_load_dataset_input_data(self):
         """
         Test that load_dataset returns an instance of SelectDataSetA with correct input_data.
@@ -157,8 +157,8 @@ class TestLocateClassLoader(unittest.TestCase):
         """
         ds = load_step4_locate_dataset(self.config)
         self.assertIsInstance(ds, LocateDataSetA)
-        self.assertEqual(ds.step_name,"locate")
-        
+        self.assertEqual(ds.step_name, "locate")
+
     def test_load_dataset_input_data_and_profiles(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
@@ -170,8 +170,9 @@ class TestLocateClassLoader(unittest.TestCase):
         ds_select = load_step3_select_dataset(self.config, ds_input.input_data)
         ds_select.label_profiles()
 
-        ds = load_step4_locate_dataset(self.config, ds_input.input_data,
-                                       ds_select.selected_profiles)
+        ds = load_step4_locate_dataset(
+            self.config, ds_input.input_data, ds_select.selected_profiles
+        )
 
         self.assertIsInstance(ds, LocateDataSetA)
 
@@ -211,8 +212,8 @@ class TestExtractClassLoader(unittest.TestCase):
         """
         ds = load_step5_extract_dataset(self.config)
         self.assertIsInstance(ds, ExtractDataSetA)
-        self.assertEqual(ds.step_name,"extract")
-        
+        self.assertEqual(ds.step_name, "extract")
+
     def test_load_dataset_input_data_and_profiles(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
@@ -227,13 +228,18 @@ class TestExtractClassLoader(unittest.TestCase):
         ds_summary = load_step2_summary_dataset(self.config, ds_input.input_data)
         ds_summary.calculate_stats()
 
-        ds_locate = load_step4_locate_dataset(self.config, ds_input.input_data,
-                                              ds_select.selected_profiles)
+        ds_locate = load_step4_locate_dataset(
+            self.config, ds_input.input_data, ds_select.selected_profiles
+        )
         ds_locate.process_targets()
 
-        ds = load_step5_extract_dataset(self.config, ds_input.input_data,
-                                        ds_select.selected_profiles, ds_locate.target_rows,
-                                        ds_summary.summary_stats)
+        ds = load_step5_extract_dataset(
+            self.config,
+            ds_input.input_data,
+            ds_select.selected_profiles,
+            ds_locate.target_rows,
+            ds_summary.summary_stats,
+        )
 
         self.assertIsInstance(ds, ExtractDataSetA)
 
@@ -289,8 +295,8 @@ class TestSplitClassLoader(unittest.TestCase):
         """
         ds = load_step6_split_dataset(self.config)
         self.assertIsInstance(ds, SplitDataSetA)
-        self.assertEqual(ds.step_name,"split")
-        
+        self.assertEqual(ds.step_name, "split")
+
     def test_load_dataset_input_data(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
@@ -305,13 +311,18 @@ class TestSplitClassLoader(unittest.TestCase):
         ds_summary = load_step2_summary_dataset(self.config, ds_input.input_data)
         ds_summary.calculate_stats()
 
-        ds_locate = load_step4_locate_dataset(self.config, ds_input.input_data,
-                                              ds_select.selected_profiles)
+        ds_locate = load_step4_locate_dataset(
+            self.config, ds_input.input_data, ds_select.selected_profiles
+        )
         ds_locate.process_targets()
 
-        ds_extract = load_step5_extract_dataset(self.config, ds_input.input_data,
-                                                ds_select.selected_profiles, ds_locate.target_rows,
-                                                ds_summary.summary_stats)
+        ds_extract = load_step5_extract_dataset(
+            self.config,
+            ds_input.input_data,
+            ds_select.selected_profiles,
+            ds_locate.target_rows,
+            ds_summary.summary_stats,
+        )
         ds_extract.process_targets()
 
         ds = load_step6_split_dataset(self.config, ds_extract.target_features)

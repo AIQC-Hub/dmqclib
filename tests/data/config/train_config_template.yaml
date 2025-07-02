@@ -3,9 +3,8 @@ path_info_sets:
   - name: data_set_1
     common:
       base_path: /path/to/data # Need to modify
-      step_folder_name: "training"
     input:
-      base_path: /path/to/data # Need to modify
+      step_folder_name: "training"
 
 target_sets:
   - name: target_set_1_3

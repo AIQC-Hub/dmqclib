@@ -33,7 +33,7 @@ class TestTrainingInputClassLoader(unittest.TestCase):
         """
         ds = load_step1_input_training_set(self.config)
         self.assertIsInstance(ds, InputTrainingSetA)
-        self.assertEqual(ds.step_name,"input")
+        self.assertEqual(ds.step_name, "input")
 
 
 class TestModelValidationClassLoader(unittest.TestCase):
@@ -74,8 +74,8 @@ class TestModelValidationClassLoader(unittest.TestCase):
         """
         ds = load_step2_model_validation_class(self.config)
         self.assertIsInstance(ds, KFoldValidation)
-        self.assertEqual(ds.step_name,"validate")
-        
+        self.assertEqual(ds.step_name, "validate")
+
     def test_training_set_data(self):
         """
         Test that load_dataset returns an instance of KFoldValidation with correct input_data.
@@ -130,15 +130,16 @@ class TestBuildModelClassLoader(unittest.TestCase):
         """
         ds = load_step4_build_model_class(self.config)
         self.assertIsInstance(ds, BuildModel)
-        self.assertEqual(ds.step_name,"build")
-        
+        self.assertEqual(ds.step_name, "build")
+
     def test_training_and_test_sets(self):
         """
         Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
         """
 
-        ds = load_step4_build_model_class(self.config, self.ds_input.training_sets,
-                                          self.ds_input.test_sets)
+        ds = load_step4_build_model_class(
+            self.config, self.ds_input.training_sets, self.ds_input.test_sets
+        )
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)

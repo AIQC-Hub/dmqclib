@@ -33,15 +33,21 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
-        self.ds_summary = load_step2_summary_dataset(self.config,
-                                                     input_data=self.ds_input.input_data)
+        self.ds_summary = load_step2_summary_dataset(
+            self.config, input_data=self.ds_input.input_data
+        )
         self.ds_summary.calculate_stats()
 
-        self.ds_select = load_step3_select_dataset(self.config, input_data=self.ds_input.input_data)
+        self.ds_select = load_step3_select_dataset(
+            self.config, input_data=self.ds_input.input_data
+        )
         self.ds_select.label_profiles()
 
-        self.ds_locate = load_step4_locate_dataset(self.config, input_data=self.ds_input.input_data,
-                                                   selected_profiles=self.ds_select.selected_profiles)
+        self.ds_locate = load_step4_locate_dataset(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
         self.ds_locate.process_targets()
 
     def test_output_file_names(self):
@@ -59,14 +65,17 @@ class TestExtractDataSetA(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = ExtractDataSetA(self.config)
-        self.assertEqual(ds.step_name,"extract")
+        self.assertEqual(ds.step_name, "extract")
 
     def test_init_arguments(self):
         """Ensure input data and selected profiles are read correctly."""
-        ds = ExtractDataSetA(self.config, input_data=self.ds_input.input_data,
-                             selected_profiles=self.ds_select.selected_profiles,
-                             target_rows=self.ds_locate.target_rows,
-                             summary_stats=self.ds_summary.summary_stats)
+        ds = ExtractDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
+        )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
@@ -94,10 +103,13 @@ class TestExtractDataSetA(unittest.TestCase):
 
     def test_location_features(self):
         """Ensure input data and selected profiles are read correctly."""
-        ds = ExtractDataSetA(self.config, input_data=self.ds_input.input_data,
-                             selected_profiles=self.ds_select.selected_profiles,
-                             target_rows=self.ds_locate.target_rows,
-                             summary_stats=self.ds_summary.summary_stats)
+        ds = ExtractDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
+        )
 
         ds.process_targets()
 
@@ -111,10 +123,13 @@ class TestExtractDataSetA(unittest.TestCase):
 
     def test_write_target_features(self):
         """Ensure target rows are written to parquet files correctly."""
-        ds = ExtractDataSetA(self.config, input_data=self.ds_input.input_data,
-                             selected_profiles=self.ds_select.selected_profiles,
-                             target_rows=self.ds_locate.target_rows,
-                             summary_stats=self.ds_summary.summary_stats)
+        ds = ExtractDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
+        )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
         ds.output_file_names["temp"] = data_path / "temp_temp_features.parquet"
         ds.output_file_names["psal"] = data_path / "temp_psal_features.parquet"
@@ -132,10 +147,13 @@ class TestExtractDataSetA(unittest.TestCase):
 
     def test_write_no_target_features(self):
         """Ensure ValueError is raised for empty profiles."""
-        ds = ExtractDataSetA(self.config, input_data=self.ds_input.input_data,
-                             selected_profiles=self.ds_select.selected_profiles,
-                             target_rows=self.ds_locate.target_rows,
-                             summary_stats=self.ds_summary.summary_stats)
+        ds = ExtractDataSetA(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
+        )
 
         with self.assertRaises(ValueError):
             ds.write_target_features()

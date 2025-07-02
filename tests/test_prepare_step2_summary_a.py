@@ -58,7 +58,7 @@ class TestSelectDataSetA(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = SummaryDataSetA(self.config)
-        self.assertEqual(ds.step_name,"summary")
+        self.assertEqual(ds.step_name, "summary")
 
     def test_input_data(self):
         """Ensure input data is set correctly."""

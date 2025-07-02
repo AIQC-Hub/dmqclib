@@ -42,7 +42,7 @@ class TestBuildModel(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = BuildModel(self.config)
-        self.assertEqual(ds.step_name,"build")
+        self.assertEqual(ds.step_name, "build")
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
@@ -72,8 +72,11 @@ class TestBuildModel(unittest.TestCase):
 
     def test_training_sets(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
@@ -93,8 +96,11 @@ class TestBuildModel(unittest.TestCase):
 
     def test_train_with_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         ds.build_targets()
 
@@ -104,8 +110,11 @@ class TestBuildModel(unittest.TestCase):
 
     def test_test_with_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         ds.build_targets()
         ds.test_targets()
@@ -120,16 +129,22 @@ class TestBuildModel(unittest.TestCase):
 
     def test_test_without_model(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         with self.assertRaises(ValueError):
             ds.test_targets()
 
     def test_write_results(self):
         """Ensure target rows are written to parquet files correctly."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["result"]["temp"] = data_path / "temp_temp_test_result.tsv"
@@ -150,24 +165,33 @@ class TestBuildModel(unittest.TestCase):
 
     def test_write_no_results(self):
         """Ensure ValueError is raised for an empty result list."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         with self.assertRaises(ValueError):
             ds.write_results()
 
     def test_write_no_models(self):
         """Ensure ValueError is raised for an empty model list."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         with self.assertRaises(ValueError):
             ds.write_models()
 
     def test_write_models(self):
         """Ensure models are saved correctly."""
-        ds = BuildModel(self.config, training_sets=self.ds_input.training_sets,
-                        test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["model"]["temp"] = data_path / "temp_temp_model.joblib"
@@ -187,7 +211,9 @@ class TestBuildModel(unittest.TestCase):
 
     def test_read_models(self):
         """Ensure models are loaded correctly."""
-        ds = BuildModel(self.config, training_sets=None, test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config, training_sets=None, test_sets=self.ds_input.test_sets
+        )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["model"]["temp"] = data_path / "temp_model.joblib"
@@ -212,7 +238,9 @@ class TestBuildModel(unittest.TestCase):
 
     def test_read_models_no_file(self):
         """ "Ensure FileNotFoundError is raised for an invalid file name."""
-        ds = BuildModel(self.config, training_sets=None, test_sets=self.ds_input.test_sets)
+        ds = BuildModel(
+            self.config, training_sets=None, test_sets=self.ds_input.test_sets
+        )
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["model"]["temp"] = data_path / "model.joblib"

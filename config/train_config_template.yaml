@@ -4,7 +4,6 @@ path_info_sets:
     common:
       base_path: /path/to/data # Need to modify
     input:
-      base_path: /path/to/data # Need to modify
       step_folder_name: "training"
 
 target_sets:

@@ -76,7 +76,7 @@ class TestTrainingConfig(unittest.TestCase):
         ds = TrainingConfig(str(self.template_file))
         ds.select("NRT_BO_001")
         input_file_name = ds.get_full_file_name("valid", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/valid/test.txt")
 
     def test_build_folder(self):
         """
@@ -85,4 +85,4 @@ class TestTrainingConfig(unittest.TestCase):
         ds = TrainingConfig(str(self.template_file))
         ds.select("NRT_BO_001")
         input_file_name = ds.get_full_file_name("build", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/build/test.txt")

@@ -33,7 +33,7 @@ class TestSelectDataSetA(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = SelectDataSetA(self.config)
-        self.assertEqual(ds.step_name,"select")
+        self.assertEqual(ds.step_name, "select")
 
     def test_output_file_name(self):
         """Ensure output file name is set correctly."""

@@ -13,8 +13,12 @@ class LocatePositionBase(DataSetBase):
     Base class to identify training data rows
     """
 
-    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None,
-                 selected_profiles: pl.DataFrame = None):
+    def __init__(
+        self,
+        config: DataSetConfig,
+        input_data: pl.DataFrame = None,
+        selected_profiles: pl.DataFrame = None,
+    ):
         super().__init__("locate", config)
 
         # Set member variables

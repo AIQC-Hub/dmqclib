@@ -13,8 +13,12 @@ class BuildModelBase(DataSetBase):
     Base class for building models.
     """
 
-    def __init__(self, config: TrainingConfig, training_sets: pl.DataFrame = None,
-                 test_sets: pl.DataFrame = None):
+    def __init__(
+        self,
+        config: TrainingConfig,
+        training_sets: pl.DataFrame = None,
+        test_sets: pl.DataFrame = None,
+    ):
         super().__init__("build", config)
 
         # Set member variables

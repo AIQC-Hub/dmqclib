@@ -26,7 +26,9 @@ def load_step1_input_dataset(config: DataSetConfig) -> InputDataSetBase:
     return dataset_class(config)
 
 
-def load_step2_summary_dataset(config: DataSetConfig, input_data: pl.DataFrame = None) -> SummaryStatsBase:
+def load_step2_summary_dataset(
+    config: DataSetConfig, input_data: pl.DataFrame = None
+) -> SummaryStatsBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
@@ -37,7 +39,9 @@ def load_step2_summary_dataset(config: DataSetConfig, input_data: pl.DataFrame =
     return dataset_class(config, input_data=input_data)
 
 
-def load_step3_select_dataset(config: DataSetConfig, input_data: pl.DataFrame = None) -> ProfileSelectionBase:
+def load_step3_select_dataset(
+    config: DataSetConfig, input_data: pl.DataFrame = None
+) -> ProfileSelectionBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
@@ -48,8 +52,11 @@ def load_step3_select_dataset(config: DataSetConfig, input_data: pl.DataFrame = 
     return dataset_class(config, input_data=input_data)
 
 
-def load_step4_locate_dataset(config: DataSetConfig, input_data: pl.DataFrame = None,
-                              selected_profiles: pl.DataFrame = None) -> ExtractFeatureBase:
+def load_step4_locate_dataset(
+    config: DataSetConfig,
+    input_data: pl.DataFrame = None,
+    selected_profiles: pl.DataFrame = None,
+) -> ExtractFeatureBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
@@ -64,10 +71,13 @@ def load_step4_locate_dataset(config: DataSetConfig, input_data: pl.DataFrame = 
     )
 
 
-def load_step5_extract_dataset(config: DataSetConfig, input_data: pl.DataFrame = None,
-                               selected_profiles: pl.DataFrame = None,
-                               target_rows: pl.DataFrame = None,
-                               summary_stats: pl.DataFrame = None) -> LocatePositionBase:
+def load_step5_extract_dataset(
+    config: DataSetConfig,
+    input_data: pl.DataFrame = None,
+    selected_profiles: pl.DataFrame = None,
+    target_rows: pl.DataFrame = None,
+    summary_stats: pl.DataFrame = None,
+) -> LocatePositionBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.
@@ -85,7 +95,9 @@ def load_step5_extract_dataset(config: DataSetConfig, input_data: pl.DataFrame =
     )
 
 
-def load_step6_split_dataset(config: DataSetConfig, target_features: pl.DataFrame = None) -> SplitDataSetBase:
+def load_step6_split_dataset(
+    config: DataSetConfig, target_features: pl.DataFrame = None
+) -> SplitDataSetBase:
     """
     Given a dataset_name (e.g., 'NRT_BO_001'), look up the class specified in the
     YAML config and instantiate the appropriate class, returning it.

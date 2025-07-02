@@ -42,7 +42,7 @@ class TestKFoldValidation(unittest.TestCase):
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = KFoldValidation(self.config)
-        self.assertEqual(ds.step_name,"validate")
+        self.assertEqual(ds.step_name, "validate")
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""

@@ -34,28 +34,36 @@ class TestSplitDataSetA(unittest.TestCase):
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
-        self.ds_summary = load_step2_summary_dataset(self.config,
-                                                     input_data=self.ds_input.input_data)
+        self.ds_summary = load_step2_summary_dataset(
+            self.config, input_data=self.ds_input.input_data
+        )
         self.ds_summary.calculate_stats()
 
-        self.ds_select = load_step3_select_dataset(self.config, input_data=self.ds_input.input_data)
+        self.ds_select = load_step3_select_dataset(
+            self.config, input_data=self.ds_input.input_data
+        )
         self.ds_select.label_profiles()
 
-        self.ds_locate = load_step4_locate_dataset(self.config, input_data=self.ds_input.input_data,
-                                                   selected_profiles=self.ds_select.selected_profiles)
+        self.ds_locate = load_step4_locate_dataset(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
         self.ds_locate.process_targets()
 
-        self.ds_extract = load_step5_extract_dataset(self.config,
-                                                     input_data=self.ds_input.input_data,
-                                                     selected_profiles=self.ds_select.selected_profiles,
-                                                     target_rows=self.ds_locate.target_rows,
-                                                     summary_stats=self.ds_summary.summary_stats)
+        self.ds_extract = load_step5_extract_dataset(
+            self.config,
+            input_data=self.ds_input.input_data,
+            selected_profiles=self.ds_select.selected_profiles,
+            target_rows=self.ds_locate.target_rows,
+            summary_stats=self.ds_summary.summary_stats,
+        )
         self.ds_extract.process_targets()
 
     def test_step_name(self):
         """Ensure the step name is set correctly."""
         ds = SplitDataSetA(self.config)
-        self.assertEqual(ds.step_name,"split")
+        self.assertEqual(ds.step_name, "split")
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
