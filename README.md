@@ -21,6 +21,71 @@ Using *conda*:
 conda install takayasaito::dmqclib 
 ```
 
+## Usage
+
+### 1. Dataset Preparation
+
+#### 1.1 Create a Configuration File
+First, create a configuration file that will serve as a template for preparing your dataset.
+
+```python
+import dmqclib as dm
+
+config_file = "/path/to/config_file.yaml"
+dm.write_config_template(config_file, module="prepare")
+```
+
+The function `write_config_template` generates a template configuration file at the specified location. You will need to edit this file to include entries relevant to the dataset you want to prepare for training. For detailed instructions, refer to the [Configuration](#configuration) section.
+
+#### 1.2 Create a Training Dataset
+Next, use the configuration file to create the training dataset.
+
+```python
+dataset_name = "NRT_BO_001"
+
+config = dm.read_config(config_file)  # Ensure the correct file is referenced
+dm.create_training_data_set(dataset_name, config)
+```
+
+The configuration file must contain the appropriate entries for the `dataset_name` variable to successfully execute the above command. The function `create_training_data_set` generates several folders and datasets, including:
+
+- **summary**: Summary statistics of input data to estimate normalization values.
+- **select**: Selected profiles with bad observation flags (positive) and associated profiles with good data (negative).
+- **locate**: Observation records for both positive and negative profiles.
+- **extract**: Extracted features for positive and negative observation records.
+- **split**: Division of extracted feature records into training, validation, and test datasets.
+
+### 2. Training and Evaluation
+
+#### 2.1 Create a Training Configuration File
+Before training your model, create a separate configuration file specifically for training purposes.
+
+```python
+import dmqclib as dm
+
+training_config_file = "/path/to/train_config_file.yaml"
+dm.write_config_template(training_config_file, module="train")
+```
+
+The function `write_config_template` will produce a template configuration file at the specified location. You will need to edit this file to include entries related to your model training and evaluation. For details, please refer to the [Configuration](#configuration) section.
+
+#### 2.2 Train a Model and Evaluate Performance
+After editing the configuration file, you are ready to train your model and evaluate its performance.
+
+```python
+training_set_name = "NRT_BO_001"
+
+training_config = dm.read_config(training_config_file)
+dm.train_and_evaluate(training_set_name, training_config)
+```
+
+Similar to the previous steps, ensure that the configuration file contains the necessary entries for the `training_set_name` variable. The function `train_and_evaluate` generates several folders and datasets, including:
+
+- **validate**: Results from cross-validation processes.
+- **build**: Developed models and evaluation results on the test dataset.
+
+## Configuration
+ABC
 
 ## Contribution
 
