@@ -1,25 +1,29 @@
 import os
-import shutil
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.config.training_config import TrainingConfig
 from dmqclib.utils.config import get_config_file
+from dmqclib.config.yaml_templates import (
+    get_train_config_template,
+    get_prepare_config_template,
+)
 
 
 def write_config_template(file_name: str, module: str) -> None:
-    source_files = {
-        "prepare": "prepare_config_template.yaml",
-        "train": "train_config_template.yaml",
+    function_registry = {
+        "prepare": get_prepare_config_template,
+        "train": get_train_config_template,
     }
-    if module not in source_files:
+    if module not in function_registry:
         raise ValueError(f"Module {module} is not supported.")
 
-    source_name = get_config_file(config_file_name=source_files.get(module))
+    yaml_text = function_registry.get(module)()
     if not os.path.exists(os.path.dirname(file_name)):
         raise IOError(f"Directory '{os.path.dirname(file_name)}' does not exist.")
 
-    shutil.copyfile(source_name, file_name)
+    with open(file_name, "w") as yaml_file:
+        yaml_file.write(yaml_text)
 
 
 def read_config(file_name: str, module: str) -> ConfigBase:
