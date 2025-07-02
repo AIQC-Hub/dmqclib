@@ -43,7 +43,7 @@ Next, use the configuration file to create the training dataset.
 ```python
 dataset_name = "NRT_BO_001"
 
-config = dm.read_config(config_file)
+config = dm.read_config(config_file, module="prepare")
 config.select(dataset_name)
 dm.create_training_dataset(config)
 ```
@@ -76,7 +76,7 @@ After editing the configuration file, you are ready to train your model and eval
 ```python
 training_set_name = "NRT_BO_001"
 
-training_config = dm.read_config(training_config_file)
+training_config = dm.read_config(training_config_file, module="train")
 training_config.select(training_set_name)
 dm.train_and_evaluate(training_config)
 ```
