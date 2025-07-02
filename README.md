@@ -87,9 +87,83 @@ Similar to the previous steps, ensure that the configuration file contains the n
 - **build**: Developed models and evaluation results on the test dataset.
 
 ## Configuration
-ABC
 
-## Contribution
+### 1. Dataset Preparation
+A configuration file for dataset preparation must include the following seven sections:
+
+- **path_info_sets**: Information about paths and folders.
+- **target_sets**: Names of target variables that include NRT/DM flags.
+- **feature_sets**: Set of features utilised for training models.
+- **feature_param_sets**: Parameters associated with the features.
+- **step_class_sets**: Process steps necessary for creating training datasets.
+- **step_param_sets**: Parameters corresponding to the process steps.
+- **data_sets**: A list of datasets.
+
+Among these sections, **path_info_sets** and **data_sets** require modification before running the data generation function.
+
+#### Example of `path_info_sets`
+```yaml
+path_info_sets:
+  - name: data_set_1
+    common:
+      base_path: /path/to/data # Modify this
+    input:
+      base_path: /path/to/input # Modify this
+      step_folder_name: ""
+```
+
+In the *path_info_sets* section:
+- `common:base_path` indicates the default output data location.
+- `input:base_path` specifies the input data location.
+- The entry `input:step_folder_name` can remain as an empty string (`""`).
+
+#### Example of `data_sets`
+```yaml
+data_sets:
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+    input_file_name: nrt_cora_bo_test.parquet  # Modify this
+```
+
+In the *data_sets* section, you can edit all three entries above or add a new dataset entry as needed.
+
+### 2. Training and Evaluation
+A configuration file for training and evaluation must include the following five sections:
+
+- **path_info_sets**: Information about paths and folders.
+- **target_sets**: Names of target variables that include NRT/DM flags.
+- **step_class_sets**: Process steps necessary for creating training datasets.
+- **step_param_sets**: Parameters corresponding to the process steps.
+- **training_sets**: A list of training sets.
+
+Among these sections, **path_info_sets** and **training_sets** need to be modified before running the training function.
+
+#### Example of `path_info_sets`
+```yaml
+path_info_sets:
+  - name: data_set_1
+    common:
+      base_path: /path/to/data # Modify this
+    input:
+      base_path: /path/to/data # Modify this
+      step_folder_name: "training"
+```
+
+In the *path_info_sets* section:
+- `common:base_path` indicates the default output data location.
+- `input:base_path` specifies the location for the input data.
+- The entry `input:step_folder_name` can remain as "training".
+
+#### Example of `training_sets`
+```yaml
+training_sets:
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+```
+
+In the *training_sets* section, you may edit the existing entries or add a new training set entry as needed.
+
+## Development Environment
 
 ### Package Manager
 Using [uv](https://docs.astral.sh/uv/) is recommended when contributing modifications to the package. 
