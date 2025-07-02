@@ -1,7 +1,6 @@
 def get_data_set_config_schema():
     yaml_schema = """
 ---
----
 type: object
 properties:
   path_info_sets:
@@ -247,7 +246,6 @@ required:
 
 def get_training_config_schema():
     yaml_schema = """
----
 ---
 type: object
 properties:

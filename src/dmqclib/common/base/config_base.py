@@ -3,14 +3,15 @@ from abc import ABC
 from typing import List, Dict
 
 import jsonschema
+import yaml
 from jsonschema import validate
 
-from dmqclib.utils.config import get_config_item
-from dmqclib.utils.config import read_config
 from dmqclib.common.config.yaml_schema import (
     get_data_set_config_schema,
     get_training_config_schema,
 )
+from dmqclib.utils.config import get_config_item
+from dmqclib.utils.config import read_config
 
 
 class ConfigBase(ABC):
@@ -39,9 +40,9 @@ class ConfigBase(ABC):
         }
         if section_name not in yaml_schemas:
             raise ValueError(f"Section name {section_name} is not supported.")
-    
+
         self.section_name = section_name
-        self.yaml_schema = yaml_schemas.get(section_name)()
+        self.yaml_schema = yaml.safe_load(yaml_schemas.get(section_name)())
         self.full_config = read_config(config_file, add_config_file_name=False)
         self.valid_yaml = False
         self.data = None
