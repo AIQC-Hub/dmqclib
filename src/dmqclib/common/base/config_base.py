@@ -1,11 +1,12 @@
+import os
 from abc import ABC
 from typing import List, Dict
+
 import jsonschema
-import os
 from jsonschema import validate
 
-from dmqclib.utils.config import read_config
 from dmqclib.utils.config import get_config_item
+from dmqclib.utils.config import read_config
 
 
 class ConfigBase(ABC):

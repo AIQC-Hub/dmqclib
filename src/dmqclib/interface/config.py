@@ -1,10 +1,10 @@
 import os
 import shutil
 
-from dmqclib.utils.config import get_config_file
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.config.training_config import TrainingConfig
+from dmqclib.utils.config import get_config_file
 
 
 def write_config_template(file_name: str, module: str) -> None:
