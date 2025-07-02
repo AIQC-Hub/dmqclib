@@ -20,7 +20,7 @@ class TestLocateDataSetA(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
-        self.config.load_dataset_config("NRT_BO_001")
+        self.config.select("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"

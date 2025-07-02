@@ -17,7 +17,7 @@ class TestInputTrainingSetA(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
-        self.config.load_dataset_config("NRT_BO_001")
+        self.config.select("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {

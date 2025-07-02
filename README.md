@@ -43,8 +43,9 @@ Next, use the configuration file to create the training dataset.
 ```python
 dataset_name = "NRT_BO_001"
 
-config = dm.read_config(config_file)  # Ensure the correct file is referenced
-dm.create_training_data_set(dataset_name, config)
+config = dm.read_config(config_file)
+config.select(dataset_name)
+dm.create_training_dataset(config)
 ```
 
 The configuration file must contain the appropriate entries for the `dataset_name` variable to successfully execute the above command. The function `create_training_data_set` generates several folders and datasets, including:
@@ -76,7 +77,8 @@ After editing the configuration file, you are ready to train your model and eval
 training_set_name = "NRT_BO_001"
 
 training_config = dm.read_config(training_config_file)
-dm.train_and_evaluate(training_set_name, training_config)
+training_config.select(training_set_name)
+dm.train_and_evaluate(training_config)
 ```
 
 Similar to the previous steps, ensure that the configuration file contains the necessary entries for the `training_set_name` variable. The function `train_and_evaluate` generates several folders and datasets, including:
@@ -90,12 +92,7 @@ ABC
 ## Contribution
 
 ### Package Manager
-You can create a new environment using any package management system, such as *conda* and *mamba*. 
-
-Additionally, using *uv* is recommended when contributing modifications to the package.
-
- - [uv](https://docs.astral.sh/uv/)
-
+Using [uv](https://docs.astral.sh/uv/) is recommended when contributing modifications to the package. 
 After the installation of *uv*, running `uv sync` inside the project will create the environment.
 
 #### Example of Environment Setup

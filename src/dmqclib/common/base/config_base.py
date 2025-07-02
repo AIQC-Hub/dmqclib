@@ -51,8 +51,8 @@ class ConfigBase(ABC):
         except jsonschema.exceptions.ValidationError as e:
             self.valid_yaml = False
             return f"YAML file is invalid: {e.message}"
-
-    def load_dataset_config(self, dataset_name: str):
+        
+    def select(self, dataset_name: str):
         self.validate()
         if not self.valid_yaml:
             raise ValueError("YAML file is invalid")

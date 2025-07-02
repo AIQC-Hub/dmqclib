@@ -18,7 +18,7 @@ class TestXGBoost(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
-        self.config.load_dataset_config("NRT_BO_001")
+        self.config.select("NRT_BO_001")
 
     def test_init_class(self):
         """Ensure initialization works as expected."""

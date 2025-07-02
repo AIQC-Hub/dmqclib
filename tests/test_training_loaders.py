@@ -25,7 +25,7 @@ class TestTrainingInputClassLoader(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
-        self.config.load_dataset_config("NRT_BO_001")
+        self.config.select("NRT_BO_001")
 
     def test_load_dataset_valid_config(self):
         """
@@ -49,7 +49,7 @@ class TestModelValidationClassLoader(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
-        self.config.load_dataset_config("NRT_BO_001")
+        self.config.select("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
@@ -105,7 +105,7 @@ class TestBuildModelClassLoader(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
-        self.config.load_dataset_config("NRT_BO_001")
+        self.config.select("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {

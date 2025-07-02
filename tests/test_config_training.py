@@ -48,7 +48,7 @@ class TestTrainingConfig(unittest.TestCase):
 
     def test_load_dataset_config(self):
         ds = TrainingConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         self.assertEqual(len(ds.data["path_info"]), 5)
         self.assertEqual(len(ds.data["target_set"]), 2)
@@ -58,14 +58,14 @@ class TestTrainingConfig(unittest.TestCase):
     def test_invalid_dataset_name(self):
         ds = TrainingConfig(str(self.config_file_path))
         with self.assertRaises(ValueError):
-            ds.load_dataset_config("INVALID_NAME")
+            ds.select("INVALID_NAME")
 
     def test_input_folder(self):
         """
         Test input folder
         """
         ds = TrainingConfig(str(self.template_file))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
         input_file_name = ds.get_full_file_name("input", "test.txt")
         self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
 
@@ -74,7 +74,7 @@ class TestTrainingConfig(unittest.TestCase):
         Test valid folder
         """
         ds = TrainingConfig(str(self.template_file))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
         input_file_name = ds.get_full_file_name("valid", "test.txt")
         self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
 
@@ -83,6 +83,6 @@ class TestTrainingConfig(unittest.TestCase):
         Test build folder
         """
         ds = TrainingConfig(str(self.template_file))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
         input_file_name = ds.get_full_file_name("build", "test.txt")
         self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
