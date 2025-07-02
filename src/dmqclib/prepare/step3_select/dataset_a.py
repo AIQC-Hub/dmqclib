@@ -24,13 +24,8 @@ class SelectDataSetA(ProfileSelectionBase):
 
     expected_class_name = "SelectDataSetA"
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-    ):
-        super().__init__(dataset_name, config, input_data=input_data)
+    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None):
+        super().__init__(config, input_data=input_data)
 
         self.pos_profile_df = None
         self.neg_profile_df = None

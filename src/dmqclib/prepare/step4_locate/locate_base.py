@@ -15,12 +15,11 @@ class LocatePositionBase(DataSetBase):
 
     def __init__(
         self,
-        dataset_name: str,
         config: DataSetConfig,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
     ):
-        super().__init__("locate", dataset_name, config)
+        super().__init__("locate", config)
 
         # Set member variables
         self.default_file_name = "{target_name}_rows.parquet"

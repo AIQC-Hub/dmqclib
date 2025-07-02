@@ -22,7 +22,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Test file name with a correct entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         base_path = ds.get_base_path("common")
         self.assertEqual("/path/to/data_1", base_path)
@@ -32,7 +32,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Test file name without an entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         base_path = ds.get_base_path("input")
         self.assertEqual("/path/to/input_1", base_path)
@@ -48,7 +48,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         ds = DataSetConfig(str(config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         base_path = ds.get_base_path("locate")
         self.assertEqual("/path/to/data_1", base_path)
@@ -58,7 +58,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Test file name without an entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         folder_name = ds.get_step_folder_name("input")
         self.assertEqual("input_folder_1", folder_name)
@@ -74,7 +74,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         ds = DataSetConfig(str(config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         folder_name = ds.get_step_folder_name("select")
         self.assertEqual("select", folder_name)
@@ -90,7 +90,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         ds = DataSetConfig(str(config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         folder_name = ds.get_step_folder_name("select", folder_name_auto=False)
         self.assertEqual("", folder_name)
@@ -100,7 +100,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Test file name without an entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         dataset_folder_name = ds.get_dataset_folder_name("input")
         self.assertEqual("nrt_bo_001", dataset_folder_name)
@@ -116,7 +116,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         ds = DataSetConfig(str(config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         dataset_folder_name = ds.get_dataset_folder_name("summary")
         self.assertEqual("summary_dataset_folder", dataset_folder_name)
@@ -126,7 +126,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Test file name with a correct entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         file_name = ds.get_file_name("input", "default_file.txt")
         self.assertEqual("default_file.txt", file_name)
@@ -136,7 +136,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Test file name with a correct entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         with self.assertRaises(ValueError):
             _ = ds.get_file_name("input")
@@ -152,7 +152,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         ds = DataSetConfig(str(config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         file_name = ds.get_file_name("summary")
         self.assertEqual("summary_in_params.txt", file_name)
@@ -163,7 +163,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Expect paths to be joined with slashes correctly.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         full_file_name = ds.get_full_file_name(
             "input", "test_input_file.txt", use_dataset_folder=False
@@ -179,7 +179,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         Expect paths to be joined with slashes correctly.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         full_file_name = ds.get_full_file_name("input", "test_input_file.txt")
 
@@ -199,7 +199,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         ds = DataSetConfig(str(config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         full_file_name = ds.get_full_file_name("summary", "test_input_file.txt")
 
@@ -227,7 +227,7 @@ class TestBaseConfigBaseClass(unittest.TestCase):
         Test file name with a correct entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         base_class = ds.get_base_class("input")
         self.assertEqual("InputDataSetA", base_class)
@@ -251,7 +251,7 @@ class TestBaseConfigTargets(unittest.TestCase):
         Test file name with a correct entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         target_variables = ds.get_target_variables()
         self.assertEqual(len(target_variables), 3)
@@ -261,14 +261,14 @@ class TestBaseConfigTargets(unittest.TestCase):
         Test file name with a correct entry.
         """
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         target_names = ds.get_target_names()
         self.assertEqual(target_names, ["temp", "psal", "pres"])
 
     def test_target_dict(self):
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         target_dict = ds.get_target_dict()
         self.assertEqual(target_dict["temp"], {"name": "temp", "flag": "temp_qc"})
@@ -277,7 +277,7 @@ class TestBaseConfigTargets(unittest.TestCase):
 
     def test_target_file_names(self):
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         target_file_names = ds.get_target_file_names(
             "select", "{target_name}_features.parquet"

@@ -12,13 +12,8 @@ class SummaryStatsBase(DataSetBase):
     Base class to calculate summary stats
     """
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-    ):
-        super().__init__("summary", dataset_name, config)
+    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None):
+        super().__init__("summary", config)
 
         # Set member variables
         self.default_file_name = "summary_stats.tsv"

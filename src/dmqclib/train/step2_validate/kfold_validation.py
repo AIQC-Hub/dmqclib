@@ -11,21 +11,12 @@ class KFoldValidation(ValidationBase):
 
     expected_class_name = "KFoldValidation"
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: TrainingConfig,
-        training_sets: pl.DataFrame = None,
-    ):
-        super().__init__(
-            dataset_name,
-            config,
-            training_sets=training_sets,
-        )
+    def __init__(self, config: TrainingConfig, training_sets: pl.DataFrame = None):
+        super().__init__(config, training_sets=training_sets)
 
         self.default_k_fold = 10
 
-    def get_k_fold(self) -> str:
+    def get_k_fold(self) -> int:
         return (
             self.config.get_step_params("validate").get("k_fold", self.default_k_fold)
             or self.default_k_fold

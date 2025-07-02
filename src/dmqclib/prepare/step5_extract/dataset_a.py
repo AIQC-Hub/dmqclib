@@ -13,7 +13,6 @@ class ExtractDataSetA(ExtractFeatureBase):
 
     def __init__(
         self,
-        dataset_name: str,
         config: DataSetConfig,
         input_data: pl.DataFrame = None,
         selected_profiles: pl.DataFrame = None,
@@ -21,7 +20,6 @@ class ExtractDataSetA(ExtractFeatureBase):
         summary_stats: pl.DataFrame = None,
     ):
         super().__init__(
-            dataset_name,
             config,
             input_data=input_data,
             selected_profiles=selected_profiles,

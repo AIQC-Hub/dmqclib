@@ -11,13 +11,8 @@ class SummaryDataSetA(SummaryStatsBase):
 
     expected_class_name = "SummaryDataSetA"
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-    ):
-        super().__init__(dataset_name, config, input_data=input_data)
+    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None):
+        super().__init__(config, input_data=input_data)
 
         self.val_col_names = [
             "longitude",

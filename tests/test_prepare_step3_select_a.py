@@ -19,29 +19,25 @@ class TestSelectDataSetA(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds = load_step1_input_dataset("NRT_BO_001", self.config)
+        self.ds = load_step1_input_dataset(self.config)
         self.ds.input_file_name = str(self.test_data_file)
         self.ds.read_input_data()
 
-    def test_init_valid_dataset_name(self):
-        """Ensure SelectDataSetA constructs correctly with a valid label."""
-        ds = SelectDataSetA("NRT_BO_001", self.config)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_init_invalid_dataset_name(self):
-        """Ensure ValueError is raised for invalid label."""
-        with self.assertRaises(ValueError):
-            SelectDataSetA("NON_EXISTENT_LABEL", self.config)
+    def test_step_name(self):
+        """Ensure the step name is set correctly."""
+        ds = SelectDataSetA(self.config)
+        self.assertEqual(ds.step_name, "select")
 
     def test_output_file_name(self):
         """Ensure output file name is set correctly."""
-        ds = SelectDataSetA("NRT_BO_001", self.config)
+        ds = SelectDataSetA(self.config)
         self.assertEqual(
             "/path/to/select_1/nrt_bo_001/select_folder_1/selected_profiles.parquet",
             str(ds.output_file_name),
@@ -56,8 +52,9 @@ class TestSelectDataSetA(unittest.TestCase):
             / "test_dataset_002.yaml"
         )
         config = DataSetConfig(config_file_path)
+        config.select("NRT_BO_001")
 
-        ds = SelectDataSetA("NRT_BO_001", config)
+        ds = SelectDataSetA(config)
         self.assertEqual(
             "/path/to/data_1/nrt_bo_001/select/selected_profiles.parquet",
             str(ds.output_file_name),
@@ -65,14 +62,14 @@ class TestSelectDataSetA(unittest.TestCase):
 
     def test_input_data(self):
         """Ensure input data is set correctly."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_positive_profiles(self):
         """Ensure positive profiles are selected correctly."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.select_positive_profiles()
         self.assertIsInstance(ds.pos_profile_df, pl.DataFrame)
         self.assertEqual(ds.pos_profile_df.shape[0], 25)
@@ -80,7 +77,7 @@ class TestSelectDataSetA(unittest.TestCase):
 
     def test_negative_profiles(self):
         """Ensure negative profiles are selected correctly."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.select_positive_profiles()
         ds.select_negative_profiles()
         self.assertIsInstance(ds.neg_profile_df, pl.DataFrame)
@@ -89,7 +86,7 @@ class TestSelectDataSetA(unittest.TestCase):
 
     def test_find_profile_pairs(self):
         """Ensure profile pairs are found correctly."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.select_positive_profiles()
         ds.select_negative_profiles()
         ds.find_profile_pairs()
@@ -100,14 +97,14 @@ class TestSelectDataSetA(unittest.TestCase):
 
     def test_label_profiles(self):
         """Ensure profiles are labeled correctly in the dataset."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.label_profiles()
         self.assertEqual(ds.selected_profiles.shape[0], 44)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_write_selected_profiles(self):
         """Ensure selected profiles are written to parquet file correctly."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.output_file_name = (
             Path(__file__).resolve().parent
             / "data"
@@ -122,7 +119,7 @@ class TestSelectDataSetA(unittest.TestCase):
 
     def test_write_empty_selected_profiles(self):
         """ "Ensure ValueError is raised for empty profiles."""
-        ds = SelectDataSetA("NRT_BO_001", self.config, input_data=self.ds.input_data)
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.output_file_name = (
             Path(__file__).resolve().parent
             / "data"

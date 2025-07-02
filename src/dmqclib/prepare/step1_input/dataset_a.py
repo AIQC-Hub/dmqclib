@@ -9,8 +9,8 @@ class InputDataSetA(InputDataSetBase):
 
     expected_class_name = "InputDataSetA"
 
-    def __init__(self, dataset_name: str, config: DataSetConfig):
-        super().__init__(dataset_name, config)
+    def __init__(self, config: DataSetConfig):
+        super().__init__(config)
 
     def select(self):
         """

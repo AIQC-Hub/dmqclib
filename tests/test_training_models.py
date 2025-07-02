@@ -18,13 +18,9 @@ class TestXGBoost(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
 
-    def test_init_valid_dataset_name(self):
-        """Ensure ExtractDataSetA constructs correctly with a valid label."""
-        ds = XGBoost("NRT_BO_001", self.config)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_init_invalid_dataset_name(self):
-        """Ensure ValueError is raised for an invalid label."""
-        with self.assertRaises(ValueError):
-            XGBoost("NON_EXISTENT_LABEL", self.config)
+    def test_init_class(self):
+        """Ensure initialization works as expected."""
+        ds = XGBoost(self.config)
+        self.assertEqual(ds.k, 0)

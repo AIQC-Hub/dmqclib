@@ -12,13 +12,8 @@ class ProfileSelectionBase(DataSetBase):
     Base class for profile selection and group labeling classes
     """
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-    ):
-        super().__init__("select", dataset_name, config)
+    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None):
+        super().__init__("select", config)
 
         # Set member variables
         self.default_file_name = "selected_profiles.parquet"

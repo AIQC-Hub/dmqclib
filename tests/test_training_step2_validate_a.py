@@ -20,6 +20,7 @@ class TestKFoldValidation(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
@@ -34,23 +35,18 @@ class TestKFoldValidation(unittest.TestCase):
             },
         }
 
-        self.ds_input = load_step1_input_training_set("NRT_BO_001", self.config)
+        self.ds_input = load_step1_input_training_set(self.config)
         self.ds_input.input_file_names = self.input_file_names
         self.ds_input.process_targets()
 
-    def test_init_valid_dataset_name(self):
-        """Ensure ExtractDataSetA constructs correctly with a valid label."""
-        ds = KFoldValidation("NRT_BO_001", self.config)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_init_invalid_dataset_name(self):
-        """Ensure ValueError is raised for an invalid label."""
-        with self.assertRaises(ValueError):
-            KFoldValidation("NON_EXISTENT_LABEL", self.config)
+    def test_step_name(self):
+        """Ensure the step name is set correctly."""
+        ds = KFoldValidation(self.config)
+        self.assertEqual(ds.step_name, "validate")
 
     def test_output_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = KFoldValidation("NRT_BO_001", self.config)
+        ds = KFoldValidation(self.config)
         self.assertEqual(
             "/path/to/validate_1/nrt_bo_001/validate_folder_1/temp_validation_result.tsv",
             str(ds.output_file_names["result"]["temp"]),
@@ -66,14 +62,12 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_base_model(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation("NRT_BO_001", self.config)
+        ds = KFoldValidation(self.config)
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation(
-            "NRT_BO_001", self.config, training_sets=self.ds_input.training_sets
-        )
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
@@ -85,9 +79,7 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_default_k_fold(self):
         """Ensure k_fold is set to default value when no config entry is found."""
-        ds = KFoldValidation(
-            "NRT_BO_001", self.config, training_sets=self.ds_input.training_sets
-        )
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.config.data["step_param_set"]["steps"]["validate"]["k_fold"] = None
 
         k_fold = ds.get_k_fold()
@@ -95,9 +87,7 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_xgboost(self):
         """Verify the config file is correctly set in the member variable."""
-        ds = KFoldValidation(
-            "NRT_BO_001", self.config, training_sets=self.ds_input.training_sets
-        )
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         ds.process_targets()
 
@@ -111,9 +101,7 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_write_results(self):
         """Ensure target rows are written to parquet files correctly."""
-        ds = KFoldValidation(
-            "NRT_BO_001", self.config, training_sets=self.ds_input.training_sets
-        )
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["result"]["temp"] = (

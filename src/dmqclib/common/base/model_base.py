@@ -13,13 +13,11 @@ class ModelBase(ABC):
 
     expected_class_name = None  # Must be overridden by child classes
 
-    def __init__(self, dataset_name: str, config: ConfigBase):
+    def __init__(self, config: ConfigBase):
         if not self.expected_class_name:
             raise NotImplementedError(
                 "Child class must define 'expected_class_name' attribute"
             )
-
-        config.load_dataset_config(dataset_name)
 
         # Validate that the YAML's "class" matches the child's declared class name
         base_class = config.get_base_class("model")
@@ -33,7 +31,6 @@ class ModelBase(ABC):
             "model_params", {}
         )
 
-        self.dataset_name = dataset_name
         self.config = config
         self.model_params = model_params
 
@@ -62,7 +59,7 @@ class ModelBase(ABC):
         Read model.
         """
         if not os.path.exists(file_name):
-            raise FileNotFoundError(f"The file '{file_name}' does not exist.")
+            raise FileNotFoundError(f"File '{file_name}' does not exist.")
 
         self.model = load(file_name)
 

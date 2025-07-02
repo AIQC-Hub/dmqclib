@@ -21,16 +21,152 @@ Using *conda*:
 conda install takayasaito::dmqclib 
 ```
 
+## Usage
 
-## Contribution
+### 1. Dataset Preparation
+
+#### 1.1 Create a Configuration File
+First, create a configuration file that will serve as a template for preparing your dataset.
+
+```python
+import dmqclib as dm
+
+config_file = "/path/to/config_file.yaml"
+dm.write_config_template(config_file, module="prepare")
+```
+
+The function `write_config_template` generates a template configuration file at the specified location. You will need to edit this file to include entries relevant to the dataset you want to prepare for training. For detailed instructions, refer to the [Configuration](#configuration) section.
+
+#### 1.2 Create a Training Dataset
+Next, use the configuration file to create the training dataset.
+
+```python
+dataset_name = "NRT_BO_001"
+
+config = dm.read_config(config_file)
+config.select(dataset_name)
+dm.create_training_dataset(config)
+```
+
+The configuration file must contain the appropriate entries for the `dataset_name` variable to successfully execute the above command. The function `create_training_data_set` generates several folders and datasets, including:
+
+- **summary**: Summary statistics of input data to estimate normalization values.
+- **select**: Selected profiles with bad observation flags (positive) and associated profiles with good data (negative).
+- **locate**: Observation records for both positive and negative profiles.
+- **extract**: Extracted features for positive and negative observation records.
+- **split**: Division of extracted feature records into training, validation, and test datasets.
+
+### 2. Training and Evaluation
+
+#### 2.1 Create a Training Configuration File
+Before training your model, create a separate configuration file specifically for training purposes.
+
+```python
+import dmqclib as dm
+
+training_config_file = "/path/to/train_config_file.yaml"
+dm.write_config_template(training_config_file, module="train")
+```
+
+The function `write_config_template` will produce a template configuration file at the specified location. You will need to edit this file to include entries related to your model training and evaluation. For details, please refer to the [Configuration](#configuration) section.
+
+#### 2.2 Train a Model and Evaluate Performance
+After editing the configuration file, you are ready to train your model and evaluate its performance.
+
+```python
+training_set_name = "NRT_BO_001"
+
+training_config = dm.read_config(training_config_file)
+training_config.select(training_set_name)
+dm.train_and_evaluate(training_config)
+```
+
+Similar to the previous steps, ensure that the configuration file contains the necessary entries for the `training_set_name` variable. The function `train_and_evaluate` generates several folders and datasets, including:
+
+- **validate**: Results from cross-validation processes.
+- **build**: Developed models and evaluation results on the test dataset.
+
+## Configuration
+
+### 1. Dataset Preparation
+A configuration file for dataset preparation must include the following seven sections:
+
+- **path_info_sets**: Information about paths and folders.
+- **target_sets**: Names of target variables that include NRT/DM flags.
+- **feature_sets**: Set of features utilised for training models.
+- **feature_param_sets**: Parameters associated with the features.
+- **step_class_sets**: Process steps necessary for creating training datasets.
+- **step_param_sets**: Parameters corresponding to the process steps.
+- **data_sets**: A list of datasets.
+
+Among these sections, **path_info_sets** and **data_sets** require modification before running the data generation function.
+
+#### Example of `path_info_sets`
+```yaml
+path_info_sets:
+  - name: data_set_1
+    common:
+      base_path: /path/to/data # Modify this
+    input:
+      base_path: /path/to/input # Modify this
+      step_folder_name: ""
+```
+
+In the *path_info_sets* section:
+- `common:base_path` indicates the default output data location.
+- `input:base_path` specifies the input data location.
+- The entry `input:step_folder_name` can remain as an empty string (`""`).
+
+#### Example of `data_sets`
+```yaml
+data_sets:
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+    input_file_name: nrt_cora_bo_test.parquet  # Modify this
+```
+
+In the *data_sets* section, you can edit all three entries above or add a new dataset entry as needed.
+
+### 2. Training and Evaluation
+A configuration file for training and evaluation must include the following five sections:
+
+- **path_info_sets**: Information about paths and folders.
+- **target_sets**: Names of target variables that include NRT/DM flags.
+- **step_class_sets**: Process steps necessary for creating training datasets.
+- **step_param_sets**: Parameters corresponding to the process steps.
+- **training_sets**: A list of training sets.
+
+Among these sections, **path_info_sets** and **training_sets** need to be modified before running the training function.
+
+#### Example of `path_info_sets`
+```yaml
+path_info_sets:
+  - name: data_set_1
+    common:
+      base_path: /path/to/data # Modify this
+    input:
+      base_path: /path/to/data # Modify this
+      step_folder_name: "training"
+```
+
+In the *path_info_sets* section:
+- `common:base_path` indicates the default output data location.
+- `input:base_path` specifies the location for the input data.
+- The entry `input:step_folder_name` can remain as "training".
+
+#### Example of `training_sets`
+```yaml
+training_sets:
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+```
+
+In the *training_sets* section, you may edit the existing entries or add a new training set entry as needed.
+
+## Development Environment
 
 ### Package Manager
-You can create a new environment using any package management system, such as *conda* and *mamba*. 
-
-Additionally, using *uv* is recommended when contributing modifications to the package.
-
- - [uv](https://docs.astral.sh/uv/)
-
+Using [uv](https://docs.astral.sh/uv/) is recommended when contributing modifications to the package. 
 After the installation of *uv*, running `uv sync` inside the project will create the environment.
 
 #### Example of Environment Setup

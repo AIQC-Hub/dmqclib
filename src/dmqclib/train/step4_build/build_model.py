@@ -13,17 +13,11 @@ class BuildModel(BuildModelBase):
 
     def __init__(
         self,
-        dataset_name: str,
         config: TrainingConfig,
         training_sets: pl.DataFrame = None,
         test_sets: pl.DataFrame = None,
     ):
-        super().__init__(
-            dataset_name,
-            config,
-            training_sets=training_sets,
-            test_sets=test_sets,
-        )
+        super().__init__(config, training_sets=training_sets, test_sets=test_sets)
 
     def build(self, target_name: str):
         """
