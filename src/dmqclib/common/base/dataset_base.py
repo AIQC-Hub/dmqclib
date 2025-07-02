@@ -12,13 +12,11 @@ class DataSetBase(ABC):
 
     expected_class_name = None  # Must be overridden by child classes
 
-    def __init__(self, step_name: str, dataset_name: str, config: ConfigBase):
+    def __init__(self, step_name: str, config: ConfigBase):
         if not self.expected_class_name:
             raise NotImplementedError(
                 "Child class must define 'expected_class_name' attribute"
             )
-
-        config.load_dataset_config(dataset_name)
 
         # Validate that the YAML's "class" matches the child's declared class name
         base_class = config.get_base_class(step_name)
@@ -30,9 +28,8 @@ class DataSetBase(ABC):
 
         # Set member variables
         self.step_name = step_name
-        self.dataset_name = dataset_name
         self.config = config
 
     def __repr__(self):
         # Provide a simple representation
-        return f"DataSetBase(step={self.step_name}, dataset={self.dataset_name}, class={self.base_class_name})"
+        return f"DataSetBase(step={self.step_name}, class={self.base_class_name})"

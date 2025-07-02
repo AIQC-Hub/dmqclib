@@ -17,6 +17,7 @@ class TestInputTrainingSetA(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
@@ -31,19 +32,14 @@ class TestInputTrainingSetA(unittest.TestCase):
             },
         }
 
-    def test_init_valid_dataset_name(self):
-        """Ensure ExtractDataSetA constructs correctly with a valid label."""
-        ds = InputTrainingSetA("NRT_BO_001", self.config)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_init_invalid_dataset_name(self):
-        """Ensure ValueError is raised for an invalid label."""
-        with self.assertRaises(ValueError):
-            InputTrainingSetA("NON_EXISTENT_LABEL", self.config)
+    def test_step_name(self):
+        """Ensure the step name is set correctly."""
+        ds = InputTrainingSetA(self.config)
+        self.assertEqual(ds.step_name, "input")
 
     def test_input_file_names(self):
         """Ensure output file names are set correctly."""
-        ds = InputTrainingSetA("NRT_BO_001", self.config)
+        ds = InputTrainingSetA(self.config)
         self.assertEqual(
             "/path/to/input_1/nrt_bo_001/input_folder_1/temp_train.parquet",
             str(ds.input_file_names["train"]["temp"]),
@@ -63,7 +59,7 @@ class TestInputTrainingSetA(unittest.TestCase):
 
     def test_read_files(self):
         """Ensure input data and selected profiles are read correctly."""
-        ds = InputTrainingSetA("NRT_BO_001", self.config)
+        ds = InputTrainingSetA(self.config)
         ds.input_file_names = self.input_file_names
 
         ds.process_targets()

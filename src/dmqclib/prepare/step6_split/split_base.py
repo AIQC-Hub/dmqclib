@@ -12,13 +12,8 @@ class SplitDataSetBase(DataSetBase):
     Base class to identify training data rows
     """
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        target_features: pl.DataFrame = None,
-    ):
-        super().__init__("split", dataset_name, config)
+    def __init__(self, config: DataSetConfig, target_features: pl.DataFrame = None):
+        super().__init__("split", config)
 
         # Set member variables
         self.default_file_names = {

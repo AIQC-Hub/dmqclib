@@ -12,17 +12,8 @@ class SplitDataSetA(SplitDataSetBase):
 
     expected_class_name = "SplitDataSetA"
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        target_features: pl.DataFrame = None,
-    ):
-        super().__init__(
-            dataset_name,
-            config,
-            target_features=target_features,
-        )
+    def __init__(self, config: DataSetConfig, target_features: pl.DataFrame = None):
+        super().__init__(config, target_features=target_features)
 
         self.work_col_names = [
             "row_id",

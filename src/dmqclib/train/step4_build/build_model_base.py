@@ -15,12 +15,11 @@ class BuildModelBase(DataSetBase):
 
     def __init__(
         self,
-        dataset_name: str,
         config: TrainingConfig,
         training_sets: pl.DataFrame = None,
         test_sets: pl.DataFrame = None,
     ):
-        super().__init__("build", dataset_name, config)
+        super().__init__("build", config)
 
         # Set member variables
         self.default_file_name = "{target_name}_model.json"
@@ -41,7 +40,7 @@ class BuildModelBase(DataSetBase):
         self.results = {}
 
     def load_base_model(self):
-        self.base_model = load_model_class(self.dataset_name, self.config)
+        self.base_model = load_model_class(self.config)
 
     def build_targets(self):
         """

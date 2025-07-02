@@ -17,6 +17,13 @@ class TestDataSetConfig(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
 
+        self.template_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "prepare_config_template.yaml"
+        )
+
     def test_valid_config(self):
         """
         Test valid config
@@ -41,7 +48,7 @@ class TestDataSetConfig(unittest.TestCase):
 
     def test_load_dataset_config(self):
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
         self.assertEqual(len(ds.data["path_info"]), 6)
         self.assertEqual(len(ds.data["target_set"]), 2)
@@ -52,10 +59,42 @@ class TestDataSetConfig(unittest.TestCase):
 
     def test_load_dataset_config_twise(self):
         ds = DataSetConfig(str(self.config_file_path))
-        ds.load_dataset_config("NRT_BO_001")
-        ds.load_dataset_config("NRT_BO_001")
+        ds.select("NRT_BO_001")
+        ds.select("NRT_BO_001")
 
     def test_invalid_dataset_name(self):
         ds = DataSetConfig(str(self.config_file_path))
         with self.assertRaises(ValueError):
-            ds.load_dataset_config("INVALID_NAME")
+            ds.select("INVALID_NAME")
+
+    def test_input_folder(self):
+        """
+        Test input folder
+        """
+        ds = DataSetConfig(str(self.template_file))
+        ds.select("NRT_BO_001")
+        input_file_name = ds.get_full_file_name(
+            "input",
+            ds.data["input_file_name"],
+            use_dataset_folder=False,
+            folder_name_auto=False,
+        )
+        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_test.parquet")
+
+    def test_summary_folder(self):
+        """
+        Test summary folder
+        """
+        ds = DataSetConfig(str(self.template_file))
+        ds.select("NRT_BO_001")
+        input_file_name = ds.get_full_file_name("summary", "test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/summary/test.txt")
+
+    def test_split_folder(self):
+        """
+        Test split folder
+        """
+        ds = DataSetConfig(str(self.template_file))
+        ds.select("NRT_BO_001")
+        input_file_name = ds.get_full_file_name("split", "test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")

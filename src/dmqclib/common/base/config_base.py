@@ -1,11 +1,12 @@
+import os
 from abc import ABC
 from typing import List, Dict
+
 import jsonschema
-import os
 from jsonschema import validate
 
-from dmqclib.utils.config import read_config
 from dmqclib.utils.config import get_config_item
+from dmqclib.utils.config import read_config
 
 
 class ConfigBase(ABC):
@@ -51,7 +52,7 @@ class ConfigBase(ABC):
             self.valid_yaml = False
             return f"YAML file is invalid: {e.message}"
 
-    def load_dataset_config(self, dataset_name: str):
+    def select(self, dataset_name: str):
         self.validate()
         if not self.valid_yaml:
             raise ValueError("YAML file is invalid")

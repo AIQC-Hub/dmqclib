@@ -13,11 +13,8 @@ from dmqclib.common.base.model_base import ModelBase
 class XGBoost(ModelBase):
     expected_class_name = "XGBoost"
 
-    def __init__(self, dataset_name: str, config: ConfigBase):
-        super().__init__(
-            dataset_name,
-            config,
-        )
+    def __init__(self, config: ConfigBase):
+        super().__init__(config)
 
         params = {
             "n_estimators": 100,
