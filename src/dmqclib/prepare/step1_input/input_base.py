@@ -10,8 +10,8 @@ class InputDataSetBase(DataSetBase):
     Base class for input data loading classes.
     """
 
-    def __init__(self, dataset_name: str, config: DataSetConfig):
-        super().__init__("input", dataset_name, config)
+    def __init__(self, config: DataSetConfig):
+        super().__init__("input", config)
 
         # Set member variables
         self.input_file_name = self.config.get_full_file_name(

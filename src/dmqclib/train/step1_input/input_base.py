@@ -11,8 +11,8 @@ class InputTrainingSetBase(DataSetBase):
     Base class to import training data sets
     """
 
-    def __init__(self, dataset_name: str, config: TrainingConfig):
-        super().__init__("input", dataset_name, config)
+    def __init__(self, config: TrainingConfig):
+        super().__init__("input", config)
 
         # Set member variables
         self.default_file_names = {

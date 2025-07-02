@@ -31,28 +31,15 @@ class TestInputClassLoader(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
         Test that load_dataset returns an instance of InputDataSetA for the known label.
         """
-        ds = load_step1_input_dataset("NRT_BO_001", self.config)
+        ds = load_step1_input_dataset(self.config)
         self.assertIsInstance(ds, InputDataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step1_input_dataset("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step1_input_dataset("NRT_BO_003", self.config)
+        self.assertEqual(ds.step_name,"input")
 
 
 class TestSummaryClassLoader(unittest.TestCase):
@@ -68,6 +55,7 @@ class TestSummaryClassLoader(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -75,41 +63,27 @@ class TestSummaryClassLoader(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
         Test that load_dataset returns an instance of SummaryDataSetA for the known label.
         """
-        ds = load_step2_summary_dataset("NRT_BO_001", self.config)
+        ds = load_step2_summary_dataset(self.config)
         self.assertIsInstance(ds, SummaryDataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
+        self.assertEqual(ds.step_name,"summary")
+        
     def test_load_dataset_input_data(self):
         """
         Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
         """
-        ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
+        ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
         ds_input.read_input_data()
 
-        ds = load_step2_summary_dataset("NRT_BO_001", self.config, ds_input.input_data)
+        ds = load_step2_summary_dataset(self.config, ds_input.input_data)
         self.assertIsInstance(ds, SummaryDataSetA)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step2_summary_dataset("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step2_summary_dataset("NRT_BO_003", self.config)
 
 
 class TestSelectClassLoader(unittest.TestCase):
@@ -125,6 +99,7 @@ class TestSelectClassLoader(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -132,41 +107,27 @@ class TestSelectClassLoader(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of SelectDataSetA for the known label.
+        Test that load_dataset returns an instance of SummaryDataSetA for the known label.
         """
-        ds = load_step3_select_dataset("NRT_BO_001", self.config)
+        ds = load_step3_select_dataset(self.config)
         self.assertIsInstance(ds, SelectDataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
+        self.assertEqual(ds.step_name,"select")
+        
     def test_load_dataset_input_data(self):
         """
         Test that load_dataset returns an instance of SelectDataSetA with correct input_data.
         """
-        ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
+        ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
         ds_input.read_input_data()
 
-        ds = load_step3_select_dataset("NRT_BO_001", self.config, ds_input.input_data)
+        ds = load_step3_select_dataset(self.config, ds_input.input_data)
         self.assertIsInstance(ds, SelectDataSetA)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step3_select_dataset("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step3_select_dataset("NRT_BO_003", self.config)
 
 
 class TestLocateClassLoader(unittest.TestCase):
@@ -182,6 +143,7 @@ class TestLocateClassLoader(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -189,33 +151,27 @@ class TestLocateClassLoader(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA for the known label.
         """
-        ds = load_step4_locate_dataset("NRT_BO_001", self.config)
+        ds = load_step4_locate_dataset(self.config)
         self.assertIsInstance(ds, LocateDataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
+        self.assertEqual(ds.step_name,"locate")
+        
     def test_load_dataset_input_data_and_profiles(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
         """
-        ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
+        ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
         ds_input.read_input_data()
 
-        ds_select = load_step3_select_dataset(
-            "NRT_BO_001", self.config, ds_input.input_data
-        )
+        ds_select = load_step3_select_dataset(self.config, ds_input.input_data)
         ds_select.label_profiles()
 
-        ds = load_step4_locate_dataset(
-            "NRT_BO_001",
-            self.config,
-            ds_input.input_data,
-            ds_select.selected_profiles,
-        )
+        ds = load_step4_locate_dataset(self.config, ds_input.input_data,
+                                       ds_select.selected_profiles)
 
         self.assertIsInstance(ds, LocateDataSetA)
 
@@ -226,20 +182,6 @@ class TestLocateClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
         self.assertEqual(ds.selected_profiles.shape[0], 44)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step4_locate_dataset("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step4_locate_dataset("NRT_BO_003", self.config)
 
 
 class TestExtractClassLoader(unittest.TestCase):
@@ -255,6 +197,7 @@ class TestExtractClassLoader(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -262,48 +205,35 @@ class TestExtractClassLoader(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of LocateDataSetA for the known label.
+        Test that load_dataset returns an instance of ExtractDataSetA for the known label.
         """
-        ds = load_step5_extract_dataset("NRT_BO_001", self.config)
+        ds = load_step5_extract_dataset(self.config)
         self.assertIsInstance(ds, ExtractDataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
+        self.assertEqual(ds.step_name,"extract")
+        
     def test_load_dataset_input_data_and_profiles(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
         """
-        ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
+        ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
         ds_input.read_input_data()
 
-        ds_select = load_step3_select_dataset(
-            "NRT_BO_001", self.config, ds_input.input_data
-        )
+        ds_select = load_step3_select_dataset(self.config, ds_input.input_data)
         ds_select.label_profiles()
 
-        ds_summary = load_step2_summary_dataset(
-            "NRT_BO_001", self.config, ds_input.input_data
-        )
+        ds_summary = load_step2_summary_dataset(self.config, ds_input.input_data)
         ds_summary.calculate_stats()
 
-        ds_locate = load_step4_locate_dataset(
-            "NRT_BO_001",
-            self.config,
-            ds_input.input_data,
-            ds_select.selected_profiles,
-        )
+        ds_locate = load_step4_locate_dataset(self.config, ds_input.input_data,
+                                              ds_select.selected_profiles)
         ds_locate.process_targets()
 
-        ds = load_step5_extract_dataset(
-            "NRT_BO_001",
-            self.config,
-            ds_input.input_data,
-            ds_select.selected_profiles,
-            ds_locate.target_rows,
-            ds_summary.summary_stats,
-        )
+        ds = load_step5_extract_dataset(self.config, ds_input.input_data,
+                                        ds_select.selected_profiles, ds_locate.target_rows,
+                                        ds_summary.summary_stats)
 
         self.assertIsInstance(ds, ExtractDataSetA)
 
@@ -331,20 +261,6 @@ class TestExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.target_rows["psal"].shape[0], 140)
         self.assertEqual(ds.target_rows["psal"].shape[1], 9)
 
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step5_extract_dataset("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step5_extract_dataset("NRT_BO_003", self.config)
-
 
 class TestSplitClassLoader(unittest.TestCase):
     def setUp(self):
@@ -359,6 +275,7 @@ class TestSplitClassLoader(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -366,53 +283,38 @@ class TestSplitClassLoader(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of LocateDataSetA for the known label.
+        Test that load_dataset returns an instance of SplitDataSetA for the known label.
         """
-        ds = load_step6_split_dataset("NRT_BO_001", self.config)
+        ds = load_step6_split_dataset(self.config)
         self.assertIsInstance(ds, SplitDataSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
+        self.assertEqual(ds.step_name,"split")
+        
     def test_load_dataset_input_data(self):
         """
         Test that load_dataset returns an instance of LocateDataSetA with correct input_data and selected profiles.
         """
-        ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
+        ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
         ds_input.read_input_data()
 
-        ds_select = load_step3_select_dataset(
-            "NRT_BO_001", self.config, ds_input.input_data
-        )
+        ds_select = load_step3_select_dataset(self.config, ds_input.input_data)
         ds_select.label_profiles()
 
-        ds_summary = load_step2_summary_dataset(
-            "NRT_BO_001", self.config, ds_input.input_data
-        )
+        ds_summary = load_step2_summary_dataset(self.config, ds_input.input_data)
         ds_summary.calculate_stats()
 
-        ds_locate = load_step4_locate_dataset(
-            "NRT_BO_001",
-            self.config,
-            ds_input.input_data,
-            ds_select.selected_profiles,
-        )
+        ds_locate = load_step4_locate_dataset(self.config, ds_input.input_data,
+                                              ds_select.selected_profiles)
         ds_locate.process_targets()
 
-        ds_extract = load_step5_extract_dataset(
-            "NRT_BO_001",
-            self.config,
-            ds_input.input_data,
-            ds_select.selected_profiles,
-            ds_locate.target_rows,
-            ds_summary.summary_stats,
-        )
+        ds_extract = load_step5_extract_dataset(self.config, ds_input.input_data,
+                                                ds_select.selected_profiles, ds_locate.target_rows,
+                                                ds_summary.summary_stats)
         ds_extract.process_targets()
 
-        ds = load_step6_split_dataset(
-            "NRT_BO_001", self.config, ds_extract.target_features
-        )
+        ds = load_step6_split_dataset(self.config, ds_extract.target_features)
 
         self.assertIsInstance(ds, SplitDataSetA)
 
@@ -423,17 +325,3 @@ class TestSplitClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 140)
         self.assertEqual(ds.target_features["psal"].shape[1], 43)
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step6_split_dataset("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step6_split_dataset("NRT_BO_003", self.config)

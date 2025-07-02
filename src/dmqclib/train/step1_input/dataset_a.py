@@ -9,8 +9,5 @@ class InputTrainingSetA(InputTrainingSetBase):
 
     expected_class_name = "InputTrainingSetA"
 
-    def __init__(self, dataset_name: str, config: TrainingConfig):
-        super().__init__(
-            dataset_name,
-            config,
-        )
+    def __init__(self, config: TrainingConfig):
+        super().__init__(config)

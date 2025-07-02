@@ -17,6 +17,7 @@ class TestInputDataSetA(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -26,7 +27,7 @@ class TestInputDataSetA(unittest.TestCase):
 
     def _get_input_data(self, file_type=None, read_file_options=None):
         """Helper to load input data with optional file type and options."""
-        ds = InputDataSetA("NRT_BO_001", self.config)
+        ds = InputDataSetA(self.config)
         ds.input_file_name = str(self.test_data_file)
 
         if file_type is not None:
@@ -39,20 +40,15 @@ class TestInputDataSetA(unittest.TestCase):
 
         ds.read_input_data()
         return ds.input_data
-
-    def test_init_valid_dataset_name(self):
-        """Ensure InputDataSetA constructs correctly with a valid label."""
-        ds = InputDataSetA("NRT_BO_001", self.config)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_init_invalid_dataset_name(self):
-        """Ensure ValueError is raised for an invalid label."""
-        with self.assertRaises(ValueError):
-            InputDataSetA("NON_EXISTENT_LABEL", self.config)
-
+     
+    def test_step_name(self):
+        """Ensure the step name is set correctly."""
+        ds = InputDataSetA(self.config)
+        self.assertEqual(ds.step_name,"input")
+        
     def test_input_file_name(self):
         """Ensure the input file name is set correctly."""
-        ds = InputDataSetA("NRT_BO_001", self.config)
+        ds = InputDataSetA(self.config)
         self.assertEqual(
             "/path/to/input_1/input_folder_1/nrt_cora_bo_test.parquet",
             str(ds.input_file_name),
@@ -84,7 +80,7 @@ class TestInputDataSetA(unittest.TestCase):
 
     def test_read_input_data_file_not_found(self):
         """Ensure FileNotFoundError is raised for non-existent files."""
-        ds = InputDataSetA("NRT_BO_001", self.config)
+        ds = InputDataSetA(self.config)
         ds.input_file_name = str(self.test_data_file) + "_not_found"
 
         with self.assertRaises(FileNotFoundError):

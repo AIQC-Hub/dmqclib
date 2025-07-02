@@ -13,13 +13,8 @@ class ValidationBase(DataSetBase):
     Base class for validation classes.
     """
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: TrainingConfig,
-        training_sets: pl.DataFrame = None,
-    ):
-        super().__init__("validate", dataset_name, config)
+    def __init__(self, config: TrainingConfig, training_sets: pl.DataFrame = None):
+        super().__init__("validate", config)
 
         # Set member variables
         self.default_file_names = {
@@ -38,7 +33,7 @@ class ValidationBase(DataSetBase):
         self.summarised_results = {}
 
     def load_base_model(self):
-        self.base_model = load_model_class(self.dataset_name, self.config)
+        self.base_model = load_model_class(self.config)
 
     def process_targets(self):
         """

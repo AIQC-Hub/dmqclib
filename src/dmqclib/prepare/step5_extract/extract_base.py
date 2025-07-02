@@ -13,16 +13,10 @@ class ExtractFeatureBase(DataSetBase):
     Base class to extract features
     """
 
-    def __init__(
-        self,
-        dataset_name: str,
-        config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-        selected_profiles: pl.DataFrame = None,
-        target_rows: pl.DataFrame = None,
-        summary_stats: pl.DataFrame = None,
-    ):
-        super().__init__("extract", dataset_name, config)
+    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None,
+                 selected_profiles: pl.DataFrame = None, target_rows: pl.DataFrame = None,
+                 summary_stats: pl.DataFrame = None):
+        super().__init__("extract", config)
 
         # Set member variables
         self.default_file_name = "{target_name}_features.parquet"

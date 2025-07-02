@@ -25,28 +25,15 @@ class TestTrainingInputClassLoader(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of InputDataSetA for the known label.
+        Test that load_dataset returns an instance of InputTrainingSetA for the known label.
         """
-        ds = load_step1_input_training_set("NRT_BO_001", self.config)
+        ds = load_step1_input_training_set(self.config)
         self.assertIsInstance(ds, InputTrainingSetA)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step1_input_training_set("NON_EXISTENT_LABEL", self.config)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step1_input_training_set("NRT_BO_003", self.config)
+        self.assertEqual(ds.step_name,"input")
 
 
 class TestModelValidationClassLoader(unittest.TestCase):
@@ -62,6 +49,7 @@ class TestModelValidationClassLoader(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
@@ -76,33 +64,24 @@ class TestModelValidationClassLoader(unittest.TestCase):
             },
         }
 
-        self.ds_input = load_step1_input_training_set("NRT_BO_001", self.config)
+        self.ds_input = load_step1_input_training_set(self.config)
         self.ds_input.input_file_names = self.input_file_names
         self.ds_input.process_targets()
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of InputDataSetA for the known label.
+        Test that load_dataset returns an instance of KFoldValidation for the known label.
         """
-        ds = load_step2_model_validation_class("NRT_BO_001", self.config)
+        ds = load_step2_model_validation_class(self.config)
         self.assertIsInstance(ds, KFoldValidation)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step2_model_validation_class("NON_EXISTENT_LABEL", self.config)
-
+        self.assertEqual(ds.step_name,"validate")
+        
     def test_training_set_data(self):
         """
-        Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
+        Test that load_dataset returns an instance of KFoldValidation with correct input_data.
         """
 
-        ds = load_step2_model_validation_class(
-            "NRT_BO_001", self.config, self.ds_input.training_sets
-        )
+        ds = load_step2_model_validation_class(self.config, self.ds_input.training_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
@@ -111,13 +90,6 @@ class TestModelValidationClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
         self.assertEqual(ds.training_sets["psal"].shape[1], 38)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step2_model_validation_class("NRT_BO_003", self.config)
 
 
 class TestBuildModelClassLoader(unittest.TestCase):
@@ -133,6 +105,7 @@ class TestBuildModelClassLoader(unittest.TestCase):
             / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
@@ -147,36 +120,25 @@ class TestBuildModelClassLoader(unittest.TestCase):
             },
         }
 
-        self.ds_input = load_step1_input_training_set("NRT_BO_001", self.config)
+        self.ds_input = load_step1_input_training_set(self.config)
         self.ds_input.input_file_names = self.input_file_names
         self.ds_input.process_targets()
 
-    def test_load_dataset_valid_label(self):
+    def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of InputDataSetA for the known label.
+        Test that load_dataset returns an instance of BuildModel for the known label.
         """
-        ds = load_step4_build_model_class("NRT_BO_001", self.config)
+        ds = load_step4_build_model_class(self.config)
         self.assertIsInstance(ds, BuildModel)
-        self.assertEqual(ds.dataset_name, "NRT_BO_001")
-
-    def test_load_dataset_invalid_label(self):
-        """
-        Test that calling load_dataset with an invalid label raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step4_build_model_class("NON_EXISTENT_LABEL", self.config)
-
+        self.assertEqual(ds.step_name,"build")
+        
     def test_training_and_test_sets(self):
         """
         Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
         """
 
-        ds = load_step4_build_model_class(
-            "NRT_BO_001",
-            self.config,
-            self.ds_input.training_sets,
-            self.ds_input.test_sets,
-        )
+        ds = load_step4_build_model_class(self.config, self.ds_input.training_sets,
+                                          self.ds_input.test_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
@@ -193,10 +155,3 @@ class TestBuildModelClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 37)
-
-    def test_load_dataset_invalid_class(self):
-        """
-        Test that calling load_dataset with an invalid class raises a ValueError.
-        """
-        with self.assertRaises(ValueError):
-            load_step4_build_model_class("NRT_BO_003", self.config)

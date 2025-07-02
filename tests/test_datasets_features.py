@@ -25,42 +25,31 @@ class _TestFeatureBase(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
         self.config = DataSetConfig(str(self.config_file_path))
+        self.config.load_dataset_config("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
-        self.ds_input = load_step1_input_dataset("NRT_BO_001", self.config)
+        self.ds_input = load_step1_input_dataset(self.config)
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
 
-        self.ds_summary = load_step2_summary_dataset(
-            "NRT_BO_001", self.config, self.ds_input.input_data
-        )
+        self.ds_summary = load_step2_summary_dataset(self.config, self.ds_input.input_data)
         self.ds_summary.calculate_stats()
 
-        self.ds_select = load_step3_select_dataset(
-            "NRT_BO_001", self.config, self.ds_input.input_data
-        )
+        self.ds_select = load_step3_select_dataset(self.config, self.ds_input.input_data)
         self.ds_select.label_profiles()
 
-        self.ds_locate = load_step4_locate_dataset(
-            "NRT_BO_001",
-            self.config,
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-        )
+        self.ds_locate = load_step4_locate_dataset(self.config, self.ds_input.input_data,
+                                                   self.ds_select.selected_profiles)
         self.ds_locate.process_targets()
 
-        self.ds_extract = load_step5_extract_dataset(
-            "NRT_BO_001",
-            self.config,
-            self.ds_input.input_data,
-            self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
-            self.ds_summary.summary_stats,
-        )
+        self.ds_extract = load_step5_extract_dataset(self.config, self.ds_input.input_data,
+                                                     self.ds_select.selected_profiles,
+                                                     self.ds_locate.target_rows,
+                                                     self.ds_summary.summary_stats)
 
         self.class_name = class_name
 
@@ -122,10 +111,7 @@ class TestLocationFeature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
-        print(ds.features)
-
         ds.scale_second()
-        print(ds.features)
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
@@ -155,10 +141,7 @@ class TestDayOfYearFeature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
-        print(ds.features)
-
         ds.scale_second()
-        print(ds.features)
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
@@ -210,10 +193,7 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
-        print(ds.features)
-
         ds.scale_second()
-        print(ds.features)
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
