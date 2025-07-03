@@ -18,6 +18,7 @@ def load_feature_class(
     Instantiate a feature extraction class using the specified feature registry.
 
     Steps:
+
       1. Retrieve the class name from the ``"feature"`` key in ``feature_info``.
       2. Look up the corresponding class in :data:`FEATURE_REGISTRY`.
       3. Instantiate the retrieved class using the supplied parameters.

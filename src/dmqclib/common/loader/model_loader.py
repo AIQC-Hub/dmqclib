@@ -10,6 +10,7 @@ def load_model_class(config: ConfigBase) -> ModelBase:
     Retrieve and instantiate a model class for the "model" step from the provided config.
 
     Steps:
+
       1. Fetch the class name from the config using config.get_base_class("model").
       2. Look up the corresponding class in MODEL_REGISTRY.
       3. Instantiate the class with the given config argument.

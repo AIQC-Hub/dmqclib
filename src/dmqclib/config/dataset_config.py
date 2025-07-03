@@ -12,6 +12,7 @@ class DataSetConfig(ConfigBase):
     configurations for target sets, feature sets, step classes, etc.
 
     .. note::
+
        :attr:`expected_class_name` must match the YAML's ``base_class``
        if instantiated directly.
     """

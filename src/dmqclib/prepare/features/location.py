@@ -64,6 +64,7 @@ class LocationFeat(FeatureBase):
         feature set in :attr:`features`.
 
         Specifically:
+
           1. Selects columns like ``row_id``, ``platform_code``, and ``profile_no``
              from the DataFrame in :attr:`target_rows[target_name]``.
           2. Joins this subset with corresponding columns from :attr:`selected_profiles`
@@ -108,15 +109,15 @@ class LocationFeat(FeatureBase):
 
     def scale_second(self) -> None:
         """
-        A second scaling pass that applies a min-max transformation
-        to each feature specified in :attr:`feature_info["stats"]`.
+        Apply a second min-max scaling pass to each feature defined in :attr:`feature_info["stats"]`.
 
-        Expects :attr:`feature_info["stats"]`` to be a dictionary of form:
-          {
-            "longitude": {"min": ..., "max": ...},
-            "latitude": {"min": ..., "max": ...},
-            ...
-          }
+        This method expects :attr:`feature_info["stats"]` to be a dictionary of the form::
+
+            {
+                "longitude": {"min": ..., "max": ...},
+                "latitude": {"min": ..., "max": ...},
+                ...
+            }
         """
         for k, v in self.feature_info["stats"].items():
             self.features = self.features.with_columns(

@@ -11,6 +11,7 @@ class DataSetBase(ABC):
     validate the YAML entry's ``step_class_sets``.
 
     .. note::
+
        This class extends the :class:`abc.ABC` in order to indicate that it is
        an abstract base class.
     """

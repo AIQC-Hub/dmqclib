@@ -18,6 +18,7 @@ class SplitDataSetBase(DataSetBase):
     the resulting training and test sets into Parquet files.
 
     .. note::
+
        Since this class inherits from :class:`DataSetBase` and is marked as
        an abstract base class, it may require an ``expected_class_name``
        defined by subclasses if they are intended to be instantiated.

@@ -18,6 +18,7 @@ class InputTrainingSetBase(DataSetBase):
     files for each, and reading them into memory.
 
     .. note::
+
        Since this class inherits from :class:`DataSetBase`, a subclass
        or this class itself may need to define an ``expected_class_name``
        that matches the YAML's ``base_class`` if you plan to instantiate it
@@ -49,12 +50,14 @@ class InputTrainingSetBase(DataSetBase):
             "test": "{target_name}_test.parquet",
         }
 
-        #: A mapping of "train" and "test" to dicts of target-specific file names.
-        #: For example:
-        #: {
-        #:     "train": {"targetA": "path/to/targetA_train.parquet", ...},
-        #:     "test": {"targetA":  "path/to/targetA_test.parquet", ...}
-        #: }
+        #: A mapping of "train" and "test" to dictionaries of target-specific file names.
+        #:
+        #: Example format::
+        #:
+        #:     {
+        #:         "train": {"targetA": "path/to/targetA_train.parquet", ...},
+        #:         "test":  {"targetA": "path/to/targetA_test.parquet", ...}
+        #:     }
         self.input_file_names: Dict[str, Dict[str, str]] = {
             k: self.config.get_target_file_names("input", v)
             for k, v in self.default_file_names.items()

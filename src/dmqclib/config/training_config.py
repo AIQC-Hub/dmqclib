@@ -14,6 +14,7 @@ class TrainingConfig(ConfigBase):
     subset configurations (e.g., target sets, step parameters).
 
     .. note::
+
        :attr:`expected_class_name` must match the YAML's ``base_class``
        property if you intend to instantiate this class directly from config.
     """

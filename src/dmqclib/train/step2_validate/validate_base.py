@@ -17,6 +17,7 @@ class ValidationBase(DataSetBase):
     and the step name ``"validate"``.
 
     .. note::
+
        If this class is to be instantiated directly (rather than a subclass),
        you may need to define an ``expected_class_name`` attribute. Otherwise,
        :class:`DataSetBase` may raise a :class:`NotImplementedError` if the

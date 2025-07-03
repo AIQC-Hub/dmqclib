@@ -11,6 +11,7 @@ class SelectDataSetA(ProfileSelectionBase):
     and positive profiles from BO NRT + Cora test data.
 
     Main Steps:
+
       1. Select positive profiles: Those that have a QC flag of 4
          (indicating a "bad" measurement) in at least one of
          ``temp_qc``, ``psal_qc``, or ``pres_qc``.

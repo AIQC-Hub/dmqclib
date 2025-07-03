@@ -15,6 +15,7 @@ class BuildModel(BuildModelBase):
     intend to instantiate it within that framework.
 
     .. note::
+
        The class-level docstring references “BuildModelBase builds models.”
        You may want to revise that note in your final documentation to
        accurately reflect this subclass’s role.

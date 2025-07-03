@@ -16,16 +16,19 @@ class XGBoost(ModelBase):
     """
     An XGBoost model wrapper class for training and testing using Polars data.
 
-    Inherits from :class:`ModelBase` and implements the build and test methods
-    specifically for an XGBoost classifier. Features include:
+    Inherits from :class:`ModelBase` and implements the ``build`` and ``test`` methods
+    specifically for an XGBoost classifier.
 
-      - Conversion of Polars DataFrames to Pandas for compatibility with XGBoost.
-      - Automatic application of ``model_params`` from the YAML config,
-        if defined. Otherwise, uses default hyperparameters.
-      - Computation and storage of metrics (accuracy, balanced accuracy,
-        classification report) in :attr:`result`.
+    Features include:
+
+    - Conversion of Polars DataFrames to Pandas for compatibility with XGBoost.
+    - Automatic application of ``model_params`` from the YAML config, if defined;
+      otherwise, uses default hyperparameters.
+    - Computation and storage of metrics (accuracy, balanced accuracy,
+      classification report) in :attr:`result`.
 
     .. note::
+
        This class sets :attr:`expected_class_name` to ``"XGBoost"``, ensuring
        it can be matched in the YAML configuration if used within a
        loader or factory pattern.
@@ -58,6 +61,7 @@ class XGBoost(ModelBase):
         Train the XGBoost classifier using the assigned training set.
 
         Steps:
+
           1. Convert the Polars DataFrame (:attr:`training_set`) to Pandas.
           2. Separate features (X) and labels (y).
           3. Initialize and fit an XGBoost classifier with
@@ -79,6 +83,7 @@ class XGBoost(ModelBase):
         Evaluate the trained XGBoost classifier on the assigned test set.
 
         Steps:
+
           1. Convert the Polars DataFrame (:attr:`test_set`) to Pandas.
           2. Generate predictions.
           3. Compute metrics such as accuracy, balanced accuracy, and
@@ -87,6 +92,7 @@ class XGBoost(ModelBase):
 
         The :attr:`k` attribute (provided by parent class or
         cross-validation context) is used to identify the fold number:
+
           - If :attr:`k` is 0, the column is dropped from the final :attr:`result`.
 
         :raises ValueError: If :attr:`test_set` is None or empty.
