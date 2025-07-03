@@ -19,6 +19,7 @@ def _get_train_class(
     from the provided registry.
 
     Steps:
+
       1. Invoke :meth:`TrainingConfig.get_base_class(step)` to get the class name.
       2. Lookup the class in the given ``registry``.
       3. Return the uninstantiated class.

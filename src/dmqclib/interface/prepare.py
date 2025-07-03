@@ -18,6 +18,7 @@ def create_training_dataset(config: ConfigBase) -> None:
     by the provided configuration object.
 
     This function performs the following steps:
+
       1. Load and read the initial input data.
       2. Calculate and write summary statistics.
       3. Label and write selected profiles.

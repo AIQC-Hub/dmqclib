@@ -9,13 +9,15 @@ class FeatureBase(ABC):
     Abstract base class for extracting and scaling features.
 
     Child classes must implement all abstract methods:
+
     - :meth:`extract_features`
     - :meth:`scale_first`
     - :meth:`scale_second`
 
     These methods encompass the steps to:
-    1. Extract relevant features from provided data,
-    2. Perform an initial scaling or normalization process,
+
+    1. Extract relevant features from provided data.
+    2. Perform an initial scaling or normalization process.
     3. Optionally perform a second scaling pass, depending on
        the specific requirements.
     """

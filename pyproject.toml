@@ -29,4 +29,7 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.4.0",
     "pytest-cov>=6.2.1",
+    "sphinx>=8.2.3",
+    "sphinx-autodoc-typehints>=3.2.0",
+    "sphinx-rtd-theme>=3.0.2",
 ]

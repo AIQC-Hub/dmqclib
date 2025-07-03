@@ -12,6 +12,7 @@ class SplitDataSetA(SplitDataSetBase):
     training and test sets for BO NRT + Cora test data.
 
     This class performs the following tasks:
+
       - Randomly samples a fraction of rows for the test set.
       - Ensures matching positive and negative rows are grouped by shared
         identifiers (e.g., ``pair_id``).
@@ -20,6 +21,7 @@ class SplitDataSetA(SplitDataSetBase):
       - Optionally drops columns that are not required for subsequent analysis.
 
     .. note::
+
        The docstring states "SplitDataSetBase split feature data into training
        and test sets," but since this is :class:`SplitDataSetA`, the wording
        can be tailored further to mention "SplitDataSetA."

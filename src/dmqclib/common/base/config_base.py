@@ -23,6 +23,7 @@ class ConfigBase(ABC):
     class signature.
 
     .. note::
+
        This class extends :class:`abc.ABC` to indicate that it is an
        abstract base class and should not be instantiated directly.
     """

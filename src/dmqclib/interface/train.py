@@ -16,6 +16,7 @@ def train_and_evaluate(config: ConfigBase) -> None:
     Perform a training and evaluation process based on the specified configuration.
 
     Steps:
+
       1. Load and process input training data.
       2. Validate the model using the specified validation technique (e.g., k-fold).
       3. Build and test the final model, saving results and trained model artifacts.

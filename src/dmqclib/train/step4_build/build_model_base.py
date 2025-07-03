@@ -21,6 +21,7 @@ class BuildModelBase(DataSetBase):
     potentially for different modeling frameworks.
 
     .. note::
+
        If you intend to instantiate this class directly (rather than a subclass),
        you may need to define an ``expected_class_name`` that matches
        the config's ``base_class`` property. Otherwise, a

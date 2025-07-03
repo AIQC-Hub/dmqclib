@@ -12,6 +12,7 @@ class LocateDataSetA(LocatePositionBase):
     negative rows from BO NRT+Cora test data for training or evaluation purposes.
 
     The workflow involves:
+
       - Selecting rows that have "bad" QC flags (positive),
       - Selecting rows that have "good" QC flags (negative),
       - Aligning these two sets to form paired data examples,

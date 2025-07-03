@@ -22,6 +22,7 @@ def write_config_template(file_name: str, module: str) -> None:
     ("prepare" or "train") to a file.
 
     This function:
+
       1. Chooses a template generator (from get_prepare_config_template
          or get_train_config_template) based on the ``module`` argument.
       2. Validates that the directory for ``file_name`` exists.

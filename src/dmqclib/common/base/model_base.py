@@ -18,6 +18,7 @@ class ModelBase(ABC):
     - The :meth:`test` method for model testing
 
     .. note::
+
        Since this class inherits from :class:`abc.ABC`, it cannot be directly
        instantiated and must be subclassed.
     """
