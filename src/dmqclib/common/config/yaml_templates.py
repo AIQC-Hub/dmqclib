@@ -1,4 +1,34 @@
-def get_prepare_config_template():
+"""
+Module providing YAML templates for both dataset preparation
+and training configurations. These templates can be customized
+to fit various data pipeline requirements.
+"""
+
+
+def get_prepare_config_template() -> str:
+    """
+    Retrieve a YAML template string for dataset preparation configurations.
+
+    This template includes:
+      • path_info_sets specifying common, input, and split paths.
+      • target_sets defining which variables to process and their flags.
+      • feature_sets listing named sets of feature extraction modules.
+      • feature_param_sets detailing parameters for each feature.
+      • step_class_sets referencing classes for each preparation step
+        (e.g., input, summary, select, locate, extract, split).
+      • step_param_sets referencing parameters for the preparation steps.
+      • data_sets referencing specific dataset folders, files, and
+        associated configuration sets (e.g., step_class_set, step_param_set).
+
+    :return: A string containing the YAML template.
+    :rtype: str
+
+    .. note::
+       There is a trailing comma in the feature_sets field:
+         basic_values3_plus_flanks,
+       which may be interpreted as part of the feature name.
+       If that is unintentional, remove the comma for valid YAML parsing.
+    """
     yaml_template = """
 ---
 path_info_sets:
@@ -94,7 +124,22 @@ data_sets:
     return yaml_template
 
 
-def get_train_config_template():
+def get_train_config_template() -> str:
+    """
+    Retrieve a YAML template string for training configurations.
+
+    This template includes:
+      • path_info_sets specifying common paths and subfolders for input, validate, and build.
+      • target_sets defining variables and associated flags for training.
+      • step_class_sets mapping each step (input, validate, model, build)
+        to corresponding Python class names.
+      • step_param_sets detailing optional parameters for each training step.
+      • training_sets referencing specific dataset folders, the path_info used,
+        the target set, and which step_class_set and step_param_set apply.
+
+    :return: A string containing the YAML template.
+    :rtype: str
+    """
     yaml_template = """
 ---
 path_info_sets:

@@ -1,3 +1,11 @@
+"""
+This module contains integration tests that exercise various dmqclib functionality:
+1) Creating dataset and training configuration templates;
+2) Reading existing configuration files;
+3) Creating a training dataset for Argo-based data (prepare workflow);
+4) Training and evaluating models (train workflow).
+"""
+
 import os
 import shutil
 import unittest
@@ -9,15 +17,22 @@ from dmqclib.config.training_config import TrainingConfig
 
 
 class TestDMQCLibTemplateConfig(unittest.TestCase):
+    """
+    Tests for creating dataset and training configuration templates
+    using the dmqclib library.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Prepare file paths for dataset and training configuration templates
+        that will be written and removed during testing.
+        """
         self.ds_config_template_file = (
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "temp_dataset_template.yaml"
         )
-
         self.train_config_template_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -26,26 +41,41 @@ class TestDMQCLibTemplateConfig(unittest.TestCase):
         )
 
     def test_ds_config_template(self):
+        """
+        Check that a dataset (prepare) configuration template can be written
+        to the specified path and then removed.
+        """
         dm.write_config_template(self.ds_config_template_file, "prepare")
         self.assertTrue(os.path.exists(self.ds_config_template_file))
         os.remove(self.ds_config_template_file)
 
     def test_train_config_template(self):
+        """
+        Check that a training configuration template can be written
+        to the specified path and then removed.
+        """
         dm.write_config_template(self.train_config_template_file, "train")
         self.assertTrue(os.path.exists(self.train_config_template_file))
         os.remove(self.train_config_template_file)
 
 
 class TestDMQCLibReadConfig(unittest.TestCase):
+    """
+    Tests for reading dataset (prepare) and training (train) configuration files
+    using the dmqclib library.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Define paths to existing dataset and training configuration files
+        used in subsequent read tests.
+        """
         self.ds_config_file = (
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "test_dataset_001.yaml"
         )
-
         self.train_config_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -54,17 +84,31 @@ class TestDMQCLibReadConfig(unittest.TestCase):
         )
 
     def test_ds_config(self):
+        """
+        Verify that reading a dataset configuration returns a DataSetConfig instance.
+        """
         config = dm.read_config(self.ds_config_file, "prepare")
         self.assertIsInstance(config, DataSetConfig)
 
     def test_train_config(self):
+        """
+        Verify that reading a training configuration returns a TrainingConfig instance.
+        """
         config = dm.read_config(self.train_config_file, "train")
         self.assertIsInstance(config, TrainingConfig)
 
 
 class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
+    """
+    Tests for creating a training dataset (prepare workflow)
+    using dmqclib to ensure that all expected outputs are generated.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Load dataset configuration, specify file names and paths,
+        and prepare test output directories.
+        """
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -83,6 +127,10 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
         }
 
     def test_create_training_data_set(self):
+        """
+        Use dm.create_training_dataset to run all 'prepare' steps,
+        then confirm the expected files and folders exist.
+        """
         dm.create_training_dataset(self.config)
 
         output_folder = (
@@ -136,8 +184,16 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
 
 
 class TestDMQCCreateTrainingDataSet(unittest.TestCase):
+    """
+    Tests for the training workflow, ensuring training and evaluation
+    produce expected validation/test results and models.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Load a TrainingConfig, define the input and output paths,
+        and prepare directories for the train-and-evaluate steps.
+        """
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -158,6 +214,10 @@ class TestDMQCCreateTrainingDataSet(unittest.TestCase):
         }
 
     def test_train_and_evaluate(self):
+        """
+        Run dm.train_and_evaluate on the loaded config,
+        then verify that validation results and model files are generated.
+        """
         dm.train_and_evaluate(self.config)
 
         output_folder = (

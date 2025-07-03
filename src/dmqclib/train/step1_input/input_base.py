@@ -1,4 +1,5 @@
 import os
+from typing import Dict
 
 import polars as pl
 
@@ -8,46 +9,101 @@ from dmqclib.config.training_config import TrainingConfig
 
 class InputTrainingSetBase(DataSetBase):
     """
-    Base class to import training data sets
+    A base class for importing pre-split training and test data sets,
+    leveraging the training-specific configuration (:class:`TrainingConfig`).
+
+    This class extends :class:`DataSetBase` to ensure that the given YAML
+    configuration is valid for the step named ``"input"``.
+    It provides logic for iterating over targets, identifying the Parquet
+    files for each, and reading them into memory.
+
+    .. note::
+       Since this class inherits from :class:`DataSetBase`, a subclass
+       or this class itself may need to define an ``expected_class_name``
+       that matches the YAML's ``base_class`` if you plan to instantiate it
+       directly. Otherwise, :class:`DataSetBase` may raise a
+       :class:`NotImplementedError`.
     """
 
-    def __init__(self, config: TrainingConfig):
+    def __init__(self, config: TrainingConfig) -> None:
+        """
+        Initialize the training data set importer with a training configuration.
+
+        :param config: A training configuration instance that includes
+                       file paths and target definitions.
+        :type config: TrainingConfig
+        :raises NotImplementedError: If no ``expected_class_name``
+                                     is defined by a subclass and this
+                                     class is instantiated directly
+                                     (per :class:`DataSetBase` logic).
+        :raises ValueError: If the provided config's ``base_class``
+                            does not match  ``expected_class_name``
+                            (also per :class:`DataSetBase`).
+        """
         super().__init__("input", config)
 
-        # Set member variables
-        self.default_file_names = {
+        #: Default file naming patterns for train/test sets. The substring
+        #: ``{target_name}`` will be replaced dynamically.
+        self.default_file_names: Dict[str, str] = {
             "train": "{target_name}_train.parquet",
             "test": "{target_name}_test.parquet",
         }
-        self.input_file_names = {
+
+        #: A mapping of "train" and "test" to dicts of target-specific file names.
+        #: For example:
+        #: {
+        #:     "train": {"targetA": "path/to/targetA_train.parquet", ...},
+        #:     "test": {"targetA":  "path/to/targetA_test.parquet", ...}
+        #: }
+        self.input_file_names: Dict[str, Dict[str, str]] = {
             k: self.config.get_target_file_names("input", v)
             for k, v in self.default_file_names.items()
         }
-        self.training_sets = {}
-        self.test_sets = {}
 
-    def process_targets(self):
-        """
-        Iterate all targets to locate training data rows.
-        """
-        for k in self.config.get_target_names():
-            self.read_training_set(k)
-            self.read_test_sets(k)
+        #: A dictionary mapping target names to Polars DataFrames
+        #: containing their training set.
+        self.training_sets: Dict[str, pl.DataFrame] = {}
+        #: A dictionary mapping target names to Polars DataFrames
+        #: containing their test set.
+        self.test_sets: Dict[str, pl.DataFrame] = {}
 
-    def read_training_set(self, target_name: str):
+    def process_targets(self) -> None:
         """
-        Read training set from parquet file
+        Iterate over all targets defined in the config and read both
+        training and test sets from Parquet files.
+
+        Utilizes :meth:`read_training_set` and :meth:`read_test_sets`
+        for each target name returned by
+        :meth:`~dmqclib.config.training_config.TrainingConfig.get_target_names`.
         """
-        file_name = self.input_file_names["train"][target_name]
+        for target_name in self.config.get_target_names():
+            self.read_training_set(target_name)
+            self.read_test_sets(target_name)
+
+    def read_training_set(self, target_name: str) -> None:
+        """
+        Read a single target-specific training set from a Parquet file
+        into :attr:`training_sets`.
+
+        :param target_name: The identifier of the target dataset to be loaded.
+        :type target_name: str
+        :raises FileNotFoundError: If the corresponding Parquet file does not exist.
+        """
+        file_name: str = self.input_file_names["train"][target_name]
         if not os.path.exists(file_name):
             raise FileNotFoundError(f"File '{file_name}' does not exist.")
         self.training_sets[target_name] = pl.read_parquet(file_name)
 
-    def read_test_sets(self, target_name: str):
+    def read_test_sets(self, target_name: str) -> None:
         """
-        Read test set from parquet files
+        Read a single target-specific test set from a Parquet file
+        into :attr:`test_sets`.
+
+        :param target_name: The identifier of the target dataset to be loaded.
+        :type target_name: str
+        :raises FileNotFoundError: If the corresponding Parquet file does not exist.
         """
-        file_name = self.input_file_names["test"][target_name]
+        file_name: str = self.input_file_names["test"][target_name]
         if not os.path.exists(file_name):
             raise FileNotFoundError(f"File '{file_name}' does not exist.")
         self.test_sets[target_name] = pl.read_parquet(file_name)

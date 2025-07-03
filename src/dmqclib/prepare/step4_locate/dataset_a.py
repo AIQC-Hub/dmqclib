@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 import polars as pl
 
@@ -8,25 +8,58 @@ from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
 
 class LocateDataSetA(LocatePositionBase):
     """
-    LocateDataSetA identifies training data rows from BO NRT+Cora test data.
+    A subclass of :class:`LocatePositionBase` that locates both positive and
+    negative rows from BO NRT+Cora test data for training or evaluation purposes.
+
+    The workflow involves:
+      - Selecting rows that have "bad" QC flags (positive),
+      - Selecting rows that have "good" QC flags (negative),
+      - Aligning these two sets to form paired data examples,
+      - Concatenating and labeling them for subsequent steps.
     """
 
-    expected_class_name = "LocateDataSetA"
+    expected_class_name: str = "LocateDataSetA"
 
     def __init__(
         self,
         config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-        selected_profiles: pl.DataFrame = None,
-    ):
+        input_data: Optional[pl.DataFrame] = None,
+        selected_profiles: Optional[pl.DataFrame] = None,
+    ) -> None:
+        """
+        Initialize the dataset with configuration, an input DataFrame,
+        and a DataFrame of selected profiles.
+
+        :param config: A dataset configuration object specifying paths,
+                       parameters, and target definitions for locating test data rows.
+        :type config: DataSetConfig
+        :param input_data: A Polars DataFrame containing the full data
+                           from which positive and negative rows will be derived,
+                           defaults to None.
+        :type input_data: pl.DataFrame, optional
+        :param selected_profiles: A Polars DataFrame containing profiles
+                                  that have already been labeled as positive or negative,
+                                  defaults to None.
+        :type selected_profiles: pl.DataFrame, optional
+        """
         super().__init__(
             config, input_data=input_data, selected_profiles=selected_profiles
         )
 
-        self.positive_rows = {}
-        self.negative_rows = {}
+        #: Dictionary for holding subsets of positive rows keyed by target name.
+        self.positive_rows: Dict[str, pl.DataFrame] = {}
+        #: Dictionary for holding subsets of negative rows keyed by target name.
+        self.negative_rows: Dict[str, pl.DataFrame] = {}
 
-    def select_positive_rows(self, target_name: str, target_value: Dict):
+    def select_positive_rows(self, target_name: str, target_value: Dict) -> None:
+        """
+        Identify and collect positive rows for a given target.
+
+        :param target_name: The name (key) of the target in the config's target dictionary.
+        :type target_name: str
+        :param target_value: A dictionary of target metadata, including the QC flag variable name.
+        :type target_value: Dict
+        """
         flag_var_name = target_value["flag"]
         self.positive_rows[target_name] = (
             self.selected_profiles.filter(pl.col("label") == 1)
@@ -56,7 +89,16 @@ class LocateDataSetA(LocatePositionBase):
             )
         )
 
-    def select_negative_rows(self, target_name: str, target_value: Dict):
+    def select_negative_rows(self, target_name: str, target_value: Dict) -> None:
+        """
+        Identify and collect negative rows that align with positive rows,
+        forming pairs where possible.
+
+        :param target_name: The target name used to locate the corresponding positive rows.
+        :type target_name: str
+        :param target_value: A dictionary of target metadata, including the QC flag variable name.
+        :type target_value: Dict
+        """
         flag_var_name = target_value["flag"]
         self.negative_rows[target_name] = (
             self.positive_rows[target_name]
@@ -123,9 +165,14 @@ class LocateDataSetA(LocatePositionBase):
             )
         )
 
-    def locate_target_rows(self, target_name: str, target_value: Dict):
+    def locate_target_rows(self, target_name: str, target_value: Dict) -> None:
         """
-        Locate training data rows.
+        Locate training data rows by consolidating positive and negative subsets.
+
+        :param target_name: Name of the target variable.
+        :type target_name: str
+        :param target_value: A dictionary of target metadata, including the QC flag variable name.
+        :type target_value: Dict
         """
         self.select_positive_rows(target_name, target_value)
         self.select_negative_rows(target_name, target_value)

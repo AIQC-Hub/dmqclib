@@ -1,3 +1,8 @@
+"""
+Module that orchestrates the creation of a training dataset by sequentially
+loading and processing data through multiple preparation steps.
+"""
+
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
@@ -8,6 +13,29 @@ from dmqclib.common.loader.dataset_loader import load_step6_split_dataset
 
 
 def create_training_dataset(config: ConfigBase) -> None:
+    """
+    Execute a series of steps to produce a training dataset, as defined
+    by the provided configuration object.
+
+    This function performs the following steps:
+      1. Load and read the initial input data.
+      2. Calculate and write summary statistics.
+      3. Label and write selected profiles.
+      4. Locate and write target rows.
+      5. Extract and write target features.
+      6. Split and write final data sets for training/validation purposes.
+
+    :param config: A configuration object specifying the classes and parameters
+                   for each step in the dataset preparation process.
+    :type config: ConfigBase
+    :return: None (the function performs I/O operations and does not return a value).
+    :rtype: None
+
+    Example Usage:
+      >>> from dmqclib.common.base.config_base import ConfigBase
+      >>> cfg = ConfigBase(...)
+      >>> create_training_dataset(cfg)
+    """
     ds_input = load_step1_input_dataset(config)
     ds_input.read_input_data()
 

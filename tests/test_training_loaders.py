@@ -3,9 +3,11 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.training_loader import load_step1_input_training_set
-from dmqclib.common.loader.training_loader import load_step2_model_validation_class
-from dmqclib.common.loader.training_loader import load_step4_build_model_class
+from dmqclib.common.loader.training_loader import (
+    load_step1_input_training_set,
+    load_step2_model_validation_class,
+    load_step4_build_model_class,
+)
 from dmqclib.config.training_config import TrainingConfig
 from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
 from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
@@ -13,10 +15,15 @@ from dmqclib.train.step4_build.build_model import BuildModel
 
 
 class TestTrainingInputClassLoader(unittest.TestCase):
+    """
+    Tests for verifying that the correct input training class
+    (InputTrainingSetA) is loaded from the config.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Initialize a training configuration object and select a dataset
+        for input loading tests.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -29,7 +36,8 @@ class TestTrainingInputClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of InputTrainingSetA for the known label.
+        Check that load_step1_input_training_set returns an InputTrainingSetA
+        instance with the expected step name.
         """
         ds = load_step1_input_training_set(self.config)
         self.assertIsInstance(ds, InputTrainingSetA)
@@ -37,10 +45,15 @@ class TestTrainingInputClassLoader(unittest.TestCase):
 
 
 class TestModelValidationClassLoader(unittest.TestCase):
+    """
+    Tests confirming that the correct model validation class
+    (KFoldValidation) is loaded and configured.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Initialize a training configuration and load input data for testing
+        the validation class loader.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -70,7 +83,8 @@ class TestModelValidationClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of KFoldValidation for the known label.
+        Check that load_step2_model_validation_class returns a KFoldValidation
+        instance with the expected step name.
         """
         ds = load_step2_model_validation_class(self.config)
         self.assertIsInstance(ds, KFoldValidation)
@@ -78,9 +92,9 @@ class TestModelValidationClassLoader(unittest.TestCase):
 
     def test_training_set_data(self):
         """
-        Test that load_dataset returns an instance of KFoldValidation with correct input_data.
+        Ensure that when training_sets are provided, KFoldValidation
+        is instantiated with the correct Polars DataFrame sizes.
         """
-
         ds = load_step2_model_validation_class(self.config, self.ds_input.training_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
@@ -93,10 +107,15 @@ class TestModelValidationClassLoader(unittest.TestCase):
 
 
 class TestBuildModelClassLoader(unittest.TestCase):
+    """
+    Tests verifying that the correct build model class (BuildModel)
+    is loaded from the config.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Initialize a training configuration and load input data for testing
+        the build model class loader.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -126,7 +145,8 @@ class TestBuildModelClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Test that load_dataset returns an instance of BuildModel for the known label.
+        Check that load_step4_build_model_class returns a BuildModel instance
+        with the expected step name.
         """
         ds = load_step4_build_model_class(self.config)
         self.assertIsInstance(ds, BuildModel)
@@ -134,9 +154,9 @@ class TestBuildModelClassLoader(unittest.TestCase):
 
     def test_training_and_test_sets(self):
         """
-        Test that load_dataset returns an instance of SummaryDataSetA with correct input_data.
+        Ensure that BuildModel receives the correct training and test sets
+        when they are provided.
         """
-
         ds = load_step4_build_model_class(
             self.config, self.ds_input.training_sets, self.ds_input.test_sets
         )

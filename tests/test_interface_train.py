@@ -8,8 +8,16 @@ from dmqclib.interface.train import train_and_evaluate
 
 
 class TestCreateTrainingDataSet(unittest.TestCase):
+    """
+    A suite of tests ensuring that training and evaluation steps
+    generate the expected output files and folders.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Prepare the test environment by loading a specified training configuration,
+        and defining input/output paths for subsequent training/evaluation tests.
+        """
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -30,6 +38,10 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         }
 
     def test_train_and_evaluate(self):
+        """
+        Check that train_and_evaluate runs end-to-end and produces
+        validation results and trained model artifacts.
+        """
         train_and_evaluate(self.config)
 
         output_folder = (
