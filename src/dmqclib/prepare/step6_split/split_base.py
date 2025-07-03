@@ -1,5 +1,6 @@
 import os
 from abc import abstractmethod
+from typing import Dict, Optional
 
 import polars as pl
 
@@ -9,29 +10,71 @@ from dmqclib.config.dataset_config import DataSetConfig
 
 class SplitDataSetBase(DataSetBase):
     """
-    Base class to identify training data rows
+    Abstract base class to perform train/test splitting and k-fold assignment
+    for target feature DataFrames.
+
+    This class extends :class:`DataSetBase` to validate and incorporate
+    YAML-based configuration. It provides methods for writing out
+    the resulting training and test sets into Parquet files.
+
+    .. note::
+
+       Since this class inherits from :class:`DataSetBase` and is marked as
+       an abstract base class, it may require an ``expected_class_name``
+       defined by subclasses if they are intended to be instantiated.
     """
 
-    def __init__(self, config: DataSetConfig, target_features: pl.DataFrame = None):
+    def __init__(
+        self, config: DataSetConfig, target_features: Optional[pl.DataFrame] = None
+    ) -> None:
+        """
+        Initialize the train/test splitting class with a configuration
+        and optional target features.
+
+        :param config: A dataset configuration object containing parameters
+                       and paths for splitting.
+        :type config: DataSetConfig
+        :param target_features: A Polars DataFrame holding combined features
+                                for one or more targets, or None if not yet available.
+        :type target_features: pl.DataFrame, optional
+        :raises NotImplementedError: If ``expected_class_name`` is not set in a subclass
+                                     and an instance is directly created.
+        :raises ValueError: If the YAML's ``base_class`` does not match
+                            the subclass's ``expected_class_name``.
+        """
         super().__init__("split", config)
 
-        # Set member variables
-        self.default_file_names = {
+        #: Default file naming templates for train and test sets.
+        self.default_file_names: Dict[str, str] = {
             "train": "{target_name}_train.parquet",
             "test": "{target_name}_test.parquet",
         }
-        self.output_file_names = {
+        #: File paths for each target's train/test sets, keyed by "train" and "test".
+        self.output_file_names: Dict[str, Dict[str, str]] = {
             k: self.config.get_target_file_names("split", v)
             for k, v in self.default_file_names.items()
         }
-        self.target_features = target_features
-        self.training_sets = {}
-        self.test_sets = {}
 
-        self.default_test_set_fraction = 0.1
-        self.default_k_fold = 10
+        #: A Polars DataFrame of feature columns for all targets, if available.
+        self.target_features: Optional[pl.DataFrame] = target_features
+        #: A dictionary of Polars DataFrames holding training splits by target name.
+        self.training_sets: Dict[str, pl.DataFrame] = {}
+        #: A dictionary of Polars DataFrames holding test splits by target name.
+        self.test_sets: Dict[str, pl.DataFrame] = {}
 
-    def get_test_set_fraction(self) -> str:
+        #: Default fraction for test sets if none is specified in the config.
+        self.default_test_set_fraction: float = 0.1
+        #: Default number of folds for k-fold cross-validation if unspecified.
+        self.default_k_fold: int = 10
+
+    def get_test_set_fraction(self) -> float:
+        """
+        Retrieve the test set fraction (0-1) from configuration or fallback.
+
+        :return: A float in the range [0, 1] representing the fraction of data
+                 reserved for testing.
+        :rtype: float
+        """
         return (
             self.config.get_step_params("split").get(
                 "test_set_fraction", self.default_test_set_fraction
@@ -39,63 +82,103 @@ class SplitDataSetBase(DataSetBase):
             or self.default_test_set_fraction
         )
 
-    def get_k_fold(self) -> str:
+    def get_k_fold(self) -> int:
+        """
+        Retrieve the number of folds for cross-validation from configuration or fallback.
+
+        :return: An integer representing how many folds are used during k-fold
+                 cross-validation steps.
+        :rtype: int
+        """
         return (
             self.config.get_step_params("split").get("k_fold", self.default_k_fold)
             or self.default_k_fold
         )
 
-    def process_targets(self):
+    def process_targets(self) -> None:
         """
-        Iterate all targets to locate training data rows.
+        Perform test splitting, k-fold assignment, and column dropping
+        for each target defined in the dataset configuration.
+
+        Uses the abstract methods :meth:`split_test_set`, :meth:`add_k_fold`,
+        and :meth:`drop_columns` for each target name.
         """
-        for k in self.config.get_target_names():
-            self.split_test_set(k)
-            self.add_k_fold(k)
-            self.drop_columns(k)
+        for target_name in self.config.get_target_names():
+            self.split_test_set(target_name)
+            self.add_k_fold(target_name)
+            self.drop_columns(target_name)
 
     @abstractmethod
-    def split_test_set(self, target_name: str):
+    def split_test_set(self, target_name: str) -> None:
+        """
+        Split the DataFrame for a given target into training and test sets.
+
+        Must store any resulting DataFrames in :attr:`training_sets`
+        and :attr:`test_sets` using the target name as a key.
+
+        :param target_name: The identifier of the target to split.
+        :type target_name: str
+        """
         pass  # pragma: no cover
 
     @abstractmethod
-    def add_k_fold(self, target_name: str):
+    def add_k_fold(self, target_name: str) -> None:
+        """
+        Add k-fold cross-validation columns or labels to the training set.
+
+        Typically, this method would modify the DataFrame in
+        :attr:`training_sets[target_name]`.
+
+        :param target_name: The target name being processed.
+        :type target_name: str
+        """
         pass  # pragma: no cover
 
     @abstractmethod
-    def drop_columns(self, target_name: str):
+    def drop_columns(self, target_name: str) -> None:
+        """
+        Drop unnecessary columns from both training and test sets.
+
+        :param target_name: The target name being processed.
+        :type target_name: str
+        """
         pass  # pragma: no cover
 
-    def write_training_sets(self):
+    def write_training_sets(self) -> None:
         """
-        Write training sets to parquet files
+        Write the training splits to Parquet files.
+
+        :raises ValueError: If :attr:`training_sets` is empty (i.e.,
+                            no splits have been created).
         """
-        if len(self.training_sets) == 0:
+        if not self.training_sets:
             raise ValueError("Member variable 'training_sets' must not be empty.")
 
-        for k, v in self.training_sets.items():
-            os.makedirs(
-                os.path.dirname(self.output_file_names["train"][k]), exist_ok=True
-            )
-            v.write_parquet(self.output_file_names["train"][k])
+        for target_name, df in self.training_sets.items():
+            output_path = self.output_file_names["train"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_parquet(output_path)
 
-    def write_test_sets(self):
+    def write_test_sets(self) -> None:
         """
-        Write test sets to parquet files
+        Write the test splits to Parquet files.
+
+        :raises ValueError: If :attr:`test_sets` is empty (i.e.,
+                            no splits have been created).
         """
-        if len(self.test_sets) == 0:
+        if not self.test_sets:
             raise ValueError("Member variable 'test_sets' must not be empty.")
 
-        for k, v in self.test_sets.items():
-            os.makedirs(
-                os.path.dirname(self.output_file_names["test"][k]), exist_ok=True
-            )
-            v.write_parquet(self.output_file_names["test"][k])
+        for target_name, df in self.test_sets.items():
+            output_path = self.output_file_names["test"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_parquet(output_path)
 
-    def write_data_sets(self):
+    def write_data_sets(self) -> None:
         """
-        Write both training and test sets
-        """
+        Write both training and test sets to disk.
 
+        Simply calls :meth:`write_test_sets` and :meth:`write_training_sets`.
+        """
         self.write_test_sets()
         self.write_training_sets()

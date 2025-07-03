@@ -1,4 +1,5 @@
 import polars as pl
+from typing import Optional, List
 
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
@@ -6,30 +7,47 @@ from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
 
 class SelectDataSetA(ProfileSelectionBase):
     """
-    SelectDataSetA defines negative and positive profiles from BO NRT+Cora test data.
+    A subclass of :class:`ProfileSelectionBase` that defines negative
+    and positive profiles from BO NRT + Cora test data.
 
-    Main steps:
-    1. Select positive profiles:
-        Select profiles that have values 4 in at least one of temp_qc, psal_qc, and pres_qc.
+    Main Steps:
 
-    2. Select negative profiles:
-        Select profiles that have values 1 in all of temp_qc, psal_qc, pres_qc, temp_qc_dm, psal_qc_dm, pres_qc_dm.
-
-    3. Identify pairs from positive and negative datasets:
-        To reduce negative profiles, identify and keep only profiles having close dates to those of positive profiles.
-
-    4. Combine dataframes:
-        Combine positive and negative datasets.
+      1. Select positive profiles: Those that have a QC flag of 4
+         (indicating a "bad" measurement) in at least one of
+         ``temp_qc``, ``psal_qc``, or ``pres_qc``.
+      2. Select negative profiles: Those that have a QC flag of 1
+         (indicating a "good" measurement) in each of
+         ``temp_qc``, ``psal_qc``, ``pres_qc``, ``temp_qc_dm``,
+         ``psal_qc_dm``, and ``pres_qc_dm``.
+      3. Identify pairs by matching negative and positive profiles
+         based on their proximity in time.
+      4. Combine dataframes into a single DataFrame of selected profiles.
     """
 
-    expected_class_name = "SelectDataSetA"
+    expected_class_name: str = "SelectDataSetA"
 
-    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None):
+    def __init__(
+        self, config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
+    ) -> None:
+        """
+        Initialize the dataset for selecting and labeling profiles.
+
+        :param config: The dataset configuration object that includes
+                       paths and parameters for the selection process.
+        :type config: DataSetConfig
+        :param input_data: A Polars DataFrame containing the full set
+                           of profiles from which to select positive
+                           and negative examples.
+        :type input_data: pl.DataFrame, optional
+        """
         super().__init__(config, input_data=input_data)
 
-        self.pos_profile_df = None
-        self.neg_profile_df = None
-        self.key_col_names = [
+        #: Polars DataFrame containing positively-labeled profiles.
+        self.pos_profile_df: Optional[pl.DataFrame] = None
+        #: Polars DataFrame containing negatively-labeled profiles.
+        self.neg_profile_df: Optional[pl.DataFrame] = None
+        #: Column names used as unique identifiers for grouping or merging.
+        self.key_col_names: List[str] = [
             "platform_code",
             "profile_no",
             "profile_timestamp",
@@ -37,9 +55,13 @@ class SelectDataSetA(ProfileSelectionBase):
             "latitude",
         ]
 
-    def select_positive_profiles(self):
+    def select_positive_profiles(self) -> None:
         """
-        Select profiles with bad flags as positive profiles.
+        Select profiles that have a QC flag of 4 in any of the
+        specified QC columns, labeling them as "positive" (i.e.,
+        containing errors).
+
+        The resulting DataFrame is stored in :attr:`pos_profile_df`.
         """
         self.pos_profile_df = (
             self.input_data.filter(
@@ -56,9 +78,12 @@ class SelectDataSetA(ProfileSelectionBase):
             )
         )
 
-    def select_negative_profiles(self):
+    def select_negative_profiles(self) -> None:
         """
-        Select profiles with all good flags as negative profiles.
+        Select profiles that have a QC flag of 1 in all specified QC columns,
+        labeling them as "negative" (i.e., containing only good measurements).
+
+        The resulting DataFrame is stored in :attr:`neg_profile_df`.
         """
         self.neg_profile_df = (
             self.input_data.group_by(self.key_col_names)
@@ -88,9 +113,11 @@ class SelectDataSetA(ProfileSelectionBase):
             )
         )
 
-    def find_profile_pairs(self):
+    def find_profile_pairs(self) -> None:
         """
-        Identify pairs from positive and negative datasets.
+        Identify the negative profile whose date is closest to each positive profile,
+        to reduce the negative set to only those instances that are temporally
+        near the positive set.
         """
         closest_neg_id = (
             self.pos_profile_df.join(self.neg_profile_df, how="cross", suffix="_neg")
@@ -125,9 +152,10 @@ class SelectDataSetA(ProfileSelectionBase):
             .drop("neg_day_of_year")
         )
 
-    def label_profiles(self):
+    def label_profiles(self) -> None:
         """
-        Select and filter positive and negative datasets and combine them.
+        Select and label positive and negative datasets, then combine them
+        into a single DataFrame in :attr:`selected_profiles`.
         """
         self.select_positive_profiles()
         self.select_negative_profiles()

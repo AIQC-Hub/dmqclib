@@ -8,16 +8,23 @@ from dmqclib.utils.file import read_input_file
 
 
 class TestReadInputFile(unittest.TestCase):
+    """
+    A suite of tests verifying various file reading scenarios
+    (multiple file types, type inference, non-existent files, etc.)
+    using 'read_input_file'.
+    """
+
     def setUp(self):
         """
         Runs once before any tests. Sets the directory
-        where your test data files are located.
+        where test data files are located.
         """
         self.test_data_dir = Path(__file__).resolve().parent / "data" / "input"
 
     def test_read_input_file_explicit_type(self):
         """
-        Tests reading each supported file type with an explicitly specified file_type.
+        Verify that the function can read various file types
+        when the file_type is explicitly specified.
         """
         test_cases = [
             ("nrt_cora_bo_test.parquet", 132342, "parquet"),
@@ -36,8 +43,8 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_read_input_file_infer_type(self):
         """
-        Tests reading each file type without specifying file_type
-        (letting the function infer the correct format).
+        Verify that the function can infer file types
+        when file_type is not explicitly specified.
         """
         test_cases = [
             ("nrt_cora_bo_test.parquet", 132342),
@@ -56,7 +63,8 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_unsupported_file_type(self):
         """
-        Ensures that an unsupported file type raises a ValueError.
+        Verify that specifying an unsupported file type
+        raises a ValueError.
         """
         file_path = os.path.join(self.test_data_dir, "nrt_cora_bo_test.parquet")
         with self.assertRaises(ValueError) as context:
@@ -65,14 +73,16 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_non_existent_file(self):
         """
-        Ensures that trying to read a non-existent file raises FileNotFoundError.
+        Verify that attempting to read a non-existent file
+        raises FileNotFoundError.
         """
         with self.assertRaises(FileNotFoundError):
             _ = read_input_file("non_existent_file.csv", file_type="csv", options={})
 
     def test_pass_additional_options(self):
         """
-        Demonstrates passing extra options: has_header=False for CSV.
+        Demonstrate passing additional options to the reader,
+        such as has_header=False for CSV.
         """
         file_name = "nrt_cora_bo_test_2023_row1.csv.gz"
         file_path = os.path.join(self.test_data_dir, file_name)

@@ -30,3 +30,6 @@ conda/*.conda
 # Conda metadata directories created by conda-build
 conda/.built
 conda/.cache
+
+# Ignore Sphinx build output
+docs/build/

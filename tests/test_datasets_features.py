@@ -3,11 +3,13 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
-from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
-from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
-from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
-from dmqclib.common.loader.dataset_loader import load_step5_extract_dataset
+from dmqclib.common.loader.dataset_loader import (
+    load_step1_input_dataset,
+    load_step2_summary_dataset,
+    load_step3_select_dataset,
+    load_step4_locate_dataset,
+    load_step5_extract_dataset,
+)
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.prepare.features.basic_values import BasicValues3PlusFlanks
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
@@ -16,8 +18,13 @@ from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
 
 
 class _TestFeatureBase(unittest.TestCase):
+    """
+    A base class providing shared setup and validation logic for feature-based tests.
+    Derived classes can supply the feature class to setUp() for testing.
+    """
+
     def _setup(self, class_name):
-        """Set up test environment and load input and selected datasets."""
+        """Load necessary data from multiple steps (input, summary, select, locate, extract) to prepare for feature tests."""
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -62,7 +69,7 @@ class _TestFeatureBase(unittest.TestCase):
         self.class_name = class_name
 
     def _test_init_arguments(self, feature_info):
-        """Ensure input data and selected profiles are read correctly."""
+        """Validate that required data (selected_profiles, filtered_input, target_rows, summary_stats) is initialized correctly."""
         ds = self.class_name(
             "temp",
             feature_info,
@@ -94,7 +101,13 @@ class _TestFeatureBase(unittest.TestCase):
 
 
 class TestLocationFeature(_TestFeatureBase):
+    """
+    Tests for verifying the LocationFeat class, ensuring location-based features
+    are extracted and scaled as expected.
+    """
+
     def setUp(self):
+        """Initialize test environment with LocationFeat input data and config."""
         super()._setup(LocationFeat)
         self.feature_info = {
             "class": "location",
@@ -105,11 +118,11 @@ class TestLocationFeature(_TestFeatureBase):
         }
 
     def test_init_arguments(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check initialization of required data for the LocationFeat feature class."""
         super()._test_init_arguments(self.feature_info)
 
     def test_location_features(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check that location-based features are extracted and scaled accurately."""
         ds = LocationFeat(
             "temp",
             self.feature_info,
@@ -127,7 +140,13 @@ class TestLocationFeature(_TestFeatureBase):
 
 
 class TestDayOfYearFeature(_TestFeatureBase):
+    """
+    Tests for verifying the DayOfYearFeat class, ensuring date-based features
+    (with optional sine conversion) are extracted and scaled as expected.
+    """
+
     def setUp(self):
+        """Initialize test environment with DayOfYearFeat input data and config."""
         super()._setup(DayOfYearFeat)
         self.feature_info = {
             "class": "day_of_year",
@@ -135,11 +154,11 @@ class TestDayOfYearFeature(_TestFeatureBase):
         }
 
     def test_init_arguments(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check initialization of required data for the DayOfYearFeat feature class."""
         super()._test_init_arguments(self.feature_info)
 
     def test_day_of_year_features(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Verify day-of-year feature extraction with optional sine conversion."""
         ds = DayOfYearFeat(
             "temp",
             self.feature_info,
@@ -157,7 +176,13 @@ class TestDayOfYearFeature(_TestFeatureBase):
 
 
 class TestProfileSummaryStats5Feature(_TestFeatureBase):
+    """
+    Tests for verifying the ProfileSummaryStats5 class, which computes advanced
+    summary statistics for multiple variables (temp, psal, pres).
+    """
+
     def setUp(self):
+        """Initialize test environment with ProfileSummaryStats5 input data and config."""
         super()._setup(ProfileSummaryStats5)
         self.feature_info = {
             "class": "profile_summary_stats5",
@@ -187,11 +212,11 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
         }
 
     def test_init_arguments(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check initialization of required data for the ProfileSummaryStats5 feature class."""
         super()._test_init_arguments(self.feature_info)
 
     def test_profile_summary_stats5_features(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Verify the extraction of extended summary statistics for multiple variables."""
         ds = ProfileSummaryStats5(
             "temp",
             self.feature_info,
@@ -209,7 +234,13 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
 
 
 class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
+    """
+    Tests for verifying the BasicValues3PlusFlanks class, which extracts
+    basic stats (mean, median, max, etc.) and includes 'flank' data.
+    """
+
     def setUp(self):
+        """Initialize test environment with BasicValues3PlusFlanks input data and config."""
         super()._setup(BasicValues3PlusFlanks)
         self.feature_info = {
             "class": "basic_values3_plus_flanks",
@@ -222,11 +253,11 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         }
 
     def test_init_arguments(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check initialization of required data for the BasicValues3PlusFlanks feature class."""
         super()._test_init_arguments(self.feature_info)
 
     def test_basic_values3_plus_flanks_features(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Validate the extraction of basic stats plus flank data."""
         ds = BasicValues3PlusFlanks(
             "temp",
             self.feature_info,

@@ -8,8 +8,17 @@ from dmqclib.interface.prepare import create_training_dataset
 
 
 class TestCreateTrainingDataSet(unittest.TestCase):
+    """
+    Tests for verifying that create_training_dataset produces the
+    expected directory structure and output files for training data.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Prepare the test environment by creating a DataSetConfig object,
+        defining file paths, and updating the configuration with test input
+        and output paths.
+        """
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -28,6 +37,10 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         }
 
     def test_create_training_data_set(self):
+        """
+        Check that create_training_dataset generates the expected folder
+        hierarchy and files for summary, select, locate, extract, and split steps.
+        """
         create_training_dataset(self.config)
 
         output_folder = (

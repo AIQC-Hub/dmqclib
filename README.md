@@ -1,4 +1,4 @@
-# DMQCLib
+# dmqclib
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)](https://pypi.org/project/dmqclib/)
 [![Anaconda - Version](https://anaconda.org/takayasaito/dmqclib/badges/version.svg)](https://anaconda.org/takayasaito/dmqclib)
@@ -6,7 +6,7 @@
 [![Codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
 [![CodeFactor](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib/badge)](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib)
 
-The *DMQCLib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
+The *dmqclib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
 
 ## Installation
 The package is indexed on [PyPI](https://pypi.org/project/dmqclib/) and [Anaconda.org](https://anaconda.org/takayasaito/dmqclib), allowing you to install it using either *pip* or *conda*.
@@ -248,7 +248,7 @@ Install them (preferably in a dedicated environment):
 mamba install -c conda-forge conda-build anaconda-client grayskull
 ```
 
-#### 1. Generate the conda recipe with Grayskull
+#### 1. Generate the Conda Recipe with Grayskull
 
 From the project root, run:
 ```bash
@@ -260,11 +260,9 @@ This creates a *meta.yaml* file in the *dmqclib/* directory.
 > [!NOTE]
 > Make sure to review the *meta.yaml* file before building the package.
 
-#### 2. Build the package
+#### 2. Build the Package
 ```bash
-cd dmqclib
-conda build .
-cd ..
+conda build dmqclib
 ```
 
 This creates a *.conda* package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
@@ -276,9 +274,62 @@ anaconda login
 anaconda upload /full/path/to/conda-bld/noarch/dmqclib-<version>-<build>.conda
 ```
 
-#### 4. Keep the recipe under version control
+#### 4. Keep the Recipe Under Version Control
 
 ```bash
 cp dmqclib/meta.yaml conda/meta.yaml
 rm -r dmqclib
+```
+
+### Release to conda-forge
+
+#### 1. Fork and Clone the Staged-Recipes Repository  
+
+First, fork the conda-forge/staged-recipes repository on GitHub. Then clone your fork locally:
+
+```bash
+git clone https://github.com/<your_github>/staged-recipes.git    
+```
+
+#### 2. Create a New Branch from Main  
+
+From inside your cloned staged-recipes folder:  
+
+```bash
+git checkout -b dmqclib-recipe  
+```
+
+#### 3. Generate the Conda Recipe  
+
+Use Grayskull to generate a recipe for conda-forge:
+
+```bash
+cd staged-recipes
+grayskull pypi dmqclib --strict-conda-forge  
+```
+
+*Grayskull* creates a folder named *dmqclib* directly under *staged-recipes*.
+
+#### 4. Review the Generated meta.yaml  
+
+Compare the generated file *dmqclib/meta.yaml* with the existing *meta_conda_forge.yaml* from the *dmqclib* repository. Adjust as needed to meet conda-forge guidelines.
+
+#### 5. Commit and Push Your Changes  
+
+```bash
+git add dmqclib/meta.yaml  
+git commit -m "Adding dmqclib"  
+git push --set-upstream origin dmqclib-recipe  
+```
+
+#### 6. Open a Pull Request and Request a Review  
+
+On GitHub, open a Pull Request from your dmqclib-recipe branch to the main branch of conda-forge/staged-recipes.  
+Once the automated checks pass, leave a comment in your PR to request a review, for example:  
+*@conda-forge/help-python, ready for review!*
+
+#### 7. Keep the Recipe Under Version Control
+
+```bash
+cp dmqclib/meta.yaml /path/to/dmqclib/conda/meta_conda_forge.yaml
 ```

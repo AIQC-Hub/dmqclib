@@ -11,8 +11,18 @@ from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
 
 
 class TestKFoldValidation(unittest.TestCase):
+    """
+    A suite of tests ensuring that KFoldValidation correctly captures
+    configurations, splits training data, applies the XGBoost model,
+    and writes validation results.
+    """
+
     def setUp(self):
-        """Set up test environment and load input and selected datasets."""
+        """
+        Prepare the test environment by loading a training configuration
+        and input training data. The input file names for train/test sets
+        are defined here for subsequent model validation tests.
+        """
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -40,12 +50,12 @@ class TestKFoldValidation(unittest.TestCase):
         self.ds_input.process_targets()
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """Check that the step name is correctly identified as 'validate'."""
         ds = KFoldValidation(self.config)
         self.assertEqual(ds.step_name, "validate")
 
     def test_output_file_names(self):
-        """Ensure output file names are set correctly."""
+        """Verify that the default output file names are correctly resolved."""
         ds = KFoldValidation(self.config)
         self.assertEqual(
             "/path/to/validate_1/nrt_bo_001/validate_folder_1/temp_validation_result.tsv",
@@ -61,12 +71,12 @@ class TestKFoldValidation(unittest.TestCase):
         )
 
     def test_base_model(self):
-        """Verify the config file is correctly set in the member variable."""
+        """Ensure the base model is an XGBoost instance, as defined by the config."""
         ds = KFoldValidation(self.config)
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
-        """Verify the config file is correctly set in the member variable."""
+        """Check that training data is properly loaded into the KFoldValidation instance."""
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
@@ -78,7 +88,7 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.training_sets["psal"].shape[1], 38)
 
     def test_default_k_fold(self):
-        """Ensure k_fold is set to default value when no config entry is found."""
+        """Confirm that k_fold defaults to 10 if no config entry is present."""
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.config.data["step_param_set"]["steps"]["validate"]["k_fold"] = None
 
@@ -86,9 +96,8 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(k_fold, 10)
 
     def test_xgboost(self):
-        """Verify the config file is correctly set in the member variable."""
+        """Check that the XGBoost model processes the training sets and populates results."""
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
-
         ds.process_targets()
 
         self.assertIsInstance(ds.results["temp"], pl.DataFrame)
@@ -100,7 +109,7 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.results["psal"].shape[1], 7)
 
     def test_write_results(self):
-        """Ensure target rows are written to parquet files correctly."""
+        """Ensure validation results are written to files as expected."""
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         data_path = Path(__file__).resolve().parent / "data" / "training"

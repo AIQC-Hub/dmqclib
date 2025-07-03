@@ -1,5 +1,6 @@
 import numpy as np
 import polars as pl
+from typing import Optional, Dict
 
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step6_split.split_base import SplitDataSetBase
@@ -7,14 +8,47 @@ from dmqclib.prepare.step6_split.split_base import SplitDataSetBase
 
 class SplitDataSetA(SplitDataSetBase):
     """
-    SplitDataSetBase split feature data into training and test sets for BO NRT+Cora test data.
+    A subclass of :class:`SplitDataSetBase` that splits feature data into
+    training and test sets for BO NRT + Cora test data.
+
+    This class performs the following tasks:
+
+      - Randomly samples a fraction of rows for the test set.
+      - Ensures matching positive and negative rows are grouped by shared
+        identifiers (e.g., ``pair_id``).
+      - Splits out the remainder into a training set.
+      - Assigns k-fold indices to the training set rows.
+      - Optionally drops columns that are not required for subsequent analysis.
+
+    .. note::
+
+       The docstring states "SplitDataSetBase split feature data into training
+       and test sets," but since this is :class:`SplitDataSetA`, the wording
+       can be tailored further to mention "SplitDataSetA."
     """
 
-    expected_class_name = "SplitDataSetA"
+    expected_class_name: str = "SplitDataSetA"
 
-    def __init__(self, config: DataSetConfig, target_features: pl.DataFrame = None):
+    def __init__(
+        self,
+        config: DataSetConfig,
+        target_features: Optional[Dict[str, pl.DataFrame]] = None,
+    ) -> None:
+        """
+        Initialize the dataset splitting class with configuration
+        and target features.
+
+        :param config: A dataset configuration object that specifies
+                       paths, test-set fraction, and k-fold details.
+        :type config: DataSetConfig
+        :param target_features: A dictionary mapping target names to DataFrames
+                                containing extracted features. Defaults to None.
+        :type target_features: dict of str to pl.DataFrame, optional
+        """
         super().__init__(config, target_features=target_features)
 
+        #: Column names used for intermediate processing (e.g., to maintain
+        #: matching references between positive and negative rows).
         self.work_col_names = [
             "row_id",
             "profile_id",
@@ -24,7 +58,20 @@ class SplitDataSetA(SplitDataSetBase):
             "observation_no",
         ]
 
-    def split_test_set(self, target_name: str):
+    def split_test_set(self, target_name: str) -> None:
+        """
+        Split the specified target's DataFrame into training and test sets.
+
+        1. A random fraction of rows labeled 1 (positive) is sampled to form
+           the test set.
+        2. Rows labeled 0 (negative) with matching ``pair_id`` are joined
+           to that test set.
+        3. The remaining rows form the training set.
+
+        :param target_name: The target name identifying which DataFrame in
+                            :attr:`target_features` to split.
+        :type target_name: str
+        """
         test_set_fraction = self.get_test_set_fraction()
 
         pos_test_set = (
@@ -46,7 +93,19 @@ class SplitDataSetA(SplitDataSetBase):
             how="anti",
         )
 
-    def add_k_fold(self, target_name: str):
+    def add_k_fold(self, target_name: str) -> None:
+        """
+        Assign a k-fold identifier to each row in the training set for cross-validation.
+
+        1. Extracts rows labeled 1 (positive) and unevenly distributes them across
+           the specified number of folds.
+        2. Joins negative rows based on ``pair_id`` so they share the same fold
+           assignment.
+
+        :param target_name: The target name identifying the training set
+                            within :attr:`training_sets`.
+        :type target_name: str
+        """
         k_fold = self.get_k_fold()
         pos_training_set = self.training_sets[target_name].filter(pl.col("label") == 1)
         df_size = pos_training_set.shape[0]
@@ -65,17 +124,32 @@ class SplitDataSetA(SplitDataSetBase):
         neg_training_set = (
             self.training_sets[target_name]
             .filter(pl.col("label") == 0)
-            .join(pos_training_set.select([pl.col("pair_id", "k_fold")]), on="pair_id")
+            .join(
+                pos_training_set.select([pl.col("pair_id"), pl.col("k_fold")]),
+                on="pair_id",
+            )
         )
 
         training_set = pos_training_set.vstack(neg_training_set)
 
+        # Reassemble the final training set with "k_fold" positioned as the first column.
         self.training_sets[target_name] = pl.concat(
-            [training_set.select(["row_id", "k_fold"]), training_set.drop(["k_fold"])],
+            [
+                training_set.select(["row_id", "k_fold"]),
+                training_set.drop(["k_fold"]),
+            ],
             how="align_left",
         )
 
-    def drop_columns(self, target_name: str):
+    def drop_columns(self, target_name: str) -> None:
+        """
+        Remove specified working columns from both the training and test sets,
+        leaving only the essential columns for subsequent steps.
+
+        :param target_name: The target name identifying which training and test sets
+                            to modify.
+        :type target_name: str
+        """
         self.training_sets[target_name] = self.training_sets[target_name].drop(
             self.work_col_names
         )

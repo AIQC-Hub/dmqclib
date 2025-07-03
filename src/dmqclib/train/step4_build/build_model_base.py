@@ -1,5 +1,6 @@
 import os
 from abc import abstractmethod
+from typing import Optional, Dict
 
 import polars as pl
 
@@ -10,105 +11,182 @@ from dmqclib.config.training_config import TrainingConfig
 
 class BuildModelBase(DataSetBase):
     """
-    Base class for building models.
+    An abstract base class to build and test models, using training/test sets
+    and a YAML-based configuration.
+
+    Inherits from :class:`DataSetBase` (with step name ``"build"``)
+    to ensure that the provided configuration matches the expected
+    fields for model-building. Subclasses must define their own
+    logic in the :meth:`build` and :meth:`test` abstract methods,
+    potentially for different modeling frameworks.
+
+    .. note::
+
+       If you intend to instantiate this class directly (rather than a subclass),
+       you may need to define an ``expected_class_name`` that matches
+       the config's ``base_class`` property. Otherwise, a
+       :class:`NotImplementedError` may be raised.
     """
 
     def __init__(
         self,
         config: TrainingConfig,
-        training_sets: pl.DataFrame = None,
-        test_sets: pl.DataFrame = None,
-    ):
+        training_sets: Optional[pl.DataFrame] = None,
+        test_sets: Optional[pl.DataFrame] = None,
+    ) -> None:
+        """
+        Initialize the model-building base class with optional training
+        and test sets.
+
+        :param config: A training configuration object containing
+                       paths and parameters for building and testing models.
+        :type config: TrainingConfig
+        :param training_sets: A DataFrame (or dictionary-of-DataFrames) with
+                              training examples, each associated with a
+                              particular target variable, defaults to None.
+        :type training_sets: pl.DataFrame, optional
+        :param test_sets: A DataFrame (or dictionary-of-DataFrames) with
+                          testing examples, each associated with a target,
+                          defaults to None.
+        :type test_sets: pl.DataFrame, optional
+        """
         super().__init__("build", config)
 
-        # Set member variables
-        self.default_file_name = "{target_name}_model.json"
-        self.default_file_names = {
+        #: Default naming templates for model files and test results,
+        #: with placeholders for the target name.
+        self.default_file_name: str = "{target_name}_model.json"
+        self.default_file_names: Dict[str, str] = {
             "model": "{target_name}_model.joblib",
             "result": "{target_name}_test_result.tsv",
         }
-        self.output_file_names = {
+
+        #: A dictionary mapping "model" or "result" to
+        #: target-specific file paths.
+        self.output_file_names: Dict[str, Dict[str, str]] = {
             k: self.config.get_target_file_names("build", v)
             for k, v in self.default_file_names.items()
         }
-        self.training_sets = training_sets
-        self.test_sets = test_sets
 
+        #: A Polars DataFrame (or dictionary) containing training data.
+        self.training_sets: Optional[pl.DataFrame] = training_sets
+        #: A Polars DataFrame (or dictionary) containing test data.
+        self.test_sets: Optional[pl.DataFrame] = test_sets
+
+        #: Loaded from :meth:`load_base_model`; can be overridden for each target.
         self.base_model = None
         self.load_base_model()
-        self.models = {}
-        self.results = {}
 
-    def load_base_model(self):
+        #: A dictionary to store model objects keyed by target name.
+        self.models: Dict[str, object] = {}
+        #: A dictionary to store test results keyed by target name.
+        self.results: Dict[str, pl.DataFrame] = {}
+
+    def load_base_model(self) -> None:
+        """
+        Load the base model class from the configuration.
+
+        The loaded model is stored in :attr:`base_model` and may be cloned,
+        specialized, or reloaded for each target in the building process.
+        """
         self.base_model = load_model_class(self.config)
 
-    def build_targets(self):
+    def build_targets(self) -> None:
         """
-        Iterate all targets to locate training data rows.
+        Iterate over all targets from the configuration, calling :meth:`build`
+        for each, and then optionally calling :meth:`test` if test sets exist.
         """
-        for k in self.config.get_target_names():
-            self.build(k)
-            if self.test_sets is not None and k in self.test_sets:
-                self.test(k)
+        for target_name in self.config.get_target_names():
+            self.build(target_name)
+            if self.test_sets is not None and target_name in self.test_sets:
+                self.test(target_name)
 
-    def test_targets(self):
+    def test_targets(self) -> None:
         """
-        Iterate all targets to locate training data rows.
+        Iterate over all targets, ensuring that a model has been built before
+        calling :meth:`test`.
+
+        :raises ValueError: If a target has no corresponding entry in
+                            :attr:`models`.
         """
-        for k in self.config.get_target_names():
-            if k not in self.models:
-                raise ValueError(f"No valid model found for the variable '{k}'.")
-            self.test(k)
+        for target_name in self.config.get_target_names():
+            if target_name not in self.models:
+                raise ValueError(
+                    f"No valid model found for the variable '{target_name}'."
+                )
+            self.test(target_name)
 
     @abstractmethod
-    def build(self, target_name: str):
+    def build(self, target_name: str) -> None:
         """
-        Build models
+        Build a model for the specified target name.
+
+        This abstract method must be implemented by subclasses to
+        perform the steps necessary for initializing, training,
+        and storing the model in :attr:`models`.
+
+        :param target_name: The identifier for this target's model
+                            in :attr:`training_sets`.
+        :type target_name: str
         """
         pass  # pragma: no cover
 
     @abstractmethod
-    def test(self, target_name: str):
+    def test(self, target_name: str) -> None:
         """
-        Build models
+        Test a model for the specified target name.
+
+        Typically, this includes running predictions, evaluating
+        performance metrics, and storing results in :attr:`results`.
+
+        :param target_name: The identifier for this target's model
+                            and test set in :attr:`test_sets` (plus
+                            entries in :attr:`models`).
+        :type target_name: str
         """
         pass  # pragma: no cover
 
-    def write_results(self):
+    def write_results(self) -> None:
         """
-        Write results
+        Write each target's test results to a TSV file.
+
+        :raises ValueError: If :attr:`results` is empty, indicating no tests
+                            have been carried out or no results stored.
         """
-        if len(self.results) == 0:
+        if not self.results:
             raise ValueError("Member variable 'results' must not be empty.")
 
-        for k, v in self.results.items():
-            os.makedirs(
-                os.path.dirname(self.output_file_names["result"][k]), exist_ok=True
-            )
-            v.write_csv(self.output_file_names["result"][k], separator="\t")
+        for target_name, df in self.results.items():
+            output_path = self.output_file_names["result"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_csv(output_path, separator="\t")
 
-    def write_models(self):
+    def write_models(self) -> None:
         """
-        Write models
-        """
-        if len(self.models) == 0:
-            raise ValueError("Member variable 'built_models' must not be empty.")
+        Serialize and write each target's model to disk.
 
-        for k, v in self.models.items():
-            os.makedirs(
-                os.path.dirname(self.output_file_names["model"][k]), exist_ok=True
-            )
-            self.base_model.save_model(self.output_file_names["model"][k])
-
-    def read_models(self):
+        :raises ValueError: If :attr:`models` is empty, indicating no models
+                            have been built for writing.
         """
-        Read models
-        """
+        if not self.models:
+            raise ValueError("Member variable 'models' must not be empty.")
 
-        for k, v in self.output_file_names["model"].items():
-            if not os.path.exists(v):
-                raise FileNotFoundError(f"File '{v}' does not exist.")
+        for target_name, model_ref in self.models.items():
+            output_path = self.output_file_names["model"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            self.base_model.save_model(output_path)
+
+    def read_models(self) -> None:
+        """
+        Read and restore each target's model from disk, storing
+        the loaded model in :attr:`models`.
+
+        :raises FileNotFoundError: If a model file does not exist
+                                   for a particular target.
+        """
+        for target_name, path in self.output_file_names["model"].items():
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"File '{path}' does not exist.")
 
             self.load_base_model()
-            self.base_model.load_model(v)
-            self.models[k] = self.base_model
+            self.base_model.load_model(path)
+            self.models[target_name] = self.base_model

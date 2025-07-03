@@ -8,8 +8,17 @@ from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
 
 
 class TestInputTrainingSetA(unittest.TestCase):
+    """
+    A suite of tests ensuring that the InputTrainingSetA class
+    correctly loads and processes training data sets.
+    """
+
     def setUp(self):
-        """Set up test environment and load input and selected datasets."""
+        """
+        Prepare a TrainingConfig instance pointing to a test YAML file with
+        specified training sets. Also defines file paths where training
+        and test data can be loaded from.
+        """
         self.config_file_path = (
             Path(__file__).resolve().parent
             / "data"
@@ -33,12 +42,12 @@ class TestInputTrainingSetA(unittest.TestCase):
         }
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """Check that the step name in the InputTrainingSetA instance is 'input'."""
         ds = InputTrainingSetA(self.config)
         self.assertEqual(ds.step_name, "input")
 
     def test_input_file_names(self):
-        """Ensure output file names are set correctly."""
+        """Verify that file names for training and test sets are correctly resolved."""
         ds = InputTrainingSetA(self.config)
         self.assertEqual(
             "/path/to/input_1/nrt_bo_001/input_folder_1/temp_train.parquet",
@@ -58,7 +67,10 @@ class TestInputTrainingSetA(unittest.TestCase):
         )
 
     def test_read_files(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """
+        Confirm that training and test data sets are loaded into
+        Polars DataFrame objects, with expected shapes for each variable.
+        """
         ds = InputTrainingSetA(self.config)
         ds.input_file_names = self.input_file_names
 

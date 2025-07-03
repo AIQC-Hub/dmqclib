@@ -6,10 +6,15 @@ from dmqclib.train.models.xgboost import XGBoost
 
 
 class TestXGBoost(unittest.TestCase):
+    """
+    A suite of tests verifying basic XGBoost model setup and functionality
+    through the dmqclib configuration system.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Define the path to the training configuration file
+        and select the appropriate dataset prior to each test.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -21,6 +26,8 @@ class TestXGBoost(unittest.TestCase):
         self.config.select("NRT_BO_001")
 
     def test_init_class(self):
-        """Ensure initialization works as expected."""
+        """
+        Check that initializing an XGBoost object sets default values correctly.
+        """
         ds = XGBoost(self.config)
         self.assertEqual(ds.k, 0)

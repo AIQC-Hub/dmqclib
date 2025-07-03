@@ -10,6 +10,11 @@ from dmqclib.prepare.step3_select.dataset_a import SelectDataSetA
 
 
 class TestSelectDataSetA(unittest.TestCase):
+    """
+    A suite of tests ensuring the SelectDataSetA class operates correctly
+    for selecting and labeling profiles, as well as writing results to disk.
+    """
+
     def setUp(self):
         """Set up test environment and load input dataset."""
         self.config_file_path = str(
@@ -31,12 +36,12 @@ class TestSelectDataSetA(unittest.TestCase):
         self.ds.read_input_data()
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """Ensure the step name is set correctly to 'select'."""
         ds = SelectDataSetA(self.config)
         self.assertEqual(ds.step_name, "select")
 
     def test_output_file_name(self):
-        """Ensure output file name is set correctly."""
+        """Verify that the output file name is set based on configuration."""
         ds = SelectDataSetA(self.config)
         self.assertEqual(
             "/path/to/select_1/nrt_bo_001/select_folder_1/selected_profiles.parquet",
@@ -44,7 +49,7 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_default_output_file_name(self):
-        """Ensure output file name is set correctly."""
+        """Check a default output file name from a different configuration."""
         config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -61,14 +66,14 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_input_data(self):
-        """Ensure input data is set correctly."""
+        """Ensure input data is loaded into the class as a Polars DataFrame."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_positive_profiles(self):
-        """Ensure positive profiles are selected correctly."""
+        """Check that positive profiles are selected correctly."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.select_positive_profiles()
         self.assertIsInstance(ds.pos_profile_df, pl.DataFrame)
@@ -76,7 +81,7 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.pos_profile_df.shape[1], 7)
 
     def test_negative_profiles(self):
-        """Ensure negative profiles are selected correctly."""
+        """Check that negative profiles are selected correctly."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.select_positive_profiles()
         ds.select_negative_profiles()
@@ -85,7 +90,7 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.neg_profile_df.shape[1], 7)
 
     def test_find_profile_pairs(self):
-        """Ensure profile pairs are found correctly."""
+        """Validate the creation of matching profile pairs."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.select_positive_profiles()
         ds.select_negative_profiles()
@@ -96,14 +101,14 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.neg_profile_df.shape[1], 8)
 
     def test_label_profiles(self):
-        """Ensure profiles are labeled correctly in the dataset."""
+        """Check that profiles are labeled correctly."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.label_profiles()
         self.assertEqual(ds.selected_profiles.shape[0], 44)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_write_selected_profiles(self):
-        """Ensure selected profiles are written to parquet file correctly."""
+        """Confirm that selected profiles are written to a file successfully."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.output_file_name = (
             Path(__file__).resolve().parent
@@ -118,7 +123,7 @@ class TestSelectDataSetA(unittest.TestCase):
         os.remove(ds.output_file_name)
 
     def test_write_empty_selected_profiles(self):
-        """ "Ensure ValueError is raised for empty profiles."""
+        """Check that writing empty profiles raises ValueError."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.output_file_name = (
             Path(__file__).resolve().parent
