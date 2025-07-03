@@ -1,4 +1,21 @@
-def get_data_set_config_schema():
+"""
+Module providing YAML-based JSON schemas used to validate dataset and training
+configuration files. Each function returns a YAML string describing the structure
+and constraints for a specific configuration schema.
+"""
+
+
+def get_data_set_config_schema() -> str:
+    """
+    Retrieve the YAML-based JSON schema for dataset configurations.
+
+    The returned schema requires certain objects and properties (e.g.,
+    path_info_sets, target_sets, feature_sets, etc.), each with nested
+    type constraints and additional properties set to false when appropriate.
+
+    :return: A YAML string representing the JSON schema for dataset configurations.
+    :rtype: str
+    """
     yaml_schema = """
 ---
 type: object
@@ -244,7 +261,18 @@ required:
     return yaml_schema
 
 
-def get_training_config_schema():
+def get_training_config_schema() -> str:
+    """
+    Retrieve the YAML-based JSON schema for training configurations.
+
+    The returned schema specifies required objects and properties under
+    categories such as path_info_sets, target_sets, step_class_sets,
+    step_param_sets, and training_sets. Additional properties are
+    disallowed to ensure constraints remain strict.
+
+    :return: A YAML string representing the JSON schema for training configurations.
+    :rtype: str
+    """
     yaml_schema = """
 ---
 type: object

@@ -11,8 +11,16 @@ from dmqclib.prepare.step4_locate.dataset_a import LocateDataSetA
 
 
 class TestLocateDataSetA(unittest.TestCase):
+    """
+    A suite of tests for verifying the LocateDataSetA class functionality,
+    including row selection, data assignment, and file output.
+    """
+
     def setUp(self):
-        """Set up test environment and load input and selected datasets."""
+        """
+        Set up a test environment by loading a configuration file, reading
+        input data, and selecting relevant profiles for subsequent tests.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -27,6 +35,7 @@ class TestLocateDataSetA(unittest.TestCase):
             / "input"
             / "nrt_cora_bo_test.parquet"
         )
+
         self.ds_input = load_step1_input_dataset(self.config)
         self.ds_input.input_file_name = str(self.test_data_file)
         self.ds_input.read_input_data()
@@ -37,7 +46,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.ds_select.label_profiles()
 
     def test_output_file_names(self):
-        """Ensure output file names are set correctly."""
+        """
+        Validate that the output file names for each variable
+        (e.g., temp, psal) are set as per the configuration settings.
+        """
         ds = LocateDataSetA(self.config)
         self.assertEqual(
             "/path/to/locate_1/nrt_bo_001/locate_folder_1/temp_rows.parquet",
@@ -49,12 +61,17 @@ class TestLocateDataSetA(unittest.TestCase):
         )
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """
+        Ensure that the step name within LocateDataSetA is 'locate'.
+        """
         ds = LocateDataSetA(self.config)
         self.assertEqual(ds.step_name, "locate")
 
     def test_input_data_and_selected_profiles(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """
+        Confirm that input_data and selected_profiles are correctly
+        assigned as Polars DataFrames.
+        """
         ds = LocateDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -70,7 +87,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_positive_rows(self):
-        """Ensure positive row data is set correctly."""
+        """
+        Check that positive row data is identified and stored
+        correctly based on specified flags.
+        """
         ds = LocateDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -88,7 +108,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.positive_rows["psal"].shape[1], 11)
 
     def test_negative_rows(self):
-        """Ensure negative row data is set correctly."""
+        """
+        Check that negative row data is identified and stored
+        correctly following the positive row selection stage.
+        """
         ds = LocateDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -108,7 +131,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.negative_rows["psal"].shape[1], 11)
 
     def test_target_rows(self):
-        """Ensure target rows are selected and set correctly."""
+        """
+        Confirm that target rows are correctly compiled after
+        merging positive and negative rows.
+        """
         ds = LocateDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -126,7 +152,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_rows["psal"].shape[1], 9)
 
     def test_write_target_rows(self):
-        """Ensure target rows are written to parquet files correctly."""
+        """
+        Ensure that target rows are saved to Parquet files and
+        verify the existence of these files.
+        """
         ds = LocateDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -148,7 +177,10 @@ class TestLocateDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["pres"])
 
     def test_write_no_target_rows(self):
-        """ "Ensure ValueError is raised for empty profiles."""
+        """
+        Check that a ValueError is raised if target rows are absent
+        when attempting to write them.
+        """
         ds = LocateDataSetA(
             self.config,
             input_data=self.ds_input.input_data,

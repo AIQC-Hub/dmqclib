@@ -5,9 +5,15 @@ from dmqclib.utils.config import read_config
 
 
 class TestReadConfig(unittest.TestCase):
+    """
+    A suite of tests verifying proper functionality of the read_config function
+    under various usage scenarios (explicit file path, config name only,
+    missing arguments, non-existent file).
+    """
+
     def setUp(self):
         """
-        Set the test data config file.
+        Set the test data configuration file path for use in multiple tests.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -18,7 +24,8 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_with_explicit_file(self):
         """
-        Test when config_file is explicitly specified.
+        Verify that read_config can load a specific YAML file path, ensuring
+        certain keys ('data_sets', 'path_info_sets') are present in the result.
         """
         config = read_config(config_file=str(self.config_file_path))
         self.assertIsNotNone(config, "Data should not be None")
@@ -29,8 +36,8 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_with_config_name(self):
         """
-        Test when only config_name is specified (check that the file can be
-        found by traversing up parent_level directories).
+        Verify that read_config can find and load a YAML file from
+        multiple parent directories when only config_file_name is specified.
         """
         config = read_config(
             config_file_name="prepare_config_template.yaml", parent_level=3
@@ -43,14 +50,14 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_no_params_raises_error(self):
         """
-        Test that ValueError is raised if neither config_file nor config_file_name is provided.
+        Check that ValueError is raised if neither config_file nor config_file_name is provided.
         """
         with self.assertRaises(ValueError):
             read_config()
 
     def test_read_config_nonexistent_file(self):
         """
-        Test that FileNotFoundError is raised if a non-existent file is specified.
+        Ensure that FileNotFoundError is raised for a file path that does not exist.
         """
         with self.assertRaises(FileNotFoundError):
             read_config(config_file="non_existent.yaml")

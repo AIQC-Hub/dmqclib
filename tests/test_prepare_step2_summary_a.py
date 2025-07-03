@@ -10,6 +10,12 @@ from dmqclib.prepare.step2_summary.dataset_a import SummaryDataSetA
 
 
 class TestSelectDataSetA(unittest.TestCase):
+    """
+    A suite of tests for verifying summary dataset operations in SummaryDataSetA.
+    Ensures output filenames, data loading, and profile/statistical calculations
+    function as expected.
+    """
+
     def setUp(self):
         """Set up test environment and load input dataset."""
         self.config_file_path = str(
@@ -31,7 +37,7 @@ class TestSelectDataSetA(unittest.TestCase):
         self.ds.read_input_data()
 
     def test_output_file_name(self):
-        """Ensure output file name is set correctly."""
+        """Verify that the output file name is set correctly based on the configuration."""
         ds = SummaryDataSetA(self.config)
         self.assertEqual(
             "/path/to/data_1/nrt_bo_001/summary/summary_stats.tsv",
@@ -39,7 +45,7 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_default_output_file_name(self):
-        """Ensure output file name is set correctly."""
+        """Verify that a default output file name is correctly set."""
         config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -56,19 +62,19 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """Check that the step name attribute is accurately set to 'summary'."""
         ds = SummaryDataSetA(self.config)
         self.assertEqual(ds.step_name, "summary")
 
     def test_input_data(self):
-        """Ensure input data is set correctly."""
+        """Confirm that input_data is correctly stored as a Polars DataFrame."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_global_stats(self):
-        """Ensure negative profiles are selected correctly."""
+        """Check that calculate_global_stats returns correct columns and row count."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         df = ds.calculate_global_stats("temp")
         self.assertIsInstance(df, pl.DataFrame)
@@ -76,7 +82,7 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(df.shape[1], 12)
 
     def test_profile_stats(self):
-        """Ensure profile pairs are found correctly."""
+        """Check that calculate_profile_stats processes grouped profiles correctly."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         grouped_df = ds.input_data.group_by(ds.profile_col_names)
         df = ds.calculate_profile_stats(grouped_df, "temp")
@@ -84,14 +90,14 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(df.shape[1], 12)
 
     def test_summary_stats(self):
-        """Ensure profile pairs are found correctly."""
+        """Check that calculate_stats populates summary_stats with correct dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
         self.assertEqual(ds.summary_stats.shape[0], 3528)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):
-        """Ensure selected profiles are written to parquet file correctly."""
+        """Confirm that summary statistics are written to file and file creation is verified."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.output_file_name = (
             Path(__file__).resolve().parent
@@ -106,7 +112,7 @@ class TestSelectDataSetA(unittest.TestCase):
         os.remove(ds.output_file_name)
 
     def test_write_no_summary_stats(self):
-        """ "Ensure ValueError is raised for empty summary stats."""
+        """Ensure ValueError is raised if write_summary_stats is called with empty stats."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
 
         with self.assertRaises(ValueError):

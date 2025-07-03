@@ -5,10 +5,15 @@ from dmqclib.config.dataset_config import DataSetConfig
 
 
 class TestBaseConfigPathMethods(unittest.TestCase):
+    """
+    A suite of tests that verify the correctness of path-related methods
+    within the DataSetConfig (e.g., base paths, file names, folder names).
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Set up a reference to the test configuration file (test_dataset_001.yaml)
+        to be used by all subsequent tests in this class.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -19,7 +24,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_common_base_path(self):
         """
-        Test file name with a correct entry.
+        Confirm that the 'common' base path is retrieved correctly from the config.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -29,7 +34,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_input_base_path(self):
         """
-        Test file name without an entry.
+        Confirm that the 'input' base path is retrieved correctly when present.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -39,7 +44,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_default_base_path(self):
         """
-        Test file name without an entry.
+        Ensure that if a base path is not found, a default is returned instead.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -55,7 +60,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_input_step_folder_name(self):
         """
-        Test file name without an entry.
+        Verify that the folder name for the 'input' step is returned correctly.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -65,7 +70,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_auto_select_step_folder_name(self):
         """
-        Test file name without an entry.
+        Verify that the folder name is auto-selected when not explicitly defined.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -81,7 +86,8 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_no_auto_select_step_folder_name(self):
         """
-        Test file name without an entry.
+        Confirm that folder_name_auto=False returns an empty string
+        if not defined in the config.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -97,7 +103,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_common_dataset_folder_name(self):
         """
-        Test file name without an entry.
+        Verify that the correct dataset folder name is retrieved for the 'input' step.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -107,7 +113,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_dataset_folder_name_in_step_params(self):
         """
-        Test file name without an entry.
+        Verify that an overridden dataset folder name is retrieved from step parameters.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -123,7 +129,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_default_file_name(self):
         """
-        Test file name with a correct entry.
+        Verify that if a file name is missing in the config, the provided default is used.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -133,7 +139,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_no_default_file_name(self):
         """
-        Test file name with a correct entry.
+        Check that an error is raised if no default is provided and the file name is missing.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -143,7 +149,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_file_name_in_params(self):
         """
-        Test file name with a correct entry.
+        Ensure that if a file name is specified in step params, it is retrieved successfully.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -159,8 +165,8 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_full_input_path(self):
         """
-        Test with all normal, non-empty parameters.
-        Expect paths to be joined with slashes correctly.
+        Confirm that full file names are constructed properly
+        when dataset folder usage is disabled.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -168,21 +174,19 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         full_file_name = ds.get_full_file_name(
             "input", "test_input_file.txt", use_dataset_folder=False
         )
-
         self.assertEqual(
             full_file_name, "/path/to/input_1/input_folder_1/test_input_file.txt"
         )
 
     def test_full_input_path_with_dataset_folder(self):
         """
-        Test with all normal, non-empty parameters.
-        Expect paths to be joined with slashes correctly.
+        Confirm that full file names are constructed properly
+        when dataset folder usage is enabled.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
         full_file_name = ds.get_full_file_name("input", "test_input_file.txt")
-
         self.assertEqual(
             full_file_name,
             "/path/to/input_1/nrt_bo_001/input_folder_1/test_input_file.txt",
@@ -190,7 +194,7 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
     def test_full_summary_path(self):
         """
-        Test file name with a correct entry.
+        Check that a full file name is constructed using parameters from step_dataset_002.yaml.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -202,7 +206,6 @@ class TestBaseConfigPathMethods(unittest.TestCase):
         ds.select("NRT_BO_001")
 
         full_file_name = ds.get_full_file_name("summary", "test_input_file.txt")
-
         self.assertEqual(
             full_file_name,
             "/path/to/data_1/summary_dataset_folder/summary/summary_in_params.txt",
@@ -210,10 +213,15 @@ class TestBaseConfigPathMethods(unittest.TestCase):
 
 
 class TestBaseConfigBaseClass(unittest.TestCase):
+    """
+    A suite of tests that verify lookup of base classes for steps
+    within the DataSetConfig.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Set up a reference to the test configuration file (test_dataset_001.yaml)
+        to be used by all subsequent tests in this class.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -224,7 +232,7 @@ class TestBaseConfigBaseClass(unittest.TestCase):
 
     def test_input_bass_class(self):
         """
-        Test file name with a correct entry.
+        Check that the correct base class name is returned for the 'input' step.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -234,10 +242,15 @@ class TestBaseConfigBaseClass(unittest.TestCase):
 
 
 class TestBaseConfigTargets(unittest.TestCase):
+    """
+    Tests focusing on how target variables, names, and related file names
+    are retrieved from DataSetConfig.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Set up a reference to the test configuration file (test_dataset_001.yaml)
+        to be used by all subsequent tests in this class.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -248,7 +261,7 @@ class TestBaseConfigTargets(unittest.TestCase):
 
     def test_target_variables(self):
         """
-        Test file name with a correct entry.
+        Confirm that get_target_variables() returns the expected number of targets.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -258,7 +271,7 @@ class TestBaseConfigTargets(unittest.TestCase):
 
     def test_target_names(self):
         """
-        Test file name with a correct entry.
+        Confirm that get_target_names() returns a list of correct target variable names.
         """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -267,6 +280,9 @@ class TestBaseConfigTargets(unittest.TestCase):
         self.assertEqual(target_names, ["temp", "psal", "pres"])
 
     def test_target_dict(self):
+        """
+        Ensure that get_target_dict() returns a dictionary detailing each target.
+        """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
@@ -276,13 +292,16 @@ class TestBaseConfigTargets(unittest.TestCase):
         self.assertEqual(target_dict["pres"], {"name": "pres", "flag": "pres_qc"})
 
     def test_target_file_names(self):
+        """
+        Confirm that target file names are generated as expected
+        using a placeholder format string.
+        """
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
         target_file_names = ds.get_target_file_names(
             "select", "{target_name}_features.parquet"
         )
-
         self.assertEqual(
             target_file_names["temp"],
             "/path/to/select_1/nrt_bo_001/select_folder_1/temp_features.parquet",

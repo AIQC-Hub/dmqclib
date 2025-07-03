@@ -4,18 +4,26 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
-from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
-from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
-from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
-from dmqclib.common.loader.dataset_loader import load_step5_extract_dataset
+from dmqclib.common.loader.dataset_loader import (
+    load_step1_input_dataset,
+    load_step2_summary_dataset,
+    load_step3_select_dataset,
+    load_step4_locate_dataset,
+    load_step5_extract_dataset,
+)
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step6_split.dataset_a import SplitDataSetA
 
 
 class TestSplitDataSetA(unittest.TestCase):
+    """
+    A suite of unit tests ensuring SplitDataSetA correctly splits extracted features
+    into training and test sets, writes them to files, and respects user-defined
+    configurations such as test set fraction and k-fold.
+    """
+
     def setUp(self):
-        """Set up test environment and load input and selected datasets."""
+        """Set up test environment and load data from previous steps (input, summary, select, locate, extract)."""
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -24,6 +32,7 @@ class TestSplitDataSetA(unittest.TestCase):
         )
         self.config = DataSetConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
+
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -61,12 +70,12 @@ class TestSplitDataSetA(unittest.TestCase):
         self.ds_extract.process_targets()
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """Verify that the step name is correctly set to 'split'."""
         ds = SplitDataSetA(self.config)
         self.assertEqual(ds.step_name, "split")
 
     def test_output_file_names(self):
-        """Ensure output file names are set correctly."""
+        """Ensure the default output file names are correctly generated for each target variable."""
         ds = SplitDataSetA(self.config)
 
         self.assertEqual(
@@ -87,7 +96,7 @@ class TestSplitDataSetA(unittest.TestCase):
         )
 
     def test_target_features_data(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check that target features are loaded into the SplitDataSetA class properly."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
@@ -99,7 +108,7 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_features["psal"].shape[1], 43)
 
     def test_split_features_data(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Verify splitting of features into training and test sets with default or configured fractions."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
         ds.process_targets()
@@ -121,7 +130,7 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[1], 37)
 
     def test_default_test_set_fraction(self):
-        """Ensure set_fraction is set to default value when no config entry is found."""
+        """Check that the default test_set_fraction (0.1) is used if none is provided in the config."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.config.data["step_param_set"]["steps"]["split"]["test_set_fraction"] = None
 
@@ -129,7 +138,7 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(test_set_fraction, 0.1)
 
     def test_default_k_fold(self):
-        """Ensure k_fold is set to default value when no config entry is found."""
+        """Check that the default k_fold (10) is used if none is provided in the config."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.config.data["step_param_set"]["steps"]["split"]["k_fold"] = None
 
@@ -137,9 +146,8 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(k_fold, 10)
 
     def test_write_training_sets(self):
-        """Ensure target rows are written to parquet files correctly."""
+        """Confirm that training sets are written to parquet files correctly."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
-
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
@@ -159,9 +167,8 @@ class TestSplitDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["train"]["pres"])
 
     def test_write_test_sets(self):
-        """Ensure target rows are written to parquet files correctly."""
+        """Confirm that test sets are written to parquet files correctly."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
-
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
@@ -181,9 +188,8 @@ class TestSplitDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["test"]["pres"])
 
     def test_write_data_sets(self):
-        """Ensure target rows are written to parquet files correctly."""
+        """Check that calling write_data_sets writes both training and test sets to files correctly."""
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
-
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"

@@ -9,8 +9,16 @@ from dmqclib.interface.config import write_config_template
 
 
 class TestTemplateConfig(unittest.TestCase):
+    """
+    Tests for verifying that configuration templates can be correctly
+    written to disk for 'prepare' (dataset) and 'train' modules.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Set up test environment by defining sample file paths
+        for dataset and training configuration templates.
+        """
         self.ds_config_template_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -26,27 +34,52 @@ class TestTemplateConfig(unittest.TestCase):
         )
 
     def test_ds_config_template(self):
+        """
+        Check that a dataset (prepare) configuration template can be written
+        to the specified path and removed afterward.
+        """
         write_config_template(self.ds_config_template_file, "prepare")
         self.assertTrue(os.path.exists(self.ds_config_template_file))
         os.remove(self.ds_config_template_file)
 
     def test_train_config_template(self):
+        """
+        Check that a training configuration template can be written
+        to the specified path and removed afterward.
+        """
         write_config_template(self.train_config_template_file, "train")
         self.assertTrue(os.path.exists(self.train_config_template_file))
         os.remove(self.train_config_template_file)
 
     def test_config_template_with_invalid_module(self):
+        """
+        Ensure that requesting a template for an invalid module name
+        raises ValueError.
+        """
         with self.assertRaises(ValueError):
             write_config_template(self.ds_config_template_file, "prepare2")
 
     def test_config_template_with_invalid_path(self):
+        """
+        Ensure that attempting to write a template to an invalid path
+        raises IOError.
+        """
         with self.assertRaises(IOError):
             write_config_template("/abc" + str(self.ds_config_template_file), "prepare")
 
 
 class TestReadConfig(unittest.TestCase):
+    """
+    Tests for verifying that reading an existing config file returns
+    the appropriate DataSetConfig or TrainingConfig object, while
+    invalid inputs raise errors.
+    """
+
     def setUp(self):
-        """Set up test environment and define test data paths."""
+        """
+        Define sample file paths for dataset and training configuration
+        files used in subsequent tests.
+        """
         self.ds_config_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -62,17 +95,31 @@ class TestReadConfig(unittest.TestCase):
         )
 
     def test_ds_config(self):
+        """
+        Verify that reading a dataset (prepare) config file returns
+        a DataSetConfig instance.
+        """
         config = read_config(self.ds_config_file, "prepare")
         self.assertIsInstance(config, DataSetConfig)
 
     def test_train_config(self):
+        """
+        Verify that reading a training config file returns
+        a TrainingConfig instance.
+        """
         config = read_config(self.train_config_file, "train")
         self.assertIsInstance(config, TrainingConfig)
 
     def test_config_with_invalid_module(self):
+        """
+        Check that specifying an invalid module name raises ValueError.
+        """
         with self.assertRaises(ValueError):
             _ = read_config(self.ds_config_file, "prepare2")
 
     def test_config_with_invalid_path(self):
+        """
+        Check that providing an invalid file path raises IOError.
+        """
         with self.assertRaises(IOError):
             _ = read_config(str(self.ds_config_file) + "zzz", "prepare")

@@ -4,17 +4,25 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
-from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
-from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
-from dmqclib.common.loader.dataset_loader import load_step4_locate_dataset
+from dmqclib.common.loader.dataset_loader import (
+    load_step1_input_dataset,
+    load_step2_summary_dataset,
+    load_step3_select_dataset,
+    load_step4_locate_dataset,
+)
 from dmqclib.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step5_extract.dataset_a import ExtractDataSetA
 
 
 class TestExtractDataSetA(unittest.TestCase):
+    """
+    A suite of tests verifying that the ExtractDataSetA class gathers
+    and outputs extracted features from multiple prior steps (input, summary,
+    select, locate).
+    """
+
     def setUp(self):
-        """Set up test environment and load input and selected datasets."""
+        """Set up test environment and load input, summary, select, and locate data."""
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -23,6 +31,7 @@ class TestExtractDataSetA(unittest.TestCase):
         )
         self.config = DataSetConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
+
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -51,7 +60,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_locate.process_targets()
 
     def test_output_file_names(self):
-        """Ensure output file names are set correctly."""
+        """Check that the output file names are set according to the configuration."""
         ds = ExtractDataSetA(self.config)
         self.assertEqual(
             "/path/to/data_1/nrt_bo_001/extract/temp_features.parquet",
@@ -63,12 +72,12 @@ class TestExtractDataSetA(unittest.TestCase):
         )
 
     def test_step_name(self):
-        """Ensure the step name is set correctly."""
+        """Ensure the step name is set to 'extract'."""
         ds = ExtractDataSetA(self.config)
         self.assertEqual(ds.step_name, "extract")
 
     def test_init_arguments(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Validate that input data, selected profiles, target rows, and summary stats are set."""
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -102,7 +111,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_rows["psal"].shape[1], 9)
 
     def test_location_features(self):
-        """Ensure input data and selected profiles are read correctly."""
+        """Check that features are correctly processed for temp and psal targets."""
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -122,7 +131,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_features["psal"].shape[1], 43)
 
     def test_write_target_features(self):
-        """Ensure target rows are written to parquet files correctly."""
+        """Confirm that target features are written to parquet files as expected."""
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -146,7 +155,7 @@ class TestExtractDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["pres"])
 
     def test_write_no_target_features(self):
-        """Ensure ValueError is raised for empty profiles."""
+        """Check that calling write_target_features with empty features raises ValueError."""
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,

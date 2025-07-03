@@ -5,10 +5,15 @@ from dmqclib.config.training_config import TrainingConfig
 
 
 class TestTrainingConfig(unittest.TestCase):
+    """
+    A suite of tests verifying that TrainingConfig can validate a training configuration,
+    handle dataset selection, and generate file/folder paths as expected.
+    """
+
     def setUp(self):
         """
-        Called before each test method. We define the explicit path to
-        the test data config file here for reuse.
+        Set up references to a valid training configuration file and
+        a template configuration file to be used in subsequent tests.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -16,7 +21,6 @@ class TestTrainingConfig(unittest.TestCase):
             / "config"
             / "test_training_001.yaml"
         )
-
         self.template_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -26,7 +30,8 @@ class TestTrainingConfig(unittest.TestCase):
 
     def test_valid_config(self):
         """
-        Test valid config
+        Confirm that a well-formed configuration is identified as valid
+        by the validate() method.
         """
         ds = TrainingConfig(str(self.config_file_path))
         msg = ds.validate()
@@ -34,7 +39,7 @@ class TestTrainingConfig(unittest.TestCase):
 
     def test_invalid_config(self):
         """
-        Test invalid config
+        Confirm that an improperly formed configuration is identified as invalid.
         """
         config_file_path = (
             Path(__file__).resolve().parent
@@ -47,6 +52,10 @@ class TestTrainingConfig(unittest.TestCase):
         self.assertIn("invalid", msg)
 
     def test_load_dataset_config(self):
+        """
+        Check that the correct sections (path_info, target_set, step_class_set,
+        step_param_set) are loaded from a valid training configuration.
+        """
         ds = TrainingConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
@@ -56,13 +65,17 @@ class TestTrainingConfig(unittest.TestCase):
         self.assertEqual(len(ds.data["step_param_set"]), 2)
 
     def test_invalid_dataset_name(self):
+        """
+        Ensure that selecting a non-existent dataset name triggers a ValueError.
+        """
         ds = TrainingConfig(str(self.config_file_path))
         with self.assertRaises(ValueError):
             ds.select("INVALID_NAME")
 
     def test_input_folder(self):
         """
-        Test input folder
+        Confirm that file paths for the 'input' folder are generated correctly
+        when using the template configuration.
         """
         ds = TrainingConfig(str(self.template_file))
         ds.select("NRT_BO_001")
@@ -71,7 +84,8 @@ class TestTrainingConfig(unittest.TestCase):
 
     def test_valid_folder(self):
         """
-        Test valid folder
+        Confirm that file paths for the 'valid' folder are generated correctly
+        when using the template configuration.
         """
         ds = TrainingConfig(str(self.template_file))
         ds.select("NRT_BO_001")
@@ -80,7 +94,8 @@ class TestTrainingConfig(unittest.TestCase):
 
     def test_build_folder(self):
         """
-        Test build folder
+        Confirm that file paths for the 'build' folder are generated correctly
+        when using the template configuration.
         """
         ds = TrainingConfig(str(self.template_file))
         ds.select("NRT_BO_001")
