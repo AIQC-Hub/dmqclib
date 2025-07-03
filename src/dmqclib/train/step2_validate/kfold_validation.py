@@ -1,4 +1,5 @@
 import polars as pl
+from typing import Optional, List
 
 from dmqclib.config.training_config import TrainingConfig
 from dmqclib.train.step2_validate.validate_base import ValidationBase
@@ -6,31 +7,73 @@ from dmqclib.train.step2_validate.validate_base import ValidationBase
 
 class KFoldValidation(ValidationBase):
     """
-    KFoldValidation performs k-fold cross validation
+    A subclass of :class:`ValidationBase` that performs k-fold cross-validation
+    on training sets.
+
+    This class iterates over the specified number of folds, trains
+    (builds) the model on all folds except one, then tests it on the
+    held-out fold. Results are accumulated in :attr:`results`.
     """
 
-    expected_class_name = "KFoldValidation"
+    expected_class_name: str = "KFoldValidation"
 
-    def __init__(self, config: TrainingConfig, training_sets: pl.DataFrame = None):
+    def __init__(
+        self, config: TrainingConfig, training_sets: Optional[pl.DataFrame] = None
+    ) -> None:
+        """
+        Initialize the k-fold validation process.
+
+        :param config: A training configuration object containing
+                       model parameters, file paths, and other
+                       validation settings.
+        :type config: TrainingConfig
+        :param training_sets: A Polars DataFrame of labeled data,
+                              must contain a column named ``k_fold``
+                              indicating the fold assignment for each row.
+                              Defaults to None.
+        :type training_sets: pl.DataFrame, optional
+        """
         super().__init__(config, training_sets=training_sets)
 
-        self.default_k_fold = 10
+        #: The default number of folds if none is specified in the config.
+        self.default_k_fold: int = 10
 
     def get_k_fold(self) -> int:
+        """
+        Retrieve the number of folds to use for cross-validation from
+        the ``validate`` section of the YAML config, or fall back
+        to :attr:`default_k_fold`.
+
+        :return: The number of folds for k-fold cross-validation.
+        :rtype: int
+        """
         return (
             self.config.get_step_params("validate").get("k_fold", self.default_k_fold)
             or self.default_k_fold
         )
 
-    def validate(self, target_name: str):
+    def validate(self, target_name: str) -> None:
         """
-        Validate models
+        Conduct k-fold cross-validation for the given target name,
+        storing model objects and test results in :attr:`models` and
+        :attr:`results`, respectively.
+
+        For each fold out of :meth:`get_k_fold`:
+          1. Reload or re-initialize the model using :meth:`load_base_model`.
+          2. Set ``base_model.k`` to the fold index.
+          3. Build the model using all training data except rows in the current fold.
+          4. Test the model on the held-out fold.
+          5. Accumulate test results.
+
+        :param target_name: The identifier for which target dataset to validate,
+                            referring to the corresponding DataFrame within
+                            :attr:`training_sets`.
+        :type target_name: str
         """
+        self.models[target_name] = []
+        results: List[pl.DataFrame] = []
 
-        self.models[target_name] = list()
-        results = list()
-
-        k_fold = self.get_k_fold()
+        k_fold: int = self.get_k_fold()
         for k in range(k_fold):
             self.load_base_model()
             self.base_model.k = k + 1
