@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, Optional
 
 import polars as pl
 
@@ -10,59 +10,111 @@ from dmqclib.config.dataset_config import DataSetConfig
 
 class ExtractFeatureBase(DataSetBase):
     """
-    Base class to extract features
+    Abstract base class for extracting features from dataset rows.
+
+    Inherits from :class:`DataSetBase` to ensure configuration consistency
+    and uses a feature loader to dynamically compose feature extraction
+    steps. The extracted features, once generated, can be written to Parquet files.
     """
 
     def __init__(
         self,
         config: DataSetConfig,
-        input_data: pl.DataFrame = None,
-        selected_profiles: pl.DataFrame = None,
-        target_rows: pl.DataFrame = None,
-        summary_stats: pl.DataFrame = None,
-    ):
+        input_data: Optional[pl.DataFrame] = None,
+        selected_profiles: Optional[pl.DataFrame] = None,
+        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        summary_stats: Optional[pl.DataFrame] = None,
+    ) -> None:
+        """
+        Initialize the feature extraction base class.
+
+        :param config: The configuration object, containing paths and target definitions.
+        :type config: DataSetConfig
+        :param input_data: A Polars DataFrame providing the full dataset from which
+                           features are extracted, defaults to None.
+        :type input_data: pl.DataFrame, optional
+        :param selected_profiles: A Polars DataFrame containing profiles that have
+                                 been selected for processing, defaults to None.
+        :type selected_profiles: pl.DataFrame, optional
+        :param target_rows: A dictionary mapping target names to Polars DataFrames
+                            of rows relevant for those targets, defaults to None.
+        :type target_rows: Dict[str, pl.DataFrame], optional
+        :param summary_stats: A Polars DataFrame containing summary statistics that
+                              might guide feature scaling, defaults to None.
+        :type summary_stats: pl.DataFrame, optional
+        :raises NotImplementedError: If the subclass does not define
+                                     ``expected_class_name`` (when instantiating a real subclass).
+        :raises ValueError: If the provided YAML config does not match this class's
+                            ``expected_class_name``.
+        """
         super().__init__("extract", config)
 
-        # Set member variables
-        self.default_file_name = "{target_name}_features.parquet"
-        self.output_file_names = self.config.get_target_file_names(
+        #: The default pattern to use when writing feature files for each target.
+        self.default_file_name: str = "{target_name}_features.parquet"
+
+        #: A dictionary mapping target names to corresponding output Parquet file paths.
+        self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
             "extract", self.default_file_name
         )
-        self.input_data = input_data
-        self.selected_profiles = selected_profiles
+
+        self.input_data: Optional[pl.DataFrame] = input_data
+        self.selected_profiles: Optional[pl.DataFrame] = selected_profiles
+
+        # Filter input data if both input_data and selected_profiles are present
         if input_data is not None and selected_profiles is not None:
             self._filter_input()
         else:
-            self.filtered_input = None
-        self.target_rows = target_rows
-        self.summary_stats = summary_stats
-        self.feature_info = self.config.data["feature_param_set"]["params"]
-        self.target_features = {}
+            self.filtered_input: Optional[pl.DataFrame] = None
 
-    def _filter_input(self):
+        #: A dict of Polars DataFrames, one per target, indicating rows to be used.
+        self.target_rows: Optional[Dict[str, pl.DataFrame]] = target_rows
+        #: A Polars DataFrame presenting summary stats for optional use in scaling features.
+        self.summary_stats: Optional[pl.DataFrame] = summary_stats
+        #: A dictionary specifying feature extraction parameters from the config.
+        self.feature_info: Dict = self.config.data["feature_param_set"]["params"]
+        #: A dictionary mapping target names to DataFrames of extracted features.
+        self.target_features: Dict[str, pl.DataFrame] = {}
+
+    def _filter_input(self) -> None:
+        """
+        Filter the input data by joining with the selected profiles.
+
+        This method ensures that the resulting :attr:`filtered_input` only
+        contains rows also present in :attr:`selected_profiles`. The data
+        is joined on columns ``platform_code`` and ``profile_no``.
+
+        :raises polars.exceptions.ComputeError: If either ``platform_code`` or
+                                                ``profile_no`` columns are missing
+                                                from the input DataFrames.
+        """
         self.filtered_input = self.input_data.join(
-            (
-                self.selected_profiles.select(
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                )
+            self.selected_profiles.select(
+                pl.col("platform_code"),
+                pl.col("profile_no"),
             ),
             on=["platform_code", "profile_no"],
         )
 
-    def process_targets(self):
+    def process_targets(self) -> None:
         """
-        Iterate all targets to generate features.
-        """
-        for k in self.config.get_target_names():
-            self.extract_target_features(k)
+        Generate features for all targets found in the configuration.
 
-    def extract_target_features(self, k):
+        Iterates over each target name returned by
+        :meth:`~dmqclib.config.dataset_config.DataSetConfig.get_target_names`
+        and calls :meth:`extract_target_features` on them.
         """
-        Iterate all feature entries to generate features.
+        for target_name in self.config.get_target_names():
+            self.extract_target_features(target_name)
+
+    def extract_target_features(self, target_name: str) -> None:
         """
-        self.target_features[k] = (
-            self.target_rows[k]
+        Build the features for a specified target.
+
+        :param target_name: The key identifying which target to process.
+        :type target_name: str
+        """
+        self.target_features[target_name] = (
+            self.target_rows[target_name]
             .select(
                 [
                     pl.col("label"),
@@ -76,7 +128,10 @@ class ExtractFeatureBase(DataSetBase):
             )
             .join(
                 pl.concat(
-                    [self.extract_features(k, x) for x in self.feature_info],
+                    [
+                        self.extract_features(target_name, fi)
+                        for fi in self.feature_info
+                    ],
                     how="align_left",
                 ),
                 on=["row_id"],
@@ -86,7 +141,14 @@ class ExtractFeatureBase(DataSetBase):
 
     def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:
         """
-        Extract target features.
+        Use a feature loader to retrieve and run a feature extraction process.
+
+        :param target_name: The target for which features will be extracted.
+        :type target_name: str
+        :param feature_info: A dictionary of feature extraction parameters.
+        :type feature_info: Dict
+        :return: A DataFrame containing newly extracted or transformed features.
+        :rtype: pl.DataFrame
         """
         ds = load_feature_class(
             target_name,
@@ -103,13 +165,17 @@ class ExtractFeatureBase(DataSetBase):
 
         return ds.features
 
-    def write_target_features(self):
+    def write_target_features(self) -> None:
         """
-        Write target_rows to parquet files
+        Write the extracted features to their respective files.
+
+        :raises ValueError: If :attr:`target_features` is empty, meaning no features
+                            have been extracted.
         """
-        if len(self.target_features) == 0:
+        if not self.target_features:
             raise ValueError("Member variable 'target_features' must not be empty.")
 
-        for k, v in self.target_features.items():
-            os.makedirs(os.path.dirname(self.output_file_names[k]), exist_ok=True)
-            v.write_parquet(self.output_file_names[k])
+        for target, df in self.target_features.items():
+            output_path = self.output_file_names[target]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_parquet(output_path)

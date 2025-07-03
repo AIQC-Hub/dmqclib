@@ -288,8 +288,7 @@ rm -r dmqclib
 First, fork the conda-forge/staged-recipes repository on GitHub. Then clone your fork locally:
 
 ```bash
-git clone https://github.com/<your_github>/staged-recipes.git  
-cd staged-recipes  
+git clone https://github.com/<your_github>/staged-recipes.git    
 ```
 
 #### 2. Create a New Branch from Main  
@@ -305,6 +304,7 @@ git checkout -b dmqclib-recipe
 Use Grayskull to generate a recipe for conda-forge:
 
 ```bash
+cd staged-recipes
 grayskull pypi dmqclib --strict-conda-forge  
 ```
 
@@ -317,7 +317,7 @@ Compare the generated file *dmqclib/meta.yaml* with the existing *meta_conda_for
 #### 5. Commit and Push Your Changes  
 
 ```bash
-git add recipes/dmqclib/meta.yaml  
+git add dmqclib/meta.yaml  
 git commit -m "Adding dmqclib"  
 git push --set-upstream origin dmqclib-recipe  
 ```
@@ -327,3 +327,9 @@ git push --set-upstream origin dmqclib-recipe
 On GitHub, open a Pull Request from your dmqclib-recipe branch to the main branch of conda-forge/staged-recipes.  
 Once the automated checks pass, leave a comment in your PR to request a review, for example:  
 *@conda-forge/help-python, ready for review!*
+
+#### 7. Keep the Recipe Under Version Control
+
+```bash
+cp dmqclib/meta.yaml /path/to/dmqclib/conda/meta_conda_forge.yaml
+```

@@ -1,43 +1,109 @@
 import polars as pl
+from typing import Optional, Dict
 
 from dmqclib.common.base.feature_base import FeatureBase
 
 
 class ProfileSummaryStats5(FeatureBase):
     """
-    ProfileSummaryStats5 extracts profile summary features from BO NRT+Cora test data.
+    A feature-extraction class that combines row references from
+    :attr:`target_rows` with summary statistics from :attr:`summary_stats`.
+    It constructs columns of summarized metrics (e.g., min, max) for specified
+    variables and optionally applies scaling.
+
+    This class inherits from :class:`FeatureBase`, which provides a
+    generic framework for feature extraction, including placeholders
+    for multi-stage scaling.
     """
 
     def __init__(
         self,
-        target_name: str = None,
-        selected_profiles: pl.DataFrame = None,
-        filtered_input: pl.DataFrame = None,
-        target_rows: pl.DataFrame = None,
-        summary_stats: pl.DataFrame = None,
-        feature_info: pl.DataFrame = None,
-    ):
+        target_name: Optional[str] = None,
+        feature_info: Optional[Dict] = None,
+        selected_profiles: Optional[pl.DataFrame] = None,
+        filtered_input: Optional[pl.DataFrame] = None,
+        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        summary_stats: Optional[pl.DataFrame] = None,
+    ) -> None:
+        """
+        Initialize the profile summary stats feature extractor.
+
+        :param target_name: The name of the target used to lookup
+                            corresponding rows in :attr:`target_rows`.
+        :type target_name: str, optional
+        :param selected_profiles: A Polars DataFrame of selected profiles,
+                                  typically unused by this class but provided
+                                  for consistency, defaults to None.
+        :type selected_profiles: pl.DataFrame, optional
+        :param filtered_input: A Polars DataFrame of potentially filtered input data,
+                               not directly used here, defaults to None.
+        :type filtered_input: pl.DataFrame, optional
+        :param target_rows: A dictionary of DataFrames keyed by target names,
+                            containing rows for which features are extracted, defaults to None.
+        :type target_rows: dict of (str to pl.DataFrame), optional
+        :param summary_stats: A Polars DataFrame of summary statistics
+                              keyed by (platform_code, profile_no, variable),
+                              defaults to None.
+        :type summary_stats: pl.DataFrame, optional
+        :param feature_info: A dictionary specifying
+                             feature parameters and stats, defaults to None.
+
+                             Example structure:
+                             {
+                               "stats": {
+                                 "temp": {
+                                   "min": {
+                                     "min": 0.0,
+                                     "max": 30.0
+                                   },
+                                   "mean": {
+                                     "min": 0.0,
+                                     "max": 30.0
+                                   }
+                                   ...
+                                 },
+                                 "psal": {
+                                   ...
+                                 }
+                               }
+                             }
+        :type feature_info: Dict, optional
+        """
         super().__init__(
-            target_name,
-            selected_profiles,
-            filtered_input,
-            target_rows,
-            summary_stats,
-            feature_info,
+            target_name=target_name,
+            feature_info=feature_info,
+            selected_profiles=selected_profiles,
+            filtered_input=filtered_input,
+            target_rows=target_rows,
+            summary_stats=summary_stats,
         )
 
-    def extract_features(self):
+    def extract_features(self) -> None:
         """
-        Extract features.
+        Traverse the :attr:`feature_info["stats"]` structure to assemble
+        columns from :attr:`summary_stats`, merging them into :attr:`features`.
+
+        Steps:
+          1. :meth:`_filter_target_rows_cols` - initialize :attr:`features` by selecting
+             base columns (row_id, platform_code, profile_no).
+          2. For each top-level key and subkey in :attr:`feature_info["stats"]`,
+             call :meth:`_extract_single_summary` to join in the corresponding
+             metric from :attr:`summary_stats`.
+          3. Drop columns (platform_code, profile_no) that are no longer needed in
+             the final feature set.
         """
         self._filter_target_rows_cols()
-        for target_name, v1 in self.feature_info["stats"].items():
-            for var_name in v1.keys():
-                self._extract_single_summary(target_name, var_name)
+        for variable_name, variable_stats in self.feature_info["stats"].items():
+            for metric_name in variable_stats.keys():
+                self._extract_single_summary(variable_name, metric_name)
 
         self.features = self.features.drop(["platform_code", "profile_no"])
 
-    def _filter_target_rows_cols(self):
+    def _filter_target_rows_cols(self) -> None:
+        """
+        Initialize :attr:`features` by selecting the essential columns
+        from :attr:`target_rows[target_name]`.
+        """
         self.features = self.target_rows[self.target_name].select(
             [
                 pl.col("row_id"),
@@ -46,7 +112,18 @@ class ProfileSummaryStats5(FeatureBase):
             ]
         )
 
-    def _extract_single_summary(self, target_name: str, var_name: str):
+    def _extract_single_summary(self, target_name: str, var_name: str) -> None:
+        """
+        Join a single summary statistic (e.g., min, mean, max) from :attr:`summary_stats`
+        onto :attr:`features`.
+
+        :param target_name: The variable category key (e.g., "temp", "psal") in
+                            :attr:`summary_stats`.
+        :type target_name: str
+        :param var_name: The specific metric key (e.g., "min", "mean", "max")
+                         under the variable category.
+        :type var_name: str
+        """
         self.features = self.features.join(
             self.summary_stats.filter(pl.col("variable") == target_name).select(
                 [
@@ -59,23 +136,29 @@ class ProfileSummaryStats5(FeatureBase):
             maintain_order="left",
         )
 
-    def scale_first(self):
+    def scale_first(self) -> None:
         """
-        Scale features.
+        An initial scaling hook (unimplemented).
+
+        Subclasses or calling code can override or extend this method
+        to perform additional transformations before stats-based feature joins.
         """
         pass  # pragma: no cover
 
-    def scale_second(self):
+    def scale_second(self) -> None:
         """
-        Scale features.
+        Min-max scale the newly joined summary statistics.
+
+        For each top-level key (e.g., "temp") and subkey (e.g., "mean") in
+        :attr:`feature_info["stats"]`, transform the combined column
+        named "temp_mean" or "temp_min" etc. according to specified
+        min and max.
         """
-        for col_name, v1 in self.feature_info["stats"].items():
-            for stat_name, v2 in v1.items():
+        for col_name, variable_stats in self.feature_info["stats"].items():
+            for stat_name, scale_info in variable_stats.items():
                 self.features = self.features.with_columns(
-                    [
-                        (
-                            (pl.col(f"{col_name}_{stat_name}") - v2["min"])
-                            / (v2["max"] - v2["min"])
-                        ).alias(f"{col_name}_{stat_name}"),
-                    ]
+                    (
+                        (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
+                        / (scale_info["max"] - scale_info["min"])
+                    ).alias(f"{col_name}_{stat_name}")
                 )

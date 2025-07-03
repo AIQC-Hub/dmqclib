@@ -6,14 +6,32 @@ from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
 
 class SummaryDataSetA(SummaryStatsBase):
     """
-    SummaryDataSetA calculate summary stats for BO NRT+Cora test data.
+    A subclass of :class:`SummaryStatsBase` that calculates summary statistics
+    for BO NRT + Cora test data.
+
+    This class uses Polars to generate both global and per-profile statistics
+    for a set of specified columns (:attr:`val_col_names`). It expects column names
+    related to measurement attributes such as temperature, salinity, etc.,
+    and also relies on certain profile identifiers (:attr:`profile_col_names`)
+    to group data by platform and profile number.
     """
 
-    expected_class_name = "SummaryDataSetA"
+    expected_class_name: str = "SummaryDataSetA"
 
-    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None):
+    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None) -> None:
+        """
+        Initialize the dataset for summary statistics generation.
+
+        :param config: The dataset configuration object containing paths
+                       and parameters for summary stats.
+        :type config: DataSetConfig
+        :param input_data: A Polars DataFrame from which to calculate summary stats.
+                           If None, data must be assigned later.
+        :type input_data: pl.DataFrame, optional
+        """
         super().__init__(config, input_data=input_data)
 
+        #: List of numeric columns on which summary statistics will be computed.
         self.val_col_names = [
             "longitude",
             "latitude",
@@ -23,11 +41,19 @@ class SummaryDataSetA(SummaryStatsBase):
             "dist2coast",
             "bath",
         ]
+        #: List of column names used as profile identifiers for group-by operations.
         self.profile_col_names = ["platform_code", "profile_no"]
 
     def calculate_global_stats(self, val_col_name: str) -> pl.DataFrame:
         """
-        Calculate profile summary stats.
+        Calculate global summary statistics for a specific numeric column across all rows.
+
+        :param val_col_name: The name of the column for which to calculate global stats.
+        :type val_col_name: str
+        :return: A Polars DataFrame containing global metrics (e.g., min, max, mean)
+                 for the specified column, with placeholders for platform_code and
+                 profile_no to align with the structure of per-profile stats.
+        :rtype: pl.DataFrame
         """
         return (
             self.input_data.select(
@@ -76,7 +102,15 @@ class SummaryDataSetA(SummaryStatsBase):
         self, grouped_df: pl.DataFrame, val_col_name: str
     ) -> pl.DataFrame:
         """
-        Calculate global summary stats.
+        Calculate per-profile summary statistics for a specific numeric column.
+
+        :param grouped_df: A Polars DataFrame grouped by profile-identifying columns.
+        :type grouped_df: pl.DataFrame
+        :param val_col_name: The name of the column for which to calculate per-profile stats.
+        :type val_col_name: str
+        :return: A Polars DataFrame containing per-profile metrics (e.g., min, max, mean)
+                 for the specified column.
+        :rtype: pl.DataFrame
         """
         return (
             grouped_df.agg(
@@ -117,9 +151,13 @@ class SummaryDataSetA(SummaryStatsBase):
             )
         )
 
-    def calculate_stats(self):
+    def calculate_stats(self) -> None:
         """
-        Calculate summary stats.
+        Calculate summary statistics and store them in :attr:`summary_stats`.
+
+        This method concatenates global statistics across all data rows and
+        per-profile statistics grouped by :attr:`profile_col_names` for each
+        column specified in :attr:`val_col_names`.
         """
         global_stats = pl.concat(
             [self.calculate_global_stats(x) for x in self.val_col_names]
