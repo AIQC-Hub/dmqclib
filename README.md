@@ -1,4 +1,4 @@
-# DMQCLib
+# dmqclib
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)](https://pypi.org/project/dmqclib/)
 [![Anaconda - Version](https://anaconda.org/takayasaito/dmqclib/badges/version.svg)](https://anaconda.org/takayasaito/dmqclib)
@@ -6,7 +6,7 @@
 [![Codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
 [![CodeFactor](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib/badge)](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib)
 
-The *DMQCLib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
+The *dmqclib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
 
 ## Installation
 The package is indexed on [PyPI](https://pypi.org/project/dmqclib/) and [Anaconda.org](https://anaconda.org/takayasaito/dmqclib), allowing you to install it using either *pip* or *conda*.
