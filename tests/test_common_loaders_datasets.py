@@ -11,7 +11,7 @@ from dmqclib.common.loader.dataset_loader import (
     load_step5_extract_dataset,
     load_step6_split_dataset,
 )
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_input.dataset_a import InputDataSetA
 from dmqclib.prepare.step2_summary.dataset_a import SummaryDataSetA
 from dmqclib.prepare.step3_select.dataset_a import SelectDataSetA

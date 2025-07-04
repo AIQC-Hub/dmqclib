@@ -1,5 +1,5 @@
 from dmqclib.common.base.config_base import ConfigBase
-from dmqclib.utils.config import get_config_item
+from dmqclib.common.utils.config import get_config_item
 
 
 class DataSetConfig(ConfigBase):

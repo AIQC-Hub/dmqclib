@@ -8,7 +8,7 @@ import yaml
 def get_config_file(
     config_file: Optional[str] = None,
     config_file_name: Optional[str] = None,
-    parent_level: int = 3,
+    parent_level: int = 4,
 ) -> str:
     """
     Determine the file path for a configuration file.

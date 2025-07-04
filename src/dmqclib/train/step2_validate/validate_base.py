@@ -6,7 +6,7 @@ import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class ValidationBase(DataSetBase):
@@ -25,7 +25,7 @@ class ValidationBase(DataSetBase):
     """
 
     def __init__(
-        self, config: TrainingConfig, training_sets: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, training_sets: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize the validation base class with a training configuration
@@ -33,7 +33,7 @@ class ValidationBase(DataSetBase):
 
         :param config: A training configuration object containing
                        paths, target definitions, and model parameters.
-        :type config: TrainingConfig
+        :type config: ConfigBase
         :param training_sets: A DataFrame (or dictionary of DataFrames if
                               consolidated) containing training data to be
                               validated, defaults to None.

@@ -10,7 +10,7 @@ from dmqclib.common.loader.dataset_loader import (
     load_step3_select_dataset,
     load_step4_locate_dataset,
 )
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step5_extract.dataset_a import ExtractDataSetA
 
 

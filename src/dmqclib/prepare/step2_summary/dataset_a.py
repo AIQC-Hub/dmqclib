@@ -1,7 +1,7 @@
 import polars as pl
 from typing import List
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
 
 
@@ -19,13 +19,13 @@ class SummaryDataSetA(SummaryStatsBase):
 
     expected_class_name: str = "SummaryDataSetA"
 
-    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None) -> None:
+    def __init__(self, config: ConfigBase, input_data: pl.DataFrame = None) -> None:
         """
         Initialize SummaryDataSetA with configuration and optional input data.
 
         :param config: The dataset configuration object containing paths
                        and parameters for summary stats.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame from which to calculate summary stats.
                            If None, data must be assigned later.
         :type input_data: pl.DataFrame, optional

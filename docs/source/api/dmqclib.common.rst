@@ -10,3 +10,4 @@ Subpackages
    dmqclib.common.base
    dmqclib.common.config
    dmqclib.common.loader
+   dmqclib.common.utils

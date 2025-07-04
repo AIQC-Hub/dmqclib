@@ -3,7 +3,7 @@ import shutil
 import unittest
 from pathlib import Path
 
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.interface.train import train_and_evaluate
 
 
