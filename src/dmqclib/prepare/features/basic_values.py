@@ -84,11 +84,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         from :attr:`target_rows[target_name]`.
         """
         self.features = self.target_rows[self.target_name].select(
-            [
-                pl.col("row_id"),
-                pl.col("platform_code"),
-                pl.col("profile_no"),
-            ]
+            ["row_id", "platform_code", "profile_no"]
         )
 
     def _expand_observations(self) -> None:
@@ -101,14 +97,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         """
         self._expanded_observations = (
             self.target_rows[self.target_name]
-            .select(
-                [
-                    pl.col("row_id"),
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                    pl.col("observation_no"),
-                ]
-            )
+            .select(["row_id", "platform_code", "profile_no", "observation_no"])
             .join(
                 pl.DataFrame(
                     {"flank_seq": list(range(0, self.feature_info.get("flank_up") + 1))}
@@ -137,12 +126,10 @@ class BasicValues3PlusFlanks(FeatureBase):
         self._feature_wide = (
             self._expanded_observations.join(
                 self.filtered_input.select(
-                    [
-                        pl.col("platform_code"),
-                        pl.col("profile_no"),
-                        pl.col("observation_no"),
-                        pl.col(col_name).alias("value"),
-                    ]
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                    pl.col("observation_no"),
+                    pl.col(col_name).alias("value"),
                 ),
                 on=["platform_code", "profile_no", "observation_no"],
                 maintain_order="left",

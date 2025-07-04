@@ -117,13 +117,13 @@ class ExtractFeatureBase(DataSetBase):
             self.target_rows[target_name]
             .select(
                 [
-                    pl.col("label"),
-                    pl.col("row_id"),
-                    pl.col("profile_id"),
-                    pl.col("pair_id"),
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                    pl.col("observation_no"),
+                    "label",
+                    "row_id",
+                    "profile_id",
+                    "pair_id",
+                    "platform_code",
+                    "profile_no",
+                    "observation_no",
                 ]
             )
             .join(
