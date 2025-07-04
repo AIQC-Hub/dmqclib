@@ -1,4 +1,4 @@
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.step1_input.input_base import InputTrainingSetBase
 
 

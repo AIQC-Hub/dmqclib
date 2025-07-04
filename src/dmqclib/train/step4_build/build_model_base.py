@@ -6,7 +6,7 @@ import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 
 
 class BuildModelBase(DataSetBase):

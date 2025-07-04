@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 import polars as pl
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
 
 

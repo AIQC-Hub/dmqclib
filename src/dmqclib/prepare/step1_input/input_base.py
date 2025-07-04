@@ -3,8 +3,8 @@ from typing import Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.utils.file import read_input_file
+from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.utils.file import read_input_file
 
 
 class InputDataSetBase(DataSetBase):

@@ -5,7 +5,7 @@ from typing import Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 
 
 class ProfileSelectionBase(DataSetBase):

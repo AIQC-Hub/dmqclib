@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, Dict
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
 
 

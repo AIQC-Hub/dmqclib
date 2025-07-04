@@ -1,7 +1,7 @@
 import polars as pl
 from typing import List
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
 
 

@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, List
 
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.step2_validate.validate_base import ValidationBase
 
 

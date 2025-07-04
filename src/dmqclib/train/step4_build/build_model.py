@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, Dict
 
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.step4_build.build_model_base import BuildModelBase
 
 

@@ -5,7 +5,7 @@ from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.training_registry import BUILD_MODEL_REGISTRY
 from dmqclib.common.loader.training_registry import INPUT_TRAINING_SET_REGISTRY
 from dmqclib.common.loader.training_registry import MODEL_VALIDATION_REGISTRY
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.step1_input.input_base import InputTrainingSetBase
 from dmqclib.train.step2_validate.validate_base import ValidationBase
 from dmqclib.train.step4_build.build_model_base import BuildModelBase

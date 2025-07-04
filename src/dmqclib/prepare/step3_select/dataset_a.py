@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, List
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
 
 
