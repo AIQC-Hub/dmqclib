@@ -4,13 +4,13 @@ from typing import Dict
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.config.training_config import TrainingConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class InputTrainingSetBase(DataSetBase):
     """
     A base class for importing pre-split training and test data sets,
-    leveraging the training-specific configuration (:class:`TrainingConfig`).
+    leveraging the training-specific configuration (:class:`ConfigBase`).
 
     This class extends :class:`DataSetBase` to ensure that the given YAML
     configuration is valid for the step named ``"input"``.
@@ -26,13 +26,13 @@ class InputTrainingSetBase(DataSetBase):
        :class:`NotImplementedError`.
     """
 
-    def __init__(self, config: TrainingConfig) -> None:
+    def __init__(self, config: ConfigBase) -> None:
         """
         Initialize the training data set importer with a training configuration.
 
         :param config: A training configuration instance that includes
                        file paths and target definitions.
-        :type config: TrainingConfig
+        :type config: ConfigBase
         :raises NotImplementedError: If no ``expected_class_name``
                                      is defined by a subclass and this
                                      class is instantiated directly
@@ -77,7 +77,7 @@ class InputTrainingSetBase(DataSetBase):
 
         Utilizes :meth:`read_training_set` and :meth:`read_test_sets`
         for each target name returned by
-        :meth:`~dmqclib.config.training_config.TrainingConfig.get_target_names`.
+        :meth:`~dmqclib.common.base.config_base.ConfigBase.get_target_names`.
         """
         for target_name in self.config.get_target_names():
             self.read_training_set(target_name)

@@ -6,7 +6,7 @@ import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
-from dmqclib.common.config.training_config import TrainingConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class BuildModelBase(DataSetBase):
@@ -30,7 +30,7 @@ class BuildModelBase(DataSetBase):
 
     def __init__(
         self,
-        config: TrainingConfig,
+        config: ConfigBase,
         training_sets: Optional[pl.DataFrame] = None,
         test_sets: Optional[pl.DataFrame] = None,
     ) -> None:
@@ -40,7 +40,7 @@ class BuildModelBase(DataSetBase):
 
         :param config: A training configuration object containing
                        paths and parameters for building and testing models.
-        :type config: TrainingConfig
+        :type config: ConfigBase
         :param training_sets: A DataFrame (or dictionary-of-DataFrames) with
                               training examples, each associated with a
                               particular target variable, defaults to None.

@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, Dict
 
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
 
 
@@ -20,7 +20,7 @@ class ExtractDataSetA(ExtractFeatureBase):
 
     def __init__(
         self,
-        config: DataSetConfig,
+        config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         target_rows: Optional[Dict[str, pl.DataFrame]] = None,
@@ -31,7 +31,7 @@ class ExtractDataSetA(ExtractFeatureBase):
 
         :param config: A dataset configuration object that manages paths,
                        target definitions, and parameters for feature extraction.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame containing all available data
                            for feature extraction, defaults to None.
         :type input_data: pl.DataFrame, optional

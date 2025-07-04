@@ -5,7 +5,7 @@ from typing import Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class ProfileSelectionBase(DataSetBase):
@@ -22,14 +22,14 @@ class ProfileSelectionBase(DataSetBase):
     """
 
     def __init__(
-        self, config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize the profile selection base class with configuration and optional input data.
 
         :param config: A dataset configuration object that provides
                        file naming and folder paths.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: Optional Polars DataFrame that serves as the
                            initial data for profile selection,
                            defaults to None.

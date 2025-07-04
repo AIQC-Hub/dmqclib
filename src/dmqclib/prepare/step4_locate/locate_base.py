@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class LocatePositionBase(DataSetBase):
@@ -23,7 +23,7 @@ class LocatePositionBase(DataSetBase):
 
     def __init__(
         self,
-        config: DataSetConfig,
+        config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
     ) -> None:
@@ -31,7 +31,7 @@ class LocatePositionBase(DataSetBase):
         Initialize the base class for locating position or training rows within a dataset.
 
         :param config: Configuration object for dataset paths and target definitions.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame containing the full dataset from which
                            target rows can be extracted, defaults to None.
         :type input_data: pl.DataFrame, optional

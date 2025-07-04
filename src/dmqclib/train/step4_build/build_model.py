@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, Dict
 
-from dmqclib.common.config.training_config import TrainingConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step4_build.build_model_base import BuildModelBase
 
 
@@ -25,7 +25,7 @@ class BuildModel(BuildModelBase):
 
     def __init__(
         self,
-        config: TrainingConfig,
+        config: ConfigBase,
         training_sets: Optional[Dict[str, pl.DataFrame]] = None,
         test_sets: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
@@ -36,7 +36,7 @@ class BuildModel(BuildModelBase):
 
         :param config: A training configuration object specifying paths,
                        parameters, and model-building directives.
-        :type config: TrainingConfig
+        :type config: ConfigBase
         :param training_sets: A dictionary of training data keyed by target name,
                               each value being a Polars DataFrame. Defaults to None.
         :type training_sets: dict of (str to pl.DataFrame), optional

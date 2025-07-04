@@ -3,7 +3,7 @@ from typing import Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.utils.file import read_input_file
 
 
@@ -16,12 +16,12 @@ class InputDataSetBase(DataSetBase):
     and :meth:`filter_rows` to handle domain-specific requirements.
     """
 
-    def __init__(self, config: DataSetConfig) -> None:
+    def __init__(self, config: ConfigBase) -> None:
         """
         Initialize the input dataset with a given configuration.
 
-        :param config: The DataSetConfig object providing path and parameter details.
-        :type config: DataSetConfig
+        :param config: The ConfigBase object providing path and parameter details.
+        :type config: ConfigBase
         :raises NotImplementedError: If the ``expected_class_name`` is not defined
                                      by a subclass of :class:`DataSetBase`.
         :raises ValueError: If the YAML config does not match this class's

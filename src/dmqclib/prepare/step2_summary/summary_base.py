@@ -5,7 +5,7 @@ from typing import Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class SummaryStatsBase(DataSetBase):
@@ -24,7 +24,7 @@ class SummaryStatsBase(DataSetBase):
     """
 
     def __init__(
-        self, config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize the summary statistics base with a dataset configuration
@@ -32,7 +32,7 @@ class SummaryStatsBase(DataSetBase):
 
         :param config: Configuration object that includes paths and parameters
                        for retrieving or storing summary statistics.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame holding the data upon which
                            statistics will be computed. Defaults to None.
         :type input_data: pl.DataFrame, optional

@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class SplitDataSetBase(DataSetBase):
@@ -25,7 +25,7 @@ class SplitDataSetBase(DataSetBase):
     """
 
     def __init__(
-        self, config: DataSetConfig, target_features: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, target_features: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize the train/test splitting class with a configuration
@@ -33,7 +33,7 @@ class SplitDataSetBase(DataSetBase):
 
         :param config: A dataset configuration object containing parameters
                        and paths for splitting.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param target_features: A Polars DataFrame holding combined features
                                 for one or more targets, or None if not yet available.
         :type target_features: pl.DataFrame, optional

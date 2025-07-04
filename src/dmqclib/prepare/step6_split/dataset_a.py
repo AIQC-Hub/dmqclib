@@ -2,7 +2,7 @@ import numpy as np
 import polars as pl
 from typing import Optional, Dict
 
-from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step6_split.split_base import SplitDataSetBase
 
 
@@ -31,7 +31,7 @@ class SplitDataSetA(SplitDataSetBase):
 
     def __init__(
         self,
-        config: DataSetConfig,
+        config: ConfigBase,
         target_features: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
@@ -40,7 +40,7 @@ class SplitDataSetA(SplitDataSetBase):
 
         :param config: A dataset configuration object that specifies
                        paths, test-set fraction, and k-fold details.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param target_features: A dictionary mapping target names to DataFrames
                                 containing extracted features. Defaults to None.
         :type target_features: dict of str to pl.DataFrame, optional

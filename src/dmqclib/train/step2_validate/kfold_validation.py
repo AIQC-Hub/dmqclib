@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, List
 
-from dmqclib.common.config.training_config import TrainingConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step2_validate.validate_base import ValidationBase
 
 
@@ -18,7 +18,7 @@ class KFoldValidation(ValidationBase):
     expected_class_name: str = "KFoldValidation"
 
     def __init__(
-        self, config: TrainingConfig, training_sets: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, training_sets: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize the k-fold validation process.
@@ -26,7 +26,7 @@ class KFoldValidation(ValidationBase):
         :param config: A training configuration object containing
                        model parameters, file paths, and other
                        validation settings.
-        :type config: TrainingConfig
+        :type config: ConfigBase
         :param training_sets: A Polars DataFrame of labeled data,
                               must contain a column named ``k_fold``
                               indicating the fold assignment for each row.
