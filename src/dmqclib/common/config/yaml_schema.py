@@ -190,6 +190,20 @@ properties:
           properties:
             input:
               type: object
+              properties:
+                sub_steps:
+                  type: object
+                  properties:
+                    rename_columns:
+                      type: boolean
+                    select_columns:
+                      type: boolean
+                    filter_rows:
+                      type: boolean
+                  required:
+                    - rename_columns
+                    - select_columns
+                    - filter_rows
             summary:
               type: object
             select:

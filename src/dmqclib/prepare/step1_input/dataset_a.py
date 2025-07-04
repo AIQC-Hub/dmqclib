@@ -25,6 +25,24 @@ class InputDataSetA(InputDataSetBase):
         """
         super().__init__(config)
 
+    def rename_columns(self) -> None:
+        """
+        Rename columns of interest within :attr:`input_data`.
+
+        Subclasses should implement the rename columns
+         storing the modified DataFrame back into
+        :attr:`input_data`.
+        """
+        if not self.config.get_step_params("input")["sub_steps"]["rename_columns"]:
+            return None
+
+        if "rename_dict" not in self.config.get_step_params("input"):
+            raise ValueError("Could not find 'rename_dict' in Input parameters")
+
+        self.input_data = self.input_data.rename(
+            self.config.get_step_params("input")["rename_dict"]
+        )
+
     def select_columns(self) -> None:
         """
         Select columns of the data frame in :attr:`input_data`.

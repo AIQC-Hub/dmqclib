@@ -64,6 +64,20 @@ class InputDataSetBase(DataSetBase):
         )
 
         self.input_data = read_input_file(input_file, file_type, read_file_options)
+        self.rename_columns()
+        self.select_columns()
+        self.filter_rows()
+
+    @abstractmethod
+    def rename_columns(self) -> None:
+        """
+        Rename columns of interest within :attr:`input_data`.
+
+        Subclasses should implement the rename columns
+         storing the modified DataFrame back into
+        :attr:`input_data`.
+        """
+        pass  # pragma: no cover
 
     @abstractmethod
     def select_columns(self) -> None:
@@ -71,7 +85,7 @@ class InputDataSetBase(DataSetBase):
         Select columns or features of interest within :attr:`input_data`.
 
         Subclasses should implement the exact columns or transformations
-        to keep or rename, storing the modified DataFrame back into
+        to keep, storing the modified DataFrame back into
         :attr:`input_data`.
         """
         pass  # pragma: no cover

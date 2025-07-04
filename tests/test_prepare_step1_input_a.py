@@ -34,12 +34,21 @@ class TestInputDataSetA(unittest.TestCase):
             / "nrt_cora_bo_test.parquet"
         )
 
-    def _get_input_data(self, file_type=None, read_file_options=None):
+        self.config_file_path2 = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_dataset_002.yaml"
+        )
+        self.config2 = DataSetConfig(str(self.config_file_path2))
+        self.config2.select("NRT_BO_001")
+
+    def _get_input_data(self, config, file_type=None, read_file_options=None):
         """
         Helper method for loading input data using optional file type and reading options.
         Returns a Polars DataFrame.
         """
-        ds = InputDataSetA(self.config)
+        ds = InputDataSetA(config)
         ds.input_file_name = str(self.test_data_file)
 
         if file_type is not None:
@@ -76,7 +85,9 @@ class TestInputDataSetA(unittest.TestCase):
         Test reading data from a Parquet file with an explicitly
         specified file_type in the configuration.
         """
-        df = self._get_input_data(file_type="parquet", read_file_options={})
+        df = self._get_input_data(
+            self.config, file_type="parquet", read_file_options={}
+        )
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 132342)
@@ -87,7 +98,7 @@ class TestInputDataSetA(unittest.TestCase):
         Test reading data while allowing file type to be inferred
         from the file extension.
         """
-        df = self._get_input_data(file_type=None, read_file_options={})
+        df = self._get_input_data(self.config, file_type=None, read_file_options={})
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 132342)
@@ -98,7 +109,9 @@ class TestInputDataSetA(unittest.TestCase):
         Test reading data without specifying any additional file
         reading options in the config.
         """
-        df = self._get_input_data(file_type="parquet", read_file_options=None)
+        df = self._get_input_data(
+            self.config, file_type="parquet", read_file_options=None
+        )
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 132342)
@@ -120,9 +133,77 @@ class TestInputDataSetA(unittest.TestCase):
         Test reading data with extra options (e.g., limiting the number of rows).
         """
         df = self._get_input_data(
-            file_type="parquet", read_file_options={"n_rows": 100}
+            self.config, file_type="parquet", read_file_options={"n_rows": 100}
         )
 
         self.assertIsInstance(df, pl.DataFrame)
         self.assertEqual(df.shape[0], 100)
         self.assertEqual(df.shape[1], 30)
+
+
+class TestInputDataSetARename(unittest.TestCase):
+    """
+    A suite of unit tests for verifying input data handling the rename function in the InputDataSetA class.
+    Ensures that specified columns are correctly renamed.
+    """
+
+    def setUp(self):
+        """
+        Set up test environment by loading a test configuration and specifying paths
+        to test files (config file and input data).
+        """
+        self.config_file_path = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_dataset_002.yaml"
+        )
+        self.config = DataSetConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
+        self.test_data_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "input"
+            / "nrt_cora_bo_test.parquet"
+        )
+
+    def _get_input_data(self, config, file_type=None, read_file_options=None):
+        """
+        Helper method for loading input data using optional file type and reading options.
+        Returns a Polars DataFrame.
+        """
+        ds = InputDataSetA(config)
+        ds.input_file_name = str(self.test_data_file)
+
+        if file_type is not None:
+            ds.config.data["step_param_set"]["steps"]["input"]["file_type"] = file_type
+
+        if read_file_options is not None:
+            ds.config.data["step_param_set"]["steps"]["input"]["read_file_options"] = (
+                read_file_options
+            )
+
+        ds.read_input_data()
+        return ds.input_data
+
+    def test_rename(self):
+        """
+        Test renaming input data
+        """
+        df = self._get_input_data(
+            self.config, file_type="parquet", read_file_options={}
+        )
+
+        self.assertFalse("filename" in df.columns)
+        self.assertTrue("filename_new" in df.columns)
+
+    def test_rename_with_incorrect_param(self):
+        """
+        Test renaming input data with empty parameter values
+        """
+        del self.config.get_step_params("input")["rename_dict"]
+
+        with self.assertRaises(ValueError):
+            _ = self._get_input_data(
+                self.config, file_type="parquet", read_file_options={}
+            )
