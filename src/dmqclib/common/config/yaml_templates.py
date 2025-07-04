@@ -106,7 +106,11 @@ step_class_sets:
 step_param_sets:
   - name: data_set_param_set_1
     steps:
-      input: { }
+      input: { sub_steps: { rename_columns: false,
+                            filter_rows: false },
+               rename_dict: { },
+               filter_method_dict: { remove_years: [],
+                                     keep_years: [] } }
       summary: { }
       select: { }
       locate: { }
@@ -182,9 +186,7 @@ step_class_sets:
 step_param_sets:
   - name: training_param_set_1
     steps:
-      input: { sub_steps = { rename_columns: false,
-                             select_columns: false,
-                             filter_rows: false } }
+      input: { }
       validate: { k_fold: 10 }
       model: { }
       build: { }
