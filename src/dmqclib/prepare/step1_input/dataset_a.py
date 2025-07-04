@@ -24,25 +24,3 @@ class InputDataSetA(InputDataSetBase):
         :type config: DataSetConfig
         """
         super().__init__(config)
-
-    def select_columns(self) -> None:
-        """
-        Select columns of the data frame in :attr:`input_data`.
-
-        Subclasses typically apply column-based transformations
-        or filtering logic here. In this custom child class, further
-        selection procedures may be added to tailor the data to
-        modeling requirements.
-        """
-        pass  # pragma: no cover
-
-    def filter_rows(self) -> None:
-        """
-        Filter rows of the data frame in :attr:`input_data`.
-
-        Subclasses typically apply row-based filtering logic,
-        such as removing invalid or incomplete entries. In this class,
-        additional domain-specific rules might be placed here to refine
-        the dataset based on business or scientific criteria.
-        """
-        pass  # pragma: no cover

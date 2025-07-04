@@ -64,12 +64,7 @@ class LocateDataSetA(LocatePositionBase):
         flag_var_name = target_value["flag"]
         self.positive_rows[target_name] = (
             self.selected_profiles.filter(pl.col("label") == 1)
-            .select(
-                pl.col("profile_id"),
-                pl.col("neg_profile_id"),
-                pl.col("platform_code"),
-                pl.col("profile_no"),
-            )
+            .select(["profile_id", "neg_profile_id", "platform_code", "profile_no"])
             .join(
                 (
                     self.input_data.filter(pl.col(flag_var_name) == 4).select(
@@ -186,21 +181,13 @@ class LocateDataSetA(LocatePositionBase):
                 pl.when(pl.col("label") == 1)
                 .then(
                     pl.concat_str(
-                        [
-                            pl.col("platform_code"),
-                            pl.col("profile_no"),
-                            pl.col("observation_no"),
-                        ],
+                        ["platform_code", "profile_no", "observation_no"],
                         separator="|",
                     )
                 )
                 .otherwise(
                     pl.concat_str(
-                        [
-                            pl.col("pos_platform_code"),
-                            pl.col("pos_profile_no"),
-                            pl.col("pos_observation_no"),
-                        ],
+                        ["pos_platform_code", "pos_profile_no", "pos_observation_no"],
                         separator="|",
                     )
                 )
