@@ -9,9 +9,7 @@ Subpackages
 
    dmqclib.classify
    dmqclib.common
-   dmqclib.config
    dmqclib.estimate
    dmqclib.interface
    dmqclib.prepare
    dmqclib.train
-   dmqclib.utils

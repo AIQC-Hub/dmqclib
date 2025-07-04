@@ -5,7 +5,7 @@ import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.feature_loader import load_feature_class
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class ExtractFeatureBase(DataSetBase):
@@ -19,7 +19,7 @@ class ExtractFeatureBase(DataSetBase):
 
     def __init__(
         self,
-        config: DataSetConfig,
+        config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         target_rows: Optional[Dict[str, pl.DataFrame]] = None,
@@ -29,7 +29,7 @@ class ExtractFeatureBase(DataSetBase):
         Initialize the feature extraction base class.
 
         :param config: The configuration object, containing paths and target definitions.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame providing the full dataset from which
                            features are extracted, defaults to None.
         :type input_data: pl.DataFrame, optional
@@ -100,7 +100,7 @@ class ExtractFeatureBase(DataSetBase):
         Generate features for all targets found in the configuration.
 
         Iterates over each target name returned by
-        :meth:`~dmqclib.config.dataset_config.DataSetConfig.get_target_names`
+        :meth:`~dmqclib.common.base.config_base.ConfigBase.get_target_names`
         and calls :meth:`extract_target_features` on them.
         """
         for target_name in self.config.get_target_names():
@@ -117,13 +117,13 @@ class ExtractFeatureBase(DataSetBase):
             self.target_rows[target_name]
             .select(
                 [
-                    pl.col("label"),
-                    pl.col("row_id"),
-                    pl.col("profile_id"),
-                    pl.col("pair_id"),
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                    pl.col("observation_no"),
+                    "label",
+                    "row_id",
+                    "profile_id",
+                    "pair_id",
+                    "platform_code",
+                    "profile_no",
+                    "observation_no",
                 ]
             )
             .join(

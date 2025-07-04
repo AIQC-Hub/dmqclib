@@ -76,7 +76,11 @@ step_class_sets:
 step_param_sets:
   - name: data_set_param_set_1
     steps:
-      input: { }
+      input: { sub_steps: { rename_columns: true,
+                            filter_rows: true },
+               rename_dict: {filename: filename_new},
+               filter_method_dict: { remove_years: [],
+                                     keep_years: [] } }
       summary: { dataset_folder_name: summary_dataset_folder,
                  file_name: summary_in_params.txt }
       select: { }

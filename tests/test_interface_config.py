@@ -2,8 +2,8 @@ import os
 import unittest
 from pathlib import Path
 
-from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.interface.config import read_config
 from dmqclib.interface.config import write_config_template
 

@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.models.xgboost import XGBoost
 
 

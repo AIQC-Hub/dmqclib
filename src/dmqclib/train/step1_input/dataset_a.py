@@ -1,4 +1,4 @@
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step1_input.input_base import InputTrainingSetBase
 
 
@@ -14,13 +14,13 @@ class InputTrainingSetA(InputTrainingSetBase):
 
     expected_class_name: str = "InputTrainingSetA"
 
-    def __init__(self, config: TrainingConfig) -> None:
+    def __init__(self, config: ConfigBase) -> None:
         """
         Initialize the specialized input training set class with the provided
         training configuration.
 
         :param config: A training configuration object containing paths,
                        file names, and target definitions.
-        :type config: TrainingConfig
+        :type config: ConfigBase
         """
         super().__init__(config)

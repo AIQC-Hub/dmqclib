@@ -12,8 +12,8 @@ import unittest
 from pathlib import Path
 
 import dmqclib as dm
-from dmqclib.config.dataset_config import DataSetConfig
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.config.training_config import TrainingConfig
 
 
 class TestDMQCLibTemplateConfig(unittest.TestCase):

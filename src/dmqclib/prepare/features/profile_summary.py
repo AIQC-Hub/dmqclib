@@ -105,11 +105,7 @@ class ProfileSummaryStats5(FeatureBase):
         from :attr:`target_rows[target_name]`.
         """
         self.features = self.target_rows[self.target_name].select(
-            [
-                pl.col("row_id"),
-                pl.col("platform_code"),
-                pl.col("profile_no"),
-            ]
+            ["row_id", "platform_code", "profile_no"]
         )
 
     def _extract_single_summary(self, target_name: str, var_name: str) -> None:
@@ -126,11 +122,9 @@ class ProfileSummaryStats5(FeatureBase):
         """
         self.features = self.features.join(
             self.summary_stats.filter(pl.col("variable") == target_name).select(
-                [
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                    pl.col(var_name).alias(f"{target_name}_{var_name}"),
-                ]
+                pl.col("platform_code"),
+                pl.col("profile_no"),
+                pl.col(var_name).alias(f"{target_name}_{var_name}"),
             ),
             on=["platform_code", "profile_no"],
             maintain_order="left",

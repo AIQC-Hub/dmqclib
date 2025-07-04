@@ -1,7 +1,7 @@
 import polars as pl
 from typing import Optional, List
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
 
 
@@ -27,14 +27,14 @@ class SelectDataSetA(ProfileSelectionBase):
     expected_class_name: str = "SelectDataSetA"
 
     def __init__(
-        self, config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize the dataset for selecting and labeling profiles.
 
         :param config: The dataset configuration object that includes
                        paths and parameters for the selection process.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame containing the full set
                            of profiles from which to select positive
                            and negative examples.

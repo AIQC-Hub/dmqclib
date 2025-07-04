@@ -1,13 +1,14 @@
 import polars as pl
+from typing import List
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
 
 
 class SummaryDataSetA(SummaryStatsBase):
     """
-    A subclass of :class:`SummaryStatsBase` that calculates summary statistics
-    for BO NRT + Cora test data.
+    Subclass of SummaryStatsBase for calculating summary statistics
+    for BO NRT + Cora test data using Polars.
 
     This class uses Polars to generate both global and per-profile statistics
     for a set of specified columns (:attr:`val_col_names`). It expects column names
@@ -18,13 +19,13 @@ class SummaryDataSetA(SummaryStatsBase):
 
     expected_class_name: str = "SummaryDataSetA"
 
-    def __init__(self, config: DataSetConfig, input_data: pl.DataFrame = None) -> None:
+    def __init__(self, config: ConfigBase, input_data: pl.DataFrame = None) -> None:
         """
-        Initialize the dataset for summary statistics generation.
+        Initialize SummaryDataSetA with configuration and optional input data.
 
         :param config: The dataset configuration object containing paths
                        and parameters for summary stats.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame from which to calculate summary stats.
                            If None, data must be assigned later.
         :type input_data: pl.DataFrame, optional
@@ -41,12 +42,28 @@ class SummaryDataSetA(SummaryStatsBase):
             "dist2coast",
             "bath",
         ]
-        #: List of column names used as profile identifiers for group-by operations.
+        #: List of columns defining the schema of output statistics.
+        self.stats_col_names = [
+            "platform_code",
+            "profile_no",
+            "variable",
+            "min",
+            "pct2.5",
+            "pct25",
+            "mean",
+            "median",
+            "pct75",
+            "pct97.5",
+            "max",
+            "sd",
+        ]
+        #: List of columns used as identifiers for grouping data by profile.
         self.profile_col_names = ["platform_code", "profile_no"]
 
-    def calculate_global_stats(self, val_col_name: str) -> pl.DataFrame:
+    def get_stats_expression(self, val_col_name: str) -> List:
         """
-        Calculate global summary statistics for a specific numeric column across all rows.
+        Build a list of Polars expression objects used to compute summary
+        statistics for a given numeric column.
 
         :param val_col_name: The name of the column for which to calculate global stats.
         :type val_col_name: str
@@ -55,54 +72,44 @@ class SummaryDataSetA(SummaryStatsBase):
                  profile_no to align with the structure of per-profile stats.
         :rtype: pl.DataFrame
         """
+        return [
+            pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
+            pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
+            pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
+            pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
+            pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("pct25"),
+            pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("pct75"),
+            pl.col(val_col_name).quantile(0.025).cast(pl.Float64).alias("pct2.5"),
+            pl.col(val_col_name).quantile(0.975).cast(pl.Float64).alias("pct97.5"),
+            pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
+        ]
+
+    def calculate_global_stats(self, val_col_name: str) -> pl.DataFrame:
+        """
+        Compute global summary statistics for a specified numeric column
+        across all data rows.
+
+        :param val_col_name: Name of the column for which to calculate global stats.
+        :return: Polars DataFrame containing min, max, mean, etc., for the entire dataset,
+                 along with placeholders for platform_code and profile_no to match
+                 the structure of the per-profile statistics.
+        """
         return (
-            self.input_data.select(
-                [
-                    pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
-                    pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
-                    pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
-                    pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
-                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("pct25"),
-                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("pct75"),
-                    pl.col(val_col_name)
-                    .quantile(0.025)
-                    .cast(pl.Float64)
-                    .alias("pct2.5"),
-                    pl.col(val_col_name)
-                    .quantile(0.975)
-                    .cast(pl.Float64)
-                    .alias("pct97.5"),
-                    pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
-                ]
-            )
+            self.input_data.select(self.get_stats_expression(val_col_name))
             .with_columns(
                 pl.lit("all").alias("platform_code"),
                 pl.lit(0).alias("profile_no"),
                 pl.lit(val_col_name).alias("variable"),
             )
-            .select(
-                [
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                    pl.col("variable"),
-                    pl.col("min"),
-                    pl.col("pct2.5"),
-                    pl.col("pct25"),
-                    pl.col("mean"),
-                    pl.col("median"),
-                    pl.col("pct75"),
-                    pl.col("pct97.5"),
-                    pl.col("max"),
-                    pl.col("sd"),
-                ]
-            )
+            .select(self.stats_col_names)
         )
 
     def calculate_profile_stats(
         self, grouped_df: pl.DataFrame, val_col_name: str
     ) -> pl.DataFrame:
         """
-        Calculate per-profile summary statistics for a specific numeric column.
+        Compute per-profile summary statistics for a numeric column, given
+        an already grouped DataFrame.
 
         :param grouped_df: A Polars DataFrame grouped by profile-identifying columns.
         :type grouped_df: pl.DataFrame
@@ -113,42 +120,9 @@ class SummaryDataSetA(SummaryStatsBase):
         :rtype: pl.DataFrame
         """
         return (
-            grouped_df.agg(
-                [
-                    pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
-                    pl.col(val_col_name).max().cast(pl.Float64).alias("max"),
-                    pl.col(val_col_name).mean().cast(pl.Float64).alias("mean"),
-                    pl.col(val_col_name).median().cast(pl.Float64).alias("median"),
-                    pl.col(val_col_name).quantile(0.25).cast(pl.Float64).alias("pct25"),
-                    pl.col(val_col_name).quantile(0.75).cast(pl.Float64).alias("pct75"),
-                    pl.col(val_col_name)
-                    .quantile(0.025)
-                    .cast(pl.Float64)
-                    .alias("pct2.5"),
-                    pl.col(val_col_name)
-                    .quantile(0.975)
-                    .cast(pl.Float64)
-                    .alias("pct97.5"),
-                    pl.col(val_col_name).std().cast(pl.Float64).alias("sd"),
-                ]
-            )
+            grouped_df.agg(self.get_stats_expression(val_col_name))
             .with_columns(pl.lit(val_col_name).alias("variable"))
-            .select(
-                [
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                    pl.col("variable"),
-                    pl.col("min"),
-                    pl.col("pct2.5"),
-                    pl.col("pct25"),
-                    pl.col("mean"),
-                    pl.col("median"),
-                    pl.col("pct75"),
-                    pl.col("pct97.5"),
-                    pl.col("max"),
-                    pl.col("sd"),
-                ]
-            )
+            .select(self.stats_col_names)
         )
 
     def calculate_stats(self) -> None:

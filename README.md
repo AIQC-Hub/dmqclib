@@ -166,16 +166,25 @@ In the *training_sets* section, you may edit the existing entries or add a new t
 ## Development Environment
 
 ### Package Manager
-Using [uv](https://docs.astral.sh/uv/) is recommended when contributing modifications to the package. 
+Using *[uv](https://docs.astral.sh/uv/)* is recommended when contributing modifications to the package. 
 After the installation of *uv*, running `uv sync` inside the project will create the environment.
 
 #### Example of Environment Setup
-For example, the following commands create a new *conda* environment with *mamba* and set up the library environment with *uv*:
-```bash
-mamba create -n aiqc -c conda-forge python=3.12
-mamba activate aiqc
-mamba install uv
+For example, the following commands create a new *conda* environment and set up the library environment with *uv*:
 
+Using *conda*:
+```bash
+conda create --name aiqc -c conda-forge python=3.12 uv ruff
+conda activate aiqc
+```
+Or using *mamba* (an alternative to conda for faster dependency resolution):
+```bash
+mamba create -n aiqc -c conda-forge python=3.12 uv ruff
+mamba activate aiqc
+```
+
+To update the local environment with *uv*, navigate to your project directory:
+```bash
 cd /your/path/to/dmqclib
 uv sync
 ```
@@ -243,7 +252,7 @@ You’ll need the following tools:
   - anaconda-client
   - grayskull
 
-Install them (preferably in a dedicated environment):
+Install them with *conda* or *mamba* (preferably in a dedicated environment):
 ```bash
 mamba install -c conda-forge conda-build anaconda-client grayskull
 ```

@@ -3,7 +3,7 @@ import shutil
 import unittest
 from pathlib import Path
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.interface.prepare import create_training_dataset
 
 

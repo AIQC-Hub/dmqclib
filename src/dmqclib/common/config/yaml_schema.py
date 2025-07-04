@@ -190,6 +190,31 @@ properties:
           properties:
             input:
               type: object
+              properties:
+                sub_steps:
+                  type: object
+                  properties:
+                    rename_columns:
+                      type: boolean
+                    filter_rows:
+                      type: boolean
+                  required:
+                    - rename_columns
+                    - filter_rows
+                  additionalProperties: false
+                rename_dict:
+                  type: object
+                filter_method_dict:
+                  type: object
+                  properties:
+                    remove_years:
+                      type: array
+                    keep_years:
+                      type: array
+                  additionalProperties: false
+              required:
+                - sub_steps
+              additionalProperties: false
             summary:
               type: object
             select:

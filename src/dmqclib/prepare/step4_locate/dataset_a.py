@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 import polars as pl
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
 
 
@@ -23,7 +23,7 @@ class LocateDataSetA(LocatePositionBase):
 
     def __init__(
         self,
-        config: DataSetConfig,
+        config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
     ) -> None:
@@ -33,7 +33,7 @@ class LocateDataSetA(LocatePositionBase):
 
         :param config: A dataset configuration object specifying paths,
                        parameters, and target definitions for locating test data rows.
-        :type config: DataSetConfig
+        :type config: ConfigBase
         :param input_data: A Polars DataFrame containing the full data
                            from which positive and negative rows will be derived,
                            defaults to None.
@@ -64,12 +64,7 @@ class LocateDataSetA(LocatePositionBase):
         flag_var_name = target_value["flag"]
         self.positive_rows[target_name] = (
             self.selected_profiles.filter(pl.col("label") == 1)
-            .select(
-                pl.col("profile_id"),
-                pl.col("neg_profile_id"),
-                pl.col("platform_code"),
-                pl.col("profile_no"),
-            )
+            .select(["profile_id", "neg_profile_id", "platform_code", "profile_no"])
             .join(
                 (
                     self.input_data.filter(pl.col(flag_var_name) == 4).select(
@@ -186,21 +181,13 @@ class LocateDataSetA(LocatePositionBase):
                 pl.when(pl.col("label") == 1)
                 .then(
                     pl.concat_str(
-                        [
-                            pl.col("platform_code"),
-                            pl.col("profile_no"),
-                            pl.col("observation_no"),
-                        ],
+                        ["platform_code", "profile_no", "observation_no"],
                         separator="|",
                     )
                 )
                 .otherwise(
                     pl.concat_str(
-                        [
-                            pl.col("pos_platform_code"),
-                            pl.col("pos_profile_no"),
-                            pl.col("pos_observation_no"),
-                        ],
+                        ["pos_platform_code", "pos_profile_no", "pos_observation_no"],
                         separator="|",
                     )
                 )

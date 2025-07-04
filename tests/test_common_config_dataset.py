@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 
 
 class TestDataSetConfig(unittest.TestCase):

@@ -11,7 +11,7 @@ from dmqclib.common.loader.dataset_registry import (
     SPLIT_DATASET_REGISTRY,
     SUMMARY_DATASET_REGISTRY,
 )
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_input.input_base import InputDataSetBase
 from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase

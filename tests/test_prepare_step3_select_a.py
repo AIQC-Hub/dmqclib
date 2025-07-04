@@ -5,7 +5,7 @@ from pathlib import Path
 import polars as pl
 
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
-from dmqclib.config.dataset_config import DataSetConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step3_select.dataset_a import SelectDataSetA
 
 

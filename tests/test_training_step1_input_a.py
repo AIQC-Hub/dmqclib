@@ -3,7 +3,7 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.config.training_config import TrainingConfig
+from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
 
 

@@ -75,21 +75,10 @@ class LocationFeat(FeatureBase):
         """
         self.features = (
             self.target_rows[self.target_name]
-            .select(
-                [
-                    pl.col("row_id"),
-                    pl.col("platform_code"),
-                    pl.col("profile_no"),
-                ]
-            )
+            .select(["row_id", "platform_code", "profile_no"])
             .join(
                 self.selected_profiles.select(
-                    [
-                        pl.col("platform_code"),
-                        pl.col("profile_no"),
-                        pl.col("longitude"),
-                        pl.col("latitude"),
-                    ]
+                    ["platform_code", "profile_no", "longitude", "latitude"]
                 ),
                 on=["platform_code", "profile_no"],
                 maintain_order="left",
