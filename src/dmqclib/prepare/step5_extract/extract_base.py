@@ -75,6 +75,10 @@ class ExtractFeatureBase(DataSetBase):
         #: A dictionary mapping target names to DataFrames of extracted features.
         self.target_features: Dict[str, pl.DataFrame] = {}
 
+        #: Column names used for intermediate processing (e.g., to maintain
+        #: matching references between positive and negative rows).
+        self.work_col_names = []
+
     def _filter_input(self) -> None:
         """
         Filter the input data by joining with the selected profiles.
@@ -138,6 +142,14 @@ class ExtractFeatureBase(DataSetBase):
                 maintain_order="left",
             )
         )
+
+        drop_key_columns = (
+            self.config.get_step_params("extract").get("drop_key_columns") or False
+        )
+        if drop_key_columns:
+            self.target_features[target_name] = self.target_features[target_name].drop(
+                self.work_col_names
+            )
 
     def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:
         """

@@ -10,21 +10,24 @@ from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
 from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
 from dmqclib.train.step4_build.build_model import BuildModel
 
+from dmqclib.train.step1_input.input_base import InputTrainingSetBase
+from dmqclib.train.step2_validate.validate_base import ValidationBase
+from dmqclib.train.step4_build.build_model_base import BuildModelBase
 
 #: A dictionary linking class names for the "input" step
 #: to their corresponding dataset classes.
-INPUT_TRAINING_SET_REGISTRY: Dict[str, Type[InputTrainingSetA]] = {
+INPUT_TRAINING_SET_REGISTRY: Dict[str, Type[InputTrainingSetBase]] = {
     "InputTrainingSetA": InputTrainingSetA,
 }
 
 #: A dictionary linking class names for the "validate" step
 #: to their corresponding validation classes.
-MODEL_VALIDATION_REGISTRY: Dict[str, Type[KFoldValidation]] = {
+MODEL_VALIDATION_REGISTRY: Dict[str, Type[ValidationBase]] = {
     "KFoldValidation": KFoldValidation,
 }
 
 #: A dictionary linking class names for the "build" step
 #: to their corresponding model-building classes.
-BUILD_MODEL_REGISTRY: Dict[str, Type[BuildModel]] = {
+BUILD_MODEL_REGISTRY: Dict[str, Type[BuildModelBase]] = {
     "BuildModel": BuildModel,
 }

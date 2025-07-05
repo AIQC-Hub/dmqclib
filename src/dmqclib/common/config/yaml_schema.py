@@ -223,6 +223,9 @@ properties:
               type: object
             extract:
               type: object
+              properties:
+                drop_key_columns:
+                  type: boolean 
             split:
               type: object
           required:
@@ -469,5 +472,295 @@ required:
   - step_class_sets
   - step_param_sets
   - training_sets
+"""
+    return yaml_schema
+
+
+def get_classification_config_schema() -> str:
+    """
+    Retrieve the YAML-based JSON schema for dataset configurations.
+
+    The returned schema requires certain objects and properties (e.g.,
+    path_info_sets, target_sets, feature_sets, etc.), each with nested
+    type constraints and additional properties set to false when appropriate.
+
+    :return: A YAML string representing the JSON schema for dataset configurations.
+    :rtype: str
+    """
+    yaml_schema = """
+---
+type: object
+properties:
+  path_info_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        common:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          required:
+            - base_path
+          additionalProperties: false
+        input:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          required:
+            - base_path
+            - step_folder_name
+          additionalProperties: false
+        select:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
+        locate:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
+        classify:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
+      required:
+        - name
+        - common
+        - input
+      additionalProperties: false
+
+  target_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        variables:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              flag:
+                type: string
+            required:
+              - name
+              - flag
+            additionalProperties: false
+      required:
+        - name
+        - variables
+      additionalProperties: false
+
+  feature_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - features
+      additionalProperties: false
+
+  feature_param_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        params:
+          type: array
+          items:
+            type: object
+            properties:
+              feature:
+                type: string
+            required:
+              - feature
+            additionalProperties: true
+      required:
+        - name
+        - params
+      additionalProperties: false
+
+  step_class_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        steps:
+          type: object
+          properties:
+            input:
+              type: string
+            summary:
+              type: string
+            select:
+              type: string
+            locate:
+              type: string
+            extract:
+              type: string
+            model:
+              type: string
+            classify:
+              type: string
+          required:
+            - input
+            - summary
+            - select
+            - locate
+            - extract
+            - model
+            - classify
+          additionalProperties: false
+      required:
+        - name
+        - steps
+      additionalProperties: false
+
+  step_param_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        steps:
+          type: object
+          properties:
+            input:
+              type: object
+              properties:
+                sub_steps:
+                  type: object
+                  properties:
+                    rename_columns:
+                      type: boolean
+                    filter_rows:
+                      type: boolean
+                  required:
+                    - rename_columns
+                    - filter_rows
+                  additionalProperties: false
+                rename_dict:
+                  type: object
+                filter_method_dict:
+                  type: object
+                  properties:
+                    remove_years:
+                      type: array
+                    keep_years:
+                      type: array
+                  additionalProperties: false
+              required:
+                - sub_steps
+              additionalProperties: false
+            summary:
+              type: object
+            select:
+              type: object
+            locate:
+              type: object
+            extract:
+              type: object      
+              properties:
+                drop_key_columns:
+                  type: boolean  
+            model:
+              type: object
+            classify:
+              type: object
+          required:
+            - input
+            - summary
+            - select
+            - locate
+            - extract
+            - model
+            - classify
+          additionalProperties: false
+      required:
+        - name
+        - steps
+      additionalProperties: false
+
+  classification_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        dataset_folder_name:
+          type: string
+        input_file_name:
+          type: string
+        path_info:
+          type: string
+        target_set:
+          type: string
+        feature_set:
+          type: string
+        feature_param_set:
+          type: string
+        step_class_set:
+          type: string
+        step_param_set:
+          type: string
+      required:
+        - name
+        - dataset_folder_name
+        - input_file_name
+        - path_info
+        - target_set
+        - feature_set
+        - feature_param_set
+        - step_class_set
+        - step_param_set
+      additionalProperties: false
+
+additionalProperties: false
+required:
+  - path_info_sets
+  - target_sets
+  - feature_sets
+  - feature_param_sets
+  - step_class_sets
+  - step_param_sets
+  - classification_sets
 """
     return yaml_schema

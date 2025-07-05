@@ -45,7 +45,7 @@ properties:
             step_folder_name:
               type: string
           additionalProperties: false
-        split:
+        classify:
           type: object
           properties:
             base_path:
@@ -142,7 +142,9 @@ properties:
               type: string
             extract:
               type: string
-            split:
+            model:
+              type: string
+            classify:
               type: string
           required:
             - input
@@ -150,7 +152,8 @@ properties:
             - select
             - locate
             - extract
-            - split
+            - model
+            - classify
           additionalProperties: false
       required:
         - name
@@ -207,7 +210,9 @@ properties:
               properties:
                 drop_key_columns:
                   type: boolean
-            split:
+            model:
+              type: object
+            classify:
               type: object
           required:
             - input
@@ -215,14 +220,15 @@ properties:
             - select
             - locate
             - extract
-            - split
+            - model
+            - classify
           additionalProperties: false
       required:
         - name
         - steps
       additionalProperties: false
 
-  data_sets:
+  classification_sets:
     type: array
     items:
       type: object
@@ -265,4 +271,4 @@ required:
   - feature_param_sets
   - step_class_sets
   - step_param_sets
-  - data_sets
+  - classification_sets
