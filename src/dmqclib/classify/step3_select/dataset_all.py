@@ -7,47 +7,39 @@ from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
 
 class SelectDataSetAll(ProfileSelectionBase):
     """
-    A subclass of :class:`ProfileSelectionBase` that defines negative
-    and positive profiles from BO NRT + Cora test data.
+    A subclass of :class:`ProfileSelectionBase` that select all profiles from BO NRT + Cora test data.
 
-    Main Steps:
-
-      1. Select positive profiles: Those that have a QC flag of 4
-         (indicating a "bad" measurement) in at least one of
-         ``temp_qc``, ``psal_qc``, or ``pres_qc``.
-      2. Select negative profiles: Those that have a QC flag of 1
-         (indicating a "good" measurement) in each of
-         ``temp_qc``, ``psal_qc``, ``pres_qc``, ``temp_qc_dm``,
-         ``psal_qc_dm``, and ``pres_qc_dm``.
-      3. Identify pairs by matching negative and positive profiles
-         based on their proximity in time.
-      4. Combine dataframes into a single DataFrame of selected profiles.
     """
 
     expected_class_name: str = "SelectDataSetAll"
 
     def __init__(
-        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
+            self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
         """
-        Initialize the dataset for selecting and labeling profiles.
+        Initialize an instance for selecting and labeling profiles.
 
-        :param config: The dataset configuration object that includes
-                       paths and parameters for the selection process.
+        :param config: The configuration object specifying paths and 
+                       parameters for the selection process.
         :type config: ConfigBase
-        :param input_data: A Polars DataFrame containing the full set
-                           of profiles from which to select positive
-                           and negative examples.
+        :param input_data: An optional Polars DataFrame of all profiles 
+                           from which negative and positive examples are 
+                           to be selected. If not provided, it must be 
+                           assigned later.
         :type input_data: pl.DataFrame, optional
         """
         super().__init__(config, input_data=input_data)
 
+        #: Default file name to which selected profiles are written.
         self.default_file_name: str = "selected_classify_profiles.parquet"
+
+        #: Full path for the output file, resolved via the config.
         self.output_file_name: str = self.config.get_full_file_name(
             "select", self.default_file_name
         )
 
-        #: Column names used as unique identifiers for grouping or merging.
+        #: Columns used as unique identifiers for grouping/merging 
+        #: (e.g., by platform or profile).
         self.key_col_names: List[str] = [
             "platform_code",
             "profile_no",
@@ -58,9 +50,10 @@ class SelectDataSetAll(ProfileSelectionBase):
 
     def select_all_profiles(self) -> None:
         """
-        Select all profiles and label them as positives and negatives depending on QC flags.
+        Select all profiles from the input data and assign initial 
+        identifiers for negative profiles and label columns.
 
-        The resulting DataFrame is stored in :attr:`pos_profile_df`.
+        The resulting DataFrame is assigned to :attr:`selected_profiles`.
         """
         self.selected_profiles = (
             self.input_data.with_columns(
@@ -82,7 +75,7 @@ class SelectDataSetAll(ProfileSelectionBase):
 
     def label_profiles(self) -> None:
         """
-        Select and label positive and negative datasets, then combine them
+        Select and label positive and negative datasets before combining them 
         into a single DataFrame in :attr:`selected_profiles`.
         """
         self.select_all_profiles()

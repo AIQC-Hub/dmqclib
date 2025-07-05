@@ -8,7 +8,12 @@ from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
 
 class LocateDataSetAll(LocatePositionBase):
     """
-    A subclass of :class:`LocatePositionBase` that locates all rows from BO NRT+Cora test data for training or evaluation purposes.
+    A subclass of :class:`LocatePositionBase` that locates all rows 
+    from BO NRT + Cora test data for training or evaluation purposes.
+
+    This class assigns a default file naming scheme for target rows 
+    and uses configuration details (e.g., QC flags) to identify 
+    relevant data rows for each target.
     """
 
     expected_class_name: str = "LocateDataSetAll"
@@ -20,19 +25,19 @@ class LocateDataSetAll(LocatePositionBase):
         selected_profiles: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the dataset with configuration, an input DataFrame,
-        and a DataFrame of selected profiles.
+        Initialize the dataset with configuration, an optional input DataFrame,
+        and an optional DataFrame of selected profiles.
 
-        :param config: A dataset configuration object specifying paths,
-                       parameters, and target definitions for locating test data rows.
+        :param config: A configuration object specifying paths, parameters, 
+                       and target definitions for locating test data rows.
         :type config: ConfigBase
-        :param input_data: A Polars DataFrame containing the full data
-                           from which positive and negative rows will be derived,
-                           defaults to None.
+        :param input_data: An optional Polars DataFrame containing the full data 
+                           from which positive and negative rows will be derived. 
+                           If not provided, it should be set later.
         :type input_data: pl.DataFrame, optional
-        :param selected_profiles: A Polars DataFrame containing profiles
-                                  that have already been labeled as positive or negative,
-                                  defaults to None.
+        :param selected_profiles: An optional Polars DataFrame containing profiles 
+                                  labeled as positive or negative. If not provided, 
+                                  it should be set later.
         :type selected_profiles: pl.DataFrame, optional
         """
         super().__init__(
@@ -49,11 +54,14 @@ class LocateDataSetAll(LocatePositionBase):
 
     def select_all_rows(self, target_name: str, target_value: Dict) -> None:
         """
-        Collect all rows for a given target.
+        Collect all rows for a specified target by applying 
+        flag-based labeling to each record.
 
-        :param target_name: The name (key) of the target in the config's target dictionary.
+        :param target_name: The name (key) of the target in the 
+                            configuration's target dictionary.
         :type target_name: str
-        :param target_value: A dictionary of target metadata, including the QC flag variable name.
+        :param target_value: A dictionary of target metadata, 
+                             including the relevant QC flag variable name.
         :type target_value: Dict
         """
         flag_var_name = target_value["flag"]
@@ -62,13 +70,7 @@ class LocateDataSetAll(LocatePositionBase):
             .with_columns(
                 pl.lit(0, dtype=pl.UInt32).alias("profile_id"),
                 pl.lit("").alias("pair_id"),
-                pl.when(
-                    pl.col(flag_var_name).is_in(
-                        [
-                            4,
-                        ]
-                    )
-                )
+                pl.when(pl.col(flag_var_name).is_in([4]))
                 .then(1)
                 .otherwise(0)
                 .alias("label"),
@@ -88,11 +90,10 @@ class LocateDataSetAll(LocatePositionBase):
 
     def locate_target_rows(self, target_name: str, target_value: Dict) -> None:
         """
-        Locate training data rows.
+        Locate target rows for training or evaluation.
 
         :param target_name: Name of the target variable.
-        :type target_name: str
-        :param target_value: A dictionary of target metadata, including the QC flag variable name.
-        :type target_value: Dict
+        :param target_value: A dictionary of target metadata, including 
+                             the QC flag variable name used for labeling.
         """
         self.select_all_rows(target_name, target_value)

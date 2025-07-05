@@ -478,13 +478,13 @@ required:
 
 def get_classification_config_schema() -> str:
     """
-    Retrieve the YAML-based JSON schema for dataset configurations.
+    Retrieve the YAML-based JSON schema for classification configurations.
 
     The returned schema requires certain objects and properties (e.g.,
     path_info_sets, target_sets, feature_sets, etc.), each with nested
     type constraints and additional properties set to false when appropriate.
 
-    :return: A YAML string representing the JSON schema for dataset configurations.
+    :return: A YAML string representing the JSON schema for classification configurations.
     :rtype: str
     """
     yaml_schema = """

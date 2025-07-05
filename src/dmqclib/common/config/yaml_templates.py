@@ -204,7 +204,7 @@ training_sets:
 
 def get_classify_config_template() -> str:
     """
-    Retrieve a YAML template string for dataset preparation configurations.
+    Retrieve a YAML template string for classification configurations.
 
     This template includes:
 

@@ -7,13 +7,12 @@ from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
 
 class ExtractDataSetAll(ExtractFeatureBase):
     """
-    A subclass of :class:`ExtractFeatureBase` to extract features
+    A subclass of :class:`ExtractFeatureBase` for extracting features 
     from BO NRT + Cora test data.
 
-    This class sets its :attr:`expected_class_name` to ``"ExtractDataSetA"``,
-    ensuring it is recognized in the YAML configuration as a valid
-    extract class. It inherits the full feature extraction
-    pipeline from :class:`ExtractFeatureBase`.
+    This class sets its :attr:`expected_class_name` to ``ExtractDataSetAll`` so 
+    that it matches the relevant YAML configuration. All feature extraction logic 
+    inherits from the parent class, :class:`ExtractFeatureBase`.
     """
 
     expected_class_name: str = "ExtractDataSetAll"
@@ -27,24 +26,26 @@ class ExtractDataSetAll(ExtractFeatureBase):
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the feature extraction workflow for BO NRT + Cora data.
+        Initialize the feature extraction process for BO NRT + Cora test data.
 
-        :param config: A dataset configuration object that manages paths,
-                       target definitions, and parameters for feature extraction.
+        :param config: A configuration object that manages paths, target definitions, 
+                       and parameters for feature extraction.
         :type config: ConfigBase
-        :param input_data: A Polars DataFrame containing all available data
-                           for feature extraction, defaults to None.
+        :param input_data: An optional Polars DataFrame containing the complete dataset 
+                           for feature extraction. If not provided at initialization, 
+                           it should be assigned later.
         :type input_data: pl.DataFrame, optional
-        :param selected_profiles: A Polars DataFrame containing specifically-selected
-                                  profiles from the earlier steps, defaults to None.
+        :param selected_profiles: An optional Polars DataFrame of selected profiles 
+                                  from earlier steps. If not provided, it should be 
+                                  assigned later.
         :type selected_profiles: pl.DataFrame, optional
-        :param target_rows: A dictionary mapping each target to its respective
-                            subset of rows for feature generation,
-                            defaults to None.
+        :param target_rows: An optional dictionary mapping target names to respective 
+                            DataFrames containing the rows needed for feature generation. 
+                            If not provided, it should be assigned later.
         :type target_rows: dict of str to pl.DataFrame, optional
-        :param summary_stats: A Polars DataFrame with summary statistics
-                              that may guide scaling or normalization,
-                              defaults to None.
+        :param summary_stats: An optional Polars DataFrame with summary statistics, 
+                              potentially used for scaling or normalization. 
+                              If not provided, it should be assigned later.
         :type summary_stats: pl.DataFrame, optional
         """
         super().__init__(
@@ -55,16 +56,16 @@ class ExtractDataSetAll(ExtractFeatureBase):
             summary_stats=summary_stats,
         )
 
-        #: The default pattern to use when writing feature files for each target.
+        #: Default file naming pattern when writing feature files for each target.
         self.default_file_name: str = "{target_name}_classify_features.parquet"
 
-        #: A dictionary mapping target names to corresponding output Parquet file paths.
+        #: Dictionary mapping target names to the corresponding Parquet file paths.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
             "extract", self.default_file_name
         )
 
-        #: Column names used for intermediate processing (e.g., to maintain
-        #: matching references between positive and negative rows).
+        #: Column names used for intermediate or reference purposes 
+        #: (e.g., linking positive and negative rows).
         self.work_col_names = [
             "row_id",
             "profile_id",

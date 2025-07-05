@@ -19,32 +19,32 @@ from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
 
 
 def _get_prepare_class(
-    config: DataSetConfig, step: str, registry: Dict[str, Type[DataSetBase]]
+    config: DataSetConfig, 
+    step: str, 
+    registry: Dict[str, Type[DataSetBase]]
 ) -> Type[DataSetBase]:
     """
     Retrieve the class constructor from the specified registry for a given step.
 
-    1. Obtain the class name by calling :meth:`DataSetConfig.get_base_class(step)`.
+    1. Obtain the class name by calling :meth:`DataSetConfig.get_base_class` on ``step``.
     2. Look up the class in the provided registry using the extracted name.
     3. Return the class (not an instantiated object).
 
-    :param config: A dataset configuration object that determines the base class name
-                   under a specific ``step``.
+    :param config: A dataset configuration object that contains the base class name 
+                   for the requested step in the YAML.
     :type config: DataSetConfig
-    :param step: The step name (e.g., "input", "summary", "select") in the YAML config.
+    :param step: The step name defined in the YAML (e.g., "input", "summary", or "select").
     :type step: str
-    :param registry: A dictionary mapping class names (str) to class types inheriting
-                     from :class:`DataSetBase`.
+    :param registry: A dictionary mapping class names to dataset class types 
+                     inheriting from :class:`DataSetBase`.
     :type registry: dict of (str to Type[DataSetBase])
-    :raises ValueError: If the class name from the config is not found in ``registry``.
-    :return: The class constructor corresponding to the requested step.
-    :rtype: Type[DataSetBase]
+    :raises ValueError: If the class name from the configuration cannot be found 
+                        in the given ``registry``.
+    :return: The class constructor associated with the requested step.
     """
     class_name = config.get_base_class(step)
     dataset_class = registry.get(class_name)
     if not dataset_class:
-        # Possibly a minor error in the f-string: should reference class_name,
-        # not dataset_class.
         raise ValueError(f"Unknown classification class specified: {class_name}")
 
     return dataset_class
@@ -52,57 +52,63 @@ def _get_prepare_class(
 
 def load_classify_step1_input_dataset(config: DataSetConfig) -> InputDataSetBase:
     """
-    Load an :class:`InputDataSetBase`-derived class based on the configuration.
+    Instantiate an :class:`InputDataSetBase`-derived class based on the configuration.
 
-    Uses the subclass name retrieved from YAML via ``config.get_base_class("input")``
-    to fetch the correct class from :data:`INPUT_CLASSIFY_REGISTRY`, then instantiates it.
+    Specifically:
 
-    :param config: The dataset configuration object, which includes a ``base_class``
-                   field under the "input" step in the YAML.
-    :type config: DataSetConfig
-    :return: An instantiated object that inherits from :class:`InputDataSetBase`.
-    :rtype: InputDataSetBase
+    1. Fetches the class name from the config via :meth:`DataSetConfig.get_base_class("input")`.
+    2. Looks up the class in :data:`INPUT_CLASSIFY_REGISTRY`.
+    3. Instantiates and returns the class.
+
+    :param config: The dataset configuration object, which includes 
+                   a ``base_class`` field under "input" in the YAML file.
+    :return: An instance of a class derived from :class:`InputDataSetBase`.
     """
     dataset_class = _get_prepare_class(config, "input", INPUT_CLASSIFY_REGISTRY)
     return dataset_class(config)
 
 
 def load_classify_step2_summary_dataset(
-    config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
+    config: DataSetConfig, 
+    input_data: Optional[pl.DataFrame] = None
 ) -> SummaryStatsBase:
     """
-    Load a :class:`SummaryStatsBase`-derived class based on the configuration.
+    Instantiate a :class:`SummaryStatsBase`-derived class based on the configuration.
 
-    Uses the subclass name retrieved from YAML via ``config.get_base_class("summary")``
-    to fetch the correct class from :data:`SUMMARY_CLASSIFY_REGISTRY`, then instantiates it.
+    Specifically:
 
-    :param config: The dataset configuration object, referencing the "summary" step.
+    1. Fetches the class name from the config via :meth:`DataSetConfig.get_base_class("summary")`.
+    2. Looks up the class in :data:`SUMMARY_CLASSIFY_REGISTRY`.
+    3. Instantiates and returns the class, optionally with an input dataset.
+
+    :param config: The dataset configuration object referencing the "summary" step.
     :type config: DataSetConfig
-    :param input_data: A Polars DataFrame from which summary stats can be computed,
-                       defaults to None.
-    :type input_data: pl.DataFrame, optional
-    :return: An instantiated object that inherits from :class:`SummaryStatsBase`.
+    :param input_data: An optional Polars DataFrame for computing summary statistics.
     :rtype: SummaryStatsBase
+    :return: An instance of a class derived from :class:`SummaryStatsBase`.
     """
     dataset_class = _get_prepare_class(config, "summary", SUMMARY_CLASSIFY_REGISTRY)
     return dataset_class(config, input_data=input_data)
 
 
 def load_classify_step3_select_dataset(
-    config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
+    config: DataSetConfig, 
+    input_data: Optional[pl.DataFrame] = None
 ) -> ProfileSelectionBase:
     """
-    Load a :class:`ProfileSelectionBase`-derived class based on the configuration.
+    Instantiate a :class:`ProfileSelectionBase`-derived class based on the configuration.
 
-    Uses the subclass name retrieved from YAML via ``config.get_base_class("select")``
-    to fetch the correct class from :data:`SELECT_CLASSIFY_REGISTRY`, then instantiates it.
+    Specifically:
 
-    :param config: The dataset configuration object, referencing the "select" step.
+    1. Fetches the class name from the config via :meth:`DataSetConfig.get_base_class("select")`.
+    2. Looks up the class in :data:`SELECT_CLASSIFY_REGISTRY`.
+    3. Instantiates and returns the class, optionally with an input dataset.
+
+    :param config: The dataset configuration object referencing the "select" step.
     :type config: DataSetConfig
-    :param input_data: A Polars DataFrame from which profiles can be selected, defaults to None.
+    :param input_data: An optional Polars DataFrame for selecting profiles.
     :type input_data: pl.DataFrame, optional
-    :return: An instantiated object that inherits from :class:`ProfileSelectionBase`.
-    :rtype: ProfileSelectionBase
+    :return: An instance of a class derived from :class:`ProfileSelectionBase`.
     """
     dataset_class = _get_prepare_class(config, "select", SELECT_CLASSIFY_REGISTRY)
     return dataset_class(config, input_data=input_data)
@@ -114,28 +120,27 @@ def load_classify_step4_locate_dataset(
     selected_profiles: Optional[pl.DataFrame] = None,
 ) -> LocatePositionBase:
     """
-    Load a :class:`LocatePositionBase`-derived class (currently) based on the configuration.
+    Instantiate a :class:`LocatePositionBase`-derived class based on the configuration.
 
-    Uses the subclass name retrieved from YAML via ``config.get_base_class("locate")``
-    to fetch the correct class from :data:`LOCATE_CLASSIFY_REGISTRY`, then instantiates it.
+    Specifically:
 
-    :param config: The dataset configuration object, referencing the "locate" step.
+    1. Fetches the class name from the config via :meth:`DataSetConfig.get_base_class("locate")`.
+    2. Looks up the class in :data:`LOCATE_CLASSIFY_REGISTRY`.
+    3. Instantiates and returns the class, optionally with an input dataset 
+       and previously selected profiles.
+
+    :param config: The dataset configuration object referencing the "locate" step.
     :type config: DataSetConfig
-    :param input_data: A Polars DataFrame containing data from which locations can be derived,
-                       defaults to None.
+    :param input_data: An optional Polars DataFrame containing the data from which 
+                       location-based subsetting occurs.
     :type input_data: pl.DataFrame, optional
-    :param selected_profiles: A Polars DataFrame representing pre-selected profiles,
-                              defaults to None.
+    :param selected_profiles: An optional Polars DataFrame containing already selected 
+                              profiles that might be used for filtering additional rows.
     :type selected_profiles: pl.DataFrame, optional
-    :return: An instantiated object that inherits from :class:`LocatePositionBase`.
-    :rtype: LocatePositionBase
+    :return: An instance of a class derived from :class:`LocatePositionBase`.
     """
     dataset_class = _get_prepare_class(config, "locate", LOCATE_CLASSIFY_REGISTRY)
-    return dataset_class(
-        config,
-        input_data=input_data,
-        selected_profiles=selected_profiles,
-    )
+    return dataset_class(config, input_data=input_data, selected_profiles=selected_profiles)
 
 
 def load_classify_step5_extract_dataset(
@@ -146,23 +151,29 @@ def load_classify_step5_extract_dataset(
     summary_stats: Optional[pl.DataFrame] = None,
 ) -> ExtractFeatureBase:
     """
-    Load a :class:`ExtractFeatureBase`-derived class (currently) based on the configuration.
+    Instantiate an :class:`ExtractFeatureBase`-derived class based on the configuration.
 
-    Uses the subclass name retrieved from YAML via ``config.get_base_class("extract")``
-    to fetch the correct class from :data:`EXTRACT_CLASSIFY_REGISTRY`, then instantiates it.
+    Specifically:
 
-    :param config: The dataset configuration object, referencing the "extract" step.
+    1. Fetches the class name from the config via :meth:`DataSetConfig.get_base_class("extract")`.
+    2. Looks up the class in :data:`EXTRACT_CLASSIFY_REGISTRY`.
+    3. Instantiates and returns the class, optionally with various intermediate datasets.
+
+    :param config: The dataset configuration object referencing the "extract" step.
     :type config: DataSetConfig
-    :param input_data: An optional Polars DataFrame containing data for extraction steps.
+    :param input_data: An optional Polars DataFrame containing the data from which
+                       features will be extracted.
     :type input_data: pl.DataFrame, optional
-    :param selected_profiles: A Polars DataFrame of selected profiles, if applicable.
+    :param selected_profiles: An optional Polars DataFrame containing selected profiles,
+                              if relevant to feature extraction.
     :type selected_profiles: pl.DataFrame, optional
-    :param target_rows: A Polars DataFrame of rows (indexed by target) to be processed.
+    :param target_rows: An optional Polars DataFrame identifying rows relevant to each
+                        target variable.
     :type target_rows: pl.DataFrame, optional
-    :param summary_stats: A Polars DataFrame containing summary stats for scaling or references.
+    :param summary_stats: An optional Polars DataFrame providing summary statistics that
+                          might be used for feature scaling or reference.
     :type summary_stats: pl.DataFrame, optional
-    :return: An instantiated object that inherits from :class:`ExtractFeatureBase`.
-    :rtype: ExtractFeatureBase
+    :return: An instance of a class derived from :class:`ExtractFeatureBase`.
     """
     dataset_class = _get_prepare_class(config, "extract", EXTRACT_CLASSIFY_REGISTRY)
     return dataset_class(
