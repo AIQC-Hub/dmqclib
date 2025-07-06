@@ -67,7 +67,6 @@ class ExtractDataSetAll(ExtractFeatureBase):
         #: Column names used for intermediate or reference purposes
         #: (e.g., linking positive and negative rows).
         self.work_col_names = [
-            "row_id",
             "profile_id",
             "pair_id",
             "platform_code",

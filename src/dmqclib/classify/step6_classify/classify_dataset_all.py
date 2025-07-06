@@ -48,7 +48,7 @@ class ClassifyAll(BuildModelBase):
         #: with placeholders for the target name.
         self.default_file_names: Dict[str, str] = {
             "report": "{target_name}_classify_report.tsv",
-            "predict": "{target_name}_classify_prediction.parquet",
+            "prediction": "{target_name}_classify_prediction.parquet",
         }
         self.default_model_file_name: str = "{target_name}_model.joblib"
 
@@ -90,7 +90,14 @@ class ClassifyAll(BuildModelBase):
         :type target_name: str
         """
         self.base_model = self.models[target_name]
-        self.base_model.test_set = self.test_sets[target_name]
+        self.base_model.test_set = self.test_sets[target_name].drop(["row_id"])
         self.base_model.test()
-        self.predictions[target_name] = self.base_model.predictions
+        predictions = self.base_model.predictions
+        self.predictions[target_name] = pl.concat(
+            [
+                self.test_sets[target_name].select(["row_id", "label"]),
+                predictions,
+            ],
+            how="horizontal",
+        )
         self.reports[target_name] = self.base_model.report

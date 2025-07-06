@@ -106,7 +106,7 @@ class XGBoost(ModelBase):
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
         self.predictions = pl.DataFrame({
-            "predict": self.model.predict(x_test)}
+            "predicted": self.model.predict(x_test)}
         )
 
     def create_report(self):

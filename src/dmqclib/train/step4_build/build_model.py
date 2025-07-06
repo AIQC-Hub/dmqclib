@@ -62,7 +62,7 @@ class BuildModel(BuildModelBase):
         :type target_name: str
         """
         self.load_base_model()
-        self.base_model.training_set = self.training_sets[target_name].drop("k_fold")
+        self.base_model.training_set = self.training_sets[target_name].drop(["k_fold", "row_id"])
         self.base_model.build()
         self.models[target_name] = self.base_model
 
@@ -82,7 +82,14 @@ class BuildModel(BuildModelBase):
         :type target_name: str
         """
         self.base_model = self.models[target_name]
-        self.base_model.test_set = self.test_sets[target_name]
+        self.base_model.test_set = self.test_sets[target_name].drop(["row_id"])
         self.base_model.test()
         self.reports[target_name] = self.base_model.report
-        self.predictions[target_name] = self.base_model.predictions
+        predictions = self.base_model.predictions
+        self.predictions[target_name] = pl.concat(
+            [
+                self.test_sets[target_name].select(["row_id", "label"]),
+                predictions,
+            ],
+            how="horizontal",
+        )

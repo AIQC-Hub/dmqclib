@@ -50,7 +50,6 @@ class SplitDataSetA(SplitDataSetBase):
         #: Column names used for intermediate processing (e.g., to maintain
         #: matching references between positive and negative rows).
         self.work_col_names = [
-            "row_id",
             "profile_id",
             "pair_id",
             "platform_code",
@@ -86,7 +85,16 @@ class SplitDataSetA(SplitDataSetBase):
             .join(pos_test_set.select([pl.col("pair_id")]), on="pair_id")
         )
 
-        self.test_sets[target_name] = pos_test_set.vstack(neg_test_set)
+        test_set = pos_test_set.vstack(neg_test_set)
+        # Reassemble the final test set with "row_id" positioned as the first column.
+        self.test_sets[target_name] = pl.concat(
+            [
+                test_set.select(["row_id"]),
+                test_set,
+            ],
+            how="align_left",
+        )
+
         self.training_sets[target_name] = self.target_features[target_name].join(
             self.test_sets[target_name].select([pl.col("row_id")]),
             on="row_id",
@@ -135,7 +143,7 @@ class SplitDataSetA(SplitDataSetBase):
         # Reassemble the final training set with "k_fold" positioned as the first column.
         self.training_sets[target_name] = pl.concat(
             [
-                training_set.select(["row_id", "k_fold"]),
+                training_set.select(["k_fold", "row_id"]),
                 training_set.drop(["k_fold"]),
             ],
             how="align_left",

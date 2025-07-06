@@ -120,11 +120,11 @@ class TestExtractDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
         self.assertEqual(ds.target_features["temp"].shape[0], 19480)
-        self.assertEqual(ds.target_features["temp"].shape[1], 37)
+        self.assertEqual(ds.target_features["temp"].shape[1], 38)
 
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 19480)
-        self.assertEqual(ds.target_features["psal"].shape[1], 37)
+        self.assertEqual(ds.target_features["psal"].shape[1], 38)
 
     def test_write_target_features(self):
         """Confirm that target features are written to parquet files as expected."""

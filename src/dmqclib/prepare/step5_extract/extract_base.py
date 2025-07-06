@@ -121,8 +121,8 @@ class ExtractFeatureBase(DataSetBase):
             self.target_rows[target_name]
             .select(
                 [
-                    "label",
                     "row_id",
+                    "label",
                     "profile_id",
                     "pair_id",
                     "platform_code",

@@ -81,7 +81,7 @@ class KFoldValidation(ValidationBase):
             self.base_model.training_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") != (k + 1))
-                .drop("k_fold")
+                .drop(["k_fold", "row_id"])
             )
             self.base_model.build()
             self.models[target_name].append(self.base_model)
@@ -89,7 +89,7 @@ class KFoldValidation(ValidationBase):
             self.base_model.test_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") == (k + 1))
-                .drop("k_fold")
+                .drop(["k_fold", "row_id"])
             )
             self.base_model.test()
             reports.append(self.base_model.report)

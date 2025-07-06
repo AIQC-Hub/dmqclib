@@ -47,6 +47,13 @@ class TestBuildModel(unittest.TestCase):
             "pres": data_path / "temp_pres_classify_report.tsv",
         }
 
+        data_path = Path(__file__).resolve().parent / "data" / "classify"
+        self.prediction_file_names = {
+            "temp": data_path / "temp_temp_classify_prediction.parquet",
+            "psal": data_path / "temp_psal_classify_prediction.parquet",
+            "pres": data_path / "temp_pres_classify_prediction.parquet",
+        }
+
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -124,11 +131,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 37)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 37)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
 
     def test_read_models(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -155,11 +162,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 37)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 37)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
 
     def test_test_without_model(self):
         """Ensure that testing without building models raises a ValueError."""
@@ -212,3 +219,24 @@ class TestBuildModel(unittest.TestCase):
 
         with self.assertRaises(FileNotFoundError):
             ds.read_models()
+
+    def test_write_reports(self):
+        """Check that the test reports are correctly written to file."""
+        ds = ClassifyAll(
+            self.config,
+            test_sets=self.ds_extract.target_features,
+        )
+        ds.model_file_names = self.model_file_names
+        ds.output_file_names["prediction"] = self.prediction_file_names
+        ds.read_models()
+        ds.test_targets()
+        ds.write_predictions()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["pres"]))
+
+        #os.remove(ds.output_file_names["prediction"]["temp"])
+        #os.remove(ds.output_file_names["prediction"]["psal"])
+        #os.remove(ds.output_file_names["prediction"]["pres"])
+

@@ -81,11 +81,11 @@ class TestKFoldValidation(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 39)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 39)
 
     def test_default_k_fold(self):
         """Confirm that k_fold defaults to 10 if no config entry is present."""
