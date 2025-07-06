@@ -249,3 +249,27 @@ class TestBuildModel(unittest.TestCase):
 
         with self.assertRaises(FileNotFoundError):
             ds.read_models()
+
+    def test_write_predictions(self):
+        """Check that the test reports are correctly written to file."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.output_file_names["prediction"]["temp"] = data_path / "temp_temp_test_prediction.tsv"
+        ds.output_file_names["prediction"]["psal"] = data_path / "temp_psal_test_prediction.tsv"
+        ds.output_file_names["prediction"]["pres"] = data_path / "temp_pres_test_prediction.tsv"
+
+        ds.build_targets()
+        ds.test_targets()
+        ds.write_predictions()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["pres"]))
+
+        os.remove(ds.output_file_names["prediction"]["temp"])
+        os.remove(ds.output_file_names["prediction"]["psal"])
+        os.remove(ds.output_file_names["prediction"]["pres"])

@@ -60,6 +60,7 @@ class ModelBase(ABC):
         self.training_set: Optional[Any] = None
         self.test_set: Optional[Any] = None
         self.model: Optional[Any] = None
+        self.predictions: Optional[Any] = None
         self.report: Optional[Any] = None
         self.k: int = 0
 

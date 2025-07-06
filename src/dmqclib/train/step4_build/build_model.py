@@ -85,3 +85,4 @@ class BuildModel(BuildModelBase):
         self.base_model.test_set = self.test_sets[target_name]
         self.base_model.test()
         self.reports[target_name] = self.base_model.report
+        self.predictions[target_name] = self.base_model.predictions

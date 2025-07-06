@@ -60,6 +60,7 @@ class BuildModelBase(DataSetBase):
         #: with placeholders for the target name.
         self.default_file_names: Dict[str, str] = {
             "report": "{target_name}_test_report.tsv",
+            "prediction": "{target_name}_test_prediction.parquet",
         }
         self.default_model_file_name: str = "{target_name}_model.joblib"
 
@@ -88,6 +89,8 @@ class BuildModelBase(DataSetBase):
         self.models: Dict[str, object] = {}
         #: A dictionary to store test results keyed by target name.
         self.reports: Dict[str, pl.DataFrame] = {}
+        #: A dictionary to store predictions results keyed by target name.
+        self.predictions: Dict[str, pl.DataFrame] = {}
 
     def load_base_model(self) -> None:
         """
@@ -198,3 +201,18 @@ class BuildModelBase(DataSetBase):
             self.load_base_model()
             self.base_model.load_model(path)
             self.models[target_name] = self.base_model
+
+    def write_predictions(self) -> None:
+        """
+        Serialize and write each target's predictions to disk.
+
+        :raises ValueError: If :attr:`predictions` is empty, indicating no predictions
+                            have been built for writing.
+        """
+        if not self.predictions:
+            raise ValueError("Member variable 'predictions' must not be empty.")
+
+        for target_name, df in self.predictions.items():
+            output_path = self.output_file_names["prediction"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_parquet(output_path)

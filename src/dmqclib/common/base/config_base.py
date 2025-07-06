@@ -80,7 +80,6 @@ class ConfigBase(ABC):
             self.valid_yaml = True
             return "YAML file is valid"
         except jsonschema.exceptions.ValidationError as e:
-            print(e.message)
             self.valid_yaml = False
             return f"YAML file is invalid: {e.message}"
 
