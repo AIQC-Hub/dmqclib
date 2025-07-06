@@ -33,6 +33,7 @@ class BuildModelBase(DataSetBase):
         config: ConfigBase,
         training_sets: Optional[pl.DataFrame] = None,
         test_sets: Optional[pl.DataFrame] = None,
+        step_name: str = "build",
     ) -> None:
         """
         Initialize the model-building base class with optional training
@@ -49,8 +50,11 @@ class BuildModelBase(DataSetBase):
                           testing examples, each associated with a target,
                           defaults to None.
         :type test_sets: pl.DataFrame, optional
+        :param step_name: A step name,
+                          defaults to "build".
+        :type step_name: str, optional
         """
-        super().__init__("build", config)
+        super().__init__(step_name, config)
 
         #: Default names for model files and test reports,
         #: with placeholders for the target name.
@@ -67,8 +71,8 @@ class BuildModelBase(DataSetBase):
         }
 
         #: A dictionary mapping "model" to target-specific file paths.
-        self.model_file_names: Dict[str, str] = (
-            self.config.get_target_file_names("model", self.default_model_file_name)
+        self.model_file_names: Dict[str, str] = self.config.get_target_file_names(
+            "model", self.default_model_file_name
         )
 
         #: A Polars DataFrame (or dictionary) containing training data.

@@ -7,11 +7,11 @@ from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
 
 class ExtractDataSetAll(ExtractFeatureBase):
     """
-    A subclass of :class:`ExtractFeatureBase` for extracting features 
+    A subclass of :class:`ExtractFeatureBase` for extracting features
     from BO NRT + Cora test data.
 
-    This class sets its :attr:`expected_class_name` to ``ExtractDataSetAll`` so 
-    that it matches the relevant YAML configuration. All feature extraction logic 
+    This class sets its :attr:`expected_class_name` to ``ExtractDataSetAll`` so
+    that it matches the relevant YAML configuration. All feature extraction logic
     inherits from the parent class, :class:`ExtractFeatureBase`.
     """
 
@@ -28,23 +28,23 @@ class ExtractDataSetAll(ExtractFeatureBase):
         """
         Initialize the feature extraction process for BO NRT + Cora test data.
 
-        :param config: A configuration object that manages paths, target definitions, 
+        :param config: A configuration object that manages paths, target definitions,
                        and parameters for feature extraction.
         :type config: ConfigBase
-        :param input_data: An optional Polars DataFrame containing the complete dataset 
-                           for feature extraction. If not provided at initialization, 
+        :param input_data: An optional Polars DataFrame containing the complete dataset
+                           for feature extraction. If not provided at initialization,
                            it should be assigned later.
         :type input_data: pl.DataFrame, optional
-        :param selected_profiles: An optional Polars DataFrame of selected profiles 
-                                  from earlier steps. If not provided, it should be 
+        :param selected_profiles: An optional Polars DataFrame of selected profiles
+                                  from earlier steps. If not provided, it should be
                                   assigned later.
         :type selected_profiles: pl.DataFrame, optional
-        :param target_rows: An optional dictionary mapping target names to respective 
-                            DataFrames containing the rows needed for feature generation. 
+        :param target_rows: An optional dictionary mapping target names to respective
+                            DataFrames containing the rows needed for feature generation.
                             If not provided, it should be assigned later.
         :type target_rows: dict of str to pl.DataFrame, optional
-        :param summary_stats: An optional Polars DataFrame with summary statistics, 
-                              potentially used for scaling or normalization. 
+        :param summary_stats: An optional Polars DataFrame with summary statistics,
+                              potentially used for scaling or normalization.
                               If not provided, it should be assigned later.
         :type summary_stats: pl.DataFrame, optional
         """
@@ -64,7 +64,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
             "extract", self.default_file_name
         )
 
-        #: Column names used for intermediate or reference purposes 
+        #: Column names used for intermediate or reference purposes
         #: (e.g., linking positive and negative rows).
         self.work_col_names = [
             "row_id",

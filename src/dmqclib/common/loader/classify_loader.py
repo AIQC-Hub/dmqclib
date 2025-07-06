@@ -19,9 +19,7 @@ from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
 
 
 def _get_prepare_class(
-    config: DataSetConfig, 
-    step: str, 
-    registry: Dict[str, Type[DataSetBase]]
+    config: DataSetConfig, step: str, registry: Dict[str, Type[DataSetBase]]
 ) -> Type[DataSetBase]:
     """
     Retrieve the class constructor from the specified registry for a given step.
@@ -30,15 +28,15 @@ def _get_prepare_class(
     2. Look up the class in the provided registry using the extracted name.
     3. Return the class (not an instantiated object).
 
-    :param config: A dataset configuration object that contains the base class name 
+    :param config: A dataset configuration object that contains the base class name
                    for the requested step in the YAML.
     :type config: DataSetConfig
     :param step: The step name defined in the YAML (e.g., "input", "summary", or "select").
     :type step: str
-    :param registry: A dictionary mapping class names to dataset class types 
+    :param registry: A dictionary mapping class names to dataset class types
                      inheriting from :class:`DataSetBase`.
     :type registry: dict of (str to Type[DataSetBase])
-    :raises ValueError: If the class name from the configuration cannot be found 
+    :raises ValueError: If the class name from the configuration cannot be found
                         in the given ``registry``.
     :return: The class constructor associated with the requested step.
     """
@@ -60,7 +58,7 @@ def load_classify_step1_input_dataset(config: DataSetConfig) -> InputDataSetBase
     2. Looks up the class in :data:`INPUT_CLASSIFY_REGISTRY`.
     3. Instantiates and returns the class.
 
-    :param config: The dataset configuration object, which includes 
+    :param config: The dataset configuration object, which includes
                    a ``base_class`` field under "input" in the YAML file.
     :return: An instance of a class derived from :class:`InputDataSetBase`.
     """
@@ -69,8 +67,7 @@ def load_classify_step1_input_dataset(config: DataSetConfig) -> InputDataSetBase
 
 
 def load_classify_step2_summary_dataset(
-    config: DataSetConfig, 
-    input_data: Optional[pl.DataFrame] = None
+    config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
 ) -> SummaryStatsBase:
     """
     Instantiate a :class:`SummaryStatsBase`-derived class based on the configuration.
@@ -92,8 +89,7 @@ def load_classify_step2_summary_dataset(
 
 
 def load_classify_step3_select_dataset(
-    config: DataSetConfig, 
-    input_data: Optional[pl.DataFrame] = None
+    config: DataSetConfig, input_data: Optional[pl.DataFrame] = None
 ) -> ProfileSelectionBase:
     """
     Instantiate a :class:`ProfileSelectionBase`-derived class based on the configuration.
@@ -126,21 +122,23 @@ def load_classify_step4_locate_dataset(
 
     1. Fetches the class name from the config via :meth:`DataSetConfig.get_base_class("locate")`.
     2. Looks up the class in :data:`LOCATE_CLASSIFY_REGISTRY`.
-    3. Instantiates and returns the class, optionally with an input dataset 
+    3. Instantiates and returns the class, optionally with an input dataset
        and previously selected profiles.
 
     :param config: The dataset configuration object referencing the "locate" step.
     :type config: DataSetConfig
-    :param input_data: An optional Polars DataFrame containing the data from which 
+    :param input_data: An optional Polars DataFrame containing the data from which
                        location-based subsetting occurs.
     :type input_data: pl.DataFrame, optional
-    :param selected_profiles: An optional Polars DataFrame containing already selected 
+    :param selected_profiles: An optional Polars DataFrame containing already selected
                               profiles that might be used for filtering additional rows.
     :type selected_profiles: pl.DataFrame, optional
     :return: An instance of a class derived from :class:`LocatePositionBase`.
     """
     dataset_class = _get_prepare_class(config, "locate", LOCATE_CLASSIFY_REGISTRY)
-    return dataset_class(config, input_data=input_data, selected_profiles=selected_profiles)
+    return dataset_class(
+        config, input_data=input_data, selected_profiles=selected_profiles
+    )
 
 
 def load_classify_step5_extract_dataset(

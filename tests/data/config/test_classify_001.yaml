@@ -81,8 +81,8 @@ step_class_sets:
       select: SelectDataSetAll
       locate: LocateDataSetAll
       extract: ExtractDataSetAll
-      model: InvalidClass
-      classify: InvalidClass
+      model: XGBoost
+      classify: ClassifyAll
   - name: data_set_step_set_invalid
     steps:
       input: InvalidClass

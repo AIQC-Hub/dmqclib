@@ -4,10 +4,10 @@ from dmqclib.prepare.step1_input.input_base import InputDataSetBase
 
 class InputDataSetAll(InputDataSetBase):
     """
-    A subclass of :class:`InputDataSetBase` providing logic for reading 
+    A subclass of :class:`InputDataSetBase` providing logic for reading
     BO NRT + Cora test data.
 
-    This class sets the :attr:`expected_class_name` to ``InputDataSetAll``, 
+    This class sets the :attr:`expected_class_name` to ``InputDataSetAll``,
     ensuring the correct YAML configuration is matched for data loading.
     """
 
@@ -18,7 +18,7 @@ class InputDataSetAll(InputDataSetBase):
         Initialize the input dataset with a specific configuration.
 
         :param config: A configuration object derived from :class:`ConfigBase`,
-                       containing paths and parameters for retrieving 
+                       containing paths and parameters for retrieving
                        BO NRT + Cora test data.
         :type config: ConfigBase
         """

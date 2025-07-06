@@ -14,17 +14,17 @@ class SelectDataSetAll(ProfileSelectionBase):
     expected_class_name: str = "SelectDataSetAll"
 
     def __init__(
-            self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
         """
         Initialize an instance for selecting and labeling profiles.
 
-        :param config: The configuration object specifying paths and 
+        :param config: The configuration object specifying paths and
                        parameters for the selection process.
         :type config: ConfigBase
-        :param input_data: An optional Polars DataFrame of all profiles 
-                           from which negative and positive examples are 
-                           to be selected. If not provided, it must be 
+        :param input_data: An optional Polars DataFrame of all profiles
+                           from which negative and positive examples are
+                           to be selected. If not provided, it must be
                            assigned later.
         :type input_data: pl.DataFrame, optional
         """
@@ -38,7 +38,7 @@ class SelectDataSetAll(ProfileSelectionBase):
             "select", self.default_file_name
         )
 
-        #: Columns used as unique identifiers for grouping/merging 
+        #: Columns used as unique identifiers for grouping/merging
         #: (e.g., by platform or profile).
         self.key_col_names: List[str] = [
             "platform_code",
@@ -50,7 +50,7 @@ class SelectDataSetAll(ProfileSelectionBase):
 
     def select_all_profiles(self) -> None:
         """
-        Select all profiles from the input data and assign initial 
+        Select all profiles from the input data and assign initial
         identifiers for negative profiles and label columns.
 
         The resulting DataFrame is assigned to :attr:`selected_profiles`.
@@ -75,7 +75,7 @@ class SelectDataSetAll(ProfileSelectionBase):
 
     def label_profiles(self) -> None:
         """
-        Select and label positive and negative datasets before combining them 
+        Select and label positive and negative datasets before combining them
         into a single DataFrame in :attr:`selected_profiles`.
         """
         self.select_all_profiles()

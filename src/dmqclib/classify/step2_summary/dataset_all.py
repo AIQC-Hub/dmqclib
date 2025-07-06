@@ -9,7 +9,7 @@ class SummaryDataSetAll(SummaryStatsBase):
     Subclass of :class:`SummaryStatsBase` for calculating summary statistics
     for BO NRT + Cora test data using Polars.
 
-    Sets :attr:`expected_class_name` to ``SummaryDataSetAll`` to match 
+    Sets :attr:`expected_class_name` to ``SummaryDataSetAll`` to match
     the relevant YAML configuration.
     """
 
@@ -19,12 +19,12 @@ class SummaryDataSetAll(SummaryStatsBase):
         """
         Initialize SummaryDataSetAll with the provided configuration and optional data.
 
-        :param config: Configuration object containing paths and parameters for 
+        :param config: Configuration object containing paths and parameters for
                        generating summary statistics.
         :type config: ConfigBase
-        :param input_data: Optional Polars DataFrame that can be used to 
-                           calculate the summary statistics. If not provided, 
-                           it should be assigned later before calling 
+        :param input_data: Optional Polars DataFrame that can be used to
+                           calculate the summary statistics. If not provided,
+                           it should be assigned later before calling
                            statistic-related methods.
          :type input_data: pl.DataFrame, optional
         """
@@ -33,7 +33,7 @@ class SummaryDataSetAll(SummaryStatsBase):
         #: Default output file name for summary statistics; can be overridden if necessary.
         self.default_file_name: str = "classify_summary_stats.tsv"
 
-        #: The resolved absolute path for writing the summary statistics file, 
+        #: The resolved absolute path for writing the summary statistics file,
         #: based on the configuration and self.default_file_name.
         self.output_file_name: str = self.config.get_full_file_name(
             "summary", self.default_file_name
