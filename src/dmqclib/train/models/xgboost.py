@@ -105,8 +105,8 @@ class XGBoost(ModelBase):
 
         y_pred = self.model.predict(x_test)
 
-        # Build the base result DataFrame with placeholders for the "0" and "1" labels.
-        self.result = pl.DataFrame(
+        # Build the base report DataFrame with placeholders for the "0" and "1" labels.
+        self.report = pl.DataFrame(
             [
                 {"k": self.k, "label": "0", "accuracy": None},
                 {"k": self.k, "label": "1", "accuracy": None},
@@ -139,11 +139,11 @@ class XGBoost(ModelBase):
                     }
                 )
 
-        self.result = self.result.join(
+        self.report = self.report.join(
             pl.DataFrame(report_rows),
             on=["k", "label"],
             how="left",
         )
 
         if self.k == 0:
-            self.result = self.result.drop(["k"])
+            self.report = self.report.drop(["k"])

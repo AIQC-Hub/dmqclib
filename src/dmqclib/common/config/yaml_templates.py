@@ -156,9 +156,11 @@ path_info_sets:
     common:
       base_path: /path/to/data # Modify this
     input:
-      base_path: /path/to/data # Modify this
       step_folder_name: "training"
-
+    model:
+      base_path: /path/to/model
+      step_folder_name: model # Modify this
+      
 target_sets:
   - name: target_set_1_3
     variables:
@@ -237,8 +239,10 @@ path_info_sets:
     common:
       base_path: /path/to/data # Modify this
     input:
-      base_path: /path/to/input # Modify this
-      step_folder_name: ""
+      step_folder_name: "training"
+    model:
+      base_path: /path/to/model
+      step_folder_name: model # Modify this
 
 target_sets:
   - name: target_set_1_3

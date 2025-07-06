@@ -45,6 +45,14 @@ properties:
             step_folder_name:
               type: string
           additionalProperties: false
+        model:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
         classify:
           type: object
           properties:

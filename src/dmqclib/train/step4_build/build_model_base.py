@@ -52,13 +52,12 @@ class BuildModelBase(DataSetBase):
         """
         super().__init__("build", config)
 
-        #: Default naming templates for model files and test results,
+        #: Default names for model files and test reports,
         #: with placeholders for the target name.
-        self.default_file_name: str = "{target_name}_model.json"
         self.default_file_names: Dict[str, str] = {
-            "model": "{target_name}_model.joblib",
-            "result": "{target_name}_test_result.tsv",
+            "report": "{target_name}_test_report.tsv",
         }
+        self.default_model_file_name: str = "{target_name}_model.joblib"
 
         #: A dictionary mapping "model" or "result" to
         #: target-specific file paths.
@@ -66,6 +65,11 @@ class BuildModelBase(DataSetBase):
             k: self.config.get_target_file_names("build", v)
             for k, v in self.default_file_names.items()
         }
+
+        #: A dictionary mapping "model" to target-specific file paths.
+        self.model_file_names: Dict[str, str] = (
+            self.config.get_target_file_names("model", self.default_model_file_name)
+        )
 
         #: A Polars DataFrame (or dictionary) containing training data.
         self.training_sets: Optional[pl.DataFrame] = training_sets
@@ -79,7 +83,7 @@ class BuildModelBase(DataSetBase):
         #: A dictionary to store model objects keyed by target name.
         self.models: Dict[str, object] = {}
         #: A dictionary to store test results keyed by target name.
-        self.results: Dict[str, pl.DataFrame] = {}
+        self.reports: Dict[str, pl.DataFrame] = {}
 
     def load_base_model(self) -> None:
         """
@@ -145,18 +149,18 @@ class BuildModelBase(DataSetBase):
         """
         pass  # pragma: no cover
 
-    def write_results(self) -> None:
+    def write_reports(self) -> None:
         """
-        Write each target's test results to a TSV file.
+        Write each target's test reports to a TSV file.
 
-        :raises ValueError: If :attr:`results` is empty, indicating no tests
-                            have been carried out or no results stored.
+        :raises ValueError: If :attr:`reports` is empty, indicating no tests
+                            have been carried out or no reports stored.
         """
-        if not self.results:
-            raise ValueError("Member variable 'results' must not be empty.")
+        if not self.reports:
+            raise ValueError("Member variable 'reports' must not be empty.")
 
-        for target_name, df in self.results.items():
-            output_path = self.output_file_names["result"][target_name]
+        for target_name, df in self.reports.items():
+            output_path = self.output_file_names["report"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.write_csv(output_path, separator="\t")
 
@@ -171,7 +175,7 @@ class BuildModelBase(DataSetBase):
             raise ValueError("Member variable 'models' must not be empty.")
 
         for target_name, model_ref in self.models.items():
-            output_path = self.output_file_names["model"][target_name]
+            output_path = self.model_file_names[target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             self.base_model.save_model(output_path)
 
@@ -183,7 +187,7 @@ class BuildModelBase(DataSetBase):
         :raises FileNotFoundError: If a model file does not exist
                                    for a particular target.
         """
-        for target_name, path in self.output_file_names["model"].items():
+        for target_name, path in self.model_file_names.items():
             if not os.path.exists(path):
                 raise FileNotFoundError(f"File '{path}' does not exist.")
 

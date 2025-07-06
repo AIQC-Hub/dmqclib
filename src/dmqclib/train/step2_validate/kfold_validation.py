@@ -59,6 +59,7 @@ class KFoldValidation(ValidationBase):
         :attr:`results`, respectively.
 
         For each fold out of :meth:`get_k_fold`:
+
           1. Reload or re-initialize the model using :meth:`load_base_model`.
           2. Set ``base_model.k`` to the fold index.
           3. Build the model using all training data except rows in the current fold.
@@ -71,7 +72,7 @@ class KFoldValidation(ValidationBase):
         :type target_name: str
         """
         self.models[target_name] = []
-        results: List[pl.DataFrame] = []
+        reports: List[pl.DataFrame] = []
 
         k_fold: int = self.get_k_fold()
         for k in range(k_fold):
@@ -91,6 +92,6 @@ class KFoldValidation(ValidationBase):
                 .drop("k_fold")
             )
             self.base_model.test()
-            results.append(self.base_model.result)
+            reports.append(self.base_model.report)
 
-        self.results[target_name] = pl.concat(results)
+        self.reports[target_name] = pl.concat(reports)

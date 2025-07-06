@@ -53,7 +53,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.step_name, "build")
 
     def test_output_file_names(self):
-        """Verify that default output file names (model and results) are as expected."""
+        """Verify that default output file names (model and reports) are as expected."""
         ds = BuildModel(self.config)
 
         self.assertEqual(

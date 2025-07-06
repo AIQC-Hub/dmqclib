@@ -12,6 +12,9 @@ path_info_sets:
     locate:
       base_path: /path/to/locate_1
       step_folder_name: locate_folder_1
+    model:
+      base_path: /path/to/model_1
+      step_folder_name: model_folder_1
     classify:
       base_path: /path/to/classify_1
       step_folder_name: classify_folder_1

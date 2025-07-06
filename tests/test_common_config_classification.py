@@ -58,7 +58,7 @@ class TestClassificationConfig(unittest.TestCase):
         ds = ClassificationConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
-        self.assertEqual(len(ds.data["path_info"]), 6)
+        self.assertEqual(len(ds.data["path_info"]), 7)
         self.assertEqual(len(ds.data["target_set"]), 2)
         self.assertEqual(len(ds.data["feature_set"]), 2)
         self.assertEqual(len(ds.data["feature_param_set"]), 2)

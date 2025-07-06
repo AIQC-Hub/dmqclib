@@ -332,6 +332,14 @@ properties:
           required:
             - step_folder_name
           additionalProperties: false
+        model:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
         validate:
           type: object
           properties:
@@ -528,6 +536,14 @@ properties:
               type: string
           additionalProperties: false
         locate:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
+        model:
           type: object
           properties:
             base_path:

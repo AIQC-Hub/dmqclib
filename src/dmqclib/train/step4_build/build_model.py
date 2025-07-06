@@ -51,6 +51,7 @@ class BuildModel(BuildModelBase):
         Build (train) a model for the specified target, storing it in :attr:`models`.
 
         This method:
+
           1. Reloads the base model via :meth:`load_base_model`.
           2. Attaches the training data for the target (dropping the ``k_fold`` column).
           3. Calls :meth:`base_model.build`.
@@ -70,6 +71,7 @@ class BuildModel(BuildModelBase):
         Test the model for the given target, storing the results in :attr:`results`.
 
         This method:
+
           1. Retrieves the model from :attr:`models[target_name]`.
           2. Attaches the appropriate test set from :attr:`test_sets[target_name]`.
           3. Calls :meth:`base_model.test`.
@@ -82,4 +84,4 @@ class BuildModel(BuildModelBase):
         self.base_model = self.models[target_name]
         self.base_model.test_set = self.test_sets[target_name]
         self.base_model.test()
-        self.results[target_name] = self.base_model.result
+        self.reports[target_name] = self.base_model.report

@@ -47,9 +47,9 @@ class ValidationBase(DataSetBase):
         """
         super().__init__("validate", config)
 
-        #: Default file naming pattern for validation results.
+        #: Default file naming pattern for validation reports.
         self.default_file_names: Dict[str, str] = {
-            "result": "{target_name}_validation_result.tsv",
+            "report": "{target_name}_validation_report.tsv",
         }
 
         #: A dictionary mapping "result" to a dictionary of target-specific file paths.
@@ -70,11 +70,11 @@ class ValidationBase(DataSetBase):
         self.models: Dict[str, object] = {}
 
         #: A dictionary mapping each target name to a Polars DataFrame
-        #: of validation results (e.g., predictions, metrics).
-        self.results: Dict[str, pl.DataFrame] = {}
+        #: of validation reports (e.g., predictions, metrics).
+        self.reports: Dict[str, pl.DataFrame] = {}
 
         #: A dictionary for storing any summarised metrics derived from :attr:`results`.
-        self.summarised_results: Dict[str, pl.DataFrame] = {}
+        self.summarised_reports: Dict[str, pl.DataFrame] = {}
 
     def load_base_model(self) -> None:
         """
@@ -107,16 +107,16 @@ class ValidationBase(DataSetBase):
         """
         pass  # pragma: no cover
 
-    def write_results(self) -> None:
+    def write_reports(self) -> None:
         """
         Write the validation results to TSV files.
 
         :raises ValueError: If :attr:`results` is empty.
         """
-        if not self.results:
-            raise ValueError("Member variable 'results' must not be empty.")
+        if not self.reports:
+            raise ValueError("Member variable 'reports' must not be empty.")
 
-        for target_name, df in self.results.items():
-            output_path = self.output_file_names["result"][target_name]
+        for target_name, df in self.reports.items():
+            output_path = self.output_file_names["report"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.write_csv(output_path, separator="\t")

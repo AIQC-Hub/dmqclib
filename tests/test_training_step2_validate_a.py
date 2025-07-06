@@ -58,16 +58,16 @@ class TestKFoldValidation(unittest.TestCase):
         """Verify that the default output file names are correctly resolved."""
         ds = KFoldValidation(self.config)
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/temp_validation_result.tsv",
-            str(ds.output_file_names["result"]["temp"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/temp_validation_report.tsv",
+            str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/psal_validation_result.tsv",
-            str(ds.output_file_names["result"]["psal"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/psal_validation_report.tsv",
+            str(ds.output_file_names["report"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/pres_validation_result.tsv",
-            str(ds.output_file_names["result"]["pres"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/pres_validation_report.tsv",
+            str(ds.output_file_names["report"]["pres"]),
         )
 
     def test_base_model(self):
@@ -100,36 +100,36 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.process_targets()
 
-        self.assertIsInstance(ds.results["temp"], pl.DataFrame)
-        self.assertEqual(ds.results["temp"].shape[0], 12)
-        self.assertEqual(ds.results["temp"].shape[1], 7)
+        self.assertIsInstance(ds.reports["temp"], pl.DataFrame)
+        self.assertEqual(ds.reports["temp"].shape[0], 12)
+        self.assertEqual(ds.reports["temp"].shape[1], 7)
 
-        self.assertIsInstance(ds.results["psal"], pl.DataFrame)
-        self.assertEqual(ds.results["psal"].shape[0], 12)
-        self.assertEqual(ds.results["psal"].shape[1], 7)
+        self.assertIsInstance(ds.reports["psal"], pl.DataFrame)
+        self.assertEqual(ds.reports["psal"].shape[0], 12)
+        self.assertEqual(ds.reports["psal"].shape[1], 7)
 
     def test_write_results(self):
         """Ensure validation results are written to files as expected."""
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["result"]["temp"] = (
-            data_path / "temp_temp_validation_result.tsv"
+        ds.output_file_names["report"]["temp"] = (
+            data_path / "temp_temp_validation_report.tsv"
         )
-        ds.output_file_names["result"]["psal"] = (
-            data_path / "temp_psal_validation_result.tsv"
+        ds.output_file_names["report"]["psal"] = (
+            data_path / "temp_psal_validation_report.tsv"
         )
-        ds.output_file_names["result"]["pres"] = (
-            data_path / "temp_pres_validation_result.tsv"
+        ds.output_file_names["report"]["pres"] = (
+            data_path / "temp_pres_validation_report.tsv"
         )
 
         ds.process_targets()
-        ds.write_results()
+        ds.write_reports()
 
-        self.assertTrue(os.path.exists(ds.output_file_names["result"]["temp"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["result"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["result"]["pres"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["report"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["report"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["report"]["pres"]))
 
-        os.remove(ds.output_file_names["result"]["temp"])
-        os.remove(ds.output_file_names["result"]["psal"])
-        os.remove(ds.output_file_names["result"]["pres"])
+        os.remove(ds.output_file_names["report"]["temp"])
+        os.remove(ds.output_file_names["report"]["psal"])
+        os.remove(ds.output_file_names["report"]["pres"])

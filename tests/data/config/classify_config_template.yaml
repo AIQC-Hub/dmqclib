@@ -6,6 +6,9 @@ path_info_sets:
     input:
       base_path: /path/to/input # Modify this
       step_folder_name: ""
+    model:
+      base_path: /path/to/model
+      step_folder_name: model
 
 target_sets:
   - name: target_set_1_3

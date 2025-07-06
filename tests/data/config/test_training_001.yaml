@@ -6,6 +6,9 @@ path_info_sets:
     input:
       base_path: /path/to/input_1
       step_folder_name: input_folder_1
+    model:
+      base_path: /path/to/model_1
+      step_folder_name: model_folder_1
     validate:
       base_path: /path/to/validate_1
       step_folder_name: validate_folder_1
