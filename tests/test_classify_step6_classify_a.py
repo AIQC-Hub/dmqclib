@@ -220,7 +220,7 @@ class TestBuildModel(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             ds.read_models()
 
-    def test_write_reports(self):
+    def test_write_predictions(self):
         """Check that the test reports are correctly written to file."""
         ds = ClassifyAll(
             self.config,
@@ -239,4 +239,3 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["prediction"]["temp"])
         os.remove(ds.output_file_names["prediction"]["psal"])
         os.remove(ds.output_file_names["prediction"]["pres"])
-

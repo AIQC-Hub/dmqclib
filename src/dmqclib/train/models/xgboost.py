@@ -105,9 +105,7 @@ class XGBoost(ModelBase):
             raise ValueError("Member variable 'test_set' must not be empty.")
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
-        self.predictions = pl.DataFrame({
-            "predicted": self.model.predict(x_test)}
-        )
+        self.predictions = pl.DataFrame({"predicted": self.model.predict(x_test)})
 
     def create_report(self):
         if self.test_set is None:
@@ -137,7 +135,9 @@ class XGBoost(ModelBase):
         )
 
         # Join with the classification report for precision, recall, etc.
-        classification_dict = classification_report(y_test, self.predictions, output_dict=True)
+        classification_dict = classification_report(
+            y_test, self.predictions, output_dict=True
+        )
         report_rows = []
         for label_key, metrics_dict in classification_dict.items():
             if isinstance(metrics_dict, dict):  # skip 'accuracy' row

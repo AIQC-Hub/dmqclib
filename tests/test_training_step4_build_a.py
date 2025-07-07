@@ -258,9 +258,15 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_input.test_sets,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["prediction"]["temp"] = data_path / "temp_temp_test_prediction.parquet"
-        ds.output_file_names["prediction"]["psal"] = data_path / "temp_psal_test_prediction.parquet"
-        ds.output_file_names["prediction"]["pres"] = data_path / "temp_pres_test_prediction.parquet"
+        ds.output_file_names["prediction"]["temp"] = (
+            data_path / "temp_temp_test_prediction.parquet"
+        )
+        ds.output_file_names["prediction"]["psal"] = (
+            data_path / "temp_psal_test_prediction.parquet"
+        )
+        ds.output_file_names["prediction"]["pres"] = (
+            data_path / "temp_pres_test_prediction.parquet"
+        )
 
         ds.build_targets()
         ds.test_targets()

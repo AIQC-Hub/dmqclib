@@ -57,7 +57,9 @@ class ExtractDataSetAll(ExtractFeatureBase):
         )
 
         #: Default file naming pattern when writing feature files for each target.
-        self.default_file_name: str = "extracted_features_classify_{target_name}.parquet"
+        self.default_file_name: str = (
+            "extracted_features_classify_{target_name}.parquet"
+        )
 
         #: Dictionary mapping target names to the corresponding Parquet file paths.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(

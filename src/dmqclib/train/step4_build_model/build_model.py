@@ -62,7 +62,9 @@ class BuildModel(BuildModelBase):
         :type target_name: str
         """
         self.load_base_model()
-        self.base_model.training_set = self.training_sets[target_name].drop(["k_fold", "row_id"])
+        self.base_model.training_set = self.training_sets[target_name].drop(
+            ["k_fold", "row_id"]
+        )
         self.base_model.build()
         self.models[target_name] = self.base_model
 

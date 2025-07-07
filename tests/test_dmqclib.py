@@ -153,13 +153,19 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
             os.path.exists(str(output_folder / "locate" / "selected_rows_pres.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "extract" / "extracted_features_temp.parquet"))
+            os.path.exists(
+                str(output_folder / "extract" / "extracted_features_temp.parquet")
+            )
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "extract" / "extracted_features_psal.parquet"))
+            os.path.exists(
+                str(output_folder / "extract" / "extracted_features_psal.parquet")
+            )
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "extract" / "extracted_features_pres.parquet"))
+            os.path.exists(
+                str(output_folder / "extract" / "extracted_features_pres.parquet")
+            )
         )
         self.assertTrue(
             os.path.exists(str(output_folder / "split" / "train_set_temp.parquet"))
