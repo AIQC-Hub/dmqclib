@@ -50,36 +50,36 @@ class TestCreateTrainingDataSet(unittest.TestCase):
 
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "validate" / "temp_validation_report.tsv")
+                str(output_folder / "validate" / "validation_report_temp.tsv")
             )
         )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "validate" / "psal_validation_report.tsv")
+                str(output_folder / "validate" / "validation_report_psal.tsv")
             )
         )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "validate" / "pres_validation_report.tsv")
+                str(output_folder / "validate" / "validation_report_pres.tsv")
             )
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "temp_test_report.tsv"))
+            os.path.exists(str(output_folder / "build" / "test_report_temp.tsv"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "psal_test_report.tsv"))
+            os.path.exists(str(output_folder / "build" / "test_report_psal.tsv"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "pres_test_report.tsv"))
+            os.path.exists(str(output_folder / "build" / "test_report_pres.tsv"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "model" / "temp_model.joblib"))
+            os.path.exists(str(output_folder / "model" / "model_temp.joblib"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "model" / "psal_model.joblib"))
+            os.path.exists(str(output_folder / "model" / "model_psal.joblib"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "model" / "pres_model.joblib"))
+            os.path.exists(str(output_folder / "model" / "model_pres.joblib"))
         )
 
         shutil.rmtree(output_folder)

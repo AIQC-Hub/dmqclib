@@ -11,7 +11,7 @@ from dmqclib.common.loader.classify_loader import (
     load_classify_step4_locate_dataset,
 )
 from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step5_extract.dataset_all import ExtractDataSetAll
+from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
 
 
 class TestExtractDataSetA(unittest.TestCase):
@@ -63,11 +63,11 @@ class TestExtractDataSetA(unittest.TestCase):
         """Check that the output file names are set according to the configuration."""
         ds = ExtractDataSetAll(self.config)
         self.assertEqual(
-            "/path/to/data_1/nrt_bo_001/extract/temp_classify_features.parquet",
+            "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_temp.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/data_1/nrt_bo_001/extract/psal_classify_features.parquet",
+            "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_psal.parquet",
             str(ds.output_file_names["psal"]),
         )
 
@@ -82,7 +82,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.target_rows,
+            target_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
 
@@ -112,7 +112,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.target_rows,
+            target_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
 
@@ -132,7 +132,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.target_rows,
+            target_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
@@ -156,7 +156,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.target_rows,
+            target_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
 

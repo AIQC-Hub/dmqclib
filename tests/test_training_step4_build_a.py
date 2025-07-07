@@ -7,7 +7,7 @@ import polars as pl
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.train.step4_build.build_model import BuildModel
+from dmqclib.train.step4_build_model.build_model import BuildModel
 
 
 class TestBuildModel(unittest.TestCase):
@@ -32,14 +32,14 @@ class TestBuildModel(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "temp_train.parquet",
-                "psal": data_path / "psal_train.parquet",
-                "pres": data_path / "pres_train.parquet",
+                "temp": data_path / "train_set_temp.parquet",
+                "psal": data_path / "train_set_psal.parquet",
+                "pres": data_path / "train_set_pres.parquet",
             },
             "test": {
-                "temp": data_path / "temp_test.parquet",
-                "psal": data_path / "psal_test.parquet",
-                "pres": data_path / "pres_test.parquet",
+                "temp": data_path / "test_set_temp.parquet",
+                "psal": data_path / "test_set_psal.parquet",
+                "pres": data_path / "test_set_pres.parquet",
             },
         }
 
@@ -57,20 +57,20 @@ class TestBuildModel(unittest.TestCase):
         ds = BuildModel(self.config)
 
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/temp_model.joblib",
+            "/path/to/model_1/nrt_bo_001/model_folder_1/model_temp.joblib",
             str(ds.model_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/psal_model.joblib",
+            "/path/to/model_1/nrt_bo_001/model_folder_1/model_psal.joblib",
             str(ds.model_file_names["psal"]),
         )
 
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/temp_test_report.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_temp.tsv",
             str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/psal_test_report.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_psal.tsv",
             str(ds.output_file_names["report"]["psal"]),
         )
 
@@ -217,9 +217,9 @@ class TestBuildModel(unittest.TestCase):
             self.config, training_sets=None, test_sets=self.ds_input.test_sets
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = data_path / "temp_model.joblib"
-        ds.model_file_names["psal"] = data_path / "psal_model.joblib"
-        ds.model_file_names["pres"] = data_path / "pres_model.joblib"
+        ds.model_file_names["temp"] = data_path / "model_temp.joblib"
+        ds.model_file_names["psal"] = data_path / "model_psal.joblib"
+        ds.model_file_names["pres"] = data_path / "model_pres.joblib"
 
         ds.read_models()
 

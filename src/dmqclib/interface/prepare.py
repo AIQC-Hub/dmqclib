@@ -58,7 +58,7 @@ def create_training_dataset(config: ConfigBase) -> None:
         config,
         ds_input.input_data,
         ds_select.selected_profiles,
-        ds_locate.target_rows,
+        ds_locate.selected_rows,
         ds_summary.summary_stats,
     )
     ds_extract.process_targets()

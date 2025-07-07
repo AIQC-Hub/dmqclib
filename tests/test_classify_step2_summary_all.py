@@ -6,7 +6,7 @@ import polars as pl
 
 from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step2_summary.dataset_all import SummaryDataSetAll
+from dmqclib.classify.step2_calc_stats.dataset_all import SummaryDataSetAll
 
 
 class TestSelectDataSetAll(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestSelectDataSetAll(unittest.TestCase):
         """Verify that the output file name is set correctly based on the configuration."""
         ds = SummaryDataSetAll(self.config)
         self.assertEqual(
-            "/path/to/data_1/nrt_bo_001/summary/classify_summary_stats.tsv",
+            "/path/to/data_1/nrt_bo_001/summary/summary_stats_classify.tsv",
             str(ds.output_file_name),
         )
 

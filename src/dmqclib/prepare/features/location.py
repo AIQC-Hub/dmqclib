@@ -20,7 +20,7 @@ class LocationFeat(FeatureBase):
         feature_info: Optional[Dict] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         filtered_input: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -39,10 +39,10 @@ class LocationFeat(FeatureBase):
                                potentially used for advanced merging or lookups,
                                defaults to None.
         :type filtered_input: pl.DataFrame, optional
-        :param target_rows: A dictionary keyed by target names, each mapping to
+        :param selected_rows: A dictionary keyed by target names, each mapping to
                             a Polars DataFrame of rows relevant for that target,
                             defaults to None.
-        :type target_rows: dict of (str to pl.DataFrame), optional
+        :type selected_rows: dict of (str to pl.DataFrame), optional
         :param summary_stats: A Polars DataFrame containing statistical
                               information that may aid in feature scaling,
                               defaults to None.
@@ -53,7 +53,7 @@ class LocationFeat(FeatureBase):
             feature_info=feature_info,
             selected_profiles=selected_profiles,
             filtered_input=filtered_input,
-            target_rows=target_rows,
+            selected_rows=selected_rows,
             summary_stats=summary_stats,
         )
 
@@ -74,7 +74,7 @@ class LocationFeat(FeatureBase):
              ``row_id``, ``longitude``, and ``latitude`` among others.
         """
         self.features = (
-            self.target_rows[self.target_name]
+            self.selected_rows[self.target_name]
             .select(["row_id", "platform_code", "profile_no"])
             .join(
                 self.selected_profiles.select(

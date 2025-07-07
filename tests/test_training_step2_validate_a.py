@@ -7,7 +7,7 @@ import polars as pl
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
+from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
 class TestKFoldValidation(unittest.TestCase):
@@ -34,14 +34,14 @@ class TestKFoldValidation(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "temp_train.parquet",
-                "psal": data_path / "psal_train.parquet",
-                "pres": data_path / "pres_train.parquet",
+                "temp": data_path / "train_set_temp.parquet",
+                "psal": data_path / "train_set_psal.parquet",
+                "pres": data_path / "train_set_pres.parquet",
             },
             "test": {
-                "temp": data_path / "temp_test.parquet",
-                "psal": data_path / "psal_test.parquet",
-                "pres": data_path / "pres_test.parquet",
+                "temp": data_path / "test_set_temp.parquet",
+                "psal": data_path / "test_set_psal.parquet",
+                "pres": data_path / "test_set_pres.parquet",
             },
         }
 
@@ -58,15 +58,15 @@ class TestKFoldValidation(unittest.TestCase):
         """Verify that the default output file names are correctly resolved."""
         ds = KFoldValidation(self.config)
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/temp_validation_report.tsv",
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_temp.tsv",
             str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/psal_validation_report.tsv",
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_psal.tsv",
             str(ds.output_file_names["report"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/pres_validation_report.tsv",
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_pres.tsv",
             str(ds.output_file_names["report"]["pres"]),
         )
 

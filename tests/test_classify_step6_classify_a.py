@@ -13,7 +13,7 @@ from dmqclib.common.loader.classify_loader import (
 )
 from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.classify.step6_classify.classify_dataset_all import ClassifyAll
+from dmqclib.classify.step6_classify_dataset.classify_dataset_all import ClassifyAll
 
 
 class TestBuildModel(unittest.TestCase):
@@ -35,9 +35,9 @@ class TestBuildModel(unittest.TestCase):
 
         model_path = Path(__file__).resolve().parent / "data" / "training"
         self.model_file_names = {
-            "temp": model_path / "temp_model.joblib",
-            "psal": model_path / "psal_model.joblib",
-            "pres": model_path / "pres_model.joblib",
+            "temp": model_path / "model_temp.joblib",
+            "psal": model_path / "model_psal.joblib",
+            "pres": model_path / "model_pres.joblib",
         }
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
@@ -85,7 +85,7 @@ class TestBuildModel(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.target_rows,
+            target_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
         self.ds_extract.process_targets()
@@ -100,20 +100,20 @@ class TestBuildModel(unittest.TestCase):
         ds = ClassifyAll(self.config)
 
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/temp_model.joblib",
+            "/path/to/model_1/nrt_bo_001/model_folder_1/model_temp.joblib",
             str(ds.model_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/psal_model.joblib",
+            "/path/to/model_1/nrt_bo_001/model_folder_1/model_psal.joblib",
             str(ds.model_file_names["psal"]),
         )
 
         self.assertEqual(
-            "/path/to/classify_1/nrt_bo_001/classify_folder_1/temp_classify_report.tsv",
+            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_temp.tsv",
             str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/classify_1/nrt_bo_001/classify_folder_1/psal_classify_report.tsv",
+            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_psal.tsv",
             str(ds.output_file_names["report"]["psal"]),
         )
 
@@ -236,7 +236,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["pres"]))
 
-        #os.remove(ds.output_file_names["prediction"]["temp"])
-        #os.remove(ds.output_file_names["prediction"]["psal"])
-        #os.remove(ds.output_file_names["prediction"]["pres"])
+        os.remove(ds.output_file_names["prediction"]["temp"])
+        os.remove(ds.output_file_names["prediction"]["psal"])
+        os.remove(ds.output_file_names["prediction"]["pres"])
 

@@ -6,9 +6,9 @@ from dmqclib.common.loader.training_registry import BUILD_MODEL_REGISTRY
 from dmqclib.common.loader.training_registry import INPUT_TRAINING_SET_REGISTRY
 from dmqclib.common.loader.training_registry import MODEL_VALIDATION_REGISTRY
 from dmqclib.common.config.training_config import TrainingConfig
-from dmqclib.train.step1_input.input_base import InputTrainingSetBase
-from dmqclib.train.step2_validate.validate_base import ValidationBase
-from dmqclib.train.step4_build.build_model_base import BuildModelBase
+from dmqclib.train.step1_read_input.input_base import InputTrainingSetBase
+from dmqclib.train.step2_validate_model.validate_base import ValidationBase
+from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 
 
 def _get_train_class(

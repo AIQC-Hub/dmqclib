@@ -12,7 +12,7 @@ from dmqclib.common.loader.dataset_loader import (
     load_step5_extract_dataset,
 )
 from dmqclib.common.config.dataset_config import DataSetConfig
-from dmqclib.prepare.step6_split.dataset_a import SplitDataSetA
+from dmqclib.prepare.step6_split_dataset.dataset_a import SplitDataSetA
 
 
 class TestSplitDataSetA(unittest.TestCase):
@@ -64,7 +64,7 @@ class TestSplitDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.target_rows,
+            target_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
         self.ds_extract.process_targets()
@@ -79,19 +79,19 @@ class TestSplitDataSetA(unittest.TestCase):
         ds = SplitDataSetA(self.config)
 
         self.assertEqual(
-            "/path/to/split_1/nrt_bo_001/split_folder_1/temp_train.parquet",
+            "/path/to/split_1/nrt_bo_001/split_folder_1/train_set_temp.parquet",
             str(ds.output_file_names["train"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/split_1/nrt_bo_001/split_folder_1/psal_train.parquet",
+            "/path/to/split_1/nrt_bo_001/split_folder_1/train_set_psal.parquet",
             str(ds.output_file_names["train"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/split_1/nrt_bo_001/split_folder_1/temp_test.parquet",
+            "/path/to/split_1/nrt_bo_001/split_folder_1/test_set_temp.parquet",
             str(ds.output_file_names["test"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/split_1/nrt_bo_001/split_folder_1/psal_test.parquet",
+            "/path/to/split_1/nrt_bo_001/split_folder_1/test_set_psal.parquet",
             str(ds.output_file_names["test"]["psal"]),
         )
 

@@ -7,7 +7,7 @@ import polars as pl
 from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 from dmqclib.common.loader.classify_loader import load_classify_step3_select_dataset
 from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step4_locate.dataset_all import LocateDataSetAll
+from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
 
 
 class TestLocateDataSetA(unittest.TestCase):
@@ -52,11 +52,11 @@ class TestLocateDataSetA(unittest.TestCase):
         """
         ds = LocateDataSetAll(self.config)
         self.assertEqual(
-            "/path/to/locate_1/nrt_bo_001/locate_folder_1/temp_classify_rows.parquet",
+            "/path/to/locate_1/nrt_bo_001/locate_folder_1/selected_rows_classify_temp.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/locate_1/nrt_bo_001/locate_folder_1/psal_classify_rows.parquet",
+            "/path/to/locate_1/nrt_bo_001/locate_folder_1/selected_rows_classify_psal.parquet",
             str(ds.output_file_names["psal"]),
         )
 
@@ -99,13 +99,13 @@ class TestLocateDataSetA(unittest.TestCase):
 
         ds.process_targets()
 
-        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["temp"].shape[0], 19480)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
-        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["psal"].shape[0], 19480)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
     def test_write_target_rows(self):
         """

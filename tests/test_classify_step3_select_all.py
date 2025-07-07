@@ -6,7 +6,7 @@ import polars as pl
 
 from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step3_select.dataset_all import SelectDataSetAll
+from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
 
 
 class TestSelectDataSetA(unittest.TestCase):
@@ -44,7 +44,7 @@ class TestSelectDataSetA(unittest.TestCase):
         """Verify that the output file name is set based on configuration."""
         ds = SelectDataSetAll(self.config)
         self.assertEqual(
-            "/path/to/select_1/nrt_bo_001/select_folder_1/selected_classify_profiles.parquet",
+            "/path/to/select_1/nrt_bo_001/select_folder_1/selected_profiles_classify.parquet",
             str(ds.output_file_name),
         )
 

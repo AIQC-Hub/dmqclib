@@ -62,7 +62,7 @@ class _TestFeatureBase(unittest.TestCase):
             self.config,
             self.ds_input.input_data,
             self.ds_select.selected_profiles,
-            self.ds_locate.target_rows,
+            self.ds_locate.selected_rows,
             self.ds_summary.summary_stats,
         )
 
@@ -75,7 +75,7 @@ class _TestFeatureBase(unittest.TestCase):
             feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
-            self.ds_locate.target_rows,
+            self.ds_locate.selected_rows,
             self.ds_summary.summary_stats,
         )
 
@@ -87,13 +87,13 @@ class _TestFeatureBase(unittest.TestCase):
         self.assertEqual(ds.filtered_input.shape[0], 9841)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
-        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 128)
+        self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
-        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 140)
+        self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
         self.assertEqual(ds.summary_stats.shape[0], 3528)
@@ -128,7 +128,7 @@ class TestLocationFeature(_TestFeatureBase):
             self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
-            self.ds_locate.target_rows,
+            self.ds_locate.selected_rows,
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
@@ -164,7 +164,7 @@ class TestDayOfYearFeature(_TestFeatureBase):
             self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
-            self.ds_locate.target_rows,
+            self.ds_locate.selected_rows,
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
@@ -222,7 +222,7 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
             self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
-            self.ds_locate.target_rows,
+            self.ds_locate.selected_rows,
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
@@ -263,7 +263,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
             self.feature_info,
             self.ds_select.selected_profiles,
             self.ds_extract.filtered_input,
-            self.ds_locate.target_rows,
+            self.ds_locate.selected_rows,
             self.ds_summary.summary_stats,
         )
 

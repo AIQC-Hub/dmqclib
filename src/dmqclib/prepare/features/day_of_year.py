@@ -21,7 +21,7 @@ class DayOfYearFeat(FeatureBase):
         feature_info: Optional[Dict] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         filtered_input: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -43,9 +43,9 @@ class DayOfYearFeat(FeatureBase):
                                DataFrame of input data for advanced merging,
                                defaults to None.
         :type filtered_input: pl.DataFrame, optional
-        :param target_rows: A dictionary of target-specific DataFrames, each
+        :param selected_rows: A dictionary of target-specific DataFrames, each
                             containing rows relevant to that target. Defaults to None.
-        :type target_rows: dict of (str to pl.DataFrame), optional
+        :type selected_rows: dict of (str to pl.DataFrame), optional
         :param summary_stats: (Unused in this feature class) A Polars DataFrame
                               containing statistical information for potential scaling,
                               defaults to None.
@@ -56,7 +56,7 @@ class DayOfYearFeat(FeatureBase):
             feature_info=feature_info,
             selected_profiles=selected_profiles,
             filtered_input=filtered_input,
-            target_rows=target_rows,
+            selected_rows=selected_rows,
             summary_stats=summary_stats,
         )
 
@@ -75,7 +75,7 @@ class DayOfYearFeat(FeatureBase):
           4. Remove columns no longer needed (i.e., the join keys and timestamp).
         """
         self.features = (
-            self.target_rows[self.target_name]
+            self.selected_rows[self.target_name]
             .select(["row_id", "platform_code", "profile_no"])
             .join(
                 self.selected_profiles.select(

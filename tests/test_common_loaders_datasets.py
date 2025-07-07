@@ -12,12 +12,12 @@ from dmqclib.common.loader.dataset_loader import (
     load_step6_split_dataset,
 )
 from dmqclib.common.config.dataset_config import DataSetConfig
-from dmqclib.prepare.step1_input.dataset_a import InputDataSetA
-from dmqclib.prepare.step2_summary.dataset_a import SummaryDataSetA
-from dmqclib.prepare.step3_select.dataset_a import SelectDataSetA
-from dmqclib.prepare.step4_locate.dataset_a import LocateDataSetA
-from dmqclib.prepare.step5_extract.dataset_a import ExtractDataSetA
-from dmqclib.prepare.step6_split.dataset_a import SplitDataSetA
+from dmqclib.prepare.step1_read_input.dataset_a import InputDataSetA
+from dmqclib.prepare.step2_calc_stats.dataset_a import SummaryDataSetA
+from dmqclib.prepare.step3_select_profiles.dataset_a import SelectDataSetA
+from dmqclib.prepare.step4_select_rows.dataset_a import LocateDataSetA
+from dmqclib.prepare.step5_extract_features.dataset_a import ExtractDataSetA
+from dmqclib.prepare.step6_split_dataset.dataset_a import SplitDataSetA
 
 
 class TestInputClassLoader(unittest.TestCase):
@@ -268,7 +268,7 @@ class TestExtractClassLoader(unittest.TestCase):
             self.config,
             ds_input.input_data,
             ds_select.selected_profiles,
-            ds_locate.target_rows,
+            ds_locate.selected_rows,
             ds_summary.summary_stats,
         )
 
@@ -357,7 +357,7 @@ class TestSplitClassLoader(unittest.TestCase):
             self.config,
             ds_input.input_data,
             ds_select.selected_profiles,
-            ds_locate.target_rows,
+            ds_locate.selected_rows,
             ds_summary.summary_stats,
         )
         ds_extract.process_targets()

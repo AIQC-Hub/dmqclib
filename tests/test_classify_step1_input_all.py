@@ -4,7 +4,7 @@ from pathlib import Path
 import polars as pl
 
 from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step1_input.dataset_all import InputDataSetAll
+from dmqclib.classify.step1_read_input.dataset_all import InputDataSetAll
 
 
 class TestInputDataSetAll(unittest.TestCase):

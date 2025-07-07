@@ -6,19 +6,19 @@ the correct class during each preparation step in the pipeline.
 
 from typing import Dict, Type
 
-from dmqclib.prepare.step1_input.dataset_a import InputDataSetA
-from dmqclib.prepare.step2_summary.dataset_a import SummaryDataSetA
-from dmqclib.prepare.step3_select.dataset_a import SelectDataSetA
-from dmqclib.prepare.step4_locate.dataset_a import LocateDataSetA
-from dmqclib.prepare.step5_extract.dataset_a import ExtractDataSetA
-from dmqclib.prepare.step6_split.dataset_a import SplitDataSetA
+from dmqclib.prepare.step1_read_input.dataset_a import InputDataSetA
+from dmqclib.prepare.step2_calc_stats.dataset_a import SummaryDataSetA
+from dmqclib.prepare.step3_select_profiles.dataset_a import SelectDataSetA
+from dmqclib.prepare.step4_select_rows.dataset_a import LocateDataSetA
+from dmqclib.prepare.step5_extract_features.dataset_a import ExtractDataSetA
+from dmqclib.prepare.step6_split_dataset.dataset_a import SplitDataSetA
 
-from dmqclib.prepare.step1_input.input_base import InputDataSetBase
-from dmqclib.prepare.step2_summary.summary_base import SummaryStatsBase
-from dmqclib.prepare.step3_select.select_base import ProfileSelectionBase
-from dmqclib.prepare.step4_locate.locate_base import LocatePositionBase
-from dmqclib.prepare.step5_extract.extract_base import ExtractFeatureBase
-from dmqclib.prepare.step6_split.split_base import SplitDataSetBase
+from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
+from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
+from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
+from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
+from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase
+from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step1_input tasks.
