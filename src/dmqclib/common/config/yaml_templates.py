@@ -314,7 +314,7 @@ step_param_sets:
       summary: { }
       select: { }
       locate: { }
-      extract: { drop_key_columns: true }
+      extract: { }
       model: { }
       classify: { }
 

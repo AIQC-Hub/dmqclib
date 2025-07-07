@@ -724,9 +724,6 @@ properties:
               type: object
             extract:
               type: object
-              properties:
-                drop_key_columns:
-                  type: boolean
             model:
               type: object
             classify:

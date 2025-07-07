@@ -143,13 +143,9 @@ class ExtractFeatureBase(DataSetBase):
             )
         )
 
-        drop_key_columns = (
-            self.config.get_step_params("extract").get("drop_key_columns") or False
+        self.target_features[target_name] = self.target_features[target_name].drop(
+            self.drop_col_names
         )
-        if drop_key_columns:
-            self.target_features[target_name] = self.target_features[target_name].drop(
-                self.drop_col_names
-            )
 
     def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:
         """
