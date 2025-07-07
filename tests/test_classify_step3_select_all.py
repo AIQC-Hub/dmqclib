@@ -73,7 +73,7 @@ class TestSelectDataSetA(unittest.TestCase):
     def test_write_selected_profiles(self):
         """Confirm that selected profiles are written to a file successfully."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
-        ds.output_file_name = (
+        ds.output_file_name = str(
             Path(__file__).resolve().parent
             / "data"
             / "select"
@@ -88,7 +88,7 @@ class TestSelectDataSetA(unittest.TestCase):
     def test_write_empty_selected_profiles(self):
         """Check that writing empty profiles raises ValueError."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
-        ds.output_file_name = (
+        ds.output_file_name = str(
             Path(__file__).resolve().parent
             / "data"
             / "select"

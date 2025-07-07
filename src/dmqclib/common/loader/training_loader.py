@@ -66,7 +66,7 @@ def load_step1_input_training_set(config: TrainingConfig) -> InputTrainingSetBas
 
 
 def load_step2_model_validation_class(
-    config: TrainingConfig, training_sets: Optional[pl.DataFrame] = None
+    config: TrainingConfig, training_sets: Optional[dict[str, pl.DataFrame]] = None
 ) -> ValidationBase:
     """
     Retrieve and instantiate a :class:`ValidationBase` subclass for
@@ -82,7 +82,7 @@ def load_step2_model_validation_class(
     :type config: TrainingConfig
     :param training_sets: A Polars DataFrame containing data for model validation,
                           defaults to None.
-    :type training_sets: pl.DataFrame, optional
+    :type training_sets: dict[str, pl.DataFrame], optional
     :return: An instantiated object of a class that inherits from :class:`ValidationBase`.
     :rtype: ValidationBase
     """
@@ -92,8 +92,8 @@ def load_step2_model_validation_class(
 
 def load_step4_build_model_class(
     config: TrainingConfig,
-    training_sets: Optional[pl.DataFrame] = None,
-    test_sets: Optional[pl.DataFrame] = None,
+    training_sets: Optional[dict[str, pl.DataFrame]] = None,
+    test_sets: Optional[dict[str, pl.DataFrame]] = None,
 ) -> BuildModelBase:
     """
     Retrieve and instantiate a :class:`BuildModelBase` subclass for
@@ -108,9 +108,9 @@ def load_step4_build_model_class(
                    under the "build" section.
     :type config: TrainingConfig
     :param training_sets: A Polars DataFrame of training data, defaults to None.
-    :type training_sets: pl.DataFrame, optional
+    :type training_sets: dict[str, pl.DataFrame], optional
     :param test_sets: A Polars DataFrame of test data, defaults to None.
-    :type test_sets: pl.DataFrame, optional
+    :type test_sets: dict[str, pl.DataFrame], optional
     :return: An instantiated object of a class that inherits from :class:`BuildModelBase`.
     :rtype: BuildModelBase
     """

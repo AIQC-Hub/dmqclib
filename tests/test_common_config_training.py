@@ -25,7 +25,7 @@ class TestTrainingConfig(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "config"
-            / "train_config_template.yaml"
+            / "config_train_set_template.yaml"
         )
 
     def test_valid_config(self):

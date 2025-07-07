@@ -30,14 +30,14 @@ class TestInputTrainingSetA(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "train_set_temp.parquet",
-                "psal": data_path / "train_set_psal.parquet",
-                "pres": data_path / "train_set_pres.parquet",
+                "temp": str(data_path / "train_set_temp.parquet"),
+                "psal": str(data_path / "train_set_psal.parquet"),
+                "pres": str(data_path / "train_set_pres.parquet"),
             },
             "test": {
-                "temp": data_path / "test_set_temp.parquet",
-                "psal": data_path / "test_set_psal.parquet",
-                "pres": data_path / "test_set_pres.parquet",
+                "temp": str(data_path / "test_set_temp.parquet"),
+                "psal": str(data_path / "test_set_psal.parquet"),
+                "pres": str(data_path / "test_set_pres.parquet"),
             },
         }
 
@@ -78,16 +78,16 @@ class TestInputTrainingSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 39)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 42)
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 39)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 42)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)

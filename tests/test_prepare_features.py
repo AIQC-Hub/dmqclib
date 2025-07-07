@@ -20,7 +20,6 @@ from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
 class _TestFeatureBase(unittest.TestCase):
     """
     A base class providing shared setup and validation logic for feature-based tests.
-    Derived classes can supply the feature class to setUp() for testing.
     """
 
     def _setup(self, class_name):
@@ -69,7 +68,7 @@ class _TestFeatureBase(unittest.TestCase):
         self.class_name = class_name
 
     def _test_init_arguments(self, feature_info):
-        """Validate that required data (selected_profiles, filtered_input, target_rows, summary_stats) is initialized correctly."""
+        """Validate that required data (selected_profiles, filtered_input, selected_rows, summary_stats) is initialized correctly."""
         ds = self.class_name(
             "temp",
             feature_info,

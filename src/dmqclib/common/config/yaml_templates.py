@@ -5,7 +5,7 @@ to fit various data pipeline requirements.
 """
 
 
-def get_prepare_config_template() -> str:
+def get_config_data_set_template() -> str:
     """
     Retrieve a YAML template string for dataset preparation configurations.
 
@@ -43,7 +43,7 @@ path_info_sets:
       base_path: /path/to/input # Modify this
       step_folder_name: ""
     split:
-      step_folder_name: "training"
+      step_folder_name: training
 
 target_sets:
   - name: target_set_1_3
@@ -132,7 +132,7 @@ data_sets:
     return yaml_template
 
 
-def get_train_config_template() -> str:
+def get_config_train_set_template() -> str:
     """
     Retrieve a YAML template string for training configurations.
 
@@ -156,10 +156,10 @@ path_info_sets:
     common:
       base_path: /path/to/data # Modify this
     input:
-      step_folder_name: "training"
+      step_folder_name: training
     model:
-      base_path: /path/to/model
-      step_folder_name: model # Modify this
+      base_path: /path/to/model # Modify this
+      step_folder_name: model
       
 target_sets:
   - name: target_set_1_3
@@ -204,7 +204,7 @@ training_sets:
     return yaml_template
 
 
-def get_classify_config_template() -> str:
+def get_config_classify_set_template() -> str:
     """
     Retrieve a YAML template string for classification configurations.
 
@@ -239,11 +239,13 @@ path_info_sets:
     common:
       base_path: /path/to/data # Modify this
     input:
-      step_folder_name: "training"
+      step_folder_name: training
     model:
-      base_path: /path/to/model
-      step_folder_name: model # Modify this
-
+      base_path: /path/to/model  # Modify this
+      step_folder_name: model
+    concat:
+      step_folder_name: classify
+            
 target_sets:
   - name: target_set_1_3
     variables:
@@ -314,7 +316,7 @@ step_param_sets:
       summary: { }
       select: { }
       locate: { }
-      extract: { drop_key_columns: true }
+      extract: { }
       model: { }
       classify: { }
 

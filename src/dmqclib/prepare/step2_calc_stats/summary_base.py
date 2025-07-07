@@ -81,7 +81,8 @@ class SummaryStatsBase(DataSetBase):
         #: List of columns used as identifiers for grouping data by profile.
         self.profile_col_names = ["platform_code", "profile_no"]
 
-    def get_stats_expression(self, val_col_name: str) -> List:
+    @staticmethod
+    def get_stats_expression(val_col_name: str) -> List:
         """
         Build a list of Polars expression objects used to compute summary
         statistics for a given numeric column.

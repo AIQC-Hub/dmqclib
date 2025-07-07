@@ -1,6 +1,6 @@
 import os
 from abc import abstractmethod
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 import polars as pl
 
@@ -25,7 +25,9 @@ class ValidationBase(DataSetBase):
     """
 
     def __init__(
-        self, config: ConfigBase, training_sets: Optional[pl.DataFrame] = None
+        self,
+        config: ConfigBase,
+        training_sets: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
         Initialize the validation base class with a training configuration
@@ -37,7 +39,7 @@ class ValidationBase(DataSetBase):
         :param training_sets: A DataFrame (or dictionary of DataFrames if
                               consolidated) containing training data to be
                               validated, defaults to None.
-        :type training_sets: pl.DataFrame, optional
+        :type training_sets: Dict[str, pl.DataFrame], optional
         :raises NotImplementedError: If a subclass does not define
                                      ``expected_class_name`` and is instantiated
                                      with a YAML config specifying
@@ -60,14 +62,14 @@ class ValidationBase(DataSetBase):
 
         #: Optional Polars DataFrame with training sets
         #: (or dictionary if the structure is aggregated).
-        self.training_sets: Optional[pl.DataFrame] = training_sets
+        self.training_sets: Optional[Dict[str, pl.DataFrame]] = training_sets
 
         #: Base model class instantiated through the model loader.
         self.base_model = None
         self.load_base_model()
 
         #: Subclasses or the validation routine can store specialized model instances here.
-        self.models: Dict[str, object] = {}
+        self.models: Dict[str, List] = {}
 
         #: A dictionary mapping each target name to a Polars DataFrame
         #: of validation reports (e.g., predictions, metrics).

@@ -64,7 +64,7 @@ Before training your model, create a separate configuration file specifically fo
 ```python
 import dmqclib as dm
 
-training_config_file = "/path/to/train_config_file.yaml"
+training_config_file = "/path/to/training_config_file.yaml"
 dm.write_config_template(training_config_file, module="train")
 ```
 
@@ -85,6 +85,39 @@ Similar to the previous steps, ensure that the configuration file contains the n
 
 - **validate**: Results from cross-validation processes.
 - **build**: Developed models and evaluation results on the test dataset.
+
+### 3. Classification
+
+#### 1.1 Create a Configuration File
+First, create a configuration file that will serve as a template for preparing your dataset.
+
+```python
+import dmqclib as dm
+
+classification_config_file = "/path/to/classification_config_file.yaml"
+dm.write_config_template(classification_config_file, module="classify")
+```
+
+The function `write_config_template` generates a template configuration file at the specified location. You will need to edit this file to include entries relevant to the dataset you want to prepare for training. For detailed instructions, refer to the [Configuration](#configuration) section.
+
+#### 1.2 Create a Training Dataset
+Next, use the configuration file to perform classification on all observations.
+
+```python
+dataset_name = "NRT_BO_001"
+
+classification_config = dm.read_config(classification_config_file, module="classify")
+classification_config.select(dataset_name)
+dm.classify_dataset(classification_config)
+```
+
+The configuration file must contain the appropriate entries for the `dataset_name` variable to successfully execute the above command. The function `classify_dataset` generates several folders and datasets, including:
+
+- **summary**: Summary statistics of input data to estimate normalization values.
+- **select**: Selected profiles with bad observation flags (positive) and associated profiles with good data (negative).
+- **locate**: Observation records for both positive and negative profiles.
+- **extract**: Extracted features for positive and negative observation records.
+- **classify**: Classification results and reorts
 
 ## Configuration
 

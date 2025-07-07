@@ -56,7 +56,7 @@ class SplitDataSetBase(DataSetBase):
         }
 
         #: A Polars DataFrame of feature columns for all targets, if available.
-        self.target_features: Optional[pl.DataFrame] = target_features
+        self.target_features: Optional[Dict[str, pl.DataFrame]] = target_features
         #: A dictionary of Polars DataFrames holding training splits by target name.
         self.training_sets: Dict[str, pl.DataFrame] = {}
         #: A dictionary of Polars DataFrames holding test splits by target name.

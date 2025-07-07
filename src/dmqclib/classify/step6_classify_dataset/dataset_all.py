@@ -61,8 +61,18 @@ class ClassifyAll(BuildModelBase):
 
         #: A dictionary mapping "model" to target-specific file paths.
         self.model_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "model", self.default_model_file_name
+            "model", self.default_model_file_name, use_dataset_folder=False
         )
+
+        self.drop_cols = ["row_id", "platform_code", "profile_no", "observation_no"]
+
+        self.test_cols = [
+            "row_id",
+            "platform_code",
+            "profile_no",
+            "observation_no",
+            "label",
+        ]
 
     def build(self, target_name: str) -> None:
         """
@@ -90,12 +100,12 @@ class ClassifyAll(BuildModelBase):
         :type target_name: str
         """
         self.base_model = self.models[target_name]
-        self.base_model.test_set = self.test_sets[target_name].drop(["row_id"])
+        self.base_model.test_set = self.test_sets[target_name].drop(self.drop_cols)
         self.base_model.test()
         predictions = self.base_model.predictions
         self.predictions[target_name] = pl.concat(
             [
-                self.test_sets[target_name].select(["row_id", "label"]),
+                self.test_sets[target_name].select(self.test_cols),
                 predictions,
             ],
             how="horizontal",

@@ -1,5 +1,5 @@
 import polars as pl
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step2_validate_model.validate_base import ValidationBase
@@ -18,7 +18,9 @@ class KFoldValidation(ValidationBase):
     expected_class_name: str = "KFoldValidation"
 
     def __init__(
-        self, config: ConfigBase, training_sets: Optional[pl.DataFrame] = None
+        self,
+        config: ConfigBase,
+        training_sets: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
         Initialize the k-fold validation process.
@@ -37,6 +39,13 @@ class KFoldValidation(ValidationBase):
 
         #: The default number of folds if none is specified in the config.
         self.default_k_fold: int = 10
+        self.drop_cols = [
+            "k_fold",
+            "row_id",
+            "platform_code",
+            "profile_no",
+            "observation_no",
+        ]
 
     def get_k_fold(self) -> int:
         """
@@ -81,7 +90,7 @@ class KFoldValidation(ValidationBase):
             self.base_model.training_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") != (k + 1))
-                .drop(["k_fold", "row_id"])
+                .drop(self.drop_cols)
             )
             self.base_model.build()
             self.models[target_name].append(self.base_model)
@@ -89,7 +98,7 @@ class KFoldValidation(ValidationBase):
             self.base_model.test_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") == (k + 1))
-                .drop(["k_fold", "row_id"])
+                .drop(self.drop_cols)
             )
             self.base_model.test()
             reports.append(self.base_model.report)

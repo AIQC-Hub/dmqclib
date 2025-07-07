@@ -11,7 +11,7 @@ def load_feature_class(
     feature_info: Dict,
     selected_profiles: Optional[pl.DataFrame] = None,
     filtered_input: Optional[pl.DataFrame] = None,
-    target_rows: Optional[pl.DataFrame] = None,
+    selected_rows: Optional[pl.DataFrame] = None,
     summary_stats: Optional[pl.DataFrame] = None,
 ) -> FeatureBase:
     """
@@ -36,9 +36,9 @@ def load_feature_class(
     :param filtered_input: A Polars DataFrame winnowed to relevant data
                            for advanced merging or lookups, defaults to None.
     :type filtered_input: pl.DataFrame, optional
-    :param target_rows: A Polars DataFrame containing the rows or
+    :param selected_rows: A Polars DataFrame containing the rows or
                         observations for this target, defaults to None.
-    :type target_rows: pl.DataFrame, optional
+    :type selected_rows: pl.DataFrame, optional
     :param summary_stats: A Polars DataFrame with summary statistics
                           for potential use in scaling or transformation,
                           defaults to None.
@@ -59,6 +59,6 @@ def load_feature_class(
         feature_info,
         selected_profiles,
         filtered_input,
-        target_rows,
+        selected_rows,
         summary_stats,
     )

@@ -23,7 +23,7 @@ class ExtractDataSetA(ExtractFeatureBase):
         config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -38,10 +38,10 @@ class ExtractDataSetA(ExtractFeatureBase):
         :param selected_profiles: A Polars DataFrame containing specifically-selected
                                   profiles from the earlier steps, defaults to None.
         :type selected_profiles: pl.DataFrame, optional
-        :param target_rows: A dictionary mapping each target to its respective
+        :param selected_rows: A dictionary mapping each target to its respective
                             subset of rows for feature generation,
                             defaults to None.
-        :type target_rows: dict of str to pl.DataFrame, optional
+        :type selected_rows: dict of str to pl.DataFrame, optional
         :param summary_stats: A Polars DataFrame with summary statistics
                               that may guide scaling or normalization,
                               defaults to None.
@@ -51,6 +51,6 @@ class ExtractDataSetA(ExtractFeatureBase):
             config,
             input_data=input_data,
             selected_profiles=selected_profiles,
-            target_rows=target_rows,
+            selected_rows=selected_rows,
             summary_stats=summary_stats,
         )

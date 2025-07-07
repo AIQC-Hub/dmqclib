@@ -19,18 +19,25 @@ class TestTemplateConfig(unittest.TestCase):
         Set up test environment by defining sample file paths
         for dataset and training configuration templates.
         """
-        self.ds_config_template_file = (
+        self.ds_config_template_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "temp_dataset_template.yaml"
         )
 
-        self.train_config_template_file = (
+        self.config_train_set_template_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "temp_training_template.yaml"
+        )
+
+        self.config_classify_set_template_file = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "temp_classification_template.yaml"
         )
 
     def test_ds_config_template(self):
@@ -42,14 +49,23 @@ class TestTemplateConfig(unittest.TestCase):
         self.assertTrue(os.path.exists(self.ds_config_template_file))
         os.remove(self.ds_config_template_file)
 
-    def test_train_config_template(self):
+    def test_config_train_set_template(self):
         """
         Check that a training configuration template can be written
         to the specified path and removed afterward.
         """
-        write_config_template(self.train_config_template_file, "train")
-        self.assertTrue(os.path.exists(self.train_config_template_file))
-        os.remove(self.train_config_template_file)
+        write_config_template(self.config_train_set_template_file, "train")
+        self.assertTrue(os.path.exists(self.config_train_set_template_file))
+        os.remove(self.config_train_set_template_file)
+
+    def test_config_classification_set_template(self):
+        """
+        Check that a training configuration template can be written
+        to the specified path and removed afterward.
+        """
+        write_config_template(self.config_classify_set_template_file, "classify")
+        self.assertTrue(os.path.exists(self.config_classify_set_template_file))
+        os.remove(self.config_classify_set_template_file)
 
     def test_config_template_with_invalid_module(self):
         """
@@ -80,14 +96,14 @@ class TestReadConfig(unittest.TestCase):
         Define sample file paths for dataset and training configuration
         files used in subsequent tests.
         """
-        self.ds_config_file = (
+        self.ds_config_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "test_dataset_001.yaml"
         )
 
-        self.train_config_file = (
+        self.train_config_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
