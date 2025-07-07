@@ -64,7 +64,7 @@ class TestSplitDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.selected_rows,
+            selected_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
         self.ds_extract.process_targets()

@@ -247,7 +247,7 @@ class TestExtractClassLoader(unittest.TestCase):
     def test_load_dataset_input_data_and_profiles(self):
         """
         Check that load_step5_extract_dataset sets input_data, selected_profiles,
-        target_rows, summary_stats, and filtered_input properly when provided.
+        selected_rows, summary_stats, and filtered_input properly when provided.
         """
         ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -290,13 +290,13 @@ class TestExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.filtered_input.shape[0], 9841)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
-        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 128)
+        self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
-        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 140)
+        self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
 
 class TestSplitClassLoader(unittest.TestCase):

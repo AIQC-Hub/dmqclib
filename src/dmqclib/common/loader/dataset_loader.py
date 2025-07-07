@@ -144,7 +144,7 @@ def load_step5_extract_dataset(
     config: DataSetConfig,
     input_data: Optional[pl.DataFrame] = None,
     selected_profiles: Optional[pl.DataFrame] = None,
-    target_rows: Optional[pl.DataFrame] = None,
+    selected_rows: Optional[pl.DataFrame] = None,
     summary_stats: Optional[pl.DataFrame] = None,
 ) -> ExtractFeatureBase:
     """
@@ -159,8 +159,8 @@ def load_step5_extract_dataset(
     :type input_data: pl.DataFrame, optional
     :param selected_profiles: A Polars DataFrame of selected profiles, if applicable.
     :type selected_profiles: pl.DataFrame, optional
-    :param target_rows: A Polars DataFrame of rows (indexed by target) to be processed.
-    :type target_rows: pl.DataFrame, optional
+    :param selected_rows: A Polars DataFrame of rows (indexed by target) to be processed.
+    :type selected_rows: pl.DataFrame, optional
     :param summary_stats: A Polars DataFrame containing summary stats for scaling or references.
     :type summary_stats: pl.DataFrame, optional
     :return: An instantiated object that inherits from :class:`ExtractFeatureBase`.
@@ -171,7 +171,7 @@ def load_step5_extract_dataset(
         config,
         input_data=input_data,
         selected_profiles=selected_profiles,
-        target_rows=target_rows,
+        selected_rows=selected_rows,
         summary_stats=summary_stats,
     )
 

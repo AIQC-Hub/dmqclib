@@ -82,7 +82,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.selected_rows,
+            selected_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
 
@@ -98,13 +98,13 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[0], 84)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
-        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["temp"].shape[0], 19480)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
-        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["psal"].shape[0], 19480)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
     def test_location_features(self):
         """Check that features are correctly processed for temp and psal targets."""
@@ -112,7 +112,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.selected_rows,
+            selected_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
 
@@ -132,7 +132,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.selected_rows,
+            selected_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
@@ -162,7 +162,7 @@ class TestExtractDataSetA(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.selected_rows,
+            selected_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
 

@@ -28,7 +28,7 @@ class DayOfYearFeat(FeatureBase):
         Initialize the day-of-year feature extraction process.
 
         :param target_name: The name of the target variable used to index
-                            :attr:`target_rows`. Defaults to None.
+                            :attr:`selected_rows`. Defaults to None.
         :type target_name: str, optional
         :param feature_info: A Polars DataFrame or dictionary describing feature
                              parameters, which may include a "convert" key
@@ -67,7 +67,7 @@ class DayOfYearFeat(FeatureBase):
 
         Steps:
           1. Select columns ``row_id``, ``platform_code``, and ``profile_no``
-             from :attr:`target_rows[target_name]`.
+             from :attr:`selected_rows[target_name]`.
           2. Join the subset with ``profile_timestamp`` from :attr:`selected_profiles`
              based on ``platform_code`` and ``profile_no``.
           3. Compute the day of year from ``profile_timestamp`` via

@@ -130,7 +130,7 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.negative_rows["psal"].shape[0], 70)
         self.assertEqual(ds.negative_rows["psal"].shape[1], 11)
 
-    def test_target_rows(self):
+    def test_selected_rows(self):
         """
         Confirm that target rows are correctly compiled after
         merging positive and negative rows.
@@ -151,7 +151,7 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[0], 140)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
-    def test_write_target_rows(self):
+    def test_write_selected_rows(self):
         """
         Ensure that target rows are saved to Parquet files and
         verify the existence of these files.
@@ -167,7 +167,7 @@ class TestLocateDataSetA(unittest.TestCase):
         ds.output_file_names["pres"] = data_path / "temp_pres_rows.parquet"
 
         ds.process_targets()
-        ds.write_target_rows()
+        ds.write_selected_rows()
 
         self.assertTrue(os.path.exists(ds.output_file_names["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
@@ -176,7 +176,7 @@ class TestLocateDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["psal"])
         os.remove(ds.output_file_names["pres"])
 
-    def test_write_no_target_rows(self):
+    def test_write_no_selected_rows(self):
         """
         Check that a ValueError is raised if target rows are absent
         when attempting to write them.
@@ -188,4 +188,4 @@ class TestLocateDataSetA(unittest.TestCase):
         )
 
         with self.assertRaises(ValueError):
-            ds.write_target_rows()
+            ds.write_selected_rows()

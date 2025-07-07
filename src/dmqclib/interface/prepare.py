@@ -52,7 +52,7 @@ def create_training_dataset(config: ConfigBase) -> None:
         config, ds_input.input_data, ds_select.selected_profiles
     )
     ds_locate.process_targets()
-    ds_locate.write_target_rows()
+    ds_locate.write_selected_rows()
 
     ds_extract = load_step5_extract_dataset(
         config,

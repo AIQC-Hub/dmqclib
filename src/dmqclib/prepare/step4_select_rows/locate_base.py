@@ -81,7 +81,7 @@ class LocatePositionBase(DataSetBase):
         relevant to a specific target.
 
         Implementations should identify the subset of rows matching
-        the target criteria and store them in :attr:`target_rows` under
+        the target criteria and store them in :attr:`selected_rows` under
         the target name.
 
         :param target_name: Name of the target variable to process.
@@ -91,7 +91,7 @@ class LocatePositionBase(DataSetBase):
         """
         pass  # pragma: no cover
 
-    def write_target_rows(self) -> None:
+    def write_selected_rows(self) -> None:
         """
         Write the identified target rows to separate Parquet files.
 
@@ -99,10 +99,10 @@ class LocatePositionBase(DataSetBase):
         from :attr:`output_file_names`. The name is based on the target
         and a default pattern.
 
-        :raises ValueError: If :attr:`target_rows` is empty.
+        :raises ValueError: If :attr:`selected_rows` is empty.
         """
         if not self.selected_rows:
-            raise ValueError("Member variable 'target_rows' must not be empty.")
+            raise ValueError("Member variable 'selected_rows' must not be empty.")
 
         for target_name, df in self.selected_rows.items():
             file_path = self.output_file_names[target_name]

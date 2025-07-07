@@ -22,7 +22,7 @@ class ExtractFeatureBase(DataSetBase):
         config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -36,9 +36,9 @@ class ExtractFeatureBase(DataSetBase):
         :param selected_profiles: A Polars DataFrame containing profiles that have
                                  been selected for processing, defaults to None.
         :type selected_profiles: pl.DataFrame, optional
-        :param target_rows: A dictionary mapping target names to Polars DataFrames
+        :param selected_rows: A dictionary mapping target names to Polars DataFrames
                             of rows relevant for those targets, defaults to None.
-        :type target_rows: Dict[str, pl.DataFrame], optional
+        :type selected_rows: Dict[str, pl.DataFrame], optional
         :param summary_stats: A Polars DataFrame containing summary statistics that
                               might guide feature scaling, defaults to None.
         :type summary_stats: pl.DataFrame, optional
@@ -67,7 +67,7 @@ class ExtractFeatureBase(DataSetBase):
             self.filtered_input: Optional[pl.DataFrame] = None
 
         #: A dict of Polars DataFrames, one per target, indicating rows to be used.
-        self.target_rows: Optional[Dict[str, pl.DataFrame]] = target_rows
+        self.selected_rows: Optional[Dict[str, pl.DataFrame]] = selected_rows
         #: A Polars DataFrame presenting summary stats for optional use in scaling features.
         self.summary_stats: Optional[pl.DataFrame] = summary_stats
         #: A dictionary specifying feature extraction parameters from the config.
@@ -118,7 +118,7 @@ class ExtractFeatureBase(DataSetBase):
         :type target_name: str
         """
         self.target_features[target_name] = (
-            self.target_rows[target_name]
+            self.selected_rows[target_name]
             .select(
                 [
                     "row_id",
@@ -167,7 +167,7 @@ class ExtractFeatureBase(DataSetBase):
             feature_info,
             self.selected_profiles,
             self.filtered_input,
-            self.target_rows,
+            self.selected_rows,
             self.summary_stats,
         )
 

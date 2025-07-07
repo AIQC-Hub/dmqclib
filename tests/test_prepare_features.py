@@ -69,7 +69,7 @@ class _TestFeatureBase(unittest.TestCase):
         self.class_name = class_name
 
     def _test_init_arguments(self, feature_info):
-        """Validate that required data (selected_profiles, filtered_input, target_rows, summary_stats) is initialized correctly."""
+        """Validate that required data (selected_profiles, filtered_input, selected_rows, summary_stats) is initialized correctly."""
         ds = self.class_name(
             "temp",
             feature_info,

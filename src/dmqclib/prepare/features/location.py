@@ -26,7 +26,7 @@ class LocationFeat(FeatureBase):
         """
         Initialize the location feature extractor with relevant data frames.
 
-        :param target_name: The key for the target variable in :attr:`target_rows`,
+        :param target_name: The key for the target variable in :attr:`selected_rows`,
                             defaults to None.
         :type target_name: str, optional
         :param feature_info: A Polars DataFrame (or dictionary-like) describing
@@ -60,13 +60,13 @@ class LocationFeat(FeatureBase):
     def extract_features(self) -> None:
         """
         Gather and merge location columns (e.g., longitude and latitude) from
-        :attr:`selected_profiles` into :attr:`target_rows` to form the final
+        :attr:`selected_profiles` into :attr:`selected_rows` to form the final
         feature set in :attr:`features`.
 
         Specifically:
 
           1. Selects columns like ``row_id``, ``platform_code``, and ``profile_no``
-             from the DataFrame in :attr:`target_rows[target_name]``.
+             from the DataFrame in :attr:`selected_rows[target_name]``.
           2. Joins this subset with corresponding columns from :attr:`selected_profiles`
              (including ``longitude`` and ``latitude``) on ``platform_code``
              and ``profile_no``.

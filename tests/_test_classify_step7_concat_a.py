@@ -40,19 +40,12 @@ class TestBuildModel(unittest.TestCase):
             "pres": model_path / "model_pres.joblib",
         }
 
-        data_path = Path(__file__).resolve().parent / "data" / "classify"
-        self.report_file_names = {
-            "temp": data_path / "temp_classify_report_temp.tsv",
-            "psal": data_path / "temp_classify_report_psal.tsv",
-            "pres": data_path / "temp_classify_report_pres.tsv",
-        }
-
-        data_path = Path(__file__).resolve().parent / "data" / "classify"
-        self.prediction_file_names = {
-            "temp": data_path / "temp_classify_prediction_temp.parquet",
-            "psal": data_path / "temp_classify_prediction_psal.parquet",
-            "pres": data_path / "temp_classify_prediction_pres.parquet",
-        }
+        self.prediction_file_name = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "classify"
+            / "temp_predictions.parquet"
+        )
 
         self.test_data_file = (
             Path(__file__).resolve().parent

@@ -7,7 +7,7 @@ from dmqclib.common.base.feature_base import FeatureBase
 class ProfileSummaryStats5(FeatureBase):
     """
     A feature-extraction class that combines row references from
-    :attr:`target_rows` with summary statistics from :attr:`summary_stats`.
+    :attr:`selected_rows` with summary statistics from :attr:`summary_stats`.
     It constructs columns of summarized metrics (e.g., min, max) for specified
     variables and optionally applies scaling.
 
@@ -29,7 +29,7 @@ class ProfileSummaryStats5(FeatureBase):
         Initialize the profile summary stats feature extractor.
 
         :param target_name: The name of the target used to lookup
-                            corresponding rows in :attr:`target_rows`.
+                            corresponding rows in :attr:`selected_rows`.
         :type target_name: str, optional
         :param selected_profiles: A Polars DataFrame of selected profiles,
                                   typically unused by this class but provided
@@ -84,7 +84,7 @@ class ProfileSummaryStats5(FeatureBase):
         columns from :attr:`summary_stats`, merging them into :attr:`features`.
 
         Steps:
-          1. :meth:`_filter_target_rows_cols` - initialize :attr:`features` by selecting
+          1. :meth:`_filter_selected_rows_cols` - initialize :attr:`features` by selecting
              base columns (row_id, platform_code, profile_no).
           2. For each top-level key and subkey in :attr:`feature_info["stats"]`,
              call :meth:`_extract_single_summary` to join in the corresponding
@@ -92,17 +92,17 @@ class ProfileSummaryStats5(FeatureBase):
           3. Drop columns (platform_code, profile_no) that are no longer needed in
              the final feature set.
         """
-        self._filter_target_rows_cols()
+        self._filter_selected_rows_cols()
         for variable_name, variable_stats in self.feature_info["stats"].items():
             for metric_name in variable_stats.keys():
                 self._extract_single_summary(variable_name, metric_name)
 
         self.features = self.features.drop(["platform_code", "profile_no"])
 
-    def _filter_target_rows_cols(self) -> None:
+    def _filter_selected_rows_cols(self) -> None:
         """
         Initialize :attr:`features` by selecting the essential columns
-        from :attr:`target_rows[target_name]`.
+        from :attr:`selected_rows[target_name]`.
         """
         self.features = self.selected_rows[self.target_name].select(
             ["row_id", "platform_code", "profile_no"]
