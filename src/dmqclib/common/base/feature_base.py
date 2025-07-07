@@ -28,7 +28,7 @@ class FeatureBase(ABC):
         feature_info: Optional[Dict] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         filtered_input: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -45,9 +45,9 @@ class FeatureBase(ABC):
         :param filtered_input: A Polars DataFrame that may already include filters
                                applied to the data prior to feature extraction.
         :type filtered_input: pl.DataFrame, optional
-        :param target_rows: A Polars DataFrame focusing on the target rows for
+        :param selected_rows: A Polars DataFrame focusing on the target rows for
                             subsequent transformations.
-        :type target_rows: pl.DataFrame, optional
+        :type selected_rows: pl.DataFrame, optional
         :param summary_stats: A Polars DataFrame of summary statistics that might
                               guide transformations (e.g., scaling) of features.
         :type summary_stats: pl.DataFrame, optional
@@ -56,7 +56,7 @@ class FeatureBase(ABC):
         self.feature_info: Optional[Dict] = feature_info
         self.selected_profiles: Optional[pl.DataFrame] = selected_profiles
         self.filtered_input: Optional[pl.DataFrame] = filtered_input
-        self.target_rows: Optional[Dict[str, pl.DataFrame]] = target_rows
+        self.selected_rows: Optional[Dict[str, pl.DataFrame]] = selected_rows
         self.summary_stats: Optional[pl.DataFrame] = summary_stats
         self.features: Optional[pl.DataFrame] = None
 
@@ -67,7 +67,7 @@ class FeatureBase(ABC):
 
         Classes that subclass :class:`FeatureBase` must implement and tailor
         this method to their feature requirements. For instance, transformations
-        on ``self.filtered_input`` or merges with ``self.target_rows`` can occur here.
+        on ``self.filtered_input`` or merges with ``self.selected_rows`` can occur here.
         """
         pass  # pragma: no cover
 

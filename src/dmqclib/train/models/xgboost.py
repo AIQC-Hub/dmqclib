@@ -97,34 +97,47 @@ class XGBoost(ModelBase):
 
         :raises ValueError: If :attr:`test_set` is None or empty.
         """
+        self.predict()
+        self.create_report()
+
+    def predict(self):
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty.")
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
+        self.predictions = pl.DataFrame({"predicted": self.model.predict(x_test)})
+
+    def create_report(self):
+        if self.test_set is None:
+            raise ValueError("Member variable 'test_set' must not be empty.")
+
+        if self.predictions is None:
+            raise ValueError("Member variable 'predictions' must not be empty.")
+
         y_test = self.test_set["label"].to_pandas()
 
-        y_pred = self.model.predict(x_test)
-
-        # Build the base result DataFrame with placeholders for the "0" and "1" labels.
-        self.result = pl.DataFrame(
+        # Build the base report DataFrame with placeholders for the "0" and "1" labels.
+        self.report = pl.DataFrame(
             [
                 {"k": self.k, "label": "0", "accuracy": None},
                 {"k": self.k, "label": "1", "accuracy": None},
                 {
                     "k": self.k,
                     "label": "macro avg",
-                    "accuracy": accuracy_score(y_test, y_pred),
+                    "accuracy": accuracy_score(y_test, self.predictions),
                 },
                 {
                     "k": self.k,
                     "label": "weighted avg",
-                    "accuracy": balanced_accuracy_score(y_test, y_pred),
+                    "accuracy": balanced_accuracy_score(y_test, self.predictions),
                 },
             ]
         )
 
         # Join with the classification report for precision, recall, etc.
-        classification_dict = classification_report(y_test, y_pred, output_dict=True)
+        classification_dict = classification_report(
+            y_test, self.predictions, output_dict=True
+        )
         report_rows = []
         for label_key, metrics_dict in classification_dict.items():
             if isinstance(metrics_dict, dict):  # skip 'accuracy' row
@@ -139,11 +152,11 @@ class XGBoost(ModelBase):
                     }
                 )
 
-        self.result = self.result.join(
+        self.report = self.report.join(
             pl.DataFrame(report_rows),
             on=["k", "label"],
             how="left",
         )
 
         if self.k == 0:
-            self.result = self.result.drop(["k"])
+            self.report = self.report.drop(["k"])

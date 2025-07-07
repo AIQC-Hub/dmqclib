@@ -7,7 +7,7 @@ import polars as pl
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.train.step2_validate.kfold_validation import KFoldValidation
+from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
 class TestKFoldValidation(unittest.TestCase):
@@ -34,14 +34,14 @@ class TestKFoldValidation(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "temp_train.parquet",
-                "psal": data_path / "psal_train.parquet",
-                "pres": data_path / "pres_train.parquet",
+                "temp": data_path / "train_set_temp.parquet",
+                "psal": data_path / "train_set_psal.parquet",
+                "pres": data_path / "train_set_pres.parquet",
             },
             "test": {
-                "temp": data_path / "temp_test.parquet",
-                "psal": data_path / "psal_test.parquet",
-                "pres": data_path / "pres_test.parquet",
+                "temp": data_path / "test_set_temp.parquet",
+                "psal": data_path / "test_set_psal.parquet",
+                "pres": data_path / "test_set_pres.parquet",
             },
         }
 
@@ -58,16 +58,16 @@ class TestKFoldValidation(unittest.TestCase):
         """Verify that the default output file names are correctly resolved."""
         ds = KFoldValidation(self.config)
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/temp_validation_result.tsv",
-            str(ds.output_file_names["result"]["temp"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_temp.tsv",
+            str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/psal_validation_result.tsv",
-            str(ds.output_file_names["result"]["psal"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_psal.tsv",
+            str(ds.output_file_names["report"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/pres_validation_result.tsv",
-            str(ds.output_file_names["result"]["pres"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_pres.tsv",
+            str(ds.output_file_names["report"]["pres"]),
         )
 
     def test_base_model(self):
@@ -81,11 +81,11 @@ class TestKFoldValidation(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 39)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 39)
 
     def test_default_k_fold(self):
         """Confirm that k_fold defaults to 10 if no config entry is present."""
@@ -100,36 +100,36 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.process_targets()
 
-        self.assertIsInstance(ds.results["temp"], pl.DataFrame)
-        self.assertEqual(ds.results["temp"].shape[0], 12)
-        self.assertEqual(ds.results["temp"].shape[1], 7)
+        self.assertIsInstance(ds.reports["temp"], pl.DataFrame)
+        self.assertEqual(ds.reports["temp"].shape[0], 12)
+        self.assertEqual(ds.reports["temp"].shape[1], 7)
 
-        self.assertIsInstance(ds.results["psal"], pl.DataFrame)
-        self.assertEqual(ds.results["psal"].shape[0], 12)
-        self.assertEqual(ds.results["psal"].shape[1], 7)
+        self.assertIsInstance(ds.reports["psal"], pl.DataFrame)
+        self.assertEqual(ds.reports["psal"].shape[0], 12)
+        self.assertEqual(ds.reports["psal"].shape[1], 7)
 
     def test_write_results(self):
         """Ensure validation results are written to files as expected."""
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["result"]["temp"] = (
-            data_path / "temp_temp_validation_result.tsv"
+        ds.output_file_names["report"]["temp"] = (
+            data_path / "temp_temp_validation_report.tsv"
         )
-        ds.output_file_names["result"]["psal"] = (
-            data_path / "temp_psal_validation_result.tsv"
+        ds.output_file_names["report"]["psal"] = (
+            data_path / "temp_psal_validation_report.tsv"
         )
-        ds.output_file_names["result"]["pres"] = (
-            data_path / "temp_pres_validation_result.tsv"
+        ds.output_file_names["report"]["pres"] = (
+            data_path / "temp_pres_validation_report.tsv"
         )
 
         ds.process_targets()
-        ds.write_results()
+        ds.write_reports()
 
-        self.assertTrue(os.path.exists(ds.output_file_names["result"]["temp"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["result"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["result"]["pres"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["report"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["report"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["report"]["pres"]))
 
-        os.remove(ds.output_file_names["result"]["temp"])
-        os.remove(ds.output_file_names["result"]["psal"])
-        os.remove(ds.output_file_names["result"]["pres"])
+        os.remove(ds.output_file_names["report"]["temp"])
+        os.remove(ds.output_file_names["report"]["psal"])
+        os.remove(ds.output_file_names["report"]["pres"])

@@ -19,7 +19,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         feature_info: Optional[Dict] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         filtered_input: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -39,9 +39,9 @@ class BasicValues3PlusFlanks(FeatureBase):
         :param filtered_input: A potentially filtered Polars DataFrame containing
                                full observed variables, defaults to None.
         :type filtered_input: pl.DataFrame, optional
-        :param target_rows: A dictionary mapping target names to their respective
+        :param selected_rows: A dictionary mapping target names to their respective
                             DataFrames of relevant rows, defaults to None.
-        :type target_rows: dict of (str to pl.DataFrame), optional
+        :type selected_rows: dict of (str to pl.DataFrame), optional
         :param summary_stats: A Polars DataFrame of summary statistics
                               (unused in this subclass), defaults to None.
         :type summary_stats: pl.DataFrame, optional
@@ -51,7 +51,7 @@ class BasicValues3PlusFlanks(FeatureBase):
             feature_info=feature_info,
             selected_profiles=selected_profiles,
             filtered_input=filtered_input,
-            target_rows=target_rows,
+            selected_rows=selected_rows,
             summary_stats=summary_stats,
         )
         self._expanded_observations: Optional[pl.DataFrame] = None
@@ -62,6 +62,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         Initiate the multi-step process of creating the feature set in :attr:`features`.
 
         Steps:
+
           1. :meth:`_init_features` - Prepare a base DataFrame with essential columns
              (row_id, platform_code, profile_no).
           2. :meth:`_expand_observations` - Expand observations by adding rows for
@@ -83,7 +84,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         Initialize :attr:`features` by selecting core columns
         from :attr:`target_rows[target_name]`.
         """
-        self.features = self.target_rows[self.target_name].select(
+        self.features = self.selected_rows[self.target_name].select(
             ["row_id", "platform_code", "profile_no"]
         )
 
@@ -96,7 +97,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         then adjusts ``observation_no`` to shift backwards for each flank step.
         """
         self._expanded_observations = (
-            self.target_rows[self.target_name]
+            self.selected_rows[self.target_name]
             .select(["row_id", "platform_code", "profile_no", "observation_no"])
             .join(
                 pl.DataFrame(

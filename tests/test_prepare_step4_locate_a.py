@@ -7,7 +7,7 @@ import polars as pl
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
 from dmqclib.common.config.dataset_config import DataSetConfig
-from dmqclib.prepare.step4_locate.dataset_a import LocateDataSetA
+from dmqclib.prepare.step4_select_rows.dataset_a import LocateDataSetA
 
 
 class TestLocateDataSetA(unittest.TestCase):
@@ -52,11 +52,11 @@ class TestLocateDataSetA(unittest.TestCase):
         """
         ds = LocateDataSetA(self.config)
         self.assertEqual(
-            "/path/to/locate_1/nrt_bo_001/locate_folder_1/temp_rows.parquet",
+            "/path/to/locate_1/nrt_bo_001/locate_folder_1/selected_rows_temp.parquet",
             str(ds.output_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/locate_1/nrt_bo_001/locate_folder_1/psal_rows.parquet",
+            "/path/to/locate_1/nrt_bo_001/locate_folder_1/selected_rows_psal.parquet",
             str(ds.output_file_names["psal"]),
         )
 
@@ -143,13 +143,13 @@ class TestLocateDataSetA(unittest.TestCase):
 
         ds.process_targets()
 
-        self.assertIsInstance(ds.target_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["temp"].shape[0], 128)
-        self.assertEqual(ds.target_rows["temp"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 128)
+        self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
-        self.assertIsInstance(ds.target_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_rows["psal"].shape[0], 140)
-        self.assertEqual(ds.target_rows["psal"].shape[1], 9)
+        self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 140)
+        self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
     def test_write_target_rows(self):
         """

@@ -40,12 +40,12 @@ def train_and_evaluate(config: ConfigBase) -> None:
 
     ds_valid = load_step2_model_validation_class(config, ds_input.training_sets)
     ds_valid.process_targets()
-    ds_valid.write_results()
+    ds_valid.write_reports()
 
     ds_build = load_step4_build_model_class(
         config, ds_input.training_sets, ds_input.test_sets
     )
     ds_build.build_targets()
     ds_build.test_targets()
-    ds_build.write_results()
+    ds_build.write_reports()
     ds_build.write_models()

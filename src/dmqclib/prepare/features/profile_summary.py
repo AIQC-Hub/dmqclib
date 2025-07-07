@@ -22,7 +22,7 @@ class ProfileSummaryStats5(FeatureBase):
         feature_info: Optional[Dict] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
         filtered_input: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -38,9 +38,9 @@ class ProfileSummaryStats5(FeatureBase):
         :param filtered_input: A Polars DataFrame of potentially filtered input data,
                                not directly used here, defaults to None.
         :type filtered_input: pl.DataFrame, optional
-        :param target_rows: A dictionary of DataFrames keyed by target names,
+        :param selected_rows: A dictionary of DataFrames keyed by target names,
                             containing rows for which features are extracted, defaults to None.
-        :type target_rows: dict of (str to pl.DataFrame), optional
+        :type selected_rows: dict of (str to pl.DataFrame), optional
         :param summary_stats: A Polars DataFrame of summary statistics
                               keyed by (platform_code, profile_no, variable),
                               defaults to None.
@@ -74,7 +74,7 @@ class ProfileSummaryStats5(FeatureBase):
             feature_info=feature_info,
             selected_profiles=selected_profiles,
             filtered_input=filtered_input,
-            target_rows=target_rows,
+            selected_rows=selected_rows,
             summary_stats=summary_stats,
         )
 
@@ -104,7 +104,7 @@ class ProfileSummaryStats5(FeatureBase):
         Initialize :attr:`features` by selecting the essential columns
         from :attr:`target_rows[target_name]`.
         """
-        self.features = self.target_rows[self.target_name].select(
+        self.features = self.selected_rows[self.target_name].select(
             ["row_id", "platform_code", "profile_no"]
         )
 
