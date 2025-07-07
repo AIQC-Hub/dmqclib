@@ -115,19 +115,19 @@ class TestSplitDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 39)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 42)
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 39)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 42)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_default_test_set_fraction(self):
         """Check that the default test_set_fraction (0.1) is used if none is provided in the config."""
@@ -151,9 +151,15 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["train"]["temp"] = data_path / "temp_temp_train.parquet"
-        ds.output_file_names["train"]["psal"] = data_path / "temp_psal_train.parquet"
-        ds.output_file_names["train"]["pres"] = data_path / "temp_pres_train.parquet"
+        ds.output_file_names["train"]["temp"] = (
+            data_path / "temp_train_set_temp.parquet"
+        )
+        ds.output_file_names["train"]["psal"] = (
+            data_path / "temp_train_set_psal.parquet"
+        )
+        ds.output_file_names["train"]["pres"] = (
+            data_path / "temp_train_set_pres.parquet"
+        )
 
         ds.process_targets()
         ds.write_training_sets()
@@ -172,9 +178,9 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["test"]["temp"] = data_path / "temp_temp_test.parquet"
-        ds.output_file_names["test"]["psal"] = data_path / "temp_psal_test.parquet"
-        ds.output_file_names["test"]["pres"] = data_path / "temp_pres_test.parquet"
+        ds.output_file_names["test"]["temp"] = data_path / "temp_test_set_temp.parquet"
+        ds.output_file_names["test"]["psal"] = data_path / "temp_test_set_psal.parquet"
+        ds.output_file_names["test"]["pres"] = data_path / "temp_test_set_pres.parquet"
 
         ds.process_targets()
         ds.write_test_sets()
@@ -193,12 +199,18 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["train"]["temp"] = data_path / "temp_temp_train.parquet"
-        ds.output_file_names["train"]["psal"] = data_path / "temp_psal_train.parquet"
-        ds.output_file_names["train"]["pres"] = data_path / "temp_pres_train.parquet"
-        ds.output_file_names["test"]["temp"] = data_path / "temp_temp_test.parquet"
-        ds.output_file_names["test"]["psal"] = data_path / "temp_psal_test.parquet"
-        ds.output_file_names["test"]["pres"] = data_path / "temp_pres_test.parquet"
+        ds.output_file_names["train"]["temp"] = (
+            data_path / "temp_train_set_temp.parquet"
+        )
+        ds.output_file_names["train"]["psal"] = (
+            data_path / "temp_train_set_psal.parquet"
+        )
+        ds.output_file_names["train"]["pres"] = (
+            data_path / "temp_train_set_pres.parquet"
+        )
+        ds.output_file_names["test"]["temp"] = data_path / "temp_test_set_temp.parquet"
+        ds.output_file_names["test"]["psal"] = data_path / "temp_test_set_psal.parquet"
+        ds.output_file_names["test"]["pres"] = data_path / "temp_test_set_pres.parquet"
 
         ds.process_targets()
         ds.write_data_sets()

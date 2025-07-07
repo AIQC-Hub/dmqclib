@@ -49,12 +49,9 @@ class SplitDataSetA(SplitDataSetBase):
 
         #: Column names used for intermediate processing (e.g., to maintain
         #: matching references between positive and negative rows).
-        self.work_col_names = [
+        self.drop_col_names = [
             "profile_id",
             "pair_id",
-            "platform_code",
-            "profile_no",
-            "observation_no",
         ]
 
     def split_test_set(self, target_name: str) -> None:
@@ -143,7 +140,15 @@ class SplitDataSetA(SplitDataSetBase):
         # Reassemble the final training set with "k_fold" positioned as the first column.
         self.training_sets[target_name] = pl.concat(
             [
-                training_set.select(["k_fold", "row_id"]),
+                training_set.select(
+                    [
+                        "k_fold",
+                        "row_id",
+                        "platform_code",
+                        "profile_no",
+                        "observation_no",
+                    ]
+                ),
                 training_set.drop(["k_fold"]),
             ],
             how="align_left",
@@ -159,8 +164,8 @@ class SplitDataSetA(SplitDataSetBase):
         :type target_name: str
         """
         self.training_sets[target_name] = self.training_sets[target_name].drop(
-            self.work_col_names
+            self.drop_col_names
         )
         self.test_sets[target_name] = self.test_sets[target_name].drop(
-            self.work_col_names
+            self.drop_col_names
         )

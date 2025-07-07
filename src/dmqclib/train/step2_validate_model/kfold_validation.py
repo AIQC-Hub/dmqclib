@@ -37,6 +37,13 @@ class KFoldValidation(ValidationBase):
 
         #: The default number of folds if none is specified in the config.
         self.default_k_fold: int = 10
+        self.drop_cols = [
+            "k_fold",
+            "row_id",
+            "platform_code",
+            "profile_no",
+            "observation_no",
+        ]
 
     def get_k_fold(self) -> int:
         """
@@ -81,7 +88,7 @@ class KFoldValidation(ValidationBase):
             self.base_model.training_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") != (k + 1))
-                .drop(["k_fold", "row_id"])
+                .drop(self.drop_cols)
             )
             self.base_model.build()
             self.models[target_name].append(self.base_model)
@@ -89,7 +96,7 @@ class KFoldValidation(ValidationBase):
             self.base_model.test_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") == (k + 1))
-                .drop(["k_fold", "row_id"])
+                .drop(self.drop_cols)
             )
             self.base_model.test()
             reports.append(self.base_model.report)

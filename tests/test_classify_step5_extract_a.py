@@ -120,11 +120,11 @@ class TestExtractDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
         self.assertEqual(ds.target_features["temp"].shape[0], 19480)
-        self.assertEqual(ds.target_features["temp"].shape[1], 38)
+        self.assertEqual(ds.target_features["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 19480)
-        self.assertEqual(ds.target_features["psal"].shape[1], 38)
+        self.assertEqual(ds.target_features["psal"].shape[1], 41)
 
     def test_write_target_features(self):
         """Confirm that target features are written to parquet files as expected."""
@@ -136,9 +136,15 @@ class TestExtractDataSetA(unittest.TestCase):
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
-        ds.output_file_names["temp"] = data_path / "temp_temp_classify_features.parquet"
-        ds.output_file_names["psal"] = data_path / "temp_psal_classify_features.parquet"
-        ds.output_file_names["pres"] = data_path / "temp_pres_classify_features.parquet"
+        ds.output_file_names["temp"] = (
+            data_path / "temp_extracted_features_classify_temp.parquet"
+        )
+        ds.output_file_names["psal"] = (
+            data_path / "temp_extracted_features_classify_psal.parquet"
+        )
+        ds.output_file_names["pres"] = (
+            data_path / "temp_extracted_features_classify_pres.parquet"
+        )
 
         ds.process_targets()
         ds.write_target_features()

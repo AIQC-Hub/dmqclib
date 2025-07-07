@@ -77,7 +77,7 @@ class ExtractFeatureBase(DataSetBase):
 
         #: Column names used for intermediate processing (e.g., to maintain
         #: matching references between positive and negative rows).
-        self.work_col_names = []
+        self.drop_col_names = []
 
     def _filter_input(self) -> None:
         """
@@ -148,7 +148,7 @@ class ExtractFeatureBase(DataSetBase):
         )
         if drop_key_columns:
             self.target_features[target_name] = self.target_features[target_name].drop(
-                self.work_col_names
+                self.drop_col_names
             )
 
     def extract_features(self, target_name: str, feature_info: Dict) -> pl.DataFrame:

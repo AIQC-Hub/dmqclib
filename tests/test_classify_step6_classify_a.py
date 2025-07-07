@@ -42,16 +42,16 @@ class TestBuildModel(unittest.TestCase):
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
         self.report_file_names = {
-            "temp": data_path / "temp_temp_classify_report.tsv",
-            "psal": data_path / "temp_psal_classify_report.tsv",
-            "pres": data_path / "temp_pres_classify_report.tsv",
+            "temp": data_path / "temp_classify_report_temp.tsv",
+            "psal": data_path / "temp_classify_report_psal.tsv",
+            "pres": data_path / "temp_classify_report_pres.tsv",
         }
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
         self.prediction_file_names = {
-            "temp": data_path / "temp_temp_classify_prediction.parquet",
-            "psal": data_path / "temp_psal_classify_prediction.parquet",
-            "pres": data_path / "temp_pres_classify_prediction.parquet",
+            "temp": data_path / "temp_classify_prediction_temp.parquet",
+            "psal": data_path / "temp_classify_prediction_psal.parquet",
+            "pres": data_path / "temp_classify_prediction_pres.parquet",
         }
 
         self.test_data_file = (
@@ -131,11 +131,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_read_models(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -162,11 +162,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_test_without_model(self):
         """Ensure that testing without building models raises a ValueError."""
