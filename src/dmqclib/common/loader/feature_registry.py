@@ -11,10 +11,12 @@ from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.location import LocationFeat
 from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
 
+from dmqclib.common.base.feature_base import FeatureBase
+
 #: A dictionary mapping feature identifiers (str) to classes that inherit
 #: from :class:`FeatureBase`. These classes are dynamically loaded based
 #: on the "feature" key in a feature configuration dictionary.
-FEATURE_REGISTRY: Dict[str, Type] = {
+FEATURE_REGISTRY: Dict[str, Type[FeatureBase]] = {
     "location": LocationFeat,
     "day_of_year": DayOfYearFeat,
     "profile_summary_stats5": ProfileSummaryStats5,

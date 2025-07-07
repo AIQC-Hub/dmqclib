@@ -1,0 +1,99 @@
+import os
+import unittest
+from pathlib import Path
+
+import polars as pl
+
+from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
+from dmqclib.common.config.classify_config import ClassificationConfig
+from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
+
+
+class TestSelectDataSetA(unittest.TestCase):
+    """
+    A suite of tests ensuring the SelectDataSetA class operates correctly
+    for selecting and labeling profiles, as well as writing results to disk.
+    """
+
+    def setUp(self):
+        """Set up test environment and load input dataset."""
+        self.config_file_path = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_classify_001.yaml"
+        )
+        self.config = ClassificationConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
+        self.test_data_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "input"
+            / "nrt_cora_bo_test.parquet"
+        )
+        self.ds = load_classify_step1_input_dataset(self.config)
+        self.ds.input_file_name = str(self.test_data_file)
+        self.ds.read_input_data()
+
+    def test_step_name(self):
+        """Ensure the step name is set correctly to 'select'."""
+        ds = SelectDataSetAll(self.config)
+        self.assertEqual(ds.step_name, "select")
+
+    def test_output_file_name(self):
+        """Verify that the output file name is set based on configuration."""
+        ds = SelectDataSetAll(self.config)
+        self.assertEqual(
+            "/path/to/select_1/nrt_bo_001/select_folder_1/selected_profiles_classify.parquet",
+            str(ds.output_file_name),
+        )
+
+    def test_input_data(self):
+        """Ensure input data is loaded into the class as a Polars DataFrame."""
+        ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
+        self.assertIsInstance(ds.input_data, pl.DataFrame)
+        self.assertEqual(ds.input_data.shape[0], 19480)
+        self.assertEqual(ds.input_data.shape[1], 30)
+
+    def test_selected_profiles(self):
+        """Check that all profiles are selected correctly."""
+        ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
+        ds.select_all_profiles()
+        self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
+        self.assertEqual(ds.selected_profiles.shape[0], 84)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+    def test_label_profiles(self):
+        """Check that profiles are labeled correctly."""
+        ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
+        ds.label_profiles()
+        self.assertEqual(ds.selected_profiles.shape[0], 84)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+    def test_write_selected_profiles(self):
+        """Confirm that selected profiles are written to a file successfully."""
+        ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
+        ds.output_file_name = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "select"
+            / "temp_selected_classify_profiles.parquet"
+        )
+
+        ds.label_profiles()
+        ds.write_selected_profiles()
+        self.assertTrue(os.path.exists(ds.output_file_name))
+        os.remove(ds.output_file_name)
+
+    def test_write_empty_selected_profiles(self):
+        """Check that writing empty profiles raises ValueError."""
+        ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
+        ds.output_file_name = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "select"
+            / "temp_selected_classify_profiles.parquet"
+        )
+
+        with self.assertRaises(ValueError):
+            ds.write_selected_profiles()

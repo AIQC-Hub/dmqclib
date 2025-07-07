@@ -5,6 +5,9 @@ path_info_sets:
       base_path: /path/to/data # Need to modify
     input:
       step_folder_name: "training"
+    model:
+      base_path: /path/to/model
+      step_folder_name: model # Need to modify
 
 target_sets:
   - name: target_set_1_3

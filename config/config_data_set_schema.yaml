@@ -204,6 +204,9 @@ properties:
               type: object
             extract:
               type: object
+              properties:
+                drop_key_columns:
+                  type: boolean
             split:
               type: object
           required:

@@ -4,7 +4,7 @@ from pathlib import Path
 import polars as pl
 
 from dmqclib.common.config.training_config import TrainingConfig
-from dmqclib.train.step1_input.dataset_a import InputTrainingSetA
+from dmqclib.train.step1_read_input.dataset_a import InputTrainingSetA
 
 
 class TestInputTrainingSetA(unittest.TestCase):
@@ -30,14 +30,14 @@ class TestInputTrainingSetA(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "temp_train.parquet",
-                "psal": data_path / "psal_train.parquet",
-                "pres": data_path / "pres_train.parquet",
+                "temp": data_path / "train_set_temp.parquet",
+                "psal": data_path / "train_set_psal.parquet",
+                "pres": data_path / "train_set_pres.parquet",
             },
             "test": {
-                "temp": data_path / "temp_test.parquet",
-                "psal": data_path / "psal_test.parquet",
-                "pres": data_path / "pres_test.parquet",
+                "temp": data_path / "test_set_temp.parquet",
+                "psal": data_path / "test_set_psal.parquet",
+                "pres": data_path / "test_set_pres.parquet",
             },
         }
 
@@ -50,19 +50,19 @@ class TestInputTrainingSetA(unittest.TestCase):
         """Verify that file names for training and test sets are correctly resolved."""
         ds = InputTrainingSetA(self.config)
         self.assertEqual(
-            "/path/to/input_1/nrt_bo_001/input_folder_1/temp_train.parquet",
+            "/path/to/input_1/nrt_bo_001/input_folder_1/train_set_temp.parquet",
             str(ds.input_file_names["train"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/input_1/nrt_bo_001/input_folder_1/psal_train.parquet",
+            "/path/to/input_1/nrt_bo_001/input_folder_1/train_set_psal.parquet",
             str(ds.input_file_names["train"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/input_1/nrt_bo_001/input_folder_1/temp_test.parquet",
+            "/path/to/input_1/nrt_bo_001/input_folder_1/test_set_temp.parquet",
             str(ds.input_file_names["test"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/input_1/nrt_bo_001/input_folder_1/psal_test.parquet",
+            "/path/to/input_1/nrt_bo_001/input_folder_1/test_set_psal.parquet",
             str(ds.input_file_names["test"]["psal"]),
         )
 
@@ -78,16 +78,16 @@ class TestInputTrainingSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 39)
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 37)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 39)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 37)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 38)

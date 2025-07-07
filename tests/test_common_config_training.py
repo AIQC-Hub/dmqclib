@@ -59,7 +59,7 @@ class TestTrainingConfig(unittest.TestCase):
         ds = TrainingConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
-        self.assertEqual(len(ds.data["path_info"]), 5)
+        self.assertEqual(len(ds.data["path_info"]), 6)
         self.assertEqual(len(ds.data["target_set"]), 2)
         self.assertEqual(len(ds.data["step_class_set"]), 2)
         self.assertEqual(len(ds.data["step_param_set"]), 2)

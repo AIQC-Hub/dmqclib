@@ -144,40 +144,40 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
             os.path.exists(str(output_folder / "select" / "selected_profiles.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "locate" / "temp_rows.parquet"))
+            os.path.exists(str(output_folder / "locate" / "selected_rows_temp.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "locate" / "psal_rows.parquet"))
+            os.path.exists(str(output_folder / "locate" / "selected_rows_psal.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "locate" / "pres_rows.parquet"))
+            os.path.exists(str(output_folder / "locate" / "selected_rows_pres.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "extract" / "temp_features.parquet"))
+            os.path.exists(str(output_folder / "extract" / "extracted_features_temp.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "extract" / "psal_features.parquet"))
+            os.path.exists(str(output_folder / "extract" / "extracted_features_psal.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "extract" / "pres_features.parquet"))
+            os.path.exists(str(output_folder / "extract" / "extracted_features_pres.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "split" / "temp_train.parquet"))
+            os.path.exists(str(output_folder / "split" / "train_set_temp.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "split" / "psal_train.parquet"))
+            os.path.exists(str(output_folder / "split" / "train_set_psal.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "split" / "pres_train.parquet"))
+            os.path.exists(str(output_folder / "split" / "train_set_pres.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "split" / "temp_test.parquet"))
+            os.path.exists(str(output_folder / "split" / "test_set_temp.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "split" / "psal_test.parquet"))
+            os.path.exists(str(output_folder / "split" / "test_set_psal.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "split" / "pres_test.parquet"))
+            os.path.exists(str(output_folder / "split" / "test_set_pres.parquet"))
         )
 
         shutil.rmtree(output_folder)
@@ -226,36 +226,36 @@ class TestDMQCCreateTrainingDataSet(unittest.TestCase):
 
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "validate" / "temp_validation_result.tsv")
+                str(output_folder / "validate" / "validation_report_temp.tsv")
             )
         )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "validate" / "psal_validation_result.tsv")
+                str(output_folder / "validate" / "validation_report_psal.tsv")
             )
         )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "validate" / "pres_validation_result.tsv")
+                str(output_folder / "validate" / "validation_report_pres.tsv")
             )
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "temp_test_result.tsv"))
+            os.path.exists(str(output_folder / "build" / "test_report_temp.tsv"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "psal_test_result.tsv"))
+            os.path.exists(str(output_folder / "build" / "test_report_psal.tsv"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "pres_test_result.tsv"))
+            os.path.exists(str(output_folder / "build" / "test_report_pres.tsv"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "temp_model.joblib"))
+            os.path.exists(str(output_folder / "model" / "model_temp.joblib"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "psal_model.joblib"))
+            os.path.exists(str(output_folder / "model" / "model_psal.joblib"))
         )
         self.assertTrue(
-            os.path.exists(str(output_folder / "build" / "pres_model.joblib"))
+            os.path.exists(str(output_folder / "model" / "model_pres.joblib"))
         )
 
         shutil.rmtree(output_folder)

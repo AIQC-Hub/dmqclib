@@ -9,6 +9,7 @@ from jsonschema import validate
 from dmqclib.common.config.yaml_schema import (
     get_data_set_config_schema,
     get_training_config_schema,
+    get_classification_config_schema,
 )
 from dmqclib.common.utils.config import get_config_item
 from dmqclib.common.utils.config import read_config
@@ -55,6 +56,7 @@ class ConfigBase(ABC):
         yaml_schemas = {
             "data_sets": get_data_set_config_schema,
             "training_sets": get_training_config_schema,
+            "classification_sets": get_classification_config_schema,
         }
         if section_name not in yaml_schemas:
             raise ValueError(f"Section name {section_name} is not supported.")
