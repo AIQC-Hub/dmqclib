@@ -61,7 +61,7 @@ class ClassifyAll(BuildModelBase):
 
         #: A dictionary mapping "model" to target-specific file paths.
         self.model_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "model", self.default_model_file_name
+            "model", self.default_model_file_name, use_dataset_folder=False
         )
 
         self.drop_cols = ["row_id", "platform_code", "profile_no", "observation_no"]

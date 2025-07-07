@@ -9,6 +9,8 @@ path_info_sets:
     model:
       base_path: /path/to/data # Modify this
       step_folder_name: model
+    concat:
+      step_folder_name: classify
 
 target_sets:
   - name: target_set_1_3

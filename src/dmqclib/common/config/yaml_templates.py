@@ -158,8 +158,8 @@ path_info_sets:
     input:
       step_folder_name: training
     model:
-      base_path: /path/to/model
-      step_folder_name: model # Modify this
+      base_path: /path/to/model # Modify this
+      step_folder_name: model
       
 target_sets:
   - name: target_set_1_3
@@ -241,9 +241,11 @@ path_info_sets:
     input:
       step_folder_name: training
     model:
-      base_path: /path/to/model
-      step_folder_name: model # Modify this
-
+      base_path: /path/to/model  # Modify this
+      step_folder_name: model
+    concat:
+      step_folder_name: classify
+            
 target_sets:
   - name: target_set_1_3
     variables:

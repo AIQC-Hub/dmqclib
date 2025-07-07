@@ -100,11 +100,11 @@ class TestBuildModel(unittest.TestCase):
         ds = ClassifyAll(self.config)
 
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/model_temp.joblib",
+            "/path/to/model_1/model_folder_1/model_temp.joblib",
             str(ds.model_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/model_psal.joblib",
+            "/path/to/model_1/model_folder_1/model_psal.joblib",
             str(ds.model_file_names["psal"]),
         )
 

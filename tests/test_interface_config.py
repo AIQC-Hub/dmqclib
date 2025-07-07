@@ -33,6 +33,13 @@ class TestTemplateConfig(unittest.TestCase):
             / "temp_training_template.yaml"
         )
 
+        self.config_classify_set_template_file = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "temp_classification_template.yaml"
+        )
+
     def test_ds_config_template(self):
         """
         Check that a dataset (prepare) configuration template can be written
@@ -50,6 +57,15 @@ class TestTemplateConfig(unittest.TestCase):
         write_config_template(self.config_train_set_template_file, "train")
         self.assertTrue(os.path.exists(self.config_train_set_template_file))
         os.remove(self.config_train_set_template_file)
+
+    def test_config_classification_set_template(self):
+        """
+        Check that a training configuration template can be written
+        to the specified path and removed afterward.
+        """
+        write_config_template(self.config_classify_set_template_file, "classify")
+        self.assertTrue(os.path.exists(self.config_classify_set_template_file))
+        os.remove(self.config_classify_set_template_file)
 
     def test_config_template_with_invalid_module(self):
         """
