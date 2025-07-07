@@ -136,13 +136,13 @@ class TestExtractDataSetA(unittest.TestCase):
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
-        ds.output_file_names["temp"] = (
+        ds.output_file_names["temp"] = str(
             data_path / "temp_extracted_features_classify_temp.parquet"
         )
-        ds.output_file_names["psal"] = (
+        ds.output_file_names["psal"] = str(
             data_path / "temp_extracted_features_classify_psal.parquet"
         )
-        ds.output_file_names["pres"] = (
+        ds.output_file_names["pres"] = str(
             data_path / "temp_extracted_features_classify_pres.parquet"
         )
 

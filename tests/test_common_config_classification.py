@@ -65,7 +65,7 @@ class TestClassificationConfig(unittest.TestCase):
         self.assertEqual(len(ds.data["step_class_set"]), 2)
         self.assertEqual(len(ds.data["step_param_set"]), 2)
 
-    def test_load_dataset_config_twise(self):
+    def test_load_dataset_config_twice(self):
         """
         Confirm that calling select() multiple times does not break anything.
         """

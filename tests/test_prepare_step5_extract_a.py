@@ -140,9 +140,9 @@ class TestExtractDataSetA(unittest.TestCase):
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
-        ds.output_file_names["temp"] = data_path / "temp_temp_features.parquet"
-        ds.output_file_names["psal"] = data_path / "temp_psal_features.parquet"
-        ds.output_file_names["pres"] = data_path / "temp_pres_features.parquet"
+        ds.output_file_names["temp"] = str(data_path / "temp_temp_features.parquet")
+        ds.output_file_names["psal"] = str(data_path / "temp_psal_features.parquet")
+        ds.output_file_names["pres"] = str(data_path / "temp_pres_features.parquet")
 
         ds.process_targets()
         ds.write_target_features()

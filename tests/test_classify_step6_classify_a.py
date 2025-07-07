@@ -35,26 +35,26 @@ class TestBuildModel(unittest.TestCase):
 
         model_path = Path(__file__).resolve().parent / "data" / "training"
         self.model_file_names = {
-            "temp": model_path / "model_temp.joblib",
-            "psal": model_path / "model_psal.joblib",
-            "pres": model_path / "model_pres.joblib",
+            "temp": str(model_path / "model_temp.joblib"),
+            "psal": str(model_path / "model_psal.joblib"),
+            "pres": str(model_path / "model_pres.joblib"),
         }
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
         self.report_file_names = {
-            "temp": data_path / "temp_classify_report_temp.tsv",
-            "psal": data_path / "temp_classify_report_psal.tsv",
-            "pres": data_path / "temp_classify_report_pres.tsv",
+            "temp": str(data_path / "temp_classify_report_temp.tsv"),
+            "psal": str(data_path / "temp_classify_report_psal.tsv"),
+            "pres": str(data_path / "temp_classify_report_pres.tsv"),
         }
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
         self.prediction_file_names = {
-            "temp": data_path / "temp_classify_prediction_temp.parquet",
-            "psal": data_path / "temp_classify_prediction_psal.parquet",
-            "pres": data_path / "temp_classify_prediction_pres.parquet",
+            "temp": str(data_path / "temp_classify_prediction_temp.parquet"),
+            "psal": str(data_path / "temp_classify_prediction_psal.parquet"),
+            "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
         }
 
-        self.test_data_file = (
+        self.test_data_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "input"
@@ -213,9 +213,9 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_extract.target_features,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = data_path / "model.joblib"
-        ds.model_file_names["psal"] = data_path / "model.joblib"
-        ds.model_file_names["pres"] = data_path / "model.joblib"
+        ds.model_file_names["temp"] = str(data_path / "model.joblib")
+        ds.model_file_names["psal"] = str(data_path / "model.joblib")
+        ds.model_file_names["pres"] = str(data_path / "model.joblib")
 
         with self.assertRaises(FileNotFoundError):
             ds.read_models()

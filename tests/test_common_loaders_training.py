@@ -55,7 +55,7 @@ class TestModelValidationClassLoader(unittest.TestCase):
         Initialize a training configuration and load input data for testing
         the validation class loader.
         """
-        self.config_file_path = (
+        self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
@@ -66,14 +66,14 @@ class TestModelValidationClassLoader(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "train_set_temp.parquet",
-                "psal": data_path / "train_set_psal.parquet",
-                "pres": data_path / "train_set_pres.parquet",
+                "temp": str(data_path / "train_set_temp.parquet"),
+                "psal": str(data_path / "train_set_psal.parquet"),
+                "pres": str(data_path / "train_set_pres.parquet"),
             },
             "test": {
-                "temp": data_path / "test_set_temp.parquet",
-                "psal": data_path / "test_set_psal.parquet",
-                "pres": data_path / "test_set_pres.parquet",
+                "temp": str(data_path / "test_set_temp.parquet"),
+                "psal": str(data_path / "test_set_psal.parquet"),
+                "pres": str(data_path / "test_set_pres.parquet"),
             },
         }
 
@@ -117,7 +117,7 @@ class TestBuildModelClassLoader(unittest.TestCase):
         Initialize a training configuration and load input data for testing
         the build model class loader.
         """
-        self.config_file_path = (
+        self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
@@ -128,14 +128,14 @@ class TestBuildModelClassLoader(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "train_set_temp.parquet",
-                "psal": data_path / "train_set_psal.parquet",
-                "pres": data_path / "train_set_pres.parquet",
+                "temp": str(data_path / "train_set_temp.parquet"),
+                "psal": str(data_path / "train_set_psal.parquet"),
+                "pres": str(data_path / "train_set_pres.parquet"),
             },
             "test": {
-                "temp": data_path / "test_set_temp.parquet",
-                "psal": data_path / "test_set_psal.parquet",
-                "pres": data_path / "test_set_pres.parquet",
+                "temp": str(data_path / "test_set_temp.parquet"),
+                "psal": str(data_path / "test_set_psal.parquet"),
+                "pres": str(data_path / "test_set_pres.parquet"),
             },
         }
 

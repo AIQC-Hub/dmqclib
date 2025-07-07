@@ -112,7 +112,5 @@ class DayOfYearFeat(FeatureBase):
         """
         if "convert" in self.feature_info and self.feature_info["convert"] == "sine":
             self.features = self.features.with_columns(
-                ((np.sin(pl.col("day_of_year") * 2 * np.pi / 365) + 1) / 2).alias(
-                    "day_of_year"
-                )
+                (np.sin(pl.col("day_of_year") * 2 * np.pi / 365) + 1) / 2
             )

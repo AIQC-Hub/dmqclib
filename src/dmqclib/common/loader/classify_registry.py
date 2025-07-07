@@ -18,6 +18,7 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
 from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase
+from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step1_read_input tasks.
@@ -51,7 +52,6 @@ EXTRACT_CLASSIFY_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step7_concat_datasets tasks.
-CLASSIFY_CLASSIFY_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
+CLASSIFY_CLASSIFY_REGISTRY: Dict[str, Type[BuildModelBase]] = {
     "ClassifyAll": ClassifyAll,
 }
-

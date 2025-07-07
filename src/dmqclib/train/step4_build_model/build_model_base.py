@@ -6,6 +6,7 @@ import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
+from dmqclib.common.base.model_base import ModelBase
 from dmqclib.common.base.config_base import ConfigBase
 
 
@@ -77,16 +78,16 @@ class BuildModelBase(DataSetBase):
         )
 
         #: A Polars DataFrame (or dictionary) containing training data.
-        self.training_sets: Optional[pl.DataFrame] = training_sets
+        self.training_sets: Optional[Dict[str, pl.DataFrame]] = training_sets
         #: A Polars DataFrame (or dictionary) containing test data.
-        self.test_sets: Optional[pl.DataFrame] = test_sets
+        self.test_sets: Optional[Dict[str, pl.DataFrame]] = test_sets
 
         #: Loaded from :meth:`load_base_model`; can be overridden for each target.
-        self.base_model = None
+        self.base_model: Optional[ModelBase] = None
         self.load_base_model()
 
         #: A dictionary to store model objects keyed by target name.
-        self.models: Dict[str, object] = {}
+        self.models: Dict[str, Optional[ModelBase]] = {}
         #: A dictionary to store test results keyed by target name.
         self.reports: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store predictions results keyed by target name.

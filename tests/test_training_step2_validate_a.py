@@ -34,14 +34,14 @@ class TestKFoldValidation(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "train_set_temp.parquet",
-                "psal": data_path / "train_set_psal.parquet",
-                "pres": data_path / "train_set_pres.parquet",
+                "temp": str(data_path / "train_set_temp.parquet"),
+                "psal": str(data_path / "train_set_psal.parquet"),
+                "pres": str(data_path / "train_set_pres.parquet"),
             },
             "test": {
-                "temp": data_path / "test_set_temp.parquet",
-                "psal": data_path / "test_set_psal.parquet",
-                "pres": data_path / "test_set_pres.parquet",
+                "temp": str(data_path / "test_set_temp.parquet"),
+                "psal": str(data_path / "test_set_psal.parquet"),
+                "pres": str(data_path / "test_set_pres.parquet"),
             },
         }
 
@@ -113,13 +113,13 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["report"]["temp"] = (
+        ds.output_file_names["report"]["temp"] = str(
             data_path / "temp_temp_validation_report.tsv"
         )
-        ds.output_file_names["report"]["psal"] = (
+        ds.output_file_names["report"]["psal"] = str(
             data_path / "temp_psal_validation_report.tsv"
         )
-        ds.output_file_names["report"]["pres"] = (
+        ds.output_file_names["report"]["pres"] = str(
             data_path / "temp_pres_validation_report.tsv"
         )
 

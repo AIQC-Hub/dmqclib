@@ -257,7 +257,9 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
         ds_select = load_classify_step3_select_dataset(self.config, ds_input.input_data)
         ds_select.label_profiles()
 
-        ds_summary = load_classify_step2_summary_dataset(self.config, ds_input.input_data)
+        ds_summary = load_classify_step2_summary_dataset(
+            self.config, ds_input.input_data
+        )
         ds_summary.calculate_stats()
 
         ds_locate = load_classify_step4_locate_dataset(
@@ -346,7 +348,9 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
         ds_select = load_classify_step3_select_dataset(self.config, ds_input.input_data)
         ds_select.label_profiles()
 
-        ds_summary = load_classify_step2_summary_dataset(self.config, ds_input.input_data)
+        ds_summary = load_classify_step2_summary_dataset(
+            self.config, ds_input.input_data
+        )
         ds_summary.calculate_stats()
 
         ds_locate = load_classify_step4_locate_dataset(
@@ -363,7 +367,9 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
         )
         ds_extract.process_targets()
 
-        ds = load_classify_step6_classify_dataset(self.config, ds_extract.target_features)
+        ds = load_classify_step6_classify_dataset(
+            self.config, ds_extract.target_features
+        )
 
         self.assertIsInstance(ds, ClassifyAll)
 

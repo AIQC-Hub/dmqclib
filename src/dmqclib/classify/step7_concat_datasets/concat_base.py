@@ -53,26 +53,28 @@ class ConcatDatasetsBase(DataSetBase):
         #: A dict of Polars DataFrames, one per target, containing classification results.
         self.predictions: Optional[Dict[str, pl.DataFrame]] = predictions
 
-        self.merged_predictions: pl.DataFrame = None
+        self.merged_predictions: Optional[pl.DataFrame] = None
 
     def merge_predictions(self) -> None:
-        self.merged_predictions = (
-            self.input_data.join(
-                pl.concat([
-                    df.rename({
-                        'label': f'{key}_label',
-                        'predicted': f'{key}_predicted'
-                    }).select([
-                        'platform_code',
-                        'profile_no',
-                        'observation_no',
-                        f'{key}_label',
-                        f'{key}_predicted'
-                    ])
+        self.merged_predictions = self.input_data.join(
+            pl.concat(
+                [
+                    df.rename(
+                        {"label": f"{key}_label", "predicted": f"{key}_predicted"}
+                    ).select(
+                        [
+                            "platform_code",
+                            "profile_no",
+                            "observation_no",
+                            f"{key}_label",
+                            f"{key}_predicted",
+                        ]
+                    )
                     for key, df in self.predictions.items()
-                ], how="align"),
-                on = ["platform_code", "profile_no", "observation_no"]
-            )
+                ],
+                how="align",
+            ),
+            on=["platform_code", "profile_no", "observation_no"],
         )
 
     def write_merged_predictions(self) -> None:

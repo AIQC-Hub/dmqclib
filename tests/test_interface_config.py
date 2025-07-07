@@ -19,14 +19,14 @@ class TestTemplateConfig(unittest.TestCase):
         Set up test environment by defining sample file paths
         for dataset and training configuration templates.
         """
-        self.ds_config_template_file = (
+        self.ds_config_template_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "temp_dataset_template.yaml"
         )
 
-        self.config_train_set_template_file = (
+        self.config_train_set_template_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
@@ -80,14 +80,14 @@ class TestReadConfig(unittest.TestCase):
         Define sample file paths for dataset and training configuration
         files used in subsequent tests.
         """
-        self.ds_config_file = (
+        self.ds_config_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "test_dataset_001.yaml"
         )
 
-        self.train_config_file = (
+        self.train_config_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"

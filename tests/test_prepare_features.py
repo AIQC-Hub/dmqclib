@@ -20,7 +20,6 @@ from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
 class _TestFeatureBase(unittest.TestCase):
     """
     A base class providing shared setup and validation logic for feature-based tests.
-    Derived classes can supply the feature class to setUp() for testing.
     """
 
     def _setup(self, class_name):

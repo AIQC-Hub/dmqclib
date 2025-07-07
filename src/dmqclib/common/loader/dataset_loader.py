@@ -144,7 +144,7 @@ def load_step5_extract_dataset(
     config: DataSetConfig,
     input_data: Optional[pl.DataFrame] = None,
     selected_profiles: Optional[pl.DataFrame] = None,
-    selected_rows: Optional[pl.DataFrame] = None,
+    selected_rows: Optional[dict[str, pl.DataFrame]] = None,
     summary_stats: Optional[pl.DataFrame] = None,
 ) -> ExtractFeatureBase:
     """
@@ -160,7 +160,7 @@ def load_step5_extract_dataset(
     :param selected_profiles: A Polars DataFrame of selected profiles, if applicable.
     :type selected_profiles: pl.DataFrame, optional
     :param selected_rows: A Polars DataFrame of rows (indexed by target) to be processed.
-    :type selected_rows: pl.DataFrame, optional
+    :type selected_rows:  dict[str, pl.DataFrame], optional
     :param summary_stats: A Polars DataFrame containing summary stats for scaling or references.
     :type summary_stats: pl.DataFrame, optional
     :return: An instantiated object that inherits from :class:`ExtractFeatureBase`.
@@ -177,7 +177,7 @@ def load_step5_extract_dataset(
 
 
 def load_step6_split_dataset(
-    config: DataSetConfig, target_features: Optional[pl.DataFrame] = None
+    config: DataSetConfig, target_features: Optional[dict[str, pl.DataFrame]] = None
 ) -> SplitDataSetBase:
     """
     Load a :class:`SplitDataSetBase`-derived class based on the configuration.
@@ -189,7 +189,7 @@ def load_step6_split_dataset(
     :type config: DataSetConfig
     :param target_features: A Polars DataFrame containing features to be split
                             into train/test sets or folds. Defaults to None.
-    :type target_features: pl.DataFrame, optional
+    :type target_features: dict[str, pl.DataFrame], optional
     :return: An instantiated object that inherits from :class:`SplitDataSetBase`.
     :rtype: SplitDataSetBase
     """

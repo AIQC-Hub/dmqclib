@@ -99,7 +99,7 @@ class TestSelectDataSetA(unittest.TestCase):
     def test_write_summary_stats(self):
         """Confirm that summary statistics are written to file and file creation is verified."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
-        ds.output_file_name = (
+        ds.output_file_name = str(
             Path(__file__).resolve().parent
             / "data"
             / "summary"

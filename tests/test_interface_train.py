@@ -18,7 +18,7 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         Prepare the test environment by loading a specified training configuration,
         and defining input/output paths for subsequent training/evaluation tests.
         """
-        self.config_file_path = (
+        self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
@@ -27,7 +27,9 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         self.config = TrainingConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
         self.test_data_location = Path(__file__).resolve().parent / "data" / "test"
-        self.input_data_path = Path(__file__).resolve().parent / "data" / "training"
+        self.input_data_path = str(
+            Path(__file__).resolve().parent / "data" / "training"
+        )
         self.config.data["path_info"] = {
             "name": "data_set_1",
             "common": {"base_path": str(self.test_data_location)},

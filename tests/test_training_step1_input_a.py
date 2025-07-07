@@ -30,14 +30,14 @@ class TestInputTrainingSetA(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "train_set_temp.parquet",
-                "psal": data_path / "train_set_psal.parquet",
-                "pres": data_path / "train_set_pres.parquet",
+                "temp": str(data_path / "train_set_temp.parquet"),
+                "psal": str(data_path / "train_set_psal.parquet"),
+                "pres": str(data_path / "train_set_pres.parquet"),
             },
             "test": {
-                "temp": data_path / "test_set_temp.parquet",
-                "psal": data_path / "test_set_psal.parquet",
-                "pres": data_path / "test_set_pres.parquet",
+                "temp": str(data_path / "test_set_temp.parquet"),
+                "psal": str(data_path / "test_set_psal.parquet"),
+                "pres": str(data_path / "test_set_pres.parquet"),
             },
         }
 

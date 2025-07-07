@@ -118,9 +118,15 @@ class TestLocateDataSetA(unittest.TestCase):
             selected_profiles=self.ds_select.selected_profiles,
         )
         data_path = Path(__file__).resolve().parent / "data" / "select"
-        ds.output_file_names["temp"] = data_path / "temp_temp_classify_rows.parquet"
-        ds.output_file_names["psal"] = data_path / "temp_psal_classify_rows.parquet"
-        ds.output_file_names["pres"] = data_path / "temp_pres_classify_rows.parquet"
+        ds.output_file_names["temp"] = str(
+            data_path / "temp_temp_classify_rows.parquet"
+        )
+        ds.output_file_names["psal"] = str(
+            data_path / "temp_psal_classify_rows.parquet"
+        )
+        ds.output_file_names["pres"] = str(
+            data_path / "temp_pres_classify_rows.parquet"
+        )
 
         ds.process_targets()
         ds.write_selected_rows()

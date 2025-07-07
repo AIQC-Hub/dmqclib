@@ -9,7 +9,7 @@ from dmqclib.common.loader.classify_registry import (
     SELECT_CLASSIFY_REGISTRY,
     LOCATE_CLASSIFY_REGISTRY,
     EXTRACT_CLASSIFY_REGISTRY,
-    CLASSIFY_CLASSIFY_REGISTRY
+    CLASSIFY_CLASSIFY_REGISTRY,
 )
 from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
@@ -17,6 +17,7 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
 from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase
+from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 
 
 def _get_prepare_class(
@@ -183,12 +184,13 @@ def load_classify_step5_extract_dataset(
         summary_stats=summary_stats,
     )
 
+
 def load_classify_step6_classify_dataset(
     config: DataSetConfig,
     test_sets: Optional[Dict[str, pl.DataFrame]] = None,
-) -> ExtractFeatureBase:
+) -> BuildModelBase:
     """
-    Instantiate an :class:`ExtractFeatureBase`-derived class based on the configuration.
+    Instantiate an :class:`BuildModelBase`-derived class based on the configuration.
 
     Specifically:
 
@@ -204,7 +206,4 @@ def load_classify_step6_classify_dataset(
     :return: An instance of a class derived from :class:`ExtractFeatureBase`.
     """
     dataset_class = _get_prepare_class(config, "classify", CLASSIFY_CLASSIFY_REGISTRY)
-    return dataset_class(
-        config,
-        test_sets=test_sets
-    )
+    return dataset_class(config, test_sets=test_sets)

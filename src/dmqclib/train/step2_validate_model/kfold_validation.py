@@ -1,5 +1,5 @@
 import polars as pl
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step2_validate_model.validate_base import ValidationBase
@@ -18,7 +18,9 @@ class KFoldValidation(ValidationBase):
     expected_class_name: str = "KFoldValidation"
 
     def __init__(
-        self, config: ConfigBase, training_sets: Optional[pl.DataFrame] = None
+        self,
+        config: ConfigBase,
+        training_sets: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
         Initialize the k-fold validation process.
