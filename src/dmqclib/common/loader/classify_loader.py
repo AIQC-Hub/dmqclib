@@ -9,6 +9,7 @@ from dmqclib.common.loader.classify_registry import (
     SELECT_CLASSIFY_REGISTRY,
     LOCATE_CLASSIFY_REGISTRY,
     EXTRACT_CLASSIFY_REGISTRY,
+    CLASSIFY_CLASSIFY_REGISTRY
 )
 from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
@@ -145,7 +146,7 @@ def load_classify_step5_extract_dataset(
     config: DataSetConfig,
     input_data: Optional[pl.DataFrame] = None,
     selected_profiles: Optional[pl.DataFrame] = None,
-    selected_rows: Optional[pl.DataFrame] = None,
+    selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
     summary_stats: Optional[pl.DataFrame] = None,
 ) -> ExtractFeatureBase:
     """
@@ -184,10 +185,7 @@ def load_classify_step5_extract_dataset(
 
 def load_classify_step6_classify_dataset(
     config: DataSetConfig,
-    input_data: Optional[pl.DataFrame] = None,
-    selected_profiles: Optional[pl.DataFrame] = None,
-    selected_rows: Optional[pl.DataFrame] = None,
-    summary_stats: Optional[pl.DataFrame] = None,
+    test_sets: Optional[Dict[str, pl.DataFrame]] = None,
 ) -> ExtractFeatureBase:
     """
     Instantiate an :class:`ExtractFeatureBase`-derived class based on the configuration.
@@ -200,25 +198,13 @@ def load_classify_step6_classify_dataset(
 
     :param config: The dataset configuration object referencing the "extract" step.
     :type config: DataSetConfig
-    :param input_data: An optional Polars DataFrame containing the data from which
-                       features will be extracted.
-    :type input_data: pl.DataFrame, optional
-    :param selected_profiles: An optional Polars DataFrame containing selected profiles,
-                              if relevant to feature extraction.
-    :type selected_profiles: pl.DataFrame, optional
-    :param selected_rows: An optional Polars DataFrame identifying rows relevant to each
+    :param test_sets: An optional Polars DataFrame identifying rows relevant to each
                         target variable.
-    :type selected_rows: pl.DataFrame, optional
-    :param summary_stats: An optional Polars DataFrame providing summary statistics that
-                          might be used for feature scaling or reference.
-    :type summary_stats: pl.DataFrame, optional
+    :type test_sets: pl.DataFrame, optional
     :return: An instance of a class derived from :class:`ExtractFeatureBase`.
     """
-    dataset_class = _get_prepare_class(config, "extract", EXTRACT_CLASSIFY_REGISTRY)
+    dataset_class = _get_prepare_class(config, "classify", CLASSIFY_CLASSIFY_REGISTRY)
     return dataset_class(
         config,
-        input_data=input_data,
-        selected_profiles=selected_profiles,
-        selected_rows=selected_rows,
-        summary_stats=summary_stats,
+        test_sets=test_sets
     )

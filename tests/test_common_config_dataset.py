@@ -25,7 +25,7 @@ class TestDataSetConfig(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "config"
-            / "prepare_config_template.yaml"
+            / "config_data_set_template.yaml"
         )
 
     def test_valid_config(self):

@@ -5,17 +5,17 @@ from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 
 
-class ConcatDataSetA(ConcatDatasetsBase):
+class ConcatDataSetAll(ConcatDatasetsBase):
     """
     A subclass of :class:`ConcatDatasetsBase` to concatenate predictions and the input dataset
 
-    This class sets its :attr:`expected_class_name` to ``"ConcatDataSetA"``,
+    This class sets its :attr:`expected_class_name` to ``"ConcatDataSetAll"``,
     ensuring it is recognized in the YAML configuration as a valid
     extract class. It inherits the concatenation
     pipeline from :class:`ConcatDatasetsBase`.
     """
 
-    expected_class_name: str = "ConcatDataSetA"
+    expected_class_name: str = "ConcatDataSetAll"
 
     def __init__(
         self,

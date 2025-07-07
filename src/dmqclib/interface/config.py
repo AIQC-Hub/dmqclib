@@ -11,8 +11,8 @@ from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.utils.config import get_config_file
 from dmqclib.common.config.yaml_templates import (
-    get_train_config_template,
-    get_prepare_config_template,
+    get_config_train_set_template,
+    get_config_data_set_template,
 )
 
 
@@ -23,8 +23,8 @@ def write_config_template(file_name: str, module: str) -> None:
 
     This function:
 
-      1. Chooses a template generator (from get_prepare_config_template
-         or get_train_config_template) based on the ``module`` argument.
+      1. Chooses a template generator (from get_config_data_set_template
+         or get_config_train_set_template) based on the ``module`` argument.
       2. Validates that the directory for ``file_name`` exists.
       3. Writes the generated YAML template text to the specified file.
 
@@ -36,8 +36,8 @@ def write_config_template(file_name: str, module: str) -> None:
     :raises IOError: If the directory of the specified file path does not exist.
     """
     function_registry = {
-        "prepare": get_prepare_config_template,
-        "train": get_train_config_template,
+        "prepare": get_config_data_set_template,
+        "train": get_config_train_set_template,
     }
     if module not in function_registry:
         raise ValueError(f"Module {module} is not supported.")

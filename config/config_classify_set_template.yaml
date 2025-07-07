@@ -7,7 +7,7 @@ path_info_sets:
       base_path: /path/to/input # Modify this
       step_folder_name: ""
     model:
-      base_path: /path/to/model
+      base_path: /path/to/data # Modify this
       step_folder_name: model
 
 target_sets:
@@ -68,6 +68,7 @@ step_class_sets:
       extract: ExtractDataSetAll
       model: XGBoost
       classify: ClassifyDataSetAll
+      concat: ConcatDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -80,9 +81,10 @@ step_param_sets:
       summary: { }
       select: { }
       locate: { }
-      extract: { }
+      extract: { drop_key_columns: true }
       model: { }
       classify: { }
+      concat: { }
 
 classification_sets:
   - name: NRT_BO_001

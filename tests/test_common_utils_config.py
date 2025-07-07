@@ -40,7 +40,7 @@ class TestReadConfig(unittest.TestCase):
         multiple parent directories when only config_file_name is specified.
         """
         config = read_config(
-            config_file_name="prepare_config_template.yaml", parent_level=4
+            config_file_name="config_data_set_template.yaml", parent_level=4
         )
         self.assertIsNotNone(config, "Data should not be None")
         self.assertIn("data_sets", config, "Key 'data_sets' should be in the YAML")

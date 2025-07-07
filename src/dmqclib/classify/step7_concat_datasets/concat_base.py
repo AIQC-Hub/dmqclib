@@ -53,12 +53,31 @@ class ConcatDatasetsBase(DataSetBase):
         #: A dict of Polars DataFrames, one per target, containing classification results.
         self.predictions: Optional[Dict[str, pl.DataFrame]] = predictions
 
-    def join_targets(self) -> None:
-        pass
+        self.merged_predictions: pl.DataFrame = None
 
-    def concat(self) -> None:
-        pass
+    def merge_predictions(self) -> None:
+        self.merged_predictions = (
+            self.input_data.join(
+                pl.concat([
+                    df.rename({
+                        'label': f'{key}_label',
+                        'predicted': f'{key}_predicted'
+                    }).select([
+                        'platform_code',
+                        'profile_no',
+                        'observation_no',
+                        f'{key}_label',
+                        f'{key}_predicted'
+                    ])
+                    for key, df in self.predictions.items()
+                ], how="align"),
+                on = ["platform_code", "profile_no", "observation_no"]
+            )
+        )
 
-    def write_target_features(self) -> None:
-        pass
+    def write_merged_predictions(self) -> None:
+        if self.merged_predictions is None:
+            raise ValueError("Member variable 'merged_predictions' must not be empty.")
 
+        os.makedirs(os.path.dirname(self.output_file_name), exist_ok=True)
+        self.merged_predictions.write_parquet(self.output_file_name)

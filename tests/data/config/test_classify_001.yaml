@@ -18,6 +18,9 @@ path_info_sets:
     classify:
       base_path: /path/to/classify_1
       step_folder_name: classify_folder_1
+    concat:
+      base_path: /path/to/concat_1
+      step_folder_name: concat_folder_1
 
 target_sets:
   - name: target_set_1_2
@@ -83,6 +86,7 @@ step_class_sets:
       extract: ExtractDataSetAll
       model: XGBoost
       classify: ClassifyAll
+      concat: ConcatDataSetAll
   - name: data_set_step_set_invalid
     steps:
       input: InvalidClass
@@ -92,6 +96,7 @@ step_class_sets:
       extract: InvalidClass
       model: InvalidClass
       classify: InvalidClass
+      concat: InvalidClass
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -107,6 +112,7 @@ step_param_sets:
       extract: { drop_key_columns: true }
       model: { }
       classify: { }
+      concat: { }
 
 classification_sets:
   - name: NRT_BO_001

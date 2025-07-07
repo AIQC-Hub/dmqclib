@@ -2,12 +2,13 @@
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Need to modify
+      base_path: /path/to/data # Modify this
     input:
-      step_folder_name: "training"
+      base_path: /path/to/data # Modify this
+      step_folder_name: training
     model:
-      base_path: /path/to/model
-      step_folder_name: model # Need to modify
+      base_path: /path/to/data # Modify this
+      step_folder_name: model
 
 target_sets:
   - name: target_set_1_3

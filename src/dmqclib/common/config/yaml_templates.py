@@ -5,7 +5,7 @@ to fit various data pipeline requirements.
 """
 
 
-def get_prepare_config_template() -> str:
+def get_config_data_set_template() -> str:
     """
     Retrieve a YAML template string for dataset preparation configurations.
 
@@ -43,7 +43,7 @@ path_info_sets:
       base_path: /path/to/input # Modify this
       step_folder_name: ""
     split:
-      step_folder_name: "training"
+      step_folder_name: training
 
 target_sets:
   - name: target_set_1_3
@@ -132,7 +132,7 @@ data_sets:
     return yaml_template
 
 
-def get_train_config_template() -> str:
+def get_config_train_set_template() -> str:
     """
     Retrieve a YAML template string for training configurations.
 
@@ -156,7 +156,7 @@ path_info_sets:
     common:
       base_path: /path/to/data # Modify this
     input:
-      step_folder_name: "training"
+      step_folder_name: training
     model:
       base_path: /path/to/model
       step_folder_name: model # Modify this
@@ -204,7 +204,7 @@ training_sets:
     return yaml_template
 
 
-def get_classify_config_template() -> str:
+def get_config_classify_set_template() -> str:
     """
     Retrieve a YAML template string for classification configurations.
 
@@ -239,7 +239,7 @@ path_info_sets:
     common:
       base_path: /path/to/data # Modify this
     input:
-      step_folder_name: "training"
+      step_folder_name: training
     model:
       base_path: /path/to/model
       step_folder_name: model # Modify this
