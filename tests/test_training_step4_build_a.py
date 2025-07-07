@@ -32,14 +32,14 @@ class TestBuildModel(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
         self.input_file_names = {
             "train": {
-                "temp": data_path / "train_set_temp.parquet",
-                "psal": data_path / "train_set_psal.parquet",
-                "pres": data_path / "train_set_pres.parquet",
+                "temp": str(data_path / "train_set_temp.parquet"),
+                "psal": str(data_path / "train_set_psal.parquet"),
+                "pres": str(data_path / "train_set_pres.parquet"),
             },
             "test": {
-                "temp": data_path / "test_set_temp.parquet",
-                "psal": data_path / "test_set_psal.parquet",
-                "pres": data_path / "test_set_pres.parquet",
+                "temp": str(data_path / "test_set_temp.parquet"),
+                "psal": str(data_path / "test_set_psal.parquet"),
+                "pres": str(data_path / "test_set_pres.parquet"),
             },
         }
 
@@ -89,19 +89,19 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 39)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 42)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 39)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 42)
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_train_with_xgboost(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -128,11 +128,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_test_without_model(self):
         """Ensure that testing without building models raises a ValueError."""
@@ -152,9 +152,15 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_input.test_sets,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["report"]["temp"] = data_path / "temp_temp_test_report.tsv"
-        ds.output_file_names["report"]["psal"] = data_path / "temp_psal_test_report.tsv"
-        ds.output_file_names["report"]["pres"] = data_path / "temp_pres_test_report.tsv"
+        ds.output_file_names["report"]["temp"] = str(
+            data_path / "temp_temp_test_report.tsv"
+        )
+        ds.output_file_names["report"]["psal"] = str(
+            data_path / "temp_psal_test_report.tsv"
+        )
+        ds.output_file_names["report"]["pres"] = str(
+            data_path / "temp_pres_test_report.tsv"
+        )
 
         ds.build_targets()
         ds.test_targets()
@@ -196,9 +202,9 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_input.test_sets,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = data_path / "temp_temp_model.joblib"
-        ds.model_file_names["psal"] = data_path / "temp_psal_model.joblib"
-        ds.model_file_names["pres"] = data_path / "temp_pres_model.joblib"
+        ds.model_file_names["temp"] = str(data_path / "temp_temp_model.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_psal_model.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_pres_model.joblib")
 
         ds.build_targets()
         ds.write_models()
@@ -217,9 +223,9 @@ class TestBuildModel(unittest.TestCase):
             self.config, training_sets=None, test_sets=self.ds_input.test_sets
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = data_path / "model_temp.joblib"
-        ds.model_file_names["psal"] = data_path / "model_psal.joblib"
-        ds.model_file_names["pres"] = data_path / "model_pres.joblib"
+        ds.model_file_names["temp"] = str(data_path / "model_temp.joblib")
+        ds.model_file_names["psal"] = str(data_path / "model_psal.joblib")
+        ds.model_file_names["pres"] = str(data_path / "model_pres.joblib")
 
         ds.read_models()
 
@@ -231,11 +237,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_read_models_no_file(self):
         """Check that FileNotFoundError is raised if model files are missing."""
@@ -243,9 +249,9 @@ class TestBuildModel(unittest.TestCase):
             self.config, training_sets=None, test_sets=self.ds_input.test_sets
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = data_path / "model.joblib"
-        ds.model_file_names["psal"] = data_path / "model.joblib"
-        ds.model_file_names["pres"] = data_path / "model.joblib"
+        ds.model_file_names["temp"] = str(data_path / "model.joblib")
+        ds.model_file_names["psal"] = str(data_path / "model.joblib")
+        ds.model_file_names["pres"] = str(data_path / "model.joblib")
 
         with self.assertRaises(FileNotFoundError):
             ds.read_models()
@@ -258,14 +264,14 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_input.test_sets,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.output_file_names["prediction"]["temp"] = (
-            data_path / "temp_temp_test_prediction.parquet"
+        ds.output_file_names["prediction"]["temp"] = str(
+            data_path / "temp_test_prediction_temp.parquet"
         )
-        ds.output_file_names["prediction"]["psal"] = (
-            data_path / "temp_psal_test_prediction.parquet"
+        ds.output_file_names["prediction"]["psal"] = str(
+            data_path / "temp_test_prediction_psal.parquet"
         )
-        ds.output_file_names["prediction"]["pres"] = (
-            data_path / "temp_pres_test_prediction.parquet"
+        ds.output_file_names["prediction"]["pres"] = str(
+            data_path / "temp_test_prediction_pres.parquet"
         )
 
         ds.build_targets()

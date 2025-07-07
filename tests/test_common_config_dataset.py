@@ -25,7 +25,7 @@ class TestDataSetConfig(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "config"
-            / "prepare_config_template.yaml"
+            / "config_data_set_template.yaml"
         )
 
     def test_valid_config(self):
@@ -65,7 +65,7 @@ class TestDataSetConfig(unittest.TestCase):
         self.assertEqual(len(ds.data["step_class_set"]), 2)
         self.assertEqual(len(ds.data["step_param_set"]), 2)
 
-    def test_load_dataset_config_twise(self):
+    def test_load_dataset_config_twice(self):
         """
         Confirm that calling select() multiple times does not break anything.
         """

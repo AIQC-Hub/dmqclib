@@ -26,7 +26,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         Initialize an instance of BasicValues3PlusFlanks.
 
         :param target_name: The key identifying which target's rows to extract
-                            features for from :attr:`target_rows`.
+                            features for from :attr:`selected_rows`.
         :type target_name: str, optional
         :param feature_info: A dictionary containing feature-related parameters,
                              including a "stats" sub-dict with min/max info
@@ -82,7 +82,7 @@ class BasicValues3PlusFlanks(FeatureBase):
     def _init_features(self) -> None:
         """
         Initialize :attr:`features` by selecting core columns
-        from :attr:`target_rows[target_name]`.
+        from :attr:`selected_rows[target_name]`.
         """
         self.features = self.selected_rows[self.target_name].select(
             ["row_id", "platform_code", "profile_no"]
@@ -92,7 +92,7 @@ class BasicValues3PlusFlanks(FeatureBase):
         """
         Generate a DataFrame with additional rows for each "flank" step.
 
-        This expands each row in :attr:`target_rows[target_name]` by
+        This expands each row in :attr:`selected_rows[target_name]` by
         cross joining with a sequence from 0 to ``feature_info["flank_up"]``,
         then adjusts ``observation_no`` to shift backwards for each flank step.
         """

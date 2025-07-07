@@ -19,7 +19,7 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         defining file paths, and updating the configuration with test input
         and output paths.
         """
-        self.config_file_path = (
+        self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"

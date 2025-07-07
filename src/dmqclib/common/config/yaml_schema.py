@@ -559,6 +559,14 @@ properties:
             step_folder_name:
               type: string
           additionalProperties: false
+        concat:
+          type: object
+          properties:
+            base_path:
+              type: string
+            step_folder_name:
+              type: string
+          additionalProperties: false
       required:
         - name
         - common
@@ -652,6 +660,8 @@ properties:
               type: string
             classify:
               type: string
+            concat:
+              type: string
           required:
             - input
             - summary
@@ -660,6 +670,7 @@ properties:
             - extract
             - model
             - classify
+            - concat
           additionalProperties: false
       required:
         - name
@@ -712,13 +723,12 @@ properties:
             locate:
               type: object
             extract:
-              type: object      
-              properties:
-                drop_key_columns:
-                  type: boolean  
+              type: object
             model:
               type: object
             classify:
+              type: object
+            concat:
               type: object
           required:
             - input
@@ -728,6 +738,7 @@ properties:
             - extract
             - model
             - classify
+            - concat
           additionalProperties: false
       required:
         - name

@@ -2,12 +2,15 @@
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Need to modify
+      base_path: /path/to/data # Modify this
     input:
-      base_path: /path/to/input # Need to modify
+      base_path: /path/to/input # Modify this
       step_folder_name: ""
-    split:
-      step_folder_name: "training"
+    model:
+      base_path: /path/to/data # Modify this
+      step_folder_name: model
+    concat:
+      step_folder_name: classify
 
 target_sets:
   - name: target_set_1_3
@@ -60,12 +63,14 @@ feature_param_sets:
 step_class_sets:
   - name: data_set_step_set_1
     steps:
-      input: InputDataSetA
-      summary: SummaryDataSetA
-      select: SelectDataSetA
-      locate: LocateDataSetA
-      extract: ExtractDataSetA
-      split: SplitDataSetA
+      input: InputDataSetAll
+      summary: SummaryDataSetAll
+      select: SelectDataSetAll
+      locate: LocateDataSetAll
+      extract: ExtractDataSetAll
+      model: XGBoost
+      classify: ClassifyDataSetAll
+      concat: ConcatDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -79,10 +84,11 @@ step_param_sets:
       select: { }
       locate: { }
       extract: { }
-      split: { test_set_fraction: 0.1,
-               k_fold: 10 }
+      model: { }
+      classify: { }
+      concat: { }
 
-data_sets:
+classification_sets:
   - name: NRT_BO_001
     dataset_folder_name: nrt_bo_001
     input_file_name: nrt_cora_bo_test.parquet

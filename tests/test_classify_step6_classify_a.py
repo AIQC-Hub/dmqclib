@@ -13,7 +13,7 @@ from dmqclib.common.loader.classify_loader import (
 )
 from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.classify.step6_classify_dataset.classify_dataset_all import ClassifyAll
+from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
 
 
 class TestBuildModel(unittest.TestCase):
@@ -35,26 +35,26 @@ class TestBuildModel(unittest.TestCase):
 
         model_path = Path(__file__).resolve().parent / "data" / "training"
         self.model_file_names = {
-            "temp": model_path / "model_temp.joblib",
-            "psal": model_path / "model_psal.joblib",
-            "pres": model_path / "model_pres.joblib",
+            "temp": str(model_path / "model_temp.joblib"),
+            "psal": str(model_path / "model_psal.joblib"),
+            "pres": str(model_path / "model_pres.joblib"),
         }
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
         self.report_file_names = {
-            "temp": data_path / "temp_temp_classify_report.tsv",
-            "psal": data_path / "temp_psal_classify_report.tsv",
-            "pres": data_path / "temp_pres_classify_report.tsv",
+            "temp": str(data_path / "temp_classify_report_temp.tsv"),
+            "psal": str(data_path / "temp_classify_report_psal.tsv"),
+            "pres": str(data_path / "temp_classify_report_pres.tsv"),
         }
 
         data_path = Path(__file__).resolve().parent / "data" / "classify"
         self.prediction_file_names = {
-            "temp": data_path / "temp_temp_classify_prediction.parquet",
-            "psal": data_path / "temp_psal_classify_prediction.parquet",
-            "pres": data_path / "temp_pres_classify_prediction.parquet",
+            "temp": str(data_path / "temp_classify_prediction_temp.parquet"),
+            "psal": str(data_path / "temp_classify_prediction_psal.parquet"),
+            "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
         }
 
-        self.test_data_file = (
+        self.test_data_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "input"
@@ -85,7 +85,7 @@ class TestBuildModel(unittest.TestCase):
             self.config,
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
-            target_rows=self.ds_locate.selected_rows,
+            selected_rows=self.ds_locate.selected_rows,
             summary_stats=self.ds_summary.summary_stats,
         )
         self.ds_extract.process_targets()
@@ -100,11 +100,11 @@ class TestBuildModel(unittest.TestCase):
         ds = ClassifyAll(self.config)
 
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/model_temp.joblib",
+            "/path/to/model_1/model_folder_1/model_temp.joblib",
             str(ds.model_file_names["temp"]),
         )
         self.assertEqual(
-            "/path/to/model_1/nrt_bo_001/model_folder_1/model_psal.joblib",
+            "/path/to/model_1/model_folder_1/model_psal.joblib",
             str(ds.model_file_names["psal"]),
         )
 
@@ -131,11 +131,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_read_models(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -162,11 +162,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 38)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 38)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_test_without_model(self):
         """Ensure that testing without building models raises a ValueError."""
@@ -213,9 +213,9 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_extract.target_features,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = data_path / "model.joblib"
-        ds.model_file_names["psal"] = data_path / "model.joblib"
-        ds.model_file_names["pres"] = data_path / "model.joblib"
+        ds.model_file_names["temp"] = str(data_path / "model.joblib")
+        ds.model_file_names["psal"] = str(data_path / "model.joblib")
+        ds.model_file_names["pres"] = str(data_path / "model.joblib")
 
         with self.assertRaises(FileNotFoundError):
             ds.read_models()

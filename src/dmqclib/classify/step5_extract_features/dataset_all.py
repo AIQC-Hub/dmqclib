@@ -22,7 +22,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
         config: ConfigBase,
         input_data: Optional[pl.DataFrame] = None,
         selected_profiles: Optional[pl.DataFrame] = None,
-        target_rows: Optional[Dict[str, pl.DataFrame]] = None,
+        selected_rows: Optional[Dict[str, pl.DataFrame]] = None,
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
@@ -39,10 +39,10 @@ class ExtractDataSetAll(ExtractFeatureBase):
                                   from earlier steps. If not provided, it should be
                                   assigned later.
         :type selected_profiles: pl.DataFrame, optional
-        :param target_rows: An optional dictionary mapping target names to respective
+        :param selected_rows: An optional dictionary mapping target names to respective
                             DataFrames containing the rows needed for feature generation.
                             If not provided, it should be assigned later.
-        :type target_rows: dict of str to pl.DataFrame, optional
+        :type selected_rows: dict of str to pl.DataFrame, optional
         :param summary_stats: An optional Polars DataFrame with summary statistics,
                               potentially used for scaling or normalization.
                               If not provided, it should be assigned later.
@@ -52,7 +52,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
             config,
             input_data=input_data,
             selected_profiles=selected_profiles,
-            target_rows=target_rows,
+            selected_rows=selected_rows,
             summary_stats=summary_stats,
         )
 
@@ -68,10 +68,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
 
         #: Column names used for intermediate or reference purposes
         #: (e.g., linking positive and negative rows).
-        self.work_col_names = [
+        self.drop_col_names = [
             "profile_id",
             "pair_id",
-            "platform_code",
-            "profile_no",
-            "observation_no",
         ]

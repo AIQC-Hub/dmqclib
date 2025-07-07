@@ -27,13 +27,13 @@ class TestDMQCLibTemplateConfig(unittest.TestCase):
         Prepare file paths for dataset and training configuration templates
         that will be written and removed during testing.
         """
-        self.ds_config_template_file = (
+        self.ds_config_template_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "temp_dataset_template.yaml"
         )
-        self.train_config_template_file = (
+        self.config_train_set_template_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
@@ -49,14 +49,14 @@ class TestDMQCLibTemplateConfig(unittest.TestCase):
         self.assertTrue(os.path.exists(self.ds_config_template_file))
         os.remove(self.ds_config_template_file)
 
-    def test_train_config_template(self):
+    def test_config_train_set_template(self):
         """
         Check that a training configuration template can be written
         to the specified path and then removed.
         """
-        dm.write_config_template(self.train_config_template_file, "train")
-        self.assertTrue(os.path.exists(self.train_config_template_file))
-        os.remove(self.train_config_template_file)
+        dm.write_config_template(self.config_train_set_template_file, "train")
+        self.assertTrue(os.path.exists(self.config_train_set_template_file))
+        os.remove(self.config_train_set_template_file)
 
 
 class TestDMQCLibReadConfig(unittest.TestCase):
@@ -70,13 +70,13 @@ class TestDMQCLibReadConfig(unittest.TestCase):
         Define paths to existing dataset and training configuration files
         used in subsequent read tests.
         """
-        self.ds_config_file = (
+        self.ds_config_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "test_dataset_001.yaml"
         )
-        self.train_config_file = (
+        self.train_config_file = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
@@ -109,7 +109,7 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
         Load dataset configuration, specify file names and paths,
         and prepare test output directories.
         """
-        self.config_file_path = (
+        self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"

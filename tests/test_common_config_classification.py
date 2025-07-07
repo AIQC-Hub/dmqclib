@@ -25,7 +25,7 @@ class TestClassificationConfig(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "config"
-            / "classify_config_template.yaml"
+            / "config_classify_set_template.yaml"
         )
 
     def test_valid_config(self):
@@ -58,14 +58,14 @@ class TestClassificationConfig(unittest.TestCase):
         ds = ClassificationConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
 
-        self.assertEqual(len(ds.data["path_info"]), 7)
+        self.assertEqual(len(ds.data["path_info"]), 8)
         self.assertEqual(len(ds.data["target_set"]), 2)
         self.assertEqual(len(ds.data["feature_set"]), 2)
         self.assertEqual(len(ds.data["feature_param_set"]), 2)
         self.assertEqual(len(ds.data["step_class_set"]), 2)
         self.assertEqual(len(ds.data["step_param_set"]), 2)
 
-    def test_load_dataset_config_twise(self):
+    def test_load_dataset_config_twice(self):
         """
         Confirm that calling select() multiple times does not break anything.
         """

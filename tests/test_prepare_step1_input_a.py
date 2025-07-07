@@ -250,7 +250,8 @@ class TestInputDataSetAFilter(unittest.TestCase):
         ds.read_input_data()
         return ds.input_data
 
-    def _get_uniq_years(self, df):
+    @staticmethod
+    def _get_uniq_years(df):
         """
         Internal helper to extract the unique years from the 'profile_timestamp' column.
         """
