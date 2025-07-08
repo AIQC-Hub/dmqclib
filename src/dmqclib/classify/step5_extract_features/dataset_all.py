@@ -1,3 +1,10 @@
+"""
+This module defines the ExtractDataSetAll class, a specialized feature extraction
+component for processing BO NRT + Cora test data. It extends the base feature
+extraction capabilities provided by ExtractFeatureBase and integrates with a
+configuration system for managing data paths and parameters.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -34,19 +41,19 @@ class ExtractDataSetAll(ExtractFeatureBase):
         :param input_data: An optional Polars DataFrame containing the complete dataset
                            for feature extraction. If not provided at initialization,
                            it should be assigned later.
-        :type input_data: pl.DataFrame, optional
+        :type input_data: Optional[pl.DataFrame]
         :param selected_profiles: An optional Polars DataFrame of selected profiles
                                   from earlier steps. If not provided, it should be
                                   assigned later.
-        :type selected_profiles: pl.DataFrame, optional
+        :type selected_profiles: Optional[pl.DataFrame]
         :param selected_rows: An optional dictionary mapping target names to respective
                             DataFrames containing the rows needed for feature generation.
                             If not provided, it should be assigned later.
-        :type selected_rows: dict of str to pl.DataFrame, optional
+        :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: An optional Polars DataFrame with summary statistics,
                               potentially used for scaling or normalization.
                               If not provided, it should be assigned later.
-        :type summary_stats: pl.DataFrame, optional
+        :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
             config,

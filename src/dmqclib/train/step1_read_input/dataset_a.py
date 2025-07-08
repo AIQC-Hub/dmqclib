@@ -1,3 +1,9 @@
+"""
+This module provides a specialized input class, :class:`InputTrainingSetA`,
+designed for reading training and test datasets specific to BO NRT + Cora test data.
+It extends :class:`dmqclib.train.step1_read_input.input_base.InputTrainingSetBase`
+to handle particular data configuration and validation requirements.
+"""
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step1_read_input.input_base import InputTrainingSetBase
 

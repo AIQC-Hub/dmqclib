@@ -1,3 +1,12 @@
+"""
+This module defines the InputDataSetA class, a specific implementation for
+reading and preparing BO NRT + Cora test data.
+
+It extends InputDataSetBase to provide concrete logic for data retrieval
+and initial processing, ensuring compatibility with the overall data
+preparation pipeline.
+"""
+
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
 

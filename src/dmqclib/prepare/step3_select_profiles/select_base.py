@@ -1,3 +1,12 @@
+"""
+This module defines the abstract base class for profile selection and group labeling
+within the dmqclib framework.
+
+It provides a foundational structure for classes that identify and categorize
+profiles based on specific criteria, enabling the subsequent storage of these
+labeled profiles. Subclasses must implement the concrete logic for profile labeling.
+"""
+
 import os
 from abc import abstractmethod
 from typing import Optional
@@ -12,13 +21,28 @@ class ProfileSelectionBase(DataSetBase):
     """
     Abstract base class for profile selection and group labeling.
 
-    Inherits from :class:`DataSetBase` to leverage configuration handling and
-    validation. Subclasses must define:
+    Inherits from :class:`dmqclib.common.base.dataset_base.DataSetBase` to leverage
+    configuration handling and validation.
 
-    - ``expected_class_name`` if they are intended to be instantiated (otherwise
-      an error is raised).
-    - A custom :meth:`label_profiles` method that implements profile selection
-      and labeling logic.
+    Subclasses must define:
+
+    *   ``expected_class_name`` (a class attribute) if they are intended to be
+        instantiated (otherwise an error is raised by the base class).
+    *   A custom :meth:`label_profiles` method that implements the specific profile
+        selection and labeling logic.
+
+    :ivar default_file_name: The default file name for selected profiles.
+    :vartype default_file_name: str
+    :ivar output_file_name: The full path and name of the output Parquet file
+                            where selected profiles will be written.
+    :vartype output_file_name: str
+    :ivar input_data: An optional Polars DataFrame used as initial data for
+                      profile selection.
+    :vartype input_data: Optional[polars.DataFrame]
+    :ivar selected_profiles: A Polars DataFrame containing the profiles after
+                             selection and labeling, typically including a
+                             "group_label" column.
+    :vartype selected_profiles: Optional[polars.DataFrame]
     """
 
     def __init__(
@@ -27,16 +51,19 @@ class ProfileSelectionBase(DataSetBase):
         """
         Initialize the profile selection base class with configuration and optional input data.
 
+        This constructor calls the base class :meth:`dmqclib.common.base.dataset_base.DataSetBase.__init__`
+        and sets up file paths and data holders.
+
         :param config: A dataset configuration object that provides
-                       file naming and folder paths.
-        :type config: ConfigBase
+                       file naming conventions and folder paths.
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :param input_data: Optional Polars DataFrame that serves as the
-                           initial data for profile selection,
-                           defaults to None.
-        :type input_data: pl.DataFrame, optional
-        :raises NotImplementedError: If ``expected_class_name`` is not defined by a subclass.
-        :raises ValueError: If the YAML's "base_class" does not match the
-                            subclass's ``expected_class_name``.
+                           initial data for profile selection, defaults to None.
+        :type input_data: Optional[polars.DataFrame]
+        :raises NotImplementedError: If ``expected_class_name`` is not defined by a subclass
+                                      when the base class constructor is called.
+        :raises ValueError: If the "base_class" field in the YAML configuration
+                            does not match the subclass's ``expected_class_name``.
         """
         super().__init__("select", config)
 
@@ -50,18 +77,26 @@ class ProfileSelectionBase(DataSetBase):
     @abstractmethod
     def label_profiles(self) -> None:
         """
-        Label profiles to identify positive and negative groups.
+        Abstract method to be implemented by subclasses for labeling profiles
+        to identify positive and negative groups.
 
-        Implementations should assign a DataFrame to :attr:`selected_profiles`
-        indicating group labels (e.g., a "group_label" column).
+        Implementations of this method should perform the core logic for
+        profile selection and labeling, assigning the resulting DataFrame
+        (which should typically include a 'group_label' column) to the
+        :attr:`selected_profiles` instance variable.
         """
         pass  # pragma: no cover
 
     def write_selected_profiles(self) -> None:
         """
-        Write the selected profiles to a Parquet file specified by :attr:`output_file_name`.
+        Write the selected profiles to a Parquet file.
 
-        :raises ValueError: If :attr:`selected_profiles` is None.
+        The output file path is determined by :attr:`output_file_name`. This method
+        also ensures that the target directory exists before writing the file.
+
+        :raises ValueError: If the :attr:`selected_profiles` instance variable
+                            is None, indicating that no profiles have been selected
+                            or labeled before attempting to write.
         """
         if self.selected_profiles is None:
             raise ValueError("Member variable 'selected_profiles' must not be empty.")

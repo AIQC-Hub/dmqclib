@@ -1,3 +1,10 @@
+"""
+This module contains unit tests for the ExtractDataSetA class,
+verifying its functionality in processing and extracting features from
+various intermediate datasets (input, summary, select, and locate)
+generated in previous data quality control steps.
+"""
+
 import os
 import unittest
 from pathlib import Path

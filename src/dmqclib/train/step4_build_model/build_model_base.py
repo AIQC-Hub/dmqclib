@@ -1,3 +1,14 @@
+"""
+Provides an abstract base class, :class:`BuildModelBase`, for building and testing
+machine learning models using structured training and test datasets.
+
+This module establishes a framework for model development within a larger
+data quality control (DMQC) system, integrating with configuration management
+and model loading utilities. Subclasses are expected to implement specific
+model building and testing logic tailored to different modeling paradigms or
+frameworks.
+"""
+
 import os
 from abc import abstractmethod
 from typing import Optional, Dict
@@ -32,8 +43,8 @@ class BuildModelBase(DataSetBase):
     def __init__(
         self,
         config: ConfigBase,
-        training_sets: Optional[pl.DataFrame] = None,
-        test_sets: Optional[pl.DataFrame] = None,
+        training_sets: Optional[Dict[str, pl.DataFrame]] = None,
+        test_sets: Optional[Dict[str, pl.DataFrame]] = None,
         step_name: str = "build",
     ) -> None:
         """
@@ -43,17 +54,17 @@ class BuildModelBase(DataSetBase):
         :param config: A training configuration object containing
                        paths and parameters for building and testing models.
         :type config: ConfigBase
-        :param training_sets: A DataFrame (or dictionary-of-DataFrames) with
-                              training examples, each associated with a
-                              particular target variable, defaults to None.
-        :type training_sets: pl.DataFrame, optional
-        :param test_sets: A DataFrame (or dictionary-of-DataFrames) with
-                          testing examples, each associated with a target,
-                          defaults to None.
-        :type test_sets: pl.DataFrame, optional
-        :param step_name: A step name,
+        :param training_sets: A dictionary of Polars DataFrames, where keys are target
+                              names and values are DataFrames with training examples
+                              for that target. Defaults to None.
+        :type training_sets: Optional[Dict[str, pl.DataFrame]]
+        :param test_sets: A dictionary of Polars DataFrames, where keys are target
+                          names and values are DataFrames with testing examples
+                          for that target. Defaults to None.
+        :type test_sets: Optional[Dict[str, pl.DataFrame]]
+        :param step_name: The name of the current processing step,
                           defaults to "build".
-        :type step_name: str, optional
+        :type step_name: str
         """
         super().__init__(step_name, config)
 
@@ -148,7 +159,7 @@ class BuildModelBase(DataSetBase):
         Test a model for the specified target name.
 
         Typically, this includes running predictions, evaluating
-        performance metrics, and storing results in :attr:`results`.
+        performance metrics, and storing results in :attr:`reports`.
 
         :param target_name: The identifier for this target's model
                             and test set in :attr:`test_sets` (plus
@@ -185,7 +196,10 @@ class BuildModelBase(DataSetBase):
         for target_name, model_ref in self.models.items():
             output_path = self.model_file_names[target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            self.base_model.save_model(output_path)
+            # ISSUE: self.base_model.save_model(output_path) was incorrect.
+            # It should be the specific model_ref for the target.
+            if model_ref: # Ensure model_ref is not None before attempting to save
+                model_ref.save_model(output_path)
 
     def read_models(self) -> None:
         """
@@ -199,9 +213,12 @@ class BuildModelBase(DataSetBase):
             if not os.path.exists(path):
                 raise FileNotFoundError(f"File '{path}' does not exist.")
 
-            self.load_base_model()
-            self.base_model.load_model(path)
-            self.models[target_name] = self.base_model
+            # ISSUE: self.base_model.load_model(path) then assigning self.base_model
+            # to self.models[target_name] meant all targets would share the same instance.
+            # A new instance should be created for each target.
+            new_model_instance = load_model_class(self.config)
+            new_model_instance.load_model(path)
+            self.models[target_name] = new_model_instance
 
     def write_predictions(self) -> None:
         """

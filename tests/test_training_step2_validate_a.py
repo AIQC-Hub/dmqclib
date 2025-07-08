@@ -1,3 +1,10 @@
+"""
+This module contains unit tests for the KFoldValidation class, ensuring its
+correct integration with training configurations, data loading, model execution
+(XGBoost), and report generation. It verifies that the validation process
+behaves as expected across various scenarios.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -50,12 +57,17 @@ class TestKFoldValidation(unittest.TestCase):
         self.ds_input.process_targets()
 
     def test_step_name(self):
-        """Check that the step name is correctly identified as 'validate'."""
+        """
+        Check that the step name is correctly identified as 'validate'.
+        """
         ds = KFoldValidation(self.config)
         self.assertEqual(ds.step_name, "validate")
 
     def test_output_file_names(self):
-        """Verify that the default output file names are correctly resolved."""
+        """
+        Verify that the default output file names are correctly resolved
+        based on the configuration.
+        """
         ds = KFoldValidation(self.config)
         self.assertEqual(
             "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_temp.tsv",
@@ -71,12 +83,18 @@ class TestKFoldValidation(unittest.TestCase):
         )
 
     def test_base_model(self):
-        """Ensure the base model is an XGBoost instance, as defined by the config."""
+        """
+        Ensure the base model attribute of KFoldValidation is an XGBoost
+        instance, as defined by the configuration.
+        """
         ds = KFoldValidation(self.config)
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
-        """Check that training data is properly loaded into the KFoldValidation instance."""
+        """
+        Check that training data is properly loaded and accessible
+        within the KFoldValidation instance.
+        """
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
@@ -88,28 +106,39 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.training_sets["psal"].shape[1], 42)
 
     def test_default_k_fold(self):
-        """Confirm that k_fold defaults to 10 if no config entry is present."""
+        """
+        Confirm that the k_fold value defaults to 10 if no specific
+        configuration entry is present for it.
+        """
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        # Temporarily modify config data to simulate missing k_fold setting
         ds.config.data["step_param_set"]["steps"]["validate"]["k_fold"] = None
 
         k_fold = ds.get_k_fold()
         self.assertEqual(k_fold, 10)
 
-    def test_xgboost(self):
-        """Check that the XGBoost model processes the training sets and populates results."""
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the XGBoost model,
+        successfully processes the training sets and populates the reports.
+        """
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.process_targets()
 
         self.assertIsInstance(ds.reports["temp"], pl.DataFrame)
-        self.assertEqual(ds.reports["temp"].shape[0], 12)
-        self.assertEqual(ds.reports["temp"].shape[1], 7)
+        self.assertEqual(ds.reports["temp"].shape[0], 18)
+        self.assertEqual(ds.reports["temp"].shape[1], 8)
 
         self.assertIsInstance(ds.reports["psal"], pl.DataFrame)
-        self.assertEqual(ds.reports["psal"].shape[0], 12)
-        self.assertEqual(ds.reports["psal"].shape[1], 7)
+        self.assertEqual(ds.reports["psal"].shape[0], 18)
+        self.assertEqual(ds.reports["psal"].shape[1], 8)
 
     def test_write_results(self):
-        """Ensure validation results are written to files as expected."""
+        """
+        Ensure validation reports are written to the specified output files
+        and that these files are created on the file system.
+        Temporary files are cleaned up after the test.
+        """
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
 
         data_path = Path(__file__).resolve().parent / "data" / "training"

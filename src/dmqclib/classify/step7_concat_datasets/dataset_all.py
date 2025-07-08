@@ -1,3 +1,10 @@
+"""
+This module defines the `ConcatDataSetAll` class, which extends `ConcatDatasetsBase` to
+facilitate the concatenation of model predictions with the original input dataset.
+It is designed to integrate into a larger data quality control (DQC) workflow,
+specifically within the classification and merging steps.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -7,7 +14,7 @@ from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBas
 
 class ConcatDataSetAll(ConcatDatasetsBase):
     """
-    A subclass of :class:`ConcatDatasetsBase` to concatenate predictions and the input dataset
+    A subclass of :class:`ConcatDatasetsBase` to concatenate predictions and the input dataset.
 
     This class sets its :attr:`expected_class_name` to ``"ConcatDataSetAll"``,
     ensuring it is recognized in the YAML configuration as a valid
@@ -24,18 +31,18 @@ class ConcatDataSetAll(ConcatDatasetsBase):
         predictions: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
-        Initialize the feature extraction workflow for BO NRT + Cora data.
+        Initialize the concatenation workflow for predictions and input data.
 
         :param config: A dataset configuration object that manages paths,
-                       target definitions, and parameters for feature extraction.
+                       target definitions, and parameters for data processing.
         :type config: ConfigBase
         :param input_data: A Polars DataFrame containing all available data
-                           for feature extraction, defaults to None.
-        :type input_data: pl.DataFrame, optional
-        :param predictions: A dictionary mapping each target to its respective
-                            subset of predictions,
+                           to which predictions will be concatenated, defaults to None.
+        :type input_data: Optional[pl.DataFrame]
+        :param predictions: A dictionary mapping each target (e.g., a classification task)
+                            to its respective Polars DataFrame of predictions,
                             defaults to None.
-        :type predictions: dict of str to pl.DataFrame, optional
+        :type predictions: Optional[Dict[str, pl.DataFrame]]
         """
         super().__init__(
             config,

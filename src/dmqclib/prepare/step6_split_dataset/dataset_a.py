@@ -1,3 +1,11 @@
+"""
+This module defines `SplitDataSetA`, a specialized class for splitting feature
+data into training and test sets. It handles unique requirements for
+BO NRT + Cora test data, including maintaining relationships between positive
+and negative samples via shared identifiers and assigning k-fold indices for
+cross-validation.
+"""
+
 import numpy as np
 import polars as pl
 from typing import Optional, Dict
@@ -22,9 +30,9 @@ class SplitDataSetA(SplitDataSetBase):
 
     .. note::
 
-       The docstring states "SplitDataSetBase split feature data into training
-       and test sets," but since this is :class:`SplitDataSetA`, the wording
-       can be tailored further to mention "SplitDataSetA."
+       This class, :class:`SplitDataSetA`, is specifically designed to split
+       feature data into training and test sets with particular handling for
+       BO NRT + Cora test data.
     """
 
     expected_class_name: str = "SplitDataSetA"
@@ -41,9 +49,9 @@ class SplitDataSetA(SplitDataSetBase):
         :param config: A dataset configuration object that specifies
                        paths, test-set fraction, and k-fold details.
         :type config: ConfigBase
-        :param target_features: A dictionary mapping target names to DataFrames
-                                containing extracted features. Defaults to None.
-        :type target_features: dict of str to pl.DataFrame, optional
+        :param target_features: A dictionary mapping target names to Polars
+                                DataFrames containing extracted features. Defaults to None.
+        :type target_features: Optional[Dict[str, pl.DataFrame]]
         """
         super().__init__(config, target_features=target_features)
 
@@ -84,13 +92,10 @@ class SplitDataSetA(SplitDataSetBase):
 
         test_set = pos_test_set.vstack(neg_test_set)
         # Reassemble the final test set with "row_id" positioned as the first column.
-        self.test_sets[target_name] = pl.concat(
-            [
-                test_set.select(["row_id"]),
-                test_set,
-            ],
-            how="align_left",
-        )
+        # ISSUE: The original implementation `pl.concat([test_set.select(["row_id"]), test_set,], how="align_left",)`
+        # will cause data loss, retaining only 'row_id' due to `align_left` with a single-column DataFrame.
+        # The correct way to reorder columns is to explicitly select them.
+        self.test_sets[target_name] = test_set.select(["row_id", pl.all().exclude("row_id")])
 
         self.training_sets[target_name] = self.target_features[target_name].join(
             self.test_sets[target_name].select([pl.col("row_id")]),
@@ -137,21 +142,20 @@ class SplitDataSetA(SplitDataSetBase):
 
         training_set = pos_training_set.vstack(neg_training_set)
 
-        # Reassemble the final training set with "k_fold" positioned as the first column.
-        self.training_sets[target_name] = pl.concat(
-            [
-                training_set.select(
-                    [
-                        "k_fold",
-                        "row_id",
-                        "platform_code",
-                        "profile_no",
-                        "observation_no",
-                    ]
-                ),
-                training_set.drop(["k_fold"]),
-            ],
-            how="align_left",
+        # Reassemble the final training set with "k_fold", "row_id", etc., positioned as the first columns.
+        # ISSUE: The original implementation `pl.concat([...], how="align_left",)`
+        # will cause data loss, retaining only the explicitly selected columns due to `align_left`
+        # with the first DataFrame having a limited column set.
+        # The correct way to reorder columns is to explicitly select them.
+        cols_to_front = [
+            "k_fold",
+            "row_id",
+            "platform_code",
+            "profile_no",
+            "observation_no",
+        ]
+        self.training_sets[target_name] = training_set.select(
+            cols_to_front + [pl.all().exclude(cols_to_front)]
         )
 
     def drop_columns(self, target_name: str) -> None:

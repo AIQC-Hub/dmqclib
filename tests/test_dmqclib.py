@@ -189,7 +189,7 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
         shutil.rmtree(output_folder)
 
 
-class TestDMQCCreateTrainingDataSet(unittest.TestCase):
+class TestDMQCCreateTrainingDataSet(unittest.TestCase): # Issue: Class name is very similar to TestDMQCLibCreateTrainingDataSet, which tests the 'prepare' workflow. This class tests the 'train' workflow. A more distinct name like TestDMQCLibTrainEvaluate or TestDMQCLibTrainingWorkflow would improve clarity and avoid potential confusion.
     """
     Tests for the training workflow, ensuring training and evaluation
     produce expected validation/test results and models.

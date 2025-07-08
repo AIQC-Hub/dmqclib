@@ -1,3 +1,13 @@
+"""
+This module defines the DataSetConfig class, a specialized configuration handler
+for managing dataset-specific settings within a larger YAML configuration structure.
+
+It extends :class:`dmqclib.common.base.config_base.ConfigBase` to provide
+interfaces for selecting and resolving dataset-related configurations such as
+target sets, feature sets, and step class definitions from a hierarchical
+configuration file.
+"""
+
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.utils.config import get_config_item
 
@@ -19,7 +29,7 @@ class DataSetConfig(ConfigBase):
 
     expected_class_name: str = "DataSetConfig"
     """
-    The class name expected by the configuration. Used by 
+    The class name expected by the configuration. Used by
     :class:`ConfigBase` to validate consistency with the YAML data.
     """
 
@@ -40,7 +50,7 @@ class DataSetConfig(ConfigBase):
         then retrieve related configuration items (e.g., target_set, feature_set, etc.).
 
         This method populates :attr:`data` with relevant sub-configurations by
-        calling :func:`dmqclib.utils.config.get_config_item` on specified fields.
+        calling :func:`dmqclib.common.utils.config.get_config_item` on specified fields.
 
         :param dataset_name: The key name of the dataset to select from the YAML.
         :type dataset_name: str

@@ -1,7 +1,12 @@
 """
-This module defines a registry of feature classes for preparing datasets in
-the pipeline. Each key is a string identifier (e.g., "location") used to
-reference the corresponding feature-extraction class.
+Module defining the global registry for feature classes.
+
+This module provides ``FEATURE_REGISTRY``, a central mapping of string
+identifiers to specific feature-extraction classes within the `dmqclib`
+pipeline. Each entry allows for dynamic loading and instantiation of
+feature generators based on configuration settings, facilitating the
+preparation of datasets by applying various data transformations and
+extractions.
 """
 
 from typing import Dict, Type

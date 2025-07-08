@@ -22,44 +22,71 @@ from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBa
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step1_read_input tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step1_read_input tasks in the
+#: classification pipeline.
+#:
+#: :type: Dict[str, Type[InputDataSetBase]]
 INPUT_CLASSIFY_REGISTRY: Dict[str, Type[InputDataSetBase]] = {
     "InputDataSetAll": InputDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step2_calc_stats tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step2_calc_stats tasks in the
+#: classification pipeline.
+#:
+#: :type: Dict[str, Type[SummaryStatsBase]]
 SUMMARY_CLASSIFY_REGISTRY: Dict[str, Type[SummaryStatsBase]] = {
     "SummaryDataSetAll": SummaryDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step3_select_profiles tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step3_select_profiles tasks in the
+#: classification pipeline.
+#:
+#: :type: Dict[str, Type[ProfileSelectionBase]]
 SELECT_CLASSIFY_REGISTRY: Dict[str, Type[ProfileSelectionBase]] = {
     "SelectDataSetAll": SelectDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step4_select_rows tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step4_select_rows tasks in the
+#: classification pipeline.
+#:
+#: :type: Dict[str, Type[LocatePositionBase]]
 LOCATE_CLASSIFY_REGISTRY: Dict[str, Type[LocatePositionBase]] = {
     "LocateDataSetAll": LocateDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step5_extract_features tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step5_extract_features tasks in the
+#: classification pipeline.
+#:
+#: :type: Dict[str, Type[ExtractFeatureBase]]
 EXTRACT_CLASSIFY_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
     "ExtractDataSetAll": ExtractDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step6_classify_dataset tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step6_classify_dataset tasks in the
+#: classification pipeline.
+#:
+#: **ISSUE**: The value `ClassifyAll` is imported from `dmqclib.classify.step6_classify_dataset.dataset_all`,
+#: but the registry's type annotation is `Type[BuildModelBase]` which is imported
+#: from `dmqclib.train.step4_build_model.build_model_base`. This suggests a potential
+#: conceptual or inheritance mismatch if `ClassifyAll` is not intended to be a
+#: subclass of `BuildModelBase`.
+#:
+#: :type: Dict[str, Type[BuildModelBase]]
 CLASSIFY_CLASSIFY_REGISTRY: Dict[str, Type[BuildModelBase]] = {
     "ClassifyAll": ClassifyAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step7_concat_datasets tasks.
+#: A registry mapping class names (as strings, typically from YAML configuration)
+#: to their corresponding Python classes for step7_concat_datasets tasks in the
+#: classification pipeline.
+#:
+#: :type: Dict[str, Type[ConcatDatasetsBase]]
 CLASSIFY_CONCAT_REGISTRY: Dict[str, Type[ConcatDatasetsBase]] = {
     "ConcatDataSetAll": ConcatDataSetAll,
 }

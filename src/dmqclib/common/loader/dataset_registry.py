@@ -22,36 +22,48 @@ from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step1_read_input tasks.
+#:
+#: :type: Dict[str, Type[dmqclib.prepare.step1_read_input.input_base.InputDataSetBase]]
 INPUT_DATASET_REGISTRY: Dict[str, Type[InputDataSetBase]] = {
     "InputDataSetA": InputDataSetA,
 }
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step2_calc_stats tasks.
+#:
+#: :type: Dict[str, Type[dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase]]
 SUMMARY_DATASET_REGISTRY: Dict[str, Type[SummaryStatsBase]] = {
     "SummaryDataSetA": SummaryDataSetA,
 }
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step3_select_profiles tasks.
+#:
+#: :type: Dict[str, Type[dmqclib.prepare.step3_select_profiles.select_base.ProfileSelectionBase]]
 SELECT_DATASET_REGISTRY: Dict[str, Type[ProfileSelectionBase]] = {
     "SelectDataSetA": SelectDataSetA,
 }
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step4_select_rows tasks.
+#:
+#: :type: Dict[str, Type[dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase]]
 LOCATE_DATASET_REGISTRY: Dict[str, Type[LocatePositionBase]] = {
     "LocateDataSetA": LocateDataSetA,
 }
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step5_extract_features tasks.
+#:
+#: :type: Dict[str, Type[dmqclib.prepare.step5_extract_features.extract_base.ExtractFeatureBase]]
 EXTRACT_DATASET_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
     "ExtractDataSetA": ExtractDataSetA,
 }
 
 #: A registry mapping class names (used in YAML config) to the
 #: actual Python classes for step6_split_dataset tasks.
+#:
+#: :type: Dict[str, Type[dmqclib.prepare.step6_split_dataset.split_base.SplitDataSetBase]]
 SPLIT_DATASET_REGISTRY: Dict[str, Type[SplitDataSetBase]] = {
     "SplitDataSetA": SplitDataSetA,
 }

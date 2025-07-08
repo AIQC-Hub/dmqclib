@@ -1,3 +1,10 @@
+"""
+This module provides utilities for dynamically loading and instantiating
+feature extraction classes from a predefined registry. It serves as a central
+point for retrieving specific feature implementations based on configuration
+details, facilitating a modular approach to feature engineering.
+"""
+
 from typing import Dict, Optional
 
 import polars as pl
@@ -29,20 +36,20 @@ def load_feature_class(
     :param feature_info: A dictionary describing the feature extraction procedure,
                          which must at least include the key ``"feature"``
                          referencing the feature class name in :data:`FEATURE_REGISTRY`.
-    :type feature_info: dict
+    :type feature_info: Dict
     :param selected_profiles: A Polars DataFrame of selected profiles,
                               if applicable, defaults to None.
-    :type selected_profiles: pl.DataFrame, optional
+    :type selected_profiles: Optional[pl.DataFrame]
     :param filtered_input: A Polars DataFrame winnowed to relevant data
                            for advanced merging or lookups, defaults to None.
-    :type filtered_input: pl.DataFrame, optional
+    :type filtered_input: Optional[pl.DataFrame]
     :param selected_rows: A Polars DataFrame containing the rows or
-                        observations for this target, defaults to None.
-    :type selected_rows: pl.DataFrame, optional
+                          observations for this target, defaults to None.
+    :type selected_rows: Optional[pl.DataFrame]
     :param summary_stats: A Polars DataFrame with summary statistics
                           for potential use in scaling or transformation,
                           defaults to None.
-    :type summary_stats: pl.DataFrame, optional
+    :type summary_stats: Optional[pl.DataFrame]
     :return: An instance of the requested feature extraction class,
              inheriting from :class:`FeatureBase`.
     :rtype: FeatureBase

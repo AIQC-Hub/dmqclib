@@ -21,7 +21,7 @@ def get_config_data_set_template() -> str:
     - ``data_sets``: referencing specific dataset folders, files, and
       associated configuration sets (e.g., ``step_class_set``, ``step_param_set``).
 
-    :return: A string containing the YAML template.
+    :returns: A string containing the YAML template.
     :rtype: str
 
     .. note::
@@ -146,7 +146,7 @@ def get_config_train_set_template() -> str:
     - ``training_sets``: referencing specific dataset folders, the ``path_info`` used,
       the target set, and which ``step_class_set`` and ``step_param_set`` apply.
 
-    :return: A string containing the YAML template.
+    :returns: A string containing the YAML template.
     :rtype: str
     """
     yaml_template = """
@@ -220,7 +220,7 @@ def get_config_classify_set_template() -> str:
     - ``classification_sets``: referencing specific dataset folders, files, and
       associated configuration sets (e.g., ``step_class_set``, ``step_param_set``).
 
-    :return: A string containing the YAML template.
+    :returns: A string containing the YAML template.
     :rtype: str
 
     .. note::

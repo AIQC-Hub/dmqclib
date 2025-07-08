@@ -1,3 +1,13 @@
+"""
+Unit tests for the `classify_dataset` function.
+
+This module contains tests to verify that the `classify_dataset`
+function correctly processes input data and generates the expected
+directory structure and output files for various classification steps,
+including summary, selection, location, extraction, classification,
+and concatenation.
+"""
+
 import os
 import shutil
 import unittest
@@ -17,7 +27,8 @@ class TestClassifyDataSet(unittest.TestCase):
         """
         Prepare the test environment by creating a DataSetConfig object,
         defining file paths, and updating the configuration with test input
-        and output paths.
+        and output paths. This method ensures that each test starts with a
+        clean and predictable configuration.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -39,10 +50,24 @@ class TestClassifyDataSet(unittest.TestCase):
             "concat": {"step_folder_name": "classify"},
         }
 
+    def tearDown(self):
+        """
+        Clean up the test environment by removing any generated output folders
+        and files after each test method has completed.
+        """
+        output_folder = (
+            self.test_data_location / self.config.data["dataset_folder_name"]
+        )
+        if output_folder.exists() and output_folder.is_dir():
+            shutil.rmtree(output_folder)
+
     def test_classify_data_set(self):
         """
-        Check that classify_dataset generates the expected folder
-        hierarchy and files for summary, select, locate, extract, classify, and concat steps.
+        Verifies that the `classify_dataset` function generates the expected
+        folder hierarchy and files for each step of the classification process.
+        This includes checking for the presence of summary statistics, selected profiles,
+        located rows, extracted features, classification predictions, and reports,
+        as well as the final concatenated predictions.
         """
         classify_dataset(self.config)
 
@@ -130,5 +155,3 @@ class TestClassifyDataSet(unittest.TestCase):
         self.assertTrue(
             os.path.exists(str(output_folder / "classify" / "predictions.parquet"))
         )
-
-        shutil.rmtree(output_folder)

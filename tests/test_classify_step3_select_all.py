@@ -1,3 +1,10 @@
+"""Unit tests for the SelectDataSetAll class in dmqclib.classify.step3_select_profiles.
+
+This module contains a suite of tests to verify the correct functionality
+of the SelectDataSetAll class, including profile selection, labeling,
+and persistence operations.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -11,12 +18,12 @@ from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
 
 class TestSelectDataSetA(unittest.TestCase):
     """
-    A suite of tests ensuring the SelectDataSetA class operates correctly
+    A suite of tests ensuring the SelectDataSetAll class operates correctly
     for selecting and labeling profiles, as well as writing results to disk.
     """
 
     def setUp(self):
-        """Set up test environment and load input dataset."""
+        """Set up test environment and load input dataset for all tests."""
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -49,14 +56,14 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_input_data(self):
-        """Ensure input data is loaded into the class as a Polars DataFrame."""
+        """Ensure input data is loaded into the class as a Polars DataFrame with expected shape."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 19480)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_selected_profiles(self):
-        """Check that all profiles are selected correctly."""
+        """Check that all profiles are selected correctly and the resulting DataFrame has the expected shape."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.select_all_profiles()
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -64,14 +71,14 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_label_profiles(self):
-        """Check that profiles are labeled correctly."""
+        """Check that profiles are labeled correctly, resulting in the expected DataFrame shape."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.label_profiles()
         self.assertEqual(ds.selected_profiles.shape[0], 84)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_write_selected_profiles(self):
-        """Confirm that selected profiles are written to a file successfully."""
+        """Confirm that selected profiles are written to a file successfully and the file exists."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.output_file_name = str(
             Path(__file__).resolve().parent
@@ -80,13 +87,16 @@ class TestSelectDataSetA(unittest.TestCase):
             / "temp_selected_classify_profiles.parquet"
         )
 
+        # Assuming label_profiles populates selected_profiles before writing.
+        # If write_selected_profiles can write without prior labeling,
+        # this call might not be strictly necessary depending on the method's contract.
         ds.label_profiles()
         ds.write_selected_profiles()
         self.assertTrue(os.path.exists(ds.output_file_name))
         os.remove(ds.output_file_name)
 
     def test_write_empty_selected_profiles(self):
-        """Check that writing empty profiles raises ValueError."""
+        """Check that writing an unpopulated (empty or None) selected profiles DataFrame raises a ValueError."""
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.output_file_name = str(
             Path(__file__).resolve().parent
@@ -95,5 +105,7 @@ class TestSelectDataSetA(unittest.TestCase):
             / "temp_selected_classify_profiles.parquet"
         )
 
+        # selected_profiles is not populated by select_all_profiles() or label_profiles() here,
+        # so it is expected to be empty or None, causing a ValueError upon writing.
         with self.assertRaises(ValueError):
             ds.write_selected_profiles()

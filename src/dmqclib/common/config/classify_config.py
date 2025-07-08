@@ -1,3 +1,12 @@
+"""
+This module defines the ClassificationConfig class, a specialized configuration handler
+for managing dataset-related settings pertinent to machine learning classification tasks.
+It extends ConfigBase to provide structured access and resolution of various
+sub-configurations (e.g., target sets, feature sets, step class definitions)
+from YAML-based configuration files, simplifying the management of complex
+ML pipeline configurations.
+"""
+
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.utils.config import get_config_item
 
@@ -7,7 +16,7 @@ class ClassificationConfig(ConfigBase):
     A configuration class for retrieving and organizing dataset-related
     configurations specific to classification tasks.
 
-    Extends :class:`ConfigBase` by adding logic to select datasets
+    Extends :class:`dmqclib.common.base.config_base.ConfigBase` by adding logic to select datasets
     from YAML-based configuration files. The selected dataset references
     various sub-configurations (e.g., target sets, feature sets, and
     step class definitions). These references are resolved and stored
@@ -17,18 +26,18 @@ class ClassificationConfig(ConfigBase):
     expected_class_name: str = "ClassificationConfig"
     """
     The class name expected by this configuration to validate it 
-    aligns with the YAML definition. Used by :class:`ConfigBase`.
+    aligns with the YAML definition. Used by :class:`dmqclib.common.base.config_base.ConfigBase`.
     """
 
     def __init__(self, config_file: str) -> None:
         """
-        Initialize a new :class:`ClassificationConfig`.
+        Initialize a new :class:`ClassificationConfig` instance.
 
         :param config_file: The path to the YAML file containing
                             classification datasets and their sub-configurations.
         :type config_file: str
         :raises ValueError: If the YAML is invalid or missing the
-                            "data_sets" section.
+                            "classification_sets" section.
         """
         super().__init__("classification_sets", config_file=config_file)
 
@@ -39,11 +48,19 @@ class ClassificationConfig(ConfigBase):
 
         This method retrieves multiple related configurations by calling
         :func:`dmqclib.common.utils.config.get_config_item` on relevant
-        sections of the YAML file.
+        sections of the YAML file. It expects that the initial `self.data`
+        population from `super().select` contains references to these
+        sub-configurations, which are then resolved.
 
         :param dataset_name: The name (key) of the desired dataset
-                             in the YAML's "data_sets" dictionary.
-        :raises KeyError: If ``dataset_name`` is not present in `data_sets`.
+                             in the YAML's "classification_sets" dictionary.
+        :type dataset_name: str
+        :raises KeyError: If ``dataset_name`` is not present in the
+                          "classification_sets" section of the YAML,
+                          or if a referenced sub-configuration name (e.g.,
+                          "target_set" within the selected dataset) is not
+                          found in its corresponding top-level section
+                          (e.g., "target_sets").
         """
         super().select(dataset_name)
         self.data["target_set"] = get_config_item(

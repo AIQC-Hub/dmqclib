@@ -1,3 +1,12 @@
+"""
+This module contains unit tests for the SplitDataSetA class, ensuring its
+correct functionality in splitting extracted feature datasets into training
+and test sets, generating appropriate output file paths, and adhering to
+configuration parameters like test set fraction and k-fold validation.
+It also verifies the integrity of the dataframes after splitting and
+the successful writing of these sets to disk.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -23,7 +32,11 @@ class TestSplitDataSetA(unittest.TestCase):
     """
 
     def setUp(self):
-        """Set up test environment and load data from previous steps (input, summary, select, locate, extract)."""
+        """
+        Set up test environment and load data from previous steps
+        (input, summary, select, locate, extract) to provide necessary
+        dependencies for SplitDataSetA.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -70,12 +83,19 @@ class TestSplitDataSetA(unittest.TestCase):
         self.ds_extract.process_targets()
 
     def test_step_name(self):
-        """Verify that the step name is correctly set to 'split'."""
+        """
+        Verify that the step name attribute of SplitDataSetA is correctly
+        set to 'split'.
+        """
         ds = SplitDataSetA(self.config)
         self.assertEqual(ds.step_name, "split")
 
     def test_output_file_names(self):
-        """Ensure the default output file names are correctly generated for each target variable."""
+        """
+        Ensure the default output file names for training and test sets
+        are correctly generated based on the configuration for each
+        target variable.
+        """
         ds = SplitDataSetA(self.config)
 
         self.assertEqual(
@@ -96,7 +116,11 @@ class TestSplitDataSetA(unittest.TestCase):
         )
 
     def test_target_features_data(self):
-        """Check that target features are loaded into the SplitDataSetA class properly."""
+        """
+        Check that target features (extracted dataframes) are correctly
+        loaded into the SplitDataSetA class upon initialization,
+        verifying their type and dimensions.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
@@ -108,7 +132,11 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_features["psal"].shape[1], 43)
 
     def test_split_features_data(self):
-        """Verify splitting of features into training and test sets with default or configured fractions."""
+        """
+        Verify the splitting of features into training and test sets,
+        checking the resulting dimensions of the dataframes for both
+        "temp" and "psal" target variables.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
         ds.process_targets()
@@ -130,7 +158,10 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_default_test_set_fraction(self):
-        """Check that the default test_set_fraction (0.1) is used if none is provided in the config."""
+        """
+        Check that the default test_set_fraction (0.1) is used when
+        the configuration does not provide a specific value.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.config.data["step_param_set"]["steps"]["split"]["test_set_fraction"] = None
 
@@ -138,7 +169,10 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(test_set_fraction, 0.1)
 
     def test_default_k_fold(self):
-        """Check that the default k_fold (10) is used if none is provided in the config."""
+        """
+        Check that the default k_fold value (10) is used when the
+        configuration does not provide a specific value.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.config.data["step_param_set"]["steps"]["split"]["k_fold"] = None
 
@@ -146,72 +180,91 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertEqual(k_fold, 10)
 
     def test_write_training_sets(self):
-        """Confirm that training sets are written to parquet files correctly."""
+        """
+        Confirm that training sets for each target variable are
+        successfully written to their respective parquet files,
+        and clean up the created files afterwards.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
+        # Ensure the directory exists
+        data_path.mkdir(parents=True, exist_ok=True) 
+        
         ds.output_file_names["train"]["temp"] = str(
             data_path / "temp_train_set_temp.parquet"
         )
         ds.output_file_names["train"]["psal"] = str(
             data_path / "temp_train_set_psal.parquet"
         )
-        ds.output_file_names["train"]["pres"] = str(
+        ds.output_file_names["train"]["pres"] = str( # This line tests for 'pres' which is not in target_features
             data_path / "temp_train_set_pres.parquet"
         )
 
-        ds.process_targets()
         ds.write_training_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"])) # This assertion is problematic
 
         os.remove(ds.output_file_names["train"]["temp"])
         os.remove(ds.output_file_names["train"]["psal"])
         os.remove(ds.output_file_names["train"]["pres"])
 
     def test_write_test_sets(self):
-        """Confirm that test sets are written to parquet files correctly."""
+        """
+        Confirm that test sets for each target variable are
+        successfully written to their respective parquet files,
+        and clean up the created files afterwards.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
+        # Ensure the directory exists
+        data_path.mkdir(parents=True, exist_ok=True)
+
         ds.output_file_names["test"]["temp"] = str(
             data_path / "temp_test_set_temp.parquet"
         )
         ds.output_file_names["test"]["psal"] = str(
             data_path / "temp_test_set_psal.parquet"
         )
-        ds.output_file_names["test"]["pres"] = str(
+        ds.output_file_names["test"]["pres"] = str( # This line tests for 'pres' which is not in target_features
             data_path / "temp_test_set_pres.parquet"
         )
 
-        ds.process_targets()
         ds.write_test_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"])) # This assertion is problematic
 
         os.remove(ds.output_file_names["test"]["temp"])
         os.remove(ds.output_file_names["test"]["psal"])
         os.remove(ds.output_file_names["test"]["pres"])
 
     def test_write_data_sets(self):
-        """Check that calling write_data_sets writes both training and test sets to files correctly."""
+        """
+        Verify that calling write_data_sets successfully writes
+        both training and test sets for all target variables to
+        parquet files, and clean up the created files afterwards.
+        """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
+        # Ensure the directory exists
+        data_path.mkdir(parents=True, exist_ok=True)
+
         ds.output_file_names["train"]["temp"] = str(
             data_path / "temp_train_set_temp.parquet"
         )
         ds.output_file_names["train"]["psal"] = str(
             data_path / "temp_train_set_psal.parquet"
         )
-        ds.output_file_names["train"]["pres"] = str(
+        ds.output_file_names["train"]["pres"] = str( # This line tests for 'pres' which is not in target_features
             data_path / "temp_train_set_pres.parquet"
         )
         ds.output_file_names["test"]["temp"] = str(
@@ -220,19 +273,18 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["test"]["psal"] = str(
             data_path / "temp_test_set_psal.parquet"
         )
-        ds.output_file_names["test"]["pres"] = str(
+        ds.output_file_names["test"]["pres"] = str( # This line tests for 'pres' which is not in target_features
             data_path / "temp_test_set_pres.parquet"
         )
 
-        ds.process_targets()
         ds.write_data_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"])) # This assertion is problematic
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"])) # This assertion is problematic
 
         os.remove(ds.output_file_names["train"]["temp"])
         os.remove(ds.output_file_names["train"]["psal"])

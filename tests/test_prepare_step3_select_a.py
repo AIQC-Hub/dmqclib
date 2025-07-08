@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the SelectDataSetA class,
+which is responsible for selecting, labeling, and managing profiles
+within a dataset based on specific criteria.
+"""
+
 import os
 import unittest
 from pathlib import Path

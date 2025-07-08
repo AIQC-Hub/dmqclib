@@ -1,3 +1,13 @@
+"""
+This module defines the `SelectDataSetA` class, which is responsible for selecting
+and labeling positive and negative oceanographic profiles from a given dataset.
+
+It extends `ProfileSelectionBase` to implement specific criteria for identifying
+"bad" (positive) and "good" (negative) profiles based on QC flags, and then
+pairs them temporally to construct a labeled dataset suitable for quality
+control machine learning applications.
+"""
+
 import polars as pl
 from typing import Optional, List
 
@@ -37,8 +47,8 @@ class SelectDataSetA(ProfileSelectionBase):
         :type config: ConfigBase
         :param input_data: A Polars DataFrame containing the full set
                            of profiles from which to select positive
-                           and negative examples.
-        :type input_data: pl.DataFrame, optional
+                           and negative examples. Defaults to None.
+        :type input_data: Optional[pl.DataFrame]
         """
         super().__init__(config, input_data=input_data)
 
@@ -118,6 +128,10 @@ class SelectDataSetA(ProfileSelectionBase):
         Identify the negative profile whose date is closest to each positive profile,
         to reduce the negative set to only those instances that are temporally
         near the positive set.
+
+        This method updates :attr:`pos_profile_df` by adding a 'label' column
+        and a 'neg_profile_id' column, and updates :attr:`neg_profile_df` by
+        filtering, adding a 'label' column, and modifying 'neg_profile_id'.
         """
         closest_neg_id = (
             self.pos_profile_df.join(self.neg_profile_df, how="cross", suffix="_neg")
@@ -156,6 +170,10 @@ class SelectDataSetA(ProfileSelectionBase):
         """
         Select and label positive and negative datasets, then combine them
         into a single DataFrame in :attr:`selected_profiles`.
+
+        This method orchestrates the full selection and labeling process by
+        calling :meth:`select_positive_profiles`, :meth:`select_negative_profiles`,
+        and :meth:`find_profile_pairs` in sequence.
         """
         self.select_positive_profiles()
         self.select_negative_profiles()

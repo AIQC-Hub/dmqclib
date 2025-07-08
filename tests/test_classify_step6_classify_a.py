@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the `ClassifyAll` class,
+focusing on its functionality for loading, testing, and saving
+XGBoost models and their results within the classification workflow.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -18,8 +24,8 @@ from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
 
 class TestBuildModel(unittest.TestCase):
     """
-    A suite of tests ensuring that building, testing, and saving XGBoost models
-    via BuildModel follows the expected configuration and data flows.
+    A suite of tests ensuring that the `ClassifyAll` step correctly loads models,
+    tests them against input data, and saves classification reports and predictions.
     """
 
     def setUp(self):
@@ -123,7 +129,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_test_sets(self):
-        """Check that training and test sets are loaded into BuildModel correctly."""
+        """Check that test sets are loaded into ClassifyAll correctly."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -138,7 +144,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_read_models(self):
-        """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
+        """Confirm that reading models populates the 'models' dictionary with XGBoost instances."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -151,7 +157,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["pres"], XGBoost)
 
     def test_test_with_xgboost(self):
-        """Check that testing sets after model building populates the result columns."""
+        """Check that testing targets after model loading populates the result columns."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -169,7 +175,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_test_without_model(self):
-        """Ensure that testing without building models raises a ValueError."""
+        """Ensure that testing without loaded models raises a ValueError."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -178,7 +184,7 @@ class TestBuildModel(unittest.TestCase):
             ds.test_targets()
 
     def test_write_reports(self):
-        """Check that the test reports are correctly written to file."""
+        """Verify that test reports are correctly written to file."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -198,7 +204,7 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["report"]["pres"])
 
     def test_write_no_results(self):
-        """Ensure ValueError is raised if write_results is called with no results available."""
+        """Ensure ValueError is raised if write_reports is called without test results."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -207,7 +213,7 @@ class TestBuildModel(unittest.TestCase):
             ds.write_reports()
 
     def test_read_models_no_file(self):
-        """Check that FileNotFoundError is raised if model files are missing."""
+        """Check that FileNotFoundError is raised if model files are missing during loading."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,
@@ -221,7 +227,7 @@ class TestBuildModel(unittest.TestCase):
             ds.read_models()
 
     def test_write_predictions(self):
-        """Check that the test reports are correctly written to file."""
+        """Verify that test predictions are correctly written to file."""
         ds = ClassifyAll(
             self.config,
             test_sets=self.ds_extract.target_features,

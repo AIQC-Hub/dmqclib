@@ -1,3 +1,11 @@
+"""
+This module provides the BasicValues3PlusFlanks class for extracting target
+values and their "flanking" (neighboring) observations from Polars DataFrames.
+
+It extends FeatureBase and is designed for specific data processing needs,
+such as those encountered with BO NRT + Cora test data.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -26,25 +34,25 @@ class BasicValues3PlusFlanks(FeatureBase):
         Initialize an instance of BasicValues3PlusFlanks.
 
         :param target_name: The key identifying which target's rows to extract
-                            features for from :attr:`selected_rows`.
-        :type target_name: str, optional
+                            features for from :attr:`selected_rows`, defaults to None.
+        :type target_name: Optional[str]
         :param feature_info: A dictionary containing feature-related parameters,
                              including a "stats" sub-dict with min/max info
                              and a "flank_up" integer specifying how many
                              upstream observations to retrieve, defaults to None.
-        :type feature_info: dict, optional
+        :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame with selected profiles, typically
                                   used for further merges or lookups, defaults to None.
-        :type selected_profiles: pl.DataFrame, optional
+        :type selected_profiles: Optional[pl.DataFrame]
         :param filtered_input: A potentially filtered Polars DataFrame containing
                                full observed variables, defaults to None.
-        :type filtered_input: pl.DataFrame, optional
+        :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary mapping target names to their respective
                             DataFrames of relevant rows, defaults to None.
-        :type selected_rows: dict of (str to pl.DataFrame), optional
+        :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: A Polars DataFrame of summary statistics
                               (unused in this subclass), defaults to None.
-        :type summary_stats: pl.DataFrame, optional
+        :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
             target_name=target_name,
@@ -174,6 +182,12 @@ class BasicValues3PlusFlanks(FeatureBase):
         using min-max scaling derived from :attr:`feature_info["stats"]`.
 
         This modifies :attr:`filtered_input` in place for each relevant column.
+
+        .. warning::
+            This method does not handle cases where ``v["max"]`` equals ``v["min"]``
+            for a given column, which would result in division by zero and introduce
+            NaN or infinite values into the scaled data. Consider adding a small
+            epsilon or conditional logic to prevent this.
         """
         for col_name, v in self.feature_info["stats"].items():
             self.filtered_input = self.filtered_input.with_columns(

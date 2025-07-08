@@ -1,3 +1,13 @@
+"""
+This module defines the abstract base class `DataSetBase`, which serves as a
+foundation for implementing various dataset classes.
+
+It provides a common structure for dataset initialization, including validation
+of the `expected_class_name` attribute against the provided configuration.
+Subclasses are expected to override the `expected_class_name` attribute
+to match their specific class identifier in the system's configuration.
+"""
+
 from abc import ABC
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -16,7 +26,7 @@ class DataSetBase(ABC):
        an abstract base class.
     """
 
-    expected_class_name = None  # Must be overridden by child classes
+    expected_class_name: str | None = None  # Must be overridden by child classes
 
     def __init__(self, step_name: str, config: ConfigBase) -> None:
         """

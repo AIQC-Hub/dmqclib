@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the ExtractDataSetAll class,
+verifying its functionality in gathering and processing features from
+various classification pipeline steps (input, summary, select, locate).
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -60,7 +66,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_locate.process_targets()
 
     def test_output_file_names(self):
-        """Check that the output file names are set according to the configuration."""
+        """
+        Test that the output file names dictionary is correctly populated
+        based on the configuration.
+        """
         ds = ExtractDataSetAll(self.config)
         self.assertEqual(
             "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_temp.parquet",
@@ -72,12 +81,19 @@ class TestExtractDataSetA(unittest.TestCase):
         )
 
     def test_step_name(self):
-        """Ensure the step name is set to 'extract'."""
+        """
+        Verify that the 'step_name' attribute of the ExtractDataSetAll instance
+        is correctly set to 'extract'.
+        """
         ds = ExtractDataSetAll(self.config)
         self.assertEqual(ds.step_name, "extract")
 
     def test_init_arguments(self):
-        """Validate that input data, selected profiles, target rows, and summary stats are set."""
+        """
+        Test that the ExtractDataSetAll class correctly initializes with
+        provided input data, selected profiles, selected rows, and summary statistics,
+        and that these dataframes have the expected shapes.
+        """
         ds = ExtractDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -107,7 +123,11 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
     def test_location_features(self):
-        """Check that features are correctly processed for temp and psal targets."""
+        """
+        Test that the `process_targets` method correctly generates and
+        stores extracted features for both 'temp' and 'psal' targets
+        with the expected DataFrame shapes.
+        """
         ds = ExtractDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -127,7 +147,11 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_features["psal"].shape[1], 41)
 
     def test_write_target_features(self):
-        """Confirm that target features are written to parquet files as expected."""
+        """
+        Test that the `write_target_features` method successfully writes
+        the extracted features for configured targets to parquet files
+        and that these files are created in the specified location.
+        """
         ds = ExtractDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -136,6 +160,7 @@ class TestExtractDataSetA(unittest.TestCase):
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
+
         ds.output_file_names["temp"] = str(
             data_path / "temp_extracted_features_classify_temp.parquet"
         )
@@ -152,12 +177,17 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["pres"]))
+        
         os.remove(ds.output_file_names["temp"])
         os.remove(ds.output_file_names["psal"])
         os.remove(ds.output_file_names["pres"])
 
     def test_write_no_target_features(self):
-        """Check that calling write_target_features with empty features raises ValueError."""
+        """
+        Test that calling `write_target_features` when `target_features`
+        is empty (i.e., `process_targets` has not been called) raises a ValueError,
+        ensuring proper validation.
+        """
         ds = ExtractDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,

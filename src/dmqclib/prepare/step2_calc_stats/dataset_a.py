@@ -1,4 +1,12 @@
+"""
+This module defines the SummaryDataSetA class, a specialized implementation
+of SummaryStatsBase for calculating summary statistics on specific datasets,
+such as BO NRT and Cora test data, using the Polars DataFrame library.
+It integrates with a configuration management system to ensure proper data processing.
+"""
+
 import polars as pl
+from typing import Optional # Explicitly import Optional for clearer type hints in code and docstrings
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
@@ -6,24 +14,28 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 
 class SummaryDataSetA(SummaryStatsBase):
     """
-    Subclass of SummaryStatsBase for calculating summary statistics
-    for BO NRT + Cora test data using Polars.
+    Specialized class for calculating summary statistics for BO NRT + Cora test data.
 
-    This class sets the :attr:`expected_class_name` to match
-    the YAML configuration.
+    This class extends :class:`dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`
+    and leverages the Polars DataFrame library for efficient data processing.
+    It identifies itself via the :attr:`expected_class_name` attribute
+    to match corresponding YAML configuration entries.
     """
 
     expected_class_name: str = "SummaryDataSetA"
 
-    def __init__(self, config: ConfigBase, input_data: pl.DataFrame = None) -> None:
+    def __init__(self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None) -> None:
         """
-        Initialize SummaryDataSetA with configuration and optional input data.
+        Initializes the SummaryDataSetA instance.
 
-        :param config: The dataset configuration object containing paths
-                       and parameters for summary stats.
+        This constructor sets up the summary statistics calculator with the provided
+        configuration and an optional initial dataset.
+
+        :param config: The configuration object containing all necessary parameters
+                       and paths for data processing and summary statistics calculation.
         :type config: ConfigBase
-        :param input_data: A Polars DataFrame from which to calculate summary stats.
-                           If None, data must be assigned later.
-        :type input_data: pl.DataFrame, optional
+        :param input_data: An optional Polars DataFrame to immediately process.
+                           If ``None``, data should be set later using other methods.
+        :type input_data: Optional[pl.DataFrame]
         """
         super().__init__(config, input_data=input_data)

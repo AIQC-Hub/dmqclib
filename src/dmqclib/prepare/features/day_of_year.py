@@ -1,3 +1,13 @@
+"""
+This module defines a feature extraction class, DayOfYearFeat,
+that calculates the day of the year from timestamps.
+
+It is designed to be part of a larger feature engineering pipeline,
+extending the FeatureBase class to derive temporal features,
+specifically the day-of-year, and optionally apply a sinusoidal
+transformation for cyclical encoding.
+"""
+
 import numpy as np
 import polars as pl
 from typing import Optional, Dict
@@ -29,27 +39,26 @@ class DayOfYearFeat(FeatureBase):
 
         :param target_name: The name of the target variable used to index
                             :attr:`selected_rows`. Defaults to None.
-        :type target_name: str, optional
-        :param feature_info: A Polars DataFrame or dictionary describing feature
-                             parameters, which may include a "convert" key
-                             (e.g., "sine") for sinusoidal transformations,
-                             defaults to None.
-        :type feature_info: Dict, optional
+        :type target_name: Optional[str]
+        :param feature_info: A dictionary describing feature parameters,
+                             which may include a "convert" key (e.g., "sine")
+                             for sinusoidal transformations. Defaults to None.
+        :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame containing a subset
-                                  of profiles relevant to feature extraction,
-                                  defaults to None.
-        :type selected_profiles: pl.DataFrame, optional
+                                  of profiles relevant to feature extraction.
+                                  Defaults to None.
+        :type selected_profiles: Optional[pl.DataFrame]
         :param filtered_input: (Unused in this feature class) A filtered Polars
-                               DataFrame of input data for advanced merging,
-                               defaults to None.
-        :type filtered_input: pl.DataFrame, optional
+                               DataFrame of input data for advanced merging.
+                               Defaults to None.
+        :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary of target-specific DataFrames, each
                             containing rows relevant to that target. Defaults to None.
-        :type selected_rows: dict of (str to pl.DataFrame), optional
+        :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: (Unused in this feature class) A Polars DataFrame
-                              containing statistical information for potential scaling,
-                              defaults to None.
-        :type summary_stats: pl.DataFrame, optional
+                              containing statistical information for potential scaling.
+                              Defaults to None.
+        :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
             target_name=target_name,
@@ -71,7 +80,7 @@ class DayOfYearFeat(FeatureBase):
           2. Join the subset with ``profile_timestamp`` from :attr:`selected_profiles`
              based on ``platform_code`` and ``profile_no``.
           3. Compute the day of year from ``profile_timestamp`` via
-             Polars' .dt.ordinal_day().
+             Polars' :func:`polars.Expr.dt.ordinal_day`.
           4. Remove columns no longer needed (i.e., the join keys and timestamp).
         """
         self.features = (
@@ -106,11 +115,17 @@ class DayOfYearFeat(FeatureBase):
 
         If ``"convert"`` is specified as ``"sine"`` in :attr:`feature_info`,
         transforms each day-of-year value into a sine-based cyclical feature
-        in the range [0, 1]:
+        in the range [0, 1].
 
-        day_of_year = ((sin(day_of_year * 2π / 365) + 1) / 2).
+        The transformation formula used is:
+
+        .. math::
+            day\\_of\\_year_{transformed} = \\frac{{\\sin(day\\_of\\_year \\cdot 2\\pi / 365) + 1}}{2}
         """
-        if "convert" in self.feature_info and self.feature_info["convert"] == "sine":
+        # Issue: self.feature_info is Optional[Dict]. If it is None,
+        # accessing self.feature_info["convert"] will raise an AttributeError.
+        # Fixed by checking if self.feature_info is not None.
+        if self.feature_info is not None and self.feature_info.get("convert") == "sine":
             self.features = self.features.with_columns(
-                (np.sin(pl.col("day_of_year") * 2 * np.pi / 365) + 1) / 2
+                ((pl.col("day_of_year") * 2 * np.pi / 365).sin() + 1) / 2
             )

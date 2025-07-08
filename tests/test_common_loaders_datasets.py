@@ -1,3 +1,12 @@
+"""
+Unit tests for verifying the correct loading and initialization of dataset classes
+at various processing steps, using common loader functions.
+
+These tests ensure that the dataset objects are correctly instantiated with the
+expected step names and that any provided input data (e.g., from previous steps)
+is properly assigned and retains its expected structure.
+"""
+
 import unittest
 from pathlib import Path
 

@@ -1,3 +1,13 @@
+"""
+This module defines the :class:`ValidationBase` abstract base class, providing
+a foundational framework for validating trained machine learning models.
+
+It integrates with the ``dmqclib`` library's configuration and data handling
+mechanisms, enabling robust and standardized validation routines across
+different model types and datasets. Subclasses are expected to implement
+the specific validation logic tailored to their model and data.
+"""
+
 import os
 from abc import abstractmethod
 from typing import Optional, Dict, List
@@ -36,10 +46,10 @@ class ValidationBase(DataSetBase):
         :param config: A training configuration object containing
                        paths, target definitions, and model parameters.
         :type config: ConfigBase
-        :param training_sets: A DataFrame (or dictionary of DataFrames if
-                              consolidated) containing training data to be
-                              validated, defaults to None.
-        :type training_sets: Dict[str, pl.DataFrame], optional
+        :param training_sets: A dictionary of Polars DataFrames where keys
+                              are target names and values are the corresponding
+                              training data, or None if no training sets are provided.
+        :type training_sets: Optional[Dict[str, pl.DataFrame]]
         :raises NotImplementedError: If a subclass does not define
                                      ``expected_class_name`` and is instantiated
                                      with a YAML config specifying
@@ -75,7 +85,7 @@ class ValidationBase(DataSetBase):
         #: of validation reports (e.g., predictions, metrics).
         self.reports: Dict[str, pl.DataFrame] = {}
 
-        #: A dictionary for storing any summarised metrics derived from :attr:`results`.
+        #: A dictionary for storing any summarised metrics derived from :attr:`reports`.
         self.summarised_reports: Dict[str, pl.DataFrame] = {}
 
     def load_base_model(self) -> None:
@@ -102,7 +112,7 @@ class ValidationBase(DataSetBase):
 
         Subclasses must implement the logic to use :attr:`training_sets`
         (and possibly :attr:`base_model` or :attr:`models`)
-        to evaluate performance, store metrics in :attr:`results`, etc.
+        to evaluate performance, store metrics in :attr:`reports`, etc.
 
         :param target_name: The key identifying which target to validate.
         :type target_name: str
@@ -111,9 +121,13 @@ class ValidationBase(DataSetBase):
 
     def write_reports(self) -> None:
         """
-        Write the validation results to TSV files.
+        Write the validation results stored in :attr:`reports` to TSV files.
 
-        :raises ValueError: If :attr:`results` is empty.
+        Each target's report DataFrame is written to a file specified by
+        :attr:`output_file_names`. Directories are created if they do not exist.
+
+        :raises ValueError: If :attr:`reports` is empty, indicating no validation
+                            results are available to write.
         """
         if not self.reports:
             raise ValueError("Member variable 'reports' must not be empty.")

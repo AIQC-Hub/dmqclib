@@ -1,3 +1,6 @@
+"""Unit tests for the SummaryDataSetA class, covering output file handling,
+data loading, and statistical calculations."""
+
 import os
 import unittest
 from pathlib import Path

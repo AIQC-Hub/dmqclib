@@ -1,3 +1,13 @@
+"""
+This module defines the abstract base class `SplitDataSetBase` for managing
+the splitting of target feature DataFrames into training and test sets,
+and for assigning k-fold cross-validation labels.
+
+It extends `DataSetBase` to provide a standardized structure for data splitting
+operations, integrating configuration management and supporting the output
+of processed datasets to Parquet files.
+"""
+
 import os
 from abc import abstractmethod
 from typing import Dict, Optional
@@ -17,6 +27,9 @@ class SplitDataSetBase(DataSetBase):
     YAML-based configuration. It provides methods for writing out
     the resulting training and test sets into Parquet files.
 
+    Subclasses must implement the abstract methods:
+    :meth:`split_test_set`, :meth:`add_k_fold`, and :meth:`drop_columns`.
+
     .. note::
 
        Since this class inherits from :class:`DataSetBase` and is marked as
@@ -25,7 +38,7 @@ class SplitDataSetBase(DataSetBase):
     """
 
     def __init__(
-        self, config: ConfigBase, target_features: Optional[pl.DataFrame] = None
+        self, config: ConfigBase, target_features: Optional[Dict[str, pl.DataFrame]] = None
     ) -> None:
         """
         Initialize the train/test splitting class with a configuration
@@ -34,9 +47,10 @@ class SplitDataSetBase(DataSetBase):
         :param config: A dataset configuration object containing parameters
                        and paths for splitting.
         :type config: ConfigBase
-        :param target_features: A Polars DataFrame holding combined features
-                                for one or more targets, or None if not yet available.
-        :type target_features: pl.DataFrame, optional
+        :param target_features: A dictionary where keys are target names (str)
+                                and values are Polars DataFrames holding combined
+                                features for each target, or None if not yet available.
+        :type target_features: Optional[Dict[str, pl.DataFrame]]
         :raises NotImplementedError: If ``expected_class_name`` is not set in a subclass
                                      and an instance is directly created.
         :raises ValueError: If the YAML's ``base_class`` does not match
@@ -55,7 +69,7 @@ class SplitDataSetBase(DataSetBase):
             for k, v in self.default_file_names.items()
         }
 
-        #: A Polars DataFrame of feature columns for all targets, if available.
+        #: A dictionary of Polars DataFrames of feature columns for all targets, if available.
         self.target_features: Optional[Dict[str, pl.DataFrame]] = target_features
         #: A dictionary of Polars DataFrames holding training splits by target name.
         self.training_sets: Dict[str, pl.DataFrame] = {}

@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the ClassificationConfig class,
+ensuring its ability to load, validate, and select configuration settings
+for classification tasks, as well as generate correct file paths.
+"""
+
 import unittest
 from pathlib import Path
 
@@ -107,7 +113,7 @@ class TestClassificationConfig(unittest.TestCase):
 
     def test_classify_folder(self):
         """
-        Confirm that files placed in a 'split' folder are resolved correctly.
+        Confirm that files placed in a 'classify' folder are resolved correctly.
         """
         ds = ClassificationConfig(str(self.template_file))
         ds.select("NRT_BO_001")

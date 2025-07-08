@@ -1,3 +1,9 @@
+"""
+This module defines the InputTrainingSetBase class, which serves as a base for
+importing pre-split training and test datasets. It leverages a training-specific
+configuration to identify and load Parquet files into Polars DataFrames,
+managing both training and test sets for multiple targets.
+"""
 import os
 from typing import Dict
 
