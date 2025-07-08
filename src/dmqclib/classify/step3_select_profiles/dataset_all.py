@@ -1,3 +1,10 @@
+"""
+This module defines the `SelectDataSetAll` class, a specialized profile selection
+mechanism within the dmqclib library. It is designed to select all available
+profiles from a given input dataset (typically BO NRT + Cora test data) and
+assign initial labels and identifiers for subsequent classification tasks.
+"""
+
 import polars as pl
 from typing import Optional, List
 
@@ -7,8 +14,12 @@ from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBa
 
 class SelectDataSetAll(ProfileSelectionBase):
     """
-    A subclass of :class:`ProfileSelectionBase` that select all profiles from BO NRT + Cora test data.
+    A subclass of :class:`ProfileSelectionBase` that selects all profiles from
+    BO NRT + Cora test data.
 
+    This class initializes a selection process where all input profiles are
+    considered, and initial labels (e.g., 'negative') and unique identifiers
+    are assigned before further processing or classification.
     """
 
     expected_class_name: str = "SelectDataSetAll"
@@ -21,12 +32,12 @@ class SelectDataSetAll(ProfileSelectionBase):
 
         :param config: The configuration object specifying paths and
                        parameters for the selection process.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :param input_data: An optional Polars DataFrame of all profiles
                            from which negative and positive examples are
                            to be selected. If not provided, it must be
-                           assigned later.
-        :type input_data: pl.DataFrame, optional
+                           assigned later using :attr:`input_data`.
+        :type input_data: polars.DataFrame, optional
         """
         super().__init__(config, input_data=input_data)
 
@@ -53,7 +64,11 @@ class SelectDataSetAll(ProfileSelectionBase):
         Select all profiles from the input data and assign initial
         identifiers for negative profiles and label columns.
 
-        The resulting DataFrame is assigned to :attr:`selected_profiles`.
+        The resulting DataFrame, containing unique profiles with added
+        `neg_profile_id`, `label`, and `profile_id` columns, is assigned
+        to :attr:`selected_profiles`. The `label` column is initialized to 0
+        (indicating a 'negative' or unclassified profile) and `profile_id`
+        is a 1-based row index.
         """
         self.selected_profiles = (
             self.input_data.with_columns(
@@ -77,5 +92,10 @@ class SelectDataSetAll(ProfileSelectionBase):
         """
         Select and label positive and negative datasets before combining them
         into a single DataFrame in :attr:`selected_profiles`.
+
+        In this specific implementation, all profiles are initially selected
+        and labeled as 'negative' (label 0) by calling
+        :meth:`select_all_profiles`. This method effectively serves as the
+        entry point for the profile selection and initial labeling process.
         """
         self.select_all_profiles()

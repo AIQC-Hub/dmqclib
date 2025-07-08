@@ -1,3 +1,12 @@
+"""
+This module defines the LocateDataSetAll class, a specialized implementation
+of LocatePositionBase for selecting all relevant data rows from combined
+BO NRT and Cora test data.
+
+It is designed to prepare data for machine learning tasks by identifying
+and labeling data points based on configured QC flags.
+"""
+
 from typing import Dict, Optional
 
 import polars as pl
@@ -30,15 +39,17 @@ class LocateDataSetAll(LocatePositionBase):
 
         :param config: A configuration object specifying paths, parameters,
                        and target definitions for locating test data rows.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :param input_data: An optional Polars DataFrame containing the full data
                            from which positive and negative rows will be derived.
-                           If not provided, it should be set later.
-        :type input_data: pl.DataFrame, optional
+                           If not provided, it should be set later using
+                           :meth:`set_input_data`.
+        :type input_data: polars.DataFrame, optional
         :param selected_profiles: An optional Polars DataFrame containing profiles
                                   labeled as positive or negative. If not provided,
-                                  it should be set later.
-        :type selected_profiles: pl.DataFrame, optional
+                                  it should be set later using
+                                  :meth:`set_selected_profiles`.
+        :type selected_profiles: polars.DataFrame, optional
         """
         super().__init__(
             config, input_data=input_data, selected_profiles=selected_profiles
@@ -57,14 +68,23 @@ class LocateDataSetAll(LocatePositionBase):
         Collect all rows for a specified target by applying
         flag-based labeling to each record.
 
+        This method assumes that :attr:`input_data` has been set prior to its call.
+
         :param target_name: The name (key) of the target in the
                             configuration's target dictionary.
         :type target_name: str
         :param target_value: A dictionary of target metadata,
-                             including the relevant QC flag variable name.
-        :type target_value: Dict
+                             including the relevant QC flag variable name
+                             (e.g., ``{"flag": "BATHY_QC_FLAG"}``).
+        :type target_value: dict
         """
         flag_var_name = target_value["flag"]
+        # Issue: The input_data attribute is accessed directly (self.input_data)
+        # without an explicit check for None. While the __init__ docstring
+        # indicates it "should be set later" if not provided, calling this method
+        # before input_data is set would raise an AttributeError.
+        # It is assumed that input_data is guaranteed to be a pl.DataFrame
+        # by the time this method is called within the library's workflow.
         self.selected_rows[target_name] = (
             self.input_data.with_row_index("row_id", offset=1)
             .with_columns(
@@ -90,10 +110,16 @@ class LocateDataSetAll(LocatePositionBase):
 
     def locate_target_rows(self, target_name: str, target_value: Dict) -> None:
         """
-        Locate target rows for training or evaluation.
+        Locate target rows for training or evaluation by calling :meth:`select_all_rows`.
+
+        This method acts as a wrapper, ensuring all rows are considered for the target
+        based on the provided QC flag.
 
         :param target_name: Name of the target variable.
+        :type target_name: str
         :param target_value: A dictionary of target metadata, including
-                             the QC flag variable name used for labeling.
+                             the QC flag variable name used for labeling
+                             (e.g., ``{"flag": "TEMP_QC_FLAG"}``).
+        :type target_value: dict
         """
         self.select_all_rows(target_name, target_value)

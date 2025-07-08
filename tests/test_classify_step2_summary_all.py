@@ -1,3 +1,10 @@
+"""Unit tests for the SummaryDataSetAll class.
+
+This module contains tests for verifying the correct functionality of
+SummaryDataSetAll, including output file name generation, data loading,
+and the calculation of global and profile-specific statistics.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -17,13 +24,19 @@ class TestSelectDataSetAll(unittest.TestCase):
     """
 
     def setUp(self):
-        """Set up test environment and load input dataset."""
+        """Set up test environment and load input dataset.
+
+        Initializes configuration and loads a sample input dataset
+        for use across multiple tests.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
             / "config"
             / "test_classify_001.yaml"
         )
+        # Issue: self.config_file_path is already a string from the previous line,
+        # so the `str()` cast here is redundant.
         self.config = ClassificationConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
         self.test_data_file = (
@@ -50,14 +63,20 @@ class TestSelectDataSetAll(unittest.TestCase):
         self.assertEqual(ds.step_name, "summary")
 
     def test_input_data(self):
-        """Confirm that input_data is correctly stored as a Polars DataFrame."""
+        """Confirm that input_data is correctly stored as a Polars DataFrame.
+
+        Also verifies the dimensions (rows and columns) of the loaded data.
+        """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 19480)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_global_stats(self):
-        """Check that calculate_global_stats returns correct columns and row count."""
+        """Check that calculate_global_stats returns correct columns and row count.
+
+        Ensures the generated global statistics DataFrame has the expected structure.
+        """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         df = ds.calculate_global_stats("temp")
         self.assertIsInstance(df, pl.DataFrame)
@@ -65,7 +84,10 @@ class TestSelectDataSetAll(unittest.TestCase):
         self.assertEqual(df.shape[1], 12)
 
     def test_profile_stats(self):
-        """Check that calculate_profile_stats processes grouped profiles correctly."""
+        """Check that calculate_profile_stats processes grouped profiles correctly.
+
+        Verifies the dimensions of the DataFrame containing profile-specific statistics.
+        """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         grouped_df = ds.input_data.group_by(ds.profile_col_names)
         df = ds.calculate_profile_stats(grouped_df, "temp")
@@ -73,14 +95,22 @@ class TestSelectDataSetAll(unittest.TestCase):
         self.assertEqual(df.shape[1], 12)
 
     def test_summary_stats(self):
-        """Check that calculate_stats populates summary_stats with correct dimensions."""
+        """Check that calculate_stats populates summary_stats with correct dimensions.
+
+        Ensures the final summary statistics DataFrame has the expected number
+        of rows and columns after calculation.
+        """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
         self.assertEqual(ds.summary_stats.shape[0], 595)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):
-        """Confirm that summary statistics are written to file and file creation is verified."""
+        """Confirm that summary statistics are written to file and file creation is verified.
+
+        Creates a temporary file, writes the summary statistics, and then
+        checks for its existence before cleaning up.
+        """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         ds.output_file_name = str(
             Path(__file__).resolve().parent
@@ -95,7 +125,11 @@ class TestSelectDataSetAll(unittest.TestCase):
         os.remove(ds.output_file_name)
 
     def test_write_no_summary_stats(self):
-        """Ensure ValueError is raised if write_summary_stats is called with empty stats."""
+        """Ensure ValueError is raised if write_summary_stats is called with empty stats.
+
+        Verifies that attempting to write statistics before they are calculated
+        or if they are empty results in a ValueError.
+        """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
 
         with self.assertRaises(ValueError):

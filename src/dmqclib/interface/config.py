@@ -1,7 +1,7 @@
 """
 Module providing utilities for writing YAML configuration templates and
-reading them as instantiated configuration objects. Supports both
-"prepare" and "train" modules using corresponding registry lookups.
+reading them as instantiated configuration objects. Supports "prepare",
+"train", and "classify" modules using corresponding registry lookups.
 """
 
 import os
@@ -21,20 +21,21 @@ from dmqclib.common.config.yaml_templates import (
 def write_config_template(file_name: str, module: str) -> None:
     """
     Write a YAML configuration template for the specified module
-    ("prepare" or "train") to a file.
+    ("prepare", "train", or "classify") to a file.
 
     This function:
 
-      1. Chooses a template generator (from get_config_data_set_template
-         or get_config_train_set_template) based on the ``module`` argument.
+      1. Chooses a template generator (from get_config_data_set_template,
+         get_config_train_set_template, or get_config_classify_set_template)
+         based on the ``module`` argument.
       2. Validates that the directory for ``file_name`` exists.
       3. Writes the generated YAML template text to the specified file.
 
     :param file_name: The path (including filename) where the YAML file will be written.
     :type file_name: str
-    :param module: Determines which template to write; must be one of "prepare", "train" and "classify".
+    :param module: Determines which template to write; must be one of "prepare", "train", or "classify".
     :type module: str
-    :raises ValueError: If the specified module is not supported ("prepare" or "train" only).
+    :raises ValueError: If the specified module is not supported ("prepare", "train", or "classify" only).
     :raises IOError: If the directory of the specified file path does not exist.
     """
     function_registry = {
@@ -60,18 +61,19 @@ def read_config(file_name: str, module: str) -> ConfigBase:
     automatically selecting the appropriate subclass based on the given module.
 
     This function:
-      1. Matches the specified module (either "prepare" or "train")
-         to the corresponding configuration class (DataSetConfig or TrainingConfig).
+      1. Matches the specified module (either "prepare", "train", or "classify")
+         to the corresponding configuration class (DataSetConfig, TrainingConfig,
+         or ClassificationConfig).
       2. Resolves the file path by calling :meth:`get_config_file`.
       3. Instantiates and returns the matched configuration class with the resolved path.
 
     :param file_name: The path (including filename) to the YAML file.
     :type file_name: str
     :param module: Determines which configuration class to instantiate;
-                   must be one of "prepare", "train" and "classify".
+                   must be one of "prepare", "train", or "classify".
     :type module: str
     :raises ValueError: If the module is not supported.
-    :return: An instantiated configuration object (either DataSetConfig or TrainingConfig).
+    :return: An instantiated configuration object (either DataSetConfig, TrainingConfig, or ClassificationConfig).
     :rtype: ConfigBase
     """
     config_classes = {

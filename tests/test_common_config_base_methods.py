@@ -1,3 +1,9 @@
+"""
+Unit tests for the DataSetConfig class in dmqclib.common.config.
+This module verifies the correct functionality of DataSetConfig's methods
+related to path handling, base class retrieval, and target variable management.
+"""
+
 import unittest
 from pathlib import Path
 
@@ -230,7 +236,7 @@ class TestBaseConfigBaseClass(unittest.TestCase):
             / "test_dataset_001.yaml"
         )
 
-    def test_input_bass_class(self):
+    def test_input_base_class(self):
         """
         Check that the correct base class name is returned for the 'input' step.
         """

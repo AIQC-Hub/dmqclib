@@ -1,3 +1,11 @@
+"""
+This module defines the LocationFeat class, a specialized feature extractor
+for geographical coordinates (longitude, latitude) within a specified dataset.
+
+It extends the generic FeatureBase to handle the specific requirements of
+location data, including extraction from raw profiles and optional scaling.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -10,7 +18,7 @@ class LocationFeat(FeatureBase):
     (e.g., longitude, latitude) within the BO NRT + Cora dataset.
 
     This class uses the provided data frames to gather location-related fields
-    and optionally apply scaling methods. It inherits from :class:`FeatureBase`
+    and optionally apply scaling methods. It inherits from :class:`~dmqclib.common.base.feature_base.FeatureBase`
     which defines a generic feature extraction workflow.
     """
 
@@ -29,23 +37,24 @@ class LocationFeat(FeatureBase):
         :param target_name: The key for the target variable in :attr:`selected_rows`,
                             defaults to None.
         :type target_name: str, optional
-        :param feature_info: A Polars DataFrame (or dictionary-like) describing
-                             feature parameters, defaults to None.
-        :type feature_info: Dict, optional
+        :param feature_info: A dictionary describing feature parameters, typically
+                             including scaling statistics. Defaults to None.
+        :type feature_info: dict, optional
         :param selected_profiles: A Polars DataFrame containing a subset of profiles
-                                  relevant to feature extraction, defaults to None.
+                                  relevant to feature extraction, including location data.
+                                  Defaults to None.
         :type selected_profiles: pl.DataFrame, optional
         :param filtered_input: A filtered Polars DataFrame of input data,
-                               potentially used for advanced merging or lookups,
-                               defaults to None.
+                               potentially used for advanced merging or lookups.
+                               Defaults to None.
         :type filtered_input: pl.DataFrame, optional
         :param selected_rows: A dictionary keyed by target names, each mapping to
-                            a Polars DataFrame of rows relevant for that target,
-                            defaults to None.
-        :type selected_rows: dict of (str to pl.DataFrame), optional
+                            a Polars DataFrame of rows relevant for that target.
+                            Defaults to None.
+        :type selected_rows: dict[str, pl.DataFrame], optional
         :param summary_stats: A Polars DataFrame containing statistical
-                              information that may aid in feature scaling,
-                              defaults to None.
+                              information that may aid in feature scaling.
+                              Defaults to None.
         :type summary_stats: pl.DataFrame, optional
         """
         super().__init__(
@@ -66,12 +75,15 @@ class LocationFeat(FeatureBase):
         Specifically:
 
           1. Selects columns like ``row_id``, ``platform_code``, and ``profile_no``
-             from the DataFrame in :attr:`selected_rows[target_name]``.
+             from the DataFrame in :attr:`selected_rows[target_name]`.
           2. Joins this subset with corresponding columns from :attr:`selected_profiles`
              (including ``longitude`` and ``latitude``) on ``platform_code``
              and ``profile_no``.
           3. Drops those join columns from the final feature set, leaving
              ``row_id``, ``longitude``, and ``latitude`` among others.
+
+        :returns: None. The result is stored in the :attr:`features` attribute.
+        :rtype: None
         """
         self.features = (
             self.selected_rows[self.target_name]
@@ -90,23 +102,35 @@ class LocationFeat(FeatureBase):
         """
         (Optional) Initial scaling or normalization procedure.
 
-        Currently, unimplemented for location features; can be extended
-        if, for instance, location data requires some preprocessing
-        or transformation steps.
+        Currently, this method is unimplemented for location features and serves
+        as a placeholder for future extensions, e.g., if location data requires
+        pre-processing or transformation steps before the final scaling.
+
+        :returns: None. Operations are performed in-place on :attr:`features`.
+        :rtype: None
         """
         pass  # pragma: no cover
 
     def scale_second(self) -> None:
         """
-        Apply a second min-max scaling pass to each feature defined in :attr:`feature_info["stats"]`.
+        Apply a min-max scaling pass to each feature (column) specified in
+        :attr:`feature_info["stats"]`.
 
-        This method expects :attr:`feature_info["stats"]` to be a dictionary of the form::
+        This method iterates through the keys of the ``"stats"`` dictionary within
+        :attr:`feature_info`. For each key `k` (representing a feature name),
+        it expects a dictionary ``v`` with ``"min"`` and ``"max"`` keys to
+        perform the min-max scaling: ``(value - min) / (max - min)``.
+
+        Example structure for ``feature_info["stats"]``::
 
             {
-                "longitude": {"min": ..., "max": ...},
-                "latitude": {"min": ..., "max": ...},
+                "longitude": {"min": -180.0, "max": 180.0},
+                "latitude": {"min": -90.0, "max": 90.0},
                 ...
             }
+
+        :returns: None. Scaling is applied in-place to the :attr:`features` DataFrame.
+        :rtype: None
         """
         for k, v in self.feature_info["stats"].items():
             self.features = self.features.with_columns(

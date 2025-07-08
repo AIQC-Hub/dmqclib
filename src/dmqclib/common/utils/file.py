@@ -1,3 +1,11 @@
+"""
+This module provides utility functions for reading various file formats into Polars DataFrames.
+
+It supports common data formats like Parquet, TSV (tab-separated values), and CSV
+(comma-separated values), including their gzipped versions, and allows for automatic
+file type inference based on file extensions.
+"""
+
 import os
 from typing import Dict, Any, Optional
 
@@ -26,12 +34,12 @@ def read_input_file(
 
         If set to None or an empty string, the file type is inferred from
         the file extension. Defaults to None.
-    :type file_type: str, optional
+    :type file_type: Optional[str]
     :param options:
         A dictionary of additional keyword arguments to pass to
         the Polars reading function (e.g., "has_header", "infer_schema_length").
         Defaults to None.
-    :type options: dict of (str to Any), optional
+    :type options: Optional[Dict[str, Any]]
     :raises FileNotFoundError:
         If the specified ``input_file`` does not exist.
     :raises ValueError:

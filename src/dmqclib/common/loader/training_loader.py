@@ -1,3 +1,10 @@
+"""
+This module provides utility functions for loading and instantiating various training components,
+such as input training sets, model validation classes, and model build classes. It leverages a
+registry pattern and a `TrainingConfig` object to determine the specific class to load for each
+training step, promoting modularity and configurability in the training pipeline.
+"""
+
 import polars as pl
 from typing import Optional, Dict, Type
 
@@ -31,7 +38,7 @@ def _get_train_class(
     :type step: str
     :param registry: A dictionary mapping class names (str) to class types
                      derived from :class:`DataSetBase`.
-    :type registry: dict of (str to Type[DataSetBase])
+    :type registry: dict of (str, Type[DataSetBase])
     :raises ValueError: If the retrieved class name is not found in ``registry``.
     :return: The dataset class (uninstantiated) that is used for the specified step.
     :rtype: Type[DataSetBase]
@@ -39,8 +46,6 @@ def _get_train_class(
     class_name = config.get_base_class(step)
     dataset_class = registry.get(class_name)
     if not dataset_class:
-        # Possibly a minor oversight: referencing "dataset_class" in the error
-        # message rather than "class_name".
         raise ValueError(f"Unknown dataset class specified: {class_name}")
 
     return dataset_class
@@ -80,8 +85,8 @@ def load_step2_model_validation_class(
     :param config: The training configuration object referencing a ``base_class``
                    under the "validate" section.
     :type config: TrainingConfig
-    :param training_sets: A Polars DataFrame containing data for model validation,
-                          defaults to None.
+    :param training_sets: A dictionary of Polars DataFrames containing data for model validation,
+                          defaults to None. Keys typically represent data categories (e.g., "train", "test").
     :type training_sets: dict[str, pl.DataFrame], optional
     :return: An instantiated object of a class that inherits from :class:`ValidationBase`.
     :rtype: ValidationBase
@@ -107,9 +112,11 @@ def load_step4_build_model_class(
     :param config: The training configuration object referencing a ``base_class``
                    under the "build" section.
     :type config: TrainingConfig
-    :param training_sets: A Polars DataFrame of training data, defaults to None.
+    :param training_sets: A dictionary of Polars DataFrames of training data, defaults to None.
+                          Keys typically represent data categories (e.g., "features", "target").
     :type training_sets: dict[str, pl.DataFrame], optional
-    :param test_sets: A Polars DataFrame of test data, defaults to None.
+    :param test_sets: A dictionary of Polars DataFrames of test data, defaults to None.
+                      Keys typically represent data categories (e.g., "features", "target").
     :type test_sets: dict[str, pl.DataFrame], optional
     :return: An instantiated object of a class that inherits from :class:`BuildModelBase`.
     :rtype: BuildModelBase

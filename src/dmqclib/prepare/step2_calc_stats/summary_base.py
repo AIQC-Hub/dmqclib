@@ -1,3 +1,10 @@
+"""
+This module provides a base class, :class:`SummaryStatsBase`, for calculating and
+managing summary statistics for tabular data, primarily using the Polars library.
+It facilitates the computation of both global and per-profile statistics for
+specified numeric columns and handles the output of these statistics to a file.
+"""
+
 import os
 from typing import Optional, List
 
@@ -37,11 +44,12 @@ class SummaryStatsBase(DataSetBase):
         :type config: ConfigBase
         :param input_data: A Polars DataFrame holding the data upon which
                            statistics will be computed. Defaults to None.
-        :type input_data: pl.DataFrame, optional
+        :type input_data: Optional[pl.DataFrame]
         :raises NotImplementedError: If the :attr:`expected_class_name` is not
                                      defined by a subclass (when actually instantiated).
         :raises ValueError: If the YAML's "base_class" does not match the
                             :attr:`expected_class_name`.
+        :rtype: None
         """
         super().__init__("summary", config)
 
@@ -89,10 +97,9 @@ class SummaryStatsBase(DataSetBase):
 
         :param val_col_name: The name of the column for which to calculate global stats.
         :type val_col_name: str
-        :return: A Polars DataFrame containing global metrics (e.g., min, max, mean)
-                 for the specified column, with placeholders for platform_code and
-                 profile_no to align with the structure of per-profile stats.
-        :rtype: pl.DataFrame
+        :return: A list of Polars expression objects that, when aggregated, compute
+                 the desired summary statistics (min, max, mean, etc.).
+        :rtype: List[pl.Expr]
         """
         return [
             pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
@@ -112,9 +119,11 @@ class SummaryStatsBase(DataSetBase):
         across all data rows.
 
         :param val_col_name: Name of the column for which to calculate global stats.
+        :type val_col_name: str
         :return: Polars DataFrame containing min, max, mean, etc., for the entire dataset,
                  along with placeholders for platform_code and profile_no to match
                  the structure of the per-profile statistics.
+        :rtype: pl.DataFrame
         """
         return (
             self.input_data.select(self.get_stats_expression(val_col_name))
@@ -154,6 +163,8 @@ class SummaryStatsBase(DataSetBase):
         This method concatenates global statistics across all data rows and
         per-profile statistics grouped by :attr:`profile_col_names` for each
         column specified in :attr:`val_col_names`.
+
+        :rtype: None
         """
         global_stats = pl.concat(
             [self.calculate_global_stats(x) for x in self.val_col_names]
@@ -171,6 +182,7 @@ class SummaryStatsBase(DataSetBase):
 
         :raises ValueError: If :attr:`summary_stats` is None or has not
                             been assigned by :meth:`calculate_stats`.
+        :rtype: None
         """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")

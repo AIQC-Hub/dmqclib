@@ -1,3 +1,12 @@
+"""
+This module defines `ModelBase`, an abstract base class for developing
+machine learning models within the dmqclib framework.
+
+It provides a common interface and essential functionalities such as
+configuration loading, model saving, and model loading, which all
+concrete model implementations should inherit and extend.
+"""
+
 import os
 from abc import ABC, abstractmethod
 from typing import Optional, Any

@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the TrainingConfig class,
+verifying its ability to validate training configurations,
+handle dataset selection, and generate correct file/folder paths.
+"""
+
 import unittest
 from pathlib import Path
 

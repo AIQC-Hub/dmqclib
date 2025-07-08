@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the BuildModel class, which is responsible
+for building, testing, and saving machine learning models, specifically XGBoost models,
+within the dmqclib training pipeline.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -18,8 +24,8 @@ class TestBuildModel(unittest.TestCase):
 
     def setUp(self):
         """
-        Prepare a test training configuration and load input data.
-        Train/test file paths are defined for subsequent tests.
+        Prepare a test training configuration and load input data for subsequent tests.
+        Define mock train/test file paths for data loading.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -53,7 +59,16 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.step_name, "build")
 
     def test_output_file_names(self):
-        """Verify that default output file names (model and results) are as expected."""
+        """
+        Verify that default output file names (model and results) are as expected.
+
+        Issue: The hardcoded paths like "/path/to/model_1/..." are highly
+        dependent on an exact string match which might not be robust or portable.
+        If `BuildModel` generates real file paths, these literal strings
+        are unlikely to match, or they imply a fixed, unrealistic base path
+        in the configuration or implementation. This test would be more robust
+        if it checked relative paths or used a mocked file system.
+        """
         ds = BuildModel(self.config)
 
         self.assertEqual(
@@ -80,7 +95,9 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
-        """Check that training and test sets are loaded into BuildModel correctly."""
+        """Check that training and test sets are loaded into BuildModel correctly,
+        verifying their types and dimensions.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -117,7 +134,9 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["pres"], XGBoost)
 
     def test_test_with_xgboost(self):
-        """Check that testing sets after model building populates the result columns."""
+        """Check that testing sets after model building populates the result columns,
+        verifying data types and dimensions remain consistent.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -135,7 +154,7 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_test_without_model(self):
-        """Ensure that testing without building models raises a ValueError."""
+        """Ensure that calling test_targets() without first building models raises a ValueError."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -145,7 +164,7 @@ class TestBuildModel(unittest.TestCase):
             ds.test_targets()
 
     def test_write_reports(self):
-        """Check that the test reports are correctly written to file."""
+        """Check that test reports are correctly written to file, and then remove them."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -175,7 +194,7 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["report"]["pres"])
 
     def test_write_no_results(self):
-        """Ensure ValueError is raised if write_results is called with no results available."""
+        """Ensure ValueError is raised if write_reports is called with no test results available."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -185,7 +204,7 @@ class TestBuildModel(unittest.TestCase):
             ds.write_reports()
 
     def test_write_no_models(self):
-        """Ensure ValueError is raised if write_models is called without built models."""
+        """Ensure ValueError is raised if write_models is called without any built models."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -195,7 +214,7 @@ class TestBuildModel(unittest.TestCase):
             ds.write_models()
 
     def test_write_models(self):
-        """Check that the trained models are serialized to files correctly."""
+        """Check that the trained models are serialized to files correctly, and then remove them."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -218,7 +237,7 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.model_file_names["pres"])
 
     def test_read_models(self):
-        """Verify that existing models can be reloaded from disk and used for testing."""
+        """Verify that existing models can be reloaded from disk and successfully used for testing."""
         ds = BuildModel(
             self.config, training_sets=None, test_sets=self.ds_input.test_sets
         )
@@ -244,20 +263,20 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
     def test_read_models_no_file(self):
-        """Check that FileNotFoundError is raised if model files are missing."""
+        """Check that FileNotFoundError is raised if model files are missing during reading."""
         ds = BuildModel(
             self.config, training_sets=None, test_sets=self.ds_input.test_sets
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = str(data_path / "model.joblib")
-        ds.model_file_names["psal"] = str(data_path / "model.joblib")
-        ds.model_file_names["pres"] = str(data_path / "model.joblib")
+        ds.model_file_names["temp"] = str(data_path / "non_existent_model.joblib")
+        ds.model_file_names["psal"] = str(data_path / "non_existent_model.joblib")
+        ds.model_file_names["pres"] = str(data_path / "non_existent_model.joblib")
 
         with self.assertRaises(FileNotFoundError):
             ds.read_models()
 
     def test_write_predictions(self):
-        """Check that the test reports are correctly written to file."""
+        """Check that test predictions are correctly written to file, and then remove them."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,

@@ -1,3 +1,10 @@
+"""
+This module defines the ProfileSummaryStats5 class, a specialized feature
+extraction component for combining row references with summary statistics
+from Polars DataFrames. It is designed to extract, transform, and optionally
+scale statistical features based on pre-computed summary data.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -30,44 +37,45 @@ class ProfileSummaryStats5(FeatureBase):
 
         :param target_name: The name of the target used to lookup
                             corresponding rows in :attr:`selected_rows`.
-        :type target_name: str, optional
-        :param selected_profiles: A Polars DataFrame of selected profiles,
-                                  typically unused by this class but provided
-                                  for consistency, defaults to None.
-        :type selected_profiles: pl.DataFrame, optional
-        :param filtered_input: A Polars DataFrame of potentially filtered input data,
-                               not directly used here, defaults to None.
-        :type filtered_input: pl.DataFrame, optional
-        :param selected_rows: A dictionary of DataFrames keyed by target names,
-                            containing rows for which features are extracted, defaults to None.
-        :type selected_rows: dict of (str to pl.DataFrame), optional
-        :param summary_stats: A Polars DataFrame of summary statistics
-                              keyed by (platform_code, profile_no, variable),
-                              defaults to None.
-        :type summary_stats: pl.DataFrame, optional
+        :type target_name: Optional[str]
         :param feature_info: A dictionary specifying
-                             feature parameters and stats, defaults to None.
+                             feature parameters and stats.
 
                              Example structure:
-                             {
-                               "stats": {
-                                 "temp": {
-                                   "min": {
-                                     "min": 0.0,
-                                     "max": 30.0
-                                   },
-                                   "mean": {
-                                     "min": 0.0,
-                                     "max": 30.0
-                                   }
-                                   ...
-                                 },
-                                 "psal": {
-                                   ...
-                                 }
-                               }
-                             }
-        :type feature_info: Dict, optional
+                             .. code-block:: python
+
+                                {
+                                  "stats": {
+                                    "temp": {
+                                      "min": {
+                                        "min": 0.0,
+                                        "max": 30.0
+                                      },
+                                      "mean": {
+                                        "min": 0.0,
+                                        "max": 30.0
+                                      }
+                                      # ...
+                                    },
+                                    "psal": {
+                                      # ...
+                                    }
+                                  }
+                                }
+        :type feature_info: Optional[Dict]
+        :param selected_profiles: A Polars DataFrame of selected profiles,
+                                  typically unused by this class but provided
+                                  for consistency.
+        :type selected_profiles: Optional[pl.DataFrame]
+        :param filtered_input: A Polars DataFrame of potentially filtered input data,
+                               not directly used here.
+        :type filtered_input: Optional[pl.DataFrame]
+        :param selected_rows: A dictionary of DataFrames keyed by target names,
+                              containing rows for which features are extracted.
+        :type selected_rows: Optional[Dict[str, pl.DataFrame]]
+        :param summary_stats: A Polars DataFrame of summary statistics
+                              keyed by (platform_code, profile_no, variable).
+        :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
             target_name=target_name,
@@ -114,7 +122,9 @@ class ProfileSummaryStats5(FeatureBase):
         onto :attr:`features`.
 
         :param target_name: The variable category key (e.g., "temp", "psal") in
-                            :attr:`summary_stats`.
+                            :attr:`summary_stats`. Note: This parameter name is
+                            `variable_name` when called from `extract_features`
+                            to avoid confusion with `self.target_name`.
         :type target_name: str
         :param var_name: The specific metric key (e.g., "min", "mean", "max")
                          under the variable category.

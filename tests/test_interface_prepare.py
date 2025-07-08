@@ -1,3 +1,9 @@
+"""
+Unit tests for the `create_training_dataset` function, verifying its ability to
+generate the correct directory structure and output files for various data
+processing steps within a training dataset.
+"""
+
 import os
 import shutil
 import unittest
@@ -96,4 +102,13 @@ class TestCreateTrainingDataSet(unittest.TestCase):
             os.path.exists(str(output_folder / "split" / "test_set_pres.parquet"))
         )
 
-        shutil.rmtree(output_folder)
+    def tearDown(self):
+        """
+        Clean up the test environment by removing the generated output directory
+        and its contents.
+        """
+        output_folder = (
+            self.test_data_location / self.config.data["dataset_folder_name"]
+        )
+        if os.path.exists(output_folder):
+            shutil.rmtree(output_folder)

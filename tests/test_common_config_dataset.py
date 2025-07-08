@@ -1,3 +1,6 @@
+"""Tests for the DataSetConfig class, verifying its configuration validation,
+dataset selection, and path generation capabilities."""
+
 import unittest
 from pathlib import Path
 

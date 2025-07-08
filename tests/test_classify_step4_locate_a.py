@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the LocateDataSetAll class,
+verifying its functionality for selecting and processing data,
+assigning output file names, and handling data persistence.
+"""
+
 import os
 import unittest
 from pathlib import Path

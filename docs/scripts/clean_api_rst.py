@@ -1,6 +1,4 @@
-import os
 import re
-
 import os
 
 # Get the directory where this script lives

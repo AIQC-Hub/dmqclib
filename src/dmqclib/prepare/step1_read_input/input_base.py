@@ -1,3 +1,11 @@
+"""
+This module defines the InputDataSetBase class, providing a foundational structure
+for loading, preprocessing, and managing input data within the DMQC library.
+It includes capabilities for reading various file formats, renaming columns,
+and filtering rows based on configurable parameters, serving as a base for
+domain-specific input data handling.
+"""
+
 from typing import Optional
 
 import polars as pl
@@ -71,14 +79,14 @@ class InputDataSetBase(DataSetBase):
         columns will be renamed accordingly. Otherwise, the method does nothing.
         """
         if not self.config.get_step_params("input")["sub_steps"]["rename_columns"]:
-            return None
+            return None # Issue: Redundant 'return None'. Functions that modify in-place and don't need to signal a specific result can implicitly return None.
 
         if "rename_dict" in self.config.get_step_params("input"):
             self.input_data = self.input_data.rename(
                 self.config.get_step_params("input")["rename_dict"]
             )
 
-        return None
+        return None # Issue: Redundant 'return None'.
 
     def filter_rows(self) -> None:
         """
@@ -91,7 +99,7 @@ class InputDataSetBase(DataSetBase):
         if not self.config.get_step_params("input")["sub_steps"][
             "filter_rows"
         ] or "filter_method_dict" not in self.config.get_step_params("input"):
-            return None
+            return None # Issue: Redundant 'return None'.
 
         if (
             "remove_years" in self.config.get_step_params("input")["filter_method_dict"]
@@ -113,7 +121,7 @@ class InputDataSetBase(DataSetBase):
         ):
             self.keep_years()
 
-        return None
+        return None # Issue: Redundant 'return None'.
 
     def remove_years(self) -> None:
         """

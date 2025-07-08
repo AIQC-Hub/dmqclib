@@ -1,3 +1,8 @@
+"""
+Unit tests for the ConcatDataSetAll class, which handles concatenating prediction datasets
+generated in earlier classification steps.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -18,8 +23,8 @@ from dmqclib.classify.step7_concat_datasets.dataset_all import ConcatDataSetAll
 
 class TestConcatPredictions(unittest.TestCase):
     """
-    A suite of tests ensuring that building, testing, and saving XGBoost models
-    via BuildModel follows the expected configuration and data flows.
+    A suite of tests for the ConcatDataSetAll class, ensuring proper concatenation
+    and handling of prediction datasets.
     """
 
     def setUp(self):
@@ -96,7 +101,7 @@ class TestConcatPredictions(unittest.TestCase):
         self.assertEqual(ds.step_name, "concat")
 
     def test_output_file_names(self):
-        """Verify that default output file names (model and results) are as expected."""
+        """Verify that the default output file name for merged predictions is as expected."""
         ds = ConcatDataSetAll(self.config)
 
         self.assertEqual(
@@ -105,7 +110,10 @@ class TestConcatPredictions(unittest.TestCase):
         )
 
     def test_test_sets(self):
-        """Check that training and test sets are loaded into BuildModel correctly."""
+        """
+        Check that input data and predictions are correctly loaded into ConcatDataSetAll
+        and have the expected shapes.
+        """
         ds = ConcatDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -125,7 +133,10 @@ class TestConcatPredictions(unittest.TestCase):
         self.assertEqual(ds.predictions["psal"].shape[1], 6)
 
     def test_merge_predictions(self):
-        """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
+        """
+        Confirm that merging predictions correctly combines input data and
+        individual parameter predictions into a single DataFrame.
+        """
         ds = ConcatDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -138,7 +149,7 @@ class TestConcatPredictions(unittest.TestCase):
         self.assertEqual(ds.merged_predictions.shape[1], 36)
 
     def test_write_predictions(self):
-        """Check that the test reports are correctly written to file."""
+        """Check that the merged predictions are correctly written to a Parquet file."""
         ds = ConcatDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -156,7 +167,10 @@ class TestConcatPredictions(unittest.TestCase):
         os.remove(ds.output_file_name)
 
     def test_write_no_results(self):
-        """Ensure ValueError is raised if write_results is called with no results available."""
+        """
+        Ensure ValueError is raised if write_merged_predictions is called
+        before predictions have been merged.
+        """
         ds = ConcatDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,

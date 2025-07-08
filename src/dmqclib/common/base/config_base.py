@@ -1,3 +1,13 @@
+"""
+This module defines the `ConfigBase` abstract base class, which provides a standardized
+interface for loading, validating, and accessing configuration data from YAML files
+for various components like datasets, training sets, and classification sets.
+
+It aims to centralize configuration management, ensuring consistency and reusability
+across different parts of a machine learning pipeline by leveraging JSON schema
+validation and structured access methods.
+"""
+
 import os
 from abc import ABC
 from typing import List, Dict, Optional
@@ -37,15 +47,16 @@ class ConfigBase(ABC):
         YAML configuration file.
 
         :param section_name: The name of the configuration section to load,
-                             for example "data_sets" or "training_sets".
+                             for example "data_sets", "training_sets", or
+                             "classification_sets".
         :type section_name: str
         :param config_file: The path to the YAML configuration file.
         :type config_file: str
         :raises NotImplementedError: If no ``expected_class_name`` is set
                                      by a child class.
         :raises ValueError: If the provided ``section_name`` is not among
-                            the supported ones (i.e., "data_sets" or
-                            "training_sets").
+                            the supported ones (i.e., "data_sets",
+                            "training_sets", or "classification_sets").
         """
         if not self.expected_class_name:
             raise NotImplementedError(
@@ -116,7 +127,8 @@ class ConfigBase(ABC):
         :return: A valid filesystem path (as a string).
         :rtype: str
         :raises ValueError: If the ``base_path`` is missing or set to None
-                            in the configuration for this step.
+                            in the configuration for this step, and no common
+                            base path is defined.
         """
         if step_name not in self.data["path_info"] or (
             step_name in self.data["path_info"]
@@ -127,7 +139,7 @@ class ConfigBase(ABC):
 
         if base_path is None:
             raise ValueError(
-                "'base_path' for '{step_name}' not found or set to None in the config file"
+                f"'base_path' for '{step_name}' not found or set to None in the config file"
             )
 
         return base_path

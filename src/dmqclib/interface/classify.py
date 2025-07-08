@@ -1,3 +1,11 @@
+"""
+This module provides the main entry point for executing a comprehensive data classification pipeline.
+It orchestrates a series of sequential steps, from initial data loading and preparation to feature
+extraction, model prediction, and final result merging. Each step is configured and executed
+based on the parameters defined in a provided configuration object, ensuring a streamlined
+and customizable data quality control process.
+"""
+
 from dmqclib.common.base.config_base import ConfigBase
 
 from dmqclib.common.loader.classify_loader import (
@@ -16,24 +24,26 @@ def classify_dataset(config: ConfigBase) -> None:
     Execute a series of steps to classify all observations in the given data set, as defined
     by the provided configuration object.
 
-    This function performs the following steps:
+    This function performs the following steps in sequence:
 
       1. Load and read the initial input data.
-      2. Calculate and write summary statistics.
-      3. Label and write selected profiles.
+      2. Label and write selected profiles.
+      3. Calculate and write summary statistics.
       4. Locate and write target rows.
       5. Extract and write target features.
-      6. Use the model to predict labels in the input data
-      7. Merge the resutls with the original input data
+      6. Use the model to predict labels in the input data.
+      7. Merge the results with the original input data.
 
     :param config: A configuration object specifying the classes and parameters
-                   for each step in the dataset preparation process.
+                   for each step in the dataset preparation and classification process.
     :type config: ConfigBase
-    :return: None (the function performs I/O operations and does not return a value).
+    :return: None. The function performs I/O operations and modifies datasets based
+             on the configuration but does not return a value.
     :rtype: None
 
     Example Usage:
       >>> from dmqclib.common.base.config_base import ConfigBase
+      >>> # Assuming cfg is an instantiated ConfigBase object with necessary configurations
       >>> cfg = ConfigBase(...)
       >>> classify_dataset(cfg)
     """

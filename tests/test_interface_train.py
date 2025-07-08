@@ -1,3 +1,10 @@
+"""
+This module contains unit tests for the training and evaluation pipeline.
+It verifies that the `train_and_evaluate` function correctly generates
+expected output files and directories, including validation reports and
+trained model artifacts.
+"""
+
 import os
 import shutil
 import unittest
@@ -30,6 +37,7 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         self.input_data_path = str(
             Path(__file__).resolve().parent / "data" / "training"
         )
+        # Configure the dataset paths for the test
         self.config.data["path_info"] = {
             "name": "data_set_1",
             "common": {"base_path": str(self.test_data_location)},
@@ -39,17 +47,31 @@ class TestCreateTrainingDataSet(unittest.TestCase):
             },
         }
 
+    def tearDown(self):
+        """
+        Clean up the test environment by removing any generated output folders
+        and files after each test method has completed.
+        """
+        output_folder = (
+            self.test_data_location / self.config.data["dataset_folder_name"]
+        )
+        if output_folder.exists() and output_folder.is_dir():
+            shutil.rmtree(output_folder)
+
     def test_train_and_evaluate(self):
         """
         Check that train_and_evaluate runs end-to-end and produces
         validation results and trained model artifacts.
         """
+        # Execute the training and evaluation process
         train_and_evaluate(self.config)
 
+        # Define the expected output folder based on the configuration
         output_folder = (
             self.test_data_location / self.config.data["dataset_folder_name"]
         )
 
+        # Assert that expected validation report files are created
         self.assertTrue(
             os.path.exists(
                 str(output_folder / "validate" / "validation_report_temp.tsv")
@@ -65,6 +87,8 @@ class TestCreateTrainingDataSet(unittest.TestCase):
                 str(output_folder / "validate" / "validation_report_pres.tsv")
             )
         )
+
+        # Assert that expected build report files are created
         self.assertTrue(
             os.path.exists(str(output_folder / "build" / "test_report_temp.tsv"))
         )
@@ -74,6 +98,8 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         self.assertTrue(
             os.path.exists(str(output_folder / "build" / "test_report_pres.tsv"))
         )
+
+        # Assert that expected trained model files are created
         self.assertTrue(
             os.path.exists(str(output_folder / "model" / "model_temp.joblib"))
         )
@@ -83,5 +109,3 @@ class TestCreateTrainingDataSet(unittest.TestCase):
         self.assertTrue(
             os.path.exists(str(output_folder / "model" / "model_pres.joblib"))
         )
-
-        shutil.rmtree(output_folder)

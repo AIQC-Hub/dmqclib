@@ -1,3 +1,13 @@
+"""
+This module defines the `SummaryDataSetAll` class, a specialized class for
+calculating summary statistics specifically for BO NRT (Near Real-Time) and
+Cora test datasets using the Polars data manipulation library.
+
+It extends `SummaryStatsBase` to provide a concrete implementation for these
+specific data contexts, integrating with a `ConfigBase` object for path and
+parameter management, and defining default output file names.
+"""
+
 import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -26,7 +36,7 @@ class SummaryDataSetAll(SummaryStatsBase):
                            calculate the summary statistics. If not provided,
                            it should be assigned later before calling
                            statistic-related methods.
-         :type input_data: pl.DataFrame, optional
+        :type input_data: pl.DataFrame, optional
         """
         super().__init__(config, input_data=input_data)
 

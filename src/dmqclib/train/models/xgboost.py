@@ -1,3 +1,12 @@
+"""
+This module provides an XGBoost model wrapper, inheriting from `dmqclib.common.base.model_base.ModelBase`.
+
+It facilitates training, prediction, and evaluation of an XGBoost classifier using Polars DataFrames,
+converting them to Pandas for compatibility with the `xgboost` library. The module includes
+methods for building the model, making predictions, and generating a comprehensive classification
+report using `sklearn.metrics`.
+"""
+
 import polars as pl
 import xgboost as xgb
 from typing import Dict, Any
@@ -40,6 +49,10 @@ class XGBoost(ModelBase):
         """
         Initialize the XGBoost model with default or user-specified parameters.
 
+        This constructor calls the parent `ModelBase` constructor and then sets
+        up default XGBoost parameters if no `model_params` are provided via the
+        `config` object (i.e., if `self.model_params` is empty after `super().__init__`).
+
         :param config: A configuration object providing model parameters
                        (e.g., learning rate, max depth) and other metadata.
         :type config: ConfigBase
@@ -54,6 +67,7 @@ class XGBoost(ModelBase):
             "learning_rate": 0.1,
             "eval_metric": "logloss",
         }
+        # If model_params were not provided by the config, use defaults
         self.model_params = params if len(self.model_params) == 0 else self.model_params
 
     def build(self) -> None:
@@ -84,30 +98,53 @@ class XGBoost(ModelBase):
 
         Steps:
 
-          1. Convert the Polars DataFrame (:attr:`test_set`) to Pandas.
-          2. Generate predictions.
-          3. Compute metrics such as accuracy, balanced accuracy, and
-             precision/recall/f1 scores via :func:`sklearn.metrics.classification_report`.
-          4. Store results in :attr:`result` as a Polars DataFrame.
+          1. Call :meth:`predict` to generate predictions on the test set.
+          2. Call :meth:`create_report` to compute and store various evaluation metrics.
+          3. Store results in :attr:`result` as a Polars DataFrame.
 
         The :attr:`k` attribute (provided by parent class or
         cross-validation context) is used to identify the fold number:
 
           - If :attr:`k` is 0, the column is dropped from the final :attr:`result`.
 
-        :raises ValueError: If :attr:`test_set` is None or empty.
+        :raises ValueError: If :attr:`test_set` is None or empty during prediction.
+        :raises ValueError: If :attr:`predictions` is None during report creation.
         """
         self.predict()
         self.create_report()
 
-    def predict(self):
+    def predict(self) -> None:
+        """
+        Generates predictions for the test set using the trained model.
+
+        Converts the Polars test set to a Pandas DataFrame, makes predictions
+        using the stored XGBoost model, and stores the results in the
+        :attr:`predictions` attribute as a Polars DataFrame.
+
+        :raises ValueError: If :attr:`test_set` is None or empty.
+        """
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty.")
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
         self.predictions = pl.DataFrame({"predicted": self.model.predict(x_test)})
 
-    def create_report(self):
+    def create_report(self) -> None:
+        """
+        Computes and compiles a comprehensive classification report based on test results.
+
+        This method calculates detailed classification metrics (precision, recall,
+        f1-score, support) for each class, their macro/weighted averages, and
+        overall accuracy using a single call to
+        :func:`sklearn.metrics.classification_report`.
+
+        The overall balanced accuracy is derived from the macro average recall.
+
+        All computed metrics are stored in the :attr:`report` attribute as a Polars DataFrame.
+        The `k` attribute (fold number) is included in the report rows and dropped if `k` is 0.
+
+        :raises ValueError: If :attr:`test_set` or :attr:`predictions` are None.
+        """
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty.")
 
@@ -115,48 +152,54 @@ class XGBoost(ModelBase):
             raise ValueError("Member variable 'predictions' must not be empty.")
 
         y_test = self.test_set["label"].to_pandas()
+        y_pred = self.predictions["predicted"].to_pandas()
 
-        # Build the base report DataFrame with placeholders for the "0" and "1" labels.
-        self.report = pl.DataFrame(
-            [
-                {"k": self.k, "label": "0", "accuracy": None},
-                {"k": self.k, "label": "1", "accuracy": None},
-                {
-                    "k": self.k,
-                    "label": "macro avg",
-                    "accuracy": accuracy_score(y_test, self.predictions),
-                },
-                {
-                    "k": self.k,
-                    "label": "weighted avg",
-                    "accuracy": balanced_accuracy_score(y_test, self.predictions),
-                },
-            ]
-        )
-
-        # Join with the classification report for precision, recall, etc.
+        # A single call to classification_report gets us almost everything we need.
         classification_dict = classification_report(
-            y_test, self.predictions, output_dict=True
+            y_test, y_pred, output_dict=True, zero_division=0
         )
-        report_rows = []
-        for label_key, metrics_dict in classification_dict.items():
-            if isinstance(metrics_dict, dict):  # skip 'accuracy' row
-                report_rows.append(
-                    {
-                        "k": self.k,
-                        "label": label_key,
-                        "precision": metrics_dict["precision"],
-                        "recall": metrics_dict["recall"],
-                        "f1-score": metrics_dict["f1-score"],
-                        "support": metrics_dict["support"],
-                    }
-                )
 
-        self.report = self.report.join(
-            pl.DataFrame(report_rows),
-            on=["k", "label"],
-            how="left",
-        )
+        report_rows = []
+
+        # Process all items from the classification report dictionary
+        for label_key, metrics in classification_dict.items():
+            if label_key == "accuracy":
+                # This is the overall accuracy. Add it as a distinct metric type.
+                report_rows.append({
+                    "k": self.k,
+                    "metric_type": "overall_accuracy",
+                    "value": metrics
+                })
+            elif label_key == "macro avg":
+                # Balanced accuracy is the same as the recall of the macro average.
+                balanced_accuracy = metrics.get("recall")
+                report_rows.append({
+                    "k": self.k,
+                    "metric_type": "balanced_accuracy",
+                    "value": balanced_accuracy
+                })
+                # Fall through to also add the full macro avg report row
+                report_rows.append({
+                    "k": self.k,
+                    "metric_type": "classification_report",
+                    "label": label_key,
+                    "precision": metrics.get("precision"),
+                    "recall": metrics.get("recall"),
+                    "f1-score": metrics.get("f1-score"),
+                    "support": metrics.get("support"),
+                })
+            else:  # Handles class labels and 'weighted avg'
+                report_rows.append({
+                    "k": self.k,
+                    "metric_type": "classification_report",
+                    "label": label_key,
+                    "precision": metrics.get("precision"),
+                    "recall": metrics.get("recall"),
+                    "f1-score": metrics.get("f1-score"),
+                    "support": metrics.get("support"),
+                })
+
+        self.report = pl.DataFrame(report_rows)
 
         if self.k == 0:
-            self.report = self.report.drop(["k"])
+            self.report = self.report.drop("k")

@@ -1,3 +1,11 @@
+"""
+This module contains unit tests for the classification dataset loader functions.
+
+It verifies that each `load_classify_stepX_dataset` function correctly
+instantiates the appropriate dataset class and properly handles the
+injection of input data and intermediate results from previous steps.
+"""
+
 import unittest
 from pathlib import Path
 
@@ -88,8 +96,8 @@ class TestClassifySummaryClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step2_summary_dataset sets input_data properly
-        when provided.
+        Check that load_step2_summary_dataset properly receives and sets the
+        'input_data' attribute when provided during loading.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -138,8 +146,8 @@ class TestClassifySelectClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step3_select_dataset sets input_data properly
-        when provided.
+        Check that load_step3_select_dataset properly receives and sets the
+        'input_data' attribute when provided during loading.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -188,8 +196,8 @@ class TestClassifyLocateClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data_and_profiles(self):
         """
-        Check that load_step4_locate_dataset sets input_data and selected_profiles
-        properly when provided.
+        Check that load_step4_locate_dataset properly receives and sets the
+        'input_data' and 'selected_profiles' attributes when provided.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -249,8 +257,9 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data_and_profiles(self):
         """
-        Check that load_step5_extract_dataset sets input_data, selected_profiles,
-        selected_rows, summary_stats, and filtered_input properly when provided.
+        Check that load_step5_extract_dataset properly receives and sets
+        'input_data', 'selected_profiles', 'selected_rows', and 'summary_stats'
+        attributes when provided. Also verifies 'filtered_input' from internal processing.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -306,7 +315,7 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
 
 class TestClassifyClassifyClassLoader(unittest.TestCase):
     """
-    Tests related to loading the SplitDataSetA class.
+    Tests related to loading the ClassifyAll class.
     """
 
     def setUp(self):
@@ -331,7 +340,7 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step6_split_dataset returns a ClassifyAll instance
+        Check that load_classify_step6_classify_dataset returns a ClassifyAll instance
         with the correct step name.
         """
         ds = load_classify_step6_classify_dataset(self.config)
@@ -340,8 +349,9 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step6_split_dataset sets target_features properly
-        when provided, after all prior steps.
+        Check that load_classify_step6_classify_dataset properly receives and sets
+        the 'target_features' attribute when provided, after all prior steps
+        have generated the necessary data.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -386,7 +396,7 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
 
 class TestClassifyConcatClassLoader(unittest.TestCase):
     """
-    Tests related to loading the SplitDataSetA class.
+    Tests related to loading the ConcatDataSetAll class.
     """
 
     def setUp(self):
@@ -418,7 +428,7 @@ class TestClassifyConcatClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step6_split_dataset returns a ClassifyAll instance
+        Check that load_classify_step7_concat_dataset returns a ConcatDataSetAll instance
         with the correct step name.
         """
         ds = load_classify_step7_concat_dataset(self.config)
@@ -427,8 +437,9 @@ class TestClassifyConcatClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step6_split_dataset sets target_features properly
-        when provided, after all prior steps.
+        Check that load_classify_step7_concat_dataset properly receives and sets
+        the 'input_data' and 'predictions' attributes when provided, after
+        all prior steps have generated the necessary data.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)

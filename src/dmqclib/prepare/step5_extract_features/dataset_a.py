@@ -1,3 +1,10 @@
+"""
+This module defines the ExtractDataSetA class, a specialized feature extraction class
+for BO NRT + Cora test data. It extends ExtractFeatureBase to implement
+specific data processing and feature generation steps for this dataset,
+integrating with the dmqclib framework's configuration and data flow.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -7,13 +14,14 @@ from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBa
 
 class ExtractDataSetA(ExtractFeatureBase):
     """
-    A subclass of :class:`ExtractFeatureBase` to extract features
-    from BO NRT + Cora test data.
+    A subclass of :class:`ExtractFeatureBase` designed to extract features
+    specifically from BO NRT + Cora test data.
 
     This class sets its :attr:`expected_class_name` to ``"ExtractDataSetA"``,
     ensuring it is recognized in the YAML configuration as a valid
-    extract class. It inherits the full feature extraction
-    pipeline from :class:`ExtractFeatureBase`.
+    extract class within the dmqclib framework. It inherits the full
+    feature extraction pipeline and lifecycle management from its base class,
+    :class:`ExtractFeatureBase`.
     """
 
     expected_class_name: str = "ExtractDataSetA"
@@ -27,25 +35,32 @@ class ExtractDataSetA(ExtractFeatureBase):
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the feature extraction workflow for BO NRT + Cora data.
+        Initializes the feature extraction workflow for BO NRT + Cora data.
+
+        This constructor sets up the necessary data and configuration for the
+        feature extraction process, leveraging the capabilities of the base class.
 
         :param config: A dataset configuration object that manages paths,
                        target definitions, and parameters for feature extraction.
-        :type config: ConfigBase
-        :param input_data: A Polars DataFrame containing all available data
-                           for feature extraction, defaults to None.
-        :type input_data: pl.DataFrame, optional
-        :param selected_profiles: A Polars DataFrame containing specifically-selected
-                                  profiles from the earlier steps, defaults to None.
-        :type selected_profiles: pl.DataFrame, optional
-        :param selected_rows: A dictionary mapping each target to its respective
-                            subset of rows for feature generation,
-                            defaults to None.
-        :type selected_rows: dict of str to pl.DataFrame, optional
-        :param summary_stats: A Polars DataFrame with summary statistics
-                              that may guide scaling or normalization,
-                              defaults to None.
-        :type summary_stats: pl.DataFrame, optional
+        :type config: :class:`~dmqclib.common.base.config_base.ConfigBase`
+        :param input_data: An optional Polars DataFrame containing all available data
+                           for feature extraction. This typically represents the full dataset
+                           pre-processed in earlier steps. Defaults to None.
+        :type input_data: :class:`polars.DataFrame` or None
+        :param selected_profiles: An optional Polars DataFrame containing specifically-selected
+                                  profiles from earlier data preparation steps. This subset
+                                  is used to focus feature generation on relevant profiles.
+                                  Defaults to None.
+        :type selected_profiles: :class:`polars.DataFrame` or None
+        :param selected_rows: An optional dictionary mapping each target (str) to its respective
+                            subset of rows (:class:`polars.DataFrame`) for feature generation.
+                            This allows for target-specific feature extraction.
+                            Defaults to None.
+        :type selected_rows: Dict[str, :class:`polars.DataFrame`] or None
+        :param summary_stats: An optional Polars DataFrame with summary statistics
+                              (e.g., mean, standard deviation) that may guide scaling
+                              or normalization of features. Defaults to None.
+        :type summary_stats: :class:`polars.DataFrame` or None
         """
         super().__init__(
             config,

@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the `read_config` function,
+verifying its ability to correctly load configuration files
+from various specified paths and handle error conditions.
+"""
+
 import unittest
 from pathlib import Path
 
@@ -24,8 +30,9 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_with_explicit_file(self):
         """
-        Verify that read_config can load a specific YAML file path, ensuring
-        certain keys ('data_sets', 'path_info_sets') are present in the result.
+        Verify that read_config can load a specific YAML file when an explicit
+        file path is provided. It checks for the presence of expected top-level
+        keys ('data_sets', 'path_info_sets') in the loaded configuration.
         """
         config = read_config(config_file=str(self.config_file_path))
         self.assertIsNotNone(config, "Data should not be None")
@@ -36,8 +43,9 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_with_config_name(self):
         """
-        Verify that read_config can find and load a YAML file from
-        multiple parent directories when only config_file_name is specified.
+        Verify that read_config can locate and load a configuration file
+        by its name, searching up through multiple parent directories.
+        It confirms the presence of expected keys in the loaded configuration.
         """
         config = read_config(
             config_file_name="config_data_set_template.yaml", parent_level=4
@@ -50,14 +58,18 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_no_params_raises_error(self):
         """
-        Check that ValueError is raised if neither config_file nor config_file_name is provided.
+        Check that a ValueError is raised when `read_config` is called
+        without providing either `config_file` or `config_file_name`,
+        as at least one parameter is required for the function to proceed.
         """
         with self.assertRaises(ValueError):
             read_config()
 
     def test_read_config_nonexistent_file(self):
         """
-        Ensure that FileNotFoundError is raised for a file path that does not exist.
+        Ensure that a FileNotFoundError is raised when `read_config` is
+        provided with an explicit `config_file` path that does not correspond
+        to an existing file.
         """
         with self.assertRaises(FileNotFoundError):
             read_config(config_file="non_existent.yaml")

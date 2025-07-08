@@ -1,3 +1,8 @@
+"""
+Unit tests for configuration management functionalities,
+including writing configuration templates and reading existing configuration files.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -60,7 +65,7 @@ class TestTemplateConfig(unittest.TestCase):
 
     def test_config_classification_set_template(self):
         """
-        Check that a training configuration template can be written
+        Check that a classification configuration template can be written
         to the specified path and removed afterward.
         """
         write_config_template(self.config_classify_set_template_file, "classify")

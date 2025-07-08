@@ -1,3 +1,12 @@
+"""
+This module defines the `TrainingConfig` class, which is responsible for
+managing and accessing training-related configurations from a YAML file.
+
+It extends :class:`dmqclib.common.base.config_base.ConfigBase` to provide
+structured access to dataset settings, including targets, step classes,
+and step parameters, by resolving references within the configuration.
+"""
+
 from typing import Optional
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -21,7 +30,7 @@ class TrainingConfig(ConfigBase):
 
     expected_class_name: str = "TrainingConfig"
     """
-    The class name expected by :class:`ConfigBase` for consistency checks 
+    The class name expected by :class:`ConfigBase` for consistency checks
     when instantiating TrainingConfig from YAML.
     """
 

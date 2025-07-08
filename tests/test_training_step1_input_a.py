@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the `InputTrainingSetA` class, focusing on its
+ability to correctly initialize from a `TrainingConfig` and load training and test
+datasets using Polars.
+"""
+
 import unittest
 from pathlib import Path
 
@@ -47,7 +53,10 @@ class TestInputTrainingSetA(unittest.TestCase):
         self.assertEqual(ds.step_name, "input")
 
     def test_input_file_names(self):
-        """Verify that file names for training and test sets are correctly resolved."""
+        """
+        Verify that file names for training and test sets are correctly resolved
+        from the training configuration.
+        """
         ds = InputTrainingSetA(self.config)
         self.assertEqual(
             "/path/to/input_1/nrt_bo_001/input_folder_1/train_set_temp.parquet",
@@ -72,6 +81,8 @@ class TestInputTrainingSetA(unittest.TestCase):
         Polars DataFrame objects, with expected shapes for each variable.
         """
         ds = InputTrainingSetA(self.config)
+        # Override input_file_names to point to actual local test data files
+        # for reading, as the config paths might be generic/placeholder.
         ds.input_file_names = self.input_file_names
 
         ds.process_targets()

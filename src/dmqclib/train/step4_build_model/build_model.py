@@ -1,3 +1,12 @@
+"""
+This module defines the :class:`BuildModel` class, a specialized component
+for building and testing machine learning models.
+
+It inherits from :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase`
+and orchestrates the training and evaluation of models for specified targets
+using Polars DataFrames.
+"""
+
 import polars as pl
 from typing import Optional, Dict
 
@@ -7,18 +16,15 @@ from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 
 class BuildModel(BuildModelBase):
     """
-    A subclass of :class:`BuildModelBase` that builds and tests models
+    A subclass of :class:`BuildModelBase` designed to build and test models
     using provided training and test sets for each target.
 
     This class sets its :attr:`expected_class_name` to ``"BuildModel"``,
-    which must match the YAML configuration’s ``base_class`` if you
-    intend to instantiate it within that framework.
-
-    .. note::
-
-       The class-level docstring references “BuildModelBase builds models.”
-       You may want to revise that note in your final documentation to
-       accurately reflect this subclass’s role.
+    which must match the YAML configuration's ``base_class`` if it is to be
+    instantiated within that framework. It extends the base functionality
+    to specifically manage training and testing workflows, including
+    data preparation steps like column dropping for model input and
+    result aggregation.
     """
 
     expected_class_name: str = "BuildModel"
@@ -30,7 +36,7 @@ class BuildModel(BuildModelBase):
         test_sets: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
-        Initialize the BuildModel class with a training configuration,
+        Initializes the BuildModel class with a training configuration,
         a dictionary of training sets, and optionally a dictionary
         of test sets.
 
@@ -39,10 +45,10 @@ class BuildModel(BuildModelBase):
         :type config: ConfigBase
         :param training_sets: A dictionary of training data keyed by target name,
                               each value being a Polars DataFrame. Defaults to None.
-        :type training_sets: dict of (str to pl.DataFrame), optional
+        :type training_sets: Optional[dict[str, pl.DataFrame]]
         :param test_sets: A dictionary of test data keyed by target name,
                           each value being a Polars DataFrame. Defaults to None.
-        :type test_sets: dict of (str to pl.DataFrame), optional
+        :type test_sets: Optional[dict[str, pl.DataFrame]]
         """
         super().__init__(config, training_sets=training_sets, test_sets=test_sets)
 
@@ -63,7 +69,8 @@ class BuildModel(BuildModelBase):
         This method:
 
           1. Reloads the base model via :meth:`load_base_model`.
-          2. Attaches the training data for the target (dropping the ``k_fold`` column).
+          2. Attaches the training data for the target (dropping the ``k_fold`` column
+             and common identifying columns).
           3. Calls :meth:`base_model.build`.
           4. Stores the built model in :attr:`models[target_name]`.
 
@@ -84,10 +91,13 @@ class BuildModel(BuildModelBase):
 
         This method:
 
-          1. Retrieves the model from :attr:`models[target_name]`.
-          2. Attaches the appropriate test set from :attr:`test_sets[target_name]`.
+          1. Retrieves the previously built model from :attr:`models[target_name]`.
+          2. Attaches the appropriate test set from :attr:`test_sets[target_name]`,
+             dropping common identifying columns.
           3. Calls :meth:`base_model.test`.
-          4. Stores the test results in :attr:`results[target_name]`.
+          4. Stores the test report in :attr:`reports[target_name]`.
+          5. Stores the test predictions, augmented with identifying information
+             and the true label, in :attr:`predictions[target_name]`.
 
         :param target_name: The target variable name, used to index
                             both :attr:`models` and :attr:`test_sets`.

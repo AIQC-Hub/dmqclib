@@ -1,3 +1,12 @@
+"""
+Module for testing the `read_input_file` utility function.
+
+This module contains a series of unit tests for the `read_input_file` function,
+covering various scenarios such as reading different file types (parquet, csv, tsv,
+and gzipped versions), inferring file types, handling unsupported file types,
+managing non-existent files, and passing additional reader options.
+"""
+
 import os
 import unittest
 from pathlib import Path
@@ -35,7 +44,7 @@ class TestReadInputFile(unittest.TestCase):
         ]
         for file_name, expected_rows, file_type in test_cases:
             with self.subTest(file_name=file_name, file_type=file_type):
-                file_path = os.path.join(self.test_data_dir, file_name)
+                file_path = self.test_data_dir / file_name
                 df = read_input_file(file_path, file_type=file_type, options={})
                 self.assertIsInstance(df, pl.DataFrame)
                 self.assertEqual(df.shape[0], expected_rows)
@@ -55,7 +64,7 @@ class TestReadInputFile(unittest.TestCase):
         ]
         for file_name, expected_rows in test_cases:
             with self.subTest(file_name=file_name):
-                file_path = os.path.join(self.test_data_dir, file_name)
+                file_path = self.test_data_dir / file_name
                 df = read_input_file(file_path, file_type=None, options={})
                 self.assertIsInstance(df, pl.DataFrame)
                 self.assertEqual(df.shape[0], expected_rows)
@@ -66,7 +75,7 @@ class TestReadInputFile(unittest.TestCase):
         Verify that specifying an unsupported file type
         raises a ValueError.
         """
-        file_path = os.path.join(self.test_data_dir, "nrt_cora_bo_test.parquet")
+        file_path = self.test_data_dir / "nrt_cora_bo_test.parquet"
         with self.assertRaises(ValueError) as context:
             _ = read_input_file(file_path, file_type="foo", options={})
         self.assertIn("Unsupported file_type 'foo'", str(context.exception))
@@ -77,7 +86,7 @@ class TestReadInputFile(unittest.TestCase):
         raises FileNotFoundError.
         """
         with self.assertRaises(FileNotFoundError):
-            _ = read_input_file("non_existent_file.csv", file_type="csv", options={})
+            _ = read_input_file(Path("non_existent_file.csv"), file_type="csv", options={})
 
     def test_pass_additional_options(self):
         """
@@ -85,7 +94,7 @@ class TestReadInputFile(unittest.TestCase):
         such as has_header=False for CSV.
         """
         file_name = "nrt_cora_bo_test_2023_row1.csv.gz"
-        file_path = os.path.join(self.test_data_dir, file_name)
+        file_path = self.test_data_dir / file_name
         df = read_input_file(
             file_path, file_type="csv.gz", options={"has_header": False}
         )

@@ -1,3 +1,9 @@
+"""
+This module provides the KFoldValidation class, an implementation of k-fold cross-validation
+for model training and evaluation. It extends ValidationBase to perform iterative model
+building and testing across defined data folds, accumulating performance reports.
+"""
+
 import polars as pl
 from typing import Optional, List, Dict
 
@@ -12,7 +18,7 @@ class KFoldValidation(ValidationBase):
 
     This class iterates over the specified number of folds, trains
     (builds) the model on all folds except one, then tests it on the
-    held-out fold. Results are accumulated in :attr:`results`.
+    held-out fold. Results are accumulated in :attr:`reports`.
     """
 
     expected_class_name: str = "KFoldValidation"
@@ -29,11 +35,11 @@ class KFoldValidation(ValidationBase):
                        model parameters, file paths, and other
                        validation settings.
         :type config: ConfigBase
-        :param training_sets: A Polars DataFrame of labeled data,
-                              must contain a column named ``k_fold``
-                              indicating the fold assignment for each row.
-                              Defaults to None.
-        :type training_sets: pl.DataFrame, optional
+        :param training_sets: A dictionary where keys are target names and values are
+                              Polars DataFrames of labeled data. Each DataFrame must
+                              contain a column named ``k_fold`` indicating the fold
+                              assignment for each row. Defaults to None.
+        :type training_sets: Optional[Dict[str, pl.DataFrame]]
         """
         super().__init__(config, training_sets=training_sets)
 
@@ -65,7 +71,7 @@ class KFoldValidation(ValidationBase):
         """
         Conduct k-fold cross-validation for the given target name,
         storing model objects and test results in :attr:`models` and
-        :attr:`results`, respectively.
+        :attr:`reports`, respectively.
 
         For each fold out of :meth:`get_k_fold`:
 

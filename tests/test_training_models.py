@@ -1,3 +1,8 @@
+"""
+Unit tests for the XGBoost model class, verifying its integration with
+the dmqclib configuration system.
+"""
+
 import unittest
 from pathlib import Path
 

@@ -1,3 +1,9 @@
+"""
+This module provides a base class for concatenating input datasets with machine learning
+model predictions. It facilitates merging raw data with classified or predicted labels
+and writing the combined dataset to persistent storage, typically in Parquet format.
+"""
+
 import os
 from typing import Dict, Optional
 
@@ -11,7 +17,7 @@ class ConcatDatasetsBase(DataSetBase):
     """
     Abstract base class for concatenating predictions and the original dataset.
 
-    Inherits from :class:`DataSetBase` to ensure configuration consistency.
+    Inherits from :class:`~dmqclib.common.base.dataset_base.DataSetBase` to ensure configuration consistency.
     The concatenated dataset, once generated, can be written to Parquet files.
     """
 
@@ -25,14 +31,13 @@ class ConcatDatasetsBase(DataSetBase):
         Initialize the feature extraction base class.
 
         :param config: The configuration object, containing paths and target definitions.
-        :type config: ConfigBase
+        :type config: ~dmqclib.common.base.config_base.ConfigBase
         :param input_data: A Polars DataFrame providing the full dataset from which
                            features are extracted, defaults to None.
-        :type input_data: pl.DataFrame, optional
+        :type input_data: Optional[polars.DataFrame]
         :param predictions: A dictionary mapping each target to its respective
-                            subset of predictions,
-                            defaults to None.
-        :type predictions: dict of str to pl.DataFrame, optional
+                            subset of predictions, defaults to None.
+        :type predictions: Optional[Dict[str, polars.DataFrame]]
         :raises NotImplementedError: If the subclass does not define
                                      ``expected_class_name`` (when instantiating a real subclass).
         :raises ValueError: If the provided YAML config does not match this class's
@@ -56,6 +61,26 @@ class ConcatDatasetsBase(DataSetBase):
         self.merged_predictions: Optional[pl.DataFrame] = None
 
     def merge_predictions(self) -> None:
+        """
+        Merges the input data with the predictions for each target into a single Polars DataFrame.
+
+        The method concatenates individual prediction DataFrames (one per target)
+        and then joins them with the original input data based on common
+        identifier columns ('platform_code', 'profile_no', 'observation_no').
+        The 'label' and 'predicted' columns from each target's predictions are
+        renamed to include the target key (e.g., 'targetA_label', 'targetA_predicted')
+        to avoid name collisions.
+
+        The result is stored in the :attr:`merged_predictions` attribute.
+
+        :raises ValueError: If :attr:`predictions` or :attr:`input_data` is None when this method is called.
+        """
+        if self.input_data is None:
+            raise ValueError("Member variable 'input_data' must not be empty.")
+
+        if self.predictions is None:
+            raise ValueError("Member variable 'predictions' must not be empty.")
+
         self.merged_predictions = self.input_data.join(
             pl.concat(
                 [
@@ -78,6 +103,14 @@ class ConcatDatasetsBase(DataSetBase):
         )
 
     def write_merged_predictions(self) -> None:
+        """
+        Writes the merged predictions DataFrame to a Parquet file.
+
+        The output directory is created if it does not exist.
+        The file path is determined by :attr:`output_file_name`.
+
+        :raises ValueError: If :attr:`merged_predictions` is None when this method is called.
+        """
         if self.merged_predictions is None:
             raise ValueError("Member variable 'merged_predictions' must not be empty.")
 

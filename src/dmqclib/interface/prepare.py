@@ -14,28 +14,45 @@ from dmqclib.common.loader.dataset_loader import load_step6_split_dataset
 
 def create_training_dataset(config: ConfigBase) -> None:
     """
-    Execute a series of steps to produce a training dataset, as defined
-    by the provided configuration object.
+    Execute a series of steps to produce a training dataset.
 
-    This function performs the following steps:
+    This function orchestrates the sequential loading and processing of data
+    through multiple preparation steps, as defined by the provided configuration
+    object. It relies on a series of helper functions (e.g., ``load_stepX_dataset``)
+    and class methods to perform distinct operations, ultimately generating
+    and writing the final training and validation datasets.
 
-      1. Load and read the initial input data.
-      2. Calculate and write summary statistics.
-      3. Label and write selected profiles.
-      4. Locate and write target rows.
-      5. Extract and write target features.
-      6. Split and write final data sets for training/validation purposes.
+    The processing typically involves the following stages:
+
+    1.  **Input Data Loading:** Reads and prepares the initial raw data.
+    2.  **Summary Statistics Calculation:** Computes and stores aggregate
+        statistics from the input data.
+    3.  **Profile Selection:** Identifies and labels specific profiles or
+        data subsets based on criteria.
+    4.  **Target Row Location:** Pinpoints and extracts specific rows of interest
+        within the selected profiles.
+    5.  **Feature Extraction:** Derives and extracts relevant features for
+        modeling from the located target rows, often incorporating summary
+        statistics.
+    6.  **Dataset Splitting:** Divides the extracted features into training
+        and validation sets.
 
     :param config: A configuration object specifying the classes and parameters
-                   for each step in the dataset preparation process.
-    :type config: ConfigBase
-    :return: None (the function performs I/O operations and does not return a value).
+                   for each step in the dataset preparation process. This object
+                   guides how each data loading and processing step is performed.
+    :type config: dmqclib.common.base.config_base.ConfigBase
+    :return: None. This function performs I/O operations (reading input, writing
+             intermediate and final datasets) and does not return any value.
     :rtype: None
 
-    Example Usage:
-      >>> from dmqclib.common.base.config_base import ConfigBase
-      >>> cfg = ConfigBase(...)
-      >>> create_training_dataset(cfg)
+    :Example:
+
+    .. code-block:: python
+
+        from dmqclib.common.base.config_base import ConfigBase
+        # Assume cfg is an initialized ConfigBase instance
+        cfg = ConfigBase(...)
+        create_training_dataset(cfg)
     """
     ds_input = load_step1_input_dataset(config)
     ds_input.read_input_data()

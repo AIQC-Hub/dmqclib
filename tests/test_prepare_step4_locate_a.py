@@ -1,3 +1,9 @@
+"""
+Unit tests for the `LocateDataSetA` class, focusing on its functionality
+for selecting and processing rows based on configured datasets, and handling
+the output of processed data files.
+"""
+
 import os
 import unittest
 from pathlib import Path
