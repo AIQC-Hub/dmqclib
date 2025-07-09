@@ -38,9 +38,9 @@ def get_config_data_set_template() -> str:
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Modify this
+      base_path: /path/to/data # EDIT: Root output directory
     input:
-      base_path: /path/to/input # Modify this
+      base_path: /path/to/input # EDIT: Directory with input files
       step_folder_name: ""
     split:
       step_folder_name: training
@@ -121,7 +121,7 @@ step_param_sets:
 data_sets:
   - name: NRT_BO_001
     dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet
+    input_file_name: nrt_cora_bo_test.parquet # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     feature_set: feature_set_1
@@ -154,11 +154,11 @@ def get_config_train_set_template() -> str:
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Modify this
+      base_path: /path/to/data # EDIT: Root output directory
     input:
       step_folder_name: training
     model:
-      base_path: /path/to/model # Modify this
+      base_path: /path/to/model # EDIT: Directory with model files
       step_folder_name: model
       
 target_sets:
@@ -195,7 +195,7 @@ step_param_sets:
 
 training_sets:
   - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
+    dataset_folder_name: nrt_bo_001 # Must match the prepared dataset folder
     path_info: data_set_1
     target_set: target_set_1_3
     step_class_set: training_step_set_1
@@ -237,14 +237,14 @@ def get_config_classify_set_template() -> str:
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Modify this
+      base_path: # EDIT: Root output directory
     input:
       step_folder_name: training
     model:
-      base_path: /path/to/model  # Modify this
+      base_path: /path/to/model  # EDIT: Directory with model files
       step_folder_name: model
     concat:
-      step_folder_name: classify
+      step_folder_name: classify # EDIT: Directory with classification results
             
 target_sets:
   - name: target_set_1_3
@@ -322,8 +322,8 @@ step_param_sets:
 
 classification_sets:
   - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet
+    dataset_folder_name: nrt_bo_001  # Must match the prepared dataset folder
+    input_file_name: nrt_cora_bo_test.parquet   # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     feature_set: feature_set_1
