@@ -50,7 +50,7 @@ import dmqclib as dm
 
 # This creates 'prepare_config.yaml' with predefined sections
 dm.write_config_template(
-    file_path="/path/to/prepare_config.yaml", 
+    file_name="/path/to/prepare_config.yaml", 
     module="prepare"
 )
 ```
@@ -75,7 +75,7 @@ This generates the following output folders:
 - **select**: Profiles with bad observation flags (positive samples) and good profiles (negative samples).
 - **locate**: Observation records for both positive and negative profiles.
 - **extract**: Features extracted from the observation records.
-- **split**: The final training, validation, and test datasets.
+- **training**: The final training, validation, and test datasets.
 
 ### 2. Model Training and Evaluation
 
@@ -86,7 +86,7 @@ This workflow uses the prepared dataset to train a model and evaluate its perfor
 import dmqclib as dm
 
 dm.write_config_template(
-    file_path="/path/to/train_config.yaml", 
+    file_name="/path/to/train_config.yaml", 
     module="train"
 )
 ```
@@ -119,7 +119,7 @@ This workflow applies a trained model to classify all observations in a dataset.
 import dmqclib as dm
 
 dm.write_config_template(
-    file_path="/path/to/classify_config.yaml", 
+    file_name="/path/to/classify_config.yaml", 
     module="classify"
 )
 ```
@@ -297,7 +297,7 @@ Project documentation is hosted on [Read the Docs](https://dmqclib.readthedocs.i
 3.  **Update API Documents:**
     From the project root, run:
     ```bash
-    uv run sphinx-apidoc -f --remove-old --module-first -o docs/source/api src/dmqclib
+    uv run sphinx-apidoc -f --remove-old --separate --module-first -o docs/source/api src/dmqclib
     ```
 
 4.  **Build HTML:**
@@ -341,7 +341,7 @@ Publishing to the `takayasaito` channel on [Anaconda.org](https://anaconda.org/t
 
 ### conda-forge (Manual)
 
-Submitting or updating the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` or `dmqclib-feedstock` repository.
+Submitting or updating the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` repository.
 
 1.  **Fork and clone** the `staged-recipes` repository.
 2.  **Create a new branch** (e.g., `git checkout -b dmqclib-recipe`).

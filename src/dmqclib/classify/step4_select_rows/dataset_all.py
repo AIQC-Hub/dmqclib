@@ -1,7 +1,7 @@
 """
 This module defines the LocateDataSetAll class, a specialized implementation
 of LocatePositionBase for selecting all relevant data rows from combined
-BO NRT and Cora test data.
+Copernicus CTD data.
 
 It is designed to prepare data for machine learning tasks by identifying
 and labeling data points based on configured QC flags.

@@ -1,7 +1,7 @@
 """
 This module defines the SummaryDataSetA class, a specialized implementation
 of SummaryStatsBase for calculating summary statistics on specific datasets,
-such as BO NRT and Cora test data, using the Polars DataFrame library.
+such as Copernicus CTD data, using the Polars DataFrame library.
 It integrates with a configuration management system to ensure proper data processing.
 """
 
