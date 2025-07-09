@@ -18,7 +18,7 @@ pip install dmqclib
 
 Using *conda*:
 ```bash
-conda install takayasaito::dmqclib 
+conda install -c conda-forge dmqclib
 ```
 
 ## Usage
@@ -41,6 +41,9 @@ The function `write_config_template` generates a template configuration file at 
 Next, use the configuration file to create the training dataset.
 
 ```python
+import dmqclib as dm
+
+config_file = "/path/to/config_file.yaml"
 dataset_name = "NRT_BO_001"
 
 config = dm.read_config(config_file, module="prepare")
@@ -74,6 +77,9 @@ The function `write_config_template` will produce a template configuration file 
 After editing the configuration file, you are ready to train your model and evaluate its performance.
 
 ```python
+import dmqclib as dm
+
+training_config_file = "/path/to/training_config_file.yaml"
 training_set_name = "NRT_BO_001"
 
 training_config = dm.read_config(training_config_file, module="train")
@@ -88,7 +94,7 @@ Similar to the previous steps, ensure that the configuration file contains the n
 
 ### 3. Classification
 
-#### 1.1 Create a Configuration File
+#### 3.1 Create a Configuration File
 First, create a configuration file that will serve as a template for preparing your dataset.
 
 ```python
@@ -100,10 +106,13 @@ dm.write_config_template(classification_config_file, module="classify")
 
 The function `write_config_template` generates a template configuration file at the specified location. You will need to edit this file to include entries relevant to the dataset you want to prepare for training. For detailed instructions, refer to the [Configuration](#configuration) section.
 
-#### 1.2 Create a Training Dataset
+#### 3.2 Create a Training Dataset
 Next, use the configuration file to perform classification on all observations.
 
 ```python
+import dmqclib as dm
+
+classification_config_file = "/path/to/classification_config_file.yaml"
 dataset_name = "NRT_BO_001"
 
 classification_config = dm.read_config(classification_config_file, module="classify")
@@ -117,7 +126,7 @@ The configuration file must contain the appropriate entries for the `dataset_nam
 - **select**: Selected profiles with bad observation flags (positive) and associated profiles with good data (negative).
 - **locate**: Observation records for both positive and negative profiles.
 - **extract**: Extracted features for positive and negative observation records.
-- **classify**: Classification results and reorts
+- **classify**: Classification results and report
 
 ## Configuration
 
@@ -263,10 +272,46 @@ and the unit test code under the *tests* folder:
 uvx ruff format tests
 ```
 
+## Documentation
+
+### Read the Docs
+The documentation of the package is available on the [Read the Docs web site](https://dmqclib.readthedocs.io/en/latest/index.html). The following steps are required to prepare the documents for the Read the Docs. The updated documents are automaticlly picked up by Read the Docs though GitHub web hook when merged to the main branch.
+
+#### 1. Update docstrings
+The docstings of all source files and unit test files are updated by Google Gemini. You need to an API key to run the following commands.
+
+```bash
+python ./docs/scripts/update_docstrings.py src scripts/prompt_main.txt
+python ./docs/scripts/update_docstrings.py tests docs/scripts/prompt_unittest.txt
+```
+
+#### 2. Review docstrings
+All files with the updated docstings need to be manually reviewd one by one. You can simply remove a few lines from the top and bottom in most files. Some file contain ckunks with "Issues:" that need be reviewd and corrected if necessary.   
+
+#### 3. Update API Documents
+
+Run the following command in the project root to generate API documents.
+
+```bash
+uv run sphinx-apidoc -f --remove-old --module-first -o docs/source/api src/dmqclib
+```
+
+#### 4. Build the documents
+
+Run the following commands in the project root to build the documents.
+
+```bash
+cd docs
+uv run make html
+cd ..
+```
+
+You can review the produced documents opening docs/build/html/index.html by browser.
+
 ## Deployment
 
 ### Release to PyPI
-The GitHub Action (.github/workflows/publish_to_pypi.yaml) automatically publishes the package to [PyPI](https://pypi.org/project/dmqclib/) whenever a GitHub release is created.
+The GitHub Action ([publish_to_pypi.yaml](https://github.com/AIQC-Hub/dmqclib/blob/main/.github/workflows/publish_to_pypi.yml)) automatically publishes the package to [PyPI](https://pypi.org/project/dmqclib/) whenever a GitHub release is created.
 
 Alternatively, you can manually publish the package to PyPI:
 

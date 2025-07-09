@@ -1,12 +1,42 @@
 dmqclib.interface package
 =========================
 
+.. automodule:: dmqclib.interface
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 5
+dmqclib.interface.classify module
+---------------------------------
 
-   dmqclib.interface.config
-   dmqclib.interface.prepare
-   dmqclib.interface.train
+.. automodule:: dmqclib.interface.classify
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.interface.config module
+-------------------------------
+
+.. automodule:: dmqclib.interface.config
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.interface.prepare module
+--------------------------------
+
+.. automodule:: dmqclib.interface.prepare
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.interface.train module
+------------------------------
+
+.. automodule:: dmqclib.interface.train
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -109,6 +109,7 @@ class LocateDataSetA(LocatePositionBase):
         observations from nearby profiles, matched by pressure.
 
         The alignment process involves:
+
         1. Selecting negative profiles.
         2. Joining with the full input data to get observation details.
         3. Calculating pressure differences with corresponding positive observations.

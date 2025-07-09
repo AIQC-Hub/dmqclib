@@ -1,7 +1,7 @@
-dmqclib.common.loader.model\_registry module
+dmqclib.train.step3\_optimise\_model package
 ============================================
 
-.. automodule:: dmqclib.common.loader.model_registry
+.. automodule:: dmqclib.train.step3_optimise_model
    :members:
    :show-inheritance:
    :undoc-members:
