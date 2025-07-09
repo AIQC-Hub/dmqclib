@@ -92,10 +92,9 @@ class SplitDataSetA(SplitDataSetBase):
 
         test_set = pos_test_set.vstack(neg_test_set)
         # Reassemble the final test set with "row_id" positioned as the first column.
-        # ISSUE: The original implementation `pl.concat([test_set.select(["row_id"]), test_set,], how="align_left",)`
-        # will cause data loss, retaining only 'row_id' due to `align_left` with a single-column DataFrame.
-        # The correct way to reorder columns is to explicitly select them.
-        self.test_sets[target_name] = test_set.select(["row_id", pl.all().exclude("row_id")])
+        self.test_sets[target_name] = test_set.select(
+            ["row_id", pl.all().exclude("row_id")]
+        )
 
         self.training_sets[target_name] = self.target_features[target_name].join(
             self.test_sets[target_name].select([pl.col("row_id")]),
@@ -142,10 +141,6 @@ class SplitDataSetA(SplitDataSetBase):
 
         training_set = pos_training_set.vstack(neg_training_set)
 
-        # Reassemble the final training set with "k_fold", "row_id", etc., positioned as the first columns.
-        # ISSUE: The original implementation `pl.concat([...], how="align_left",)`
-        # will cause data loss, retaining only the explicitly selected columns due to `align_left`
-        # with the first DataFrame having a limited column set.
         # The correct way to reorder columns is to explicitly select them.
         cols_to_front = [
             "k_fold",

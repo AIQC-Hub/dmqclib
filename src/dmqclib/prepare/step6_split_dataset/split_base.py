@@ -38,7 +38,9 @@ class SplitDataSetBase(DataSetBase):
     """
 
     def __init__(
-        self, config: ConfigBase, target_features: Optional[Dict[str, pl.DataFrame]] = None
+        self,
+        config: ConfigBase,
+        target_features: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
         Initialize the train/test splitting class with a configuration

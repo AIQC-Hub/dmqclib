@@ -122,9 +122,6 @@ class DayOfYearFeat(FeatureBase):
         .. math::
             day\\_of\\_year_{transformed} = \\frac{{\\sin(day\\_of\\_year \\cdot 2\\pi / 365) + 1}}{2}
         """
-        # Issue: self.feature_info is Optional[Dict]. If it is None,
-        # accessing self.feature_info["convert"] will raise an AttributeError.
-        # Fixed by checking if self.feature_info is not None.
         if self.feature_info is not None and self.feature_info.get("convert") == "sine":
             self.features = self.features.with_columns(
                 ((pl.col("day_of_year") * 2 * np.pi / 365).sin() + 1) / 2

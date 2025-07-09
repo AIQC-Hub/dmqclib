@@ -61,13 +61,6 @@ class TestBuildModel(unittest.TestCase):
     def test_output_file_names(self):
         """
         Verify that default output file names (model and results) are as expected.
-
-        Issue: The hardcoded paths like "/path/to/model_1/..." are highly
-        dependent on an exact string match which might not be robust or portable.
-        If `BuildModel` generates real file paths, these literal strings
-        are unlikely to match, or they imply a fixed, unrealistic base path
-        in the configuration or implementation. This test would be more robust
-        if it checked relative paths or used a mocked file system.
         """
         ds = BuildModel(self.config)
 
@@ -132,6 +125,23 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["temp"], XGBoost)
         self.assertIsInstance(ds.models["psal"], XGBoost)
         self.assertIsInstance(ds.models["pres"], XGBoost)
+
+    def test_model_objects(self):
+        """Confirm that building models populates a unique model object for each target ."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsNot(ds.models["temp"], ds.models["psal"])
+        self.assertIsNot(ds.models["temp"], ds.models["pres"])
+        self.assertIsNot(ds.models["psal"], ds.models["pres"])
+
+        self.assertNotEqual(ds.models["temp"], ds.models["psal"])
+        self.assertNotEqual(ds.models["temp"], ds.models["pres"])
+        self.assertNotEqual(ds.models["psal"], ds.models["pres"])
 
     def test_test_with_xgboost(self):
         """Check that testing sets after model building populates the result columns,

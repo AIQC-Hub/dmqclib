@@ -196,9 +196,7 @@ class BuildModelBase(DataSetBase):
         for target_name, model_ref in self.models.items():
             output_path = self.model_file_names[target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            # ISSUE: self.base_model.save_model(output_path) was incorrect.
-            # It should be the specific model_ref for the target.
-            if model_ref: # Ensure model_ref is not None before attempting to save
+            if model_ref:
                 model_ref.save_model(output_path)
 
     def read_models(self) -> None:
@@ -213,9 +211,6 @@ class BuildModelBase(DataSetBase):
             if not os.path.exists(path):
                 raise FileNotFoundError(f"File '{path}' does not exist.")
 
-            # ISSUE: self.base_model.load_model(path) then assigning self.base_model
-            # to self.models[target_name] meant all targets would share the same instance.
-            # A new instance should be created for each target.
             new_model_instance = load_model_class(self.config)
             new_model_instance.load_model(path)
             self.models[target_name] = new_model_instance

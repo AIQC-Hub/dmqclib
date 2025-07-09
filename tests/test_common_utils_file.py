@@ -7,7 +7,6 @@ and gzipped versions), inferring file types, handling unsupported file types,
 managing non-existent files, and passing additional reader options.
 """
 
-import os
 import unittest
 from pathlib import Path
 
@@ -86,7 +85,9 @@ class TestReadInputFile(unittest.TestCase):
         raises FileNotFoundError.
         """
         with self.assertRaises(FileNotFoundError):
-            _ = read_input_file(Path("non_existent_file.csv"), file_type="csv", options={})
+            _ = read_input_file(
+                Path("non_existent_file.csv"), file_type="csv", options={}
+            )
 
     def test_pass_additional_options(self):
         """

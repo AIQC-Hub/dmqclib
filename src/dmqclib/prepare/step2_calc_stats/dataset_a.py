@@ -6,7 +6,9 @@ It integrates with a configuration management system to ensure proper data proce
 """
 
 import polars as pl
-from typing import Optional # Explicitly import Optional for clearer type hints in code and docstrings
+from typing import (
+    Optional,
+)  # Explicitly import Optional for clearer type hints in code and docstrings
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
@@ -24,7 +26,9 @@ class SummaryDataSetA(SummaryStatsBase):
 
     expected_class_name: str = "SummaryDataSetA"
 
-    def __init__(self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None) -> None:
+    def __init__(
+        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
+    ) -> None:
         """
         Initializes the SummaryDataSetA instance.
 

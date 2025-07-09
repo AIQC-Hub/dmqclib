@@ -35,9 +35,7 @@ class TestSelectDataSetAll(unittest.TestCase):
             / "config"
             / "test_classify_001.yaml"
         )
-        # Issue: self.config_file_path is already a string from the previous line,
-        # so the `str()` cast here is redundant.
-        self.config = ClassificationConfig(str(self.config_file_path))
+        self.config = ClassificationConfig(self.config_file_path)
         self.config.select("NRT_BO_001")
         self.test_data_file = (
             Path(__file__).resolve().parent
