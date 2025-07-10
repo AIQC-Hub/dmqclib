@@ -8,7 +8,6 @@ the parsed configuration data.
 """
 
 import os
-from pathlib import Path
 from typing import Dict, Optional, Any
 
 import yaml
@@ -29,9 +28,7 @@ def get_config_file(config_file: Optional[str] = None) -> str:
     :rtype: str
     """
     if config_file is None:
-        raise ValueError(
-            "'config_file' cannot be None"
-        )
+        raise ValueError("'config_file' cannot be None")
 
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"File '{config_file}' does not exist.")
@@ -39,8 +36,9 @@ def get_config_file(config_file: Optional[str] = None) -> str:
     return str(config_file)
 
 
-def read_config(config_file: Optional[str] = None,
-                add_config_file_name: bool = True) -> Dict[str, Any]:
+def read_config(
+    config_file: Optional[str] = None, add_config_file_name: bool = True
+) -> Dict[str, Any]:
     """
     Read and parse a YAML configuration file, returning its contents as a dictionary.
 

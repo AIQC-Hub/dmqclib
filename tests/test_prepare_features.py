@@ -206,6 +206,48 @@ class TestDayOfYearFeature(_TestFeatureBase):
         self.assertEqual(ds.features.shape[0], 128)
         self.assertEqual(ds.features.shape[1], 2)
 
+    def test_day_of_year_features_no_param(self):
+        """
+        Verifies that day-of-year features are correctly extracted and scaled,
+        specifically testing with sine conversion, and checking the resulting
+        DataFrame type and dimensions.
+        """
+        ds = DayOfYearFeat(
+            "temp",
+            self.feature_info,
+            self.ds_select.selected_profiles,
+            self.ds_extract.filtered_input,
+            self.ds_locate.selected_rows,
+            self.ds_summary.summary_stats,
+        )
+        ds.extract_features()
+        ds.feature_info = None
+        features = ds.features
+        ds.scale_second()
+        self.assertTrue(ds.features.equals(features))
+
+    def test_day_of_year_features_no_convert_param(self):
+        """
+        Verifies that day-of-year features are correctly extracted and scaled,
+        specifically testing with sine conversion, and checking the resulting
+        DataFrame type and dimensions.
+        """
+        ds = DayOfYearFeat(
+            "temp",
+            self.feature_info,
+            self.ds_select.selected_profiles,
+            self.ds_extract.filtered_input,
+            self.ds_locate.selected_rows,
+            self.ds_summary.summary_stats,
+        )
+        ds.extract_features()
+        ds.feature_info = {
+            "class": "day_of_year",
+        }
+        features = ds.features
+        ds.scale_second()
+        self.assertTrue(ds.features.equals(features))
+
 
 class TestProfileSummaryStats5Feature(_TestFeatureBase):
     """
