@@ -237,14 +237,16 @@ def get_config_classify_set_template() -> str:
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: # EDIT: Root output directory
+      base_path: /path/to/data # EDIT: Root output directory
     input:
-      step_folder_name: training
+      base_path: /path/to/input # EDIT: Directory with input files
+      step_folder_name: ""
     model:
       base_path: /path/to/model  # EDIT: Directory with model files
       step_folder_name: model
     concat:
       step_folder_name: classify # EDIT: Directory with classification results
+
             
 target_sets:
   - name: target_set_1_3
