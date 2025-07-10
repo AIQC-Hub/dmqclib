@@ -14,40 +14,23 @@ from typing import Dict, Optional, Any
 import yaml
 
 
-def get_config_file(
-    config_file: Optional[str] = None,
-    config_file_name: Optional[str] = None,
-    parent_level: int = 4,
-) -> str:
+def get_config_file(config_file: Optional[str] = None) -> str:
     """
     Determine the file path for a configuration file.
 
-    If ``config_file`` is not provided, this function constructs a path
-    by traversing ``parent_level`` directories upward from the location
-    of this file, then descending into a "config" directory using
-    ``config_file_name``. If the resulting file path does not exist,
+    If the resulting file path does not exist,
     a :class:`FileNotFoundError` is raised.
 
     :param config_file: The full path of the configuration file, if already known.
     :type config_file: str, optional
-    :param config_file_name: The name of the configuration file (e.g., "datasets.yaml").
-                             Required if ``config_file`` is not given.
-    :type config_file_name: str, optional
-    :param parent_level: Number of directories to go up from this file's location
-                         to find the base project directory before descending into "config".
-    :type parent_level: int
-    :raises ValueError: If both ``config_file`` and ``config_file_name`` are missing.
+    :raises ValueError: If ``config_file`` is missing.
     :raises FileNotFoundError: If the resolved ``config_file`` path does not exist.
     :return: A string representing the resolved absolute path to the configuration file.
     :rtype: str
     """
     if config_file is None:
-        if config_file_name is None:
-            raise ValueError(
-                "'config_file_name' cannot be None when 'config_file' is None"
-            )
-        config_file = (
-            Path(__file__).resolve().parents[parent_level] / "config" / config_file_name
+        raise ValueError(
+            "'config_file' cannot be None"
         )
 
     if not os.path.exists(config_file):
@@ -56,12 +39,8 @@ def get_config_file(
     return str(config_file)
 
 
-def read_config(
-    config_file: Optional[str] = None,
-    config_file_name: Optional[str] = None,
-    parent_level: int = 3,
-    add_config_file_name: bool = True,
-) -> Dict[str, Any]:
+def read_config(config_file: Optional[str] = None,
+                add_config_file_name: bool = True) -> Dict[str, Any]:
     """
     Read and parse a YAML configuration file, returning its contents as a dictionary.
 
@@ -76,23 +55,17 @@ def read_config(
 
     :param config_file: Full path to the config file, if already known.
     :type config_file: str, optional
-    :param config_file_name: Name of the config file (e.g., "datasets.yaml"),
-                             required if ``config_file`` is not given.
-    :type config_file_name: str, optional
-    :param parent_level: Number of directories to go up from this file's location
-                         before going down into "config" (used if constructing the path).
-    :type parent_level: int
     :param add_config_file_name: If True, the absolute path of the configuration file
                                  is added to the returned dictionary under
                                  the key "config_file_name". Defaults to True.
     :type add_config_file_name: bool
-    :raises ValueError: If both ``config_file`` and ``config_file_name`` are missing (propagated from :func:`get_config_file`).
+    :raises ValueError: If ``config_file`` is missing (propagated from :func:`get_config_file`).
     :raises FileNotFoundError: If no file is found at the resolved path (propagated from :func:`get_config_file`).
     :raises yaml.YAMLError: If the configuration file is not valid YAML.
     :return: A dictionary representing the parsed YAML config.
     :rtype: dict
     """
-    resolved_file = get_config_file(config_file, config_file_name, parent_level)
+    resolved_file = get_config_file(config_file)
 
     with open(resolved_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
