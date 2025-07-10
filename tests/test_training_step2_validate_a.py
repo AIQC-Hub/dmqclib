@@ -162,3 +162,11 @@ class TestKFoldValidation(unittest.TestCase):
         os.remove(ds.output_file_names["report"]["temp"])
         os.remove(ds.output_file_names["report"]["psal"])
         os.remove(ds.output_file_names["report"]["pres"])
+
+    def test_write_reports_empty_reports(self):
+        """
+        Ensure that empty reports raise a ValueError:.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        with self.assertRaises(ValueError):
+            ds.write_reports()

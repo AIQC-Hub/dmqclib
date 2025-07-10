@@ -115,3 +115,12 @@ class ModelBase(ABC):
         """
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         dump(self.model, file_name)
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the ModelBase instance.
+
+        :return: A string describing the instance with its class name declared by ``expected_class_name``.
+        :rtype: str
+        """
+        return f"ModelBase(class={self.expected_class_name})"

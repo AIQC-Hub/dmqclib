@@ -91,7 +91,6 @@ class ConfigBase(ABC):
             self.valid_yaml = True
             return "YAML file is valid"
         except jsonschema.exceptions.ValidationError as e:
-            print(e.message)
             self.valid_yaml = False
             return f"YAML file is invalid: {e.message}"
 
@@ -107,9 +106,9 @@ class ConfigBase(ABC):
         :raises ValueError: If the YAML configuration is found invalid
                             during validation.
         """
-        self.validate()
+        message = self.validate()
         if not self.valid_yaml:
-            raise ValueError("YAML file is invalid")
+            raise ValueError(message)
 
         self.data = get_config_item(
             self.full_config, self.section_name, dataset_name
