@@ -299,7 +299,7 @@ Project documentation is hosted on [Read the Docs](https://dmqclib.readthedocs.i
 3.  **Update API Documents:**
     From the project root, run:
     ```bash
-    uv run sphinx-apidoc -f --remove-old --separate --module-first -o docs/source/api src/dmqclib
+    uv run sphinx-apidoc -f --remove-old --module-first -o docs/source/api src/dmqclib
     ```
 
 4.  **Build HTML:**
