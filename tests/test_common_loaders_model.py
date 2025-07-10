@@ -40,8 +40,40 @@ class TestModelClassLoader(unittest.TestCase):
     def test_load_model_invalid_config(self):
         """
         Ensure that invalid model name raises a ValueError.
-
         """
         self.config.data["step_class_set"]["steps"]["model"] = "invalid_model_name"
         with self.assertRaises(ValueError):
             _ = load_model_class(self.config)
+
+    def test_build_model_empty_training_set(self):
+        """
+        Ensure that build raises a ValueError when training set is not set.
+        """
+        ds = load_model_class(self.config)
+        with self.assertRaises(ValueError):
+            ds.build()
+
+    def test_predict_model_empty_test_set(self):
+        """
+        Ensure that predict raises a ValueError when test set is not set.
+        """
+        ds = load_model_class(self.config)
+        with self.assertRaises(ValueError):
+            ds.predict()
+
+    def test_create_report_empty_test_set(self):
+        """
+        Ensure that create_report raises a ValueError when test set is not set.
+        """
+        ds = load_model_class(self.config)
+        with self.assertRaises(ValueError):
+            ds.create_report()
+
+    def test_create_report_empty_predictions(self):
+        """
+        Ensure that create_report raises a ValueError when predictions are not set.
+        """
+        ds = load_model_class(self.config)
+        ds.test_set = {}
+        with self.assertRaises(ValueError):
+            ds.create_report()

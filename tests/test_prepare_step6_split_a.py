@@ -216,6 +216,16 @@ class TestSplitDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["train"]["psal"])
         os.remove(ds.output_file_names["train"]["pres"])
 
+    def test_write_empty_training_sets(self):
+        """
+        Ensure that empty test sets raise a ValueError.
+        """
+        ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
+        ds.process_targets()
+        ds.training_sets = None
+        with self.assertRaises(ValueError):
+            ds.write_training_sets()
+
     def test_write_test_sets(self):
         """
         Confirm that test sets for each target variable are
@@ -252,6 +262,16 @@ class TestSplitDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["test"]["temp"])
         os.remove(ds.output_file_names["test"]["psal"])
         os.remove(ds.output_file_names["test"]["pres"])
+
+    def test_write_empty_test_sets(self):
+        """
+        Ensure that empty test sets raise a ValueError.
+        """
+        ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
+        ds.process_targets()
+        ds.test_sets = None
+        with self.assertRaises(ValueError):
+            ds.write_test_sets()
 
     def test_write_data_sets(self):
         """

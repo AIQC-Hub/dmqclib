@@ -148,6 +148,30 @@ class TestConcatPredictions(unittest.TestCase):
         self.assertEqual(ds.merged_predictions.shape[0], 19480)
         self.assertEqual(ds.merged_predictions.shape[1], 36)
 
+    def test_merge_predictions_with_empty_input(self):
+        """
+        Check that a ValueError is raised if input data are absent
+        """
+        ds = ConcatDataSetAll(
+            self.config,
+            input_data=None,
+            predictions=self.ds_classify.predictions,
+        )
+        with self.assertRaises(ValueError):
+            ds.merge_predictions()
+
+    def test_merge_predictions_with_empty_predictions(self):
+        """
+        Check that a ValueError is raised if predictions are absent
+        """
+        ds = ConcatDataSetAll(
+            self.config,
+            input_data=self.ds_input.input_data,
+            predictions=None,
+        )
+        with self.assertRaises(ValueError):
+            ds.merge_predictions()
+
     def test_write_predictions(self):
         """Check that the merged predictions are correctly written to a Parquet file."""
         ds = ConcatDataSetAll(
