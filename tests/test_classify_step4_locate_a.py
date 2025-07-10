@@ -113,6 +113,18 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[0], 19480)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
+    def test_selected_rows_with_empty_input(self):
+        """
+        Check that a ValueError is raised if input data are absent
+        """
+        ds = LocateDataSetAll(
+            self.config,
+            input_data=None,
+            selected_profiles=self.ds_select.selected_profiles,
+        )
+        with self.assertRaises(ValueError):
+            ds.process_targets()
+
     def test_write_selected_rows(self):
         """
         Ensure that target rows are saved to Parquet files and

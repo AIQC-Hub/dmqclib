@@ -102,3 +102,20 @@ class TestInputTrainingSetA(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+
+    def test_read_training_set_incorrect_file_names(self):
+        """
+        Ensure that invalid file names raise a FileNotFoundError.
+        """
+        ds = InputTrainingSetA(self.config)
+        with self.assertRaises(FileNotFoundError):
+            ds.process_targets()
+
+    def test_read_test_set_incorrect_file_names(self):
+        """
+        Ensure that invalid file names raise a FileNotFoundError.
+        """
+        ds = InputTrainingSetA(self.config)
+        ds.input_file_names["train"] = self.input_file_names["train"]
+        with self.assertRaises(FileNotFoundError):
+            ds.process_targets()

@@ -314,3 +314,15 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["prediction"]["temp"])
         os.remove(ds.output_file_names["prediction"]["psal"])
         os.remove(ds.output_file_names["prediction"]["pres"])
+
+    def test_write_empty_predictions(self):
+        """
+        Ensure that empty predictions raise a ValueError:.
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        with self.assertRaises(ValueError):
+            ds.write_predictions()
