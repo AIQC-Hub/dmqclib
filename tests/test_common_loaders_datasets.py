@@ -57,6 +57,15 @@ class TestInputClassLoader(unittest.TestCase):
         self.assertIsInstance(ds, InputDataSetA)
         self.assertEqual(ds.step_name, "input")
 
+    def test_load_input_class_with_invalid_config(self):
+        """
+        Ensure that invalid input class name raises a ValueError.
+
+        """
+        self.config.data["step_class_set"]["steps"]["input"] = "InvalidClass"
+        with self.assertRaises(ValueError):
+            _ = load_step1_input_dataset(self.config)
+
 
 class TestSummaryClassLoader(unittest.TestCase):
     """

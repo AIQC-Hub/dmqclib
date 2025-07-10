@@ -100,3 +100,21 @@ class TestReadInputFile(unittest.TestCase):
             file_path, file_type="csv.gz", options={"has_header": False}
         )
         self.assertIsInstance(df, pl.DataFrame)
+
+    def test_empty_options(self):
+        """
+        Demonstrate passing empty options to the reader.
+        """
+        file_name = "nrt_cora_bo_test_2023_row1.csv.gz"
+        file_path = self.test_data_dir / file_name
+        df = read_input_file(file_path, file_type="csv.gz", options=None)
+        self.assertIsInstance(df, pl.DataFrame)
+
+    def test_file_type_inference(self):
+        """
+        Ensure that unsupported file type raises a ValueError.
+        """
+        file_name = "empty_text_file.txt"
+        file_path = self.test_data_dir / file_name
+        with self.assertRaises(ValueError):
+            _ = read_input_file(file_path)
