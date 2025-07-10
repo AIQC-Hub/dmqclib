@@ -1,13 +1,42 @@
 dmqclib.prepare.features package
 ================================
 
+.. automodule:: dmqclib.prepare.features
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 5
+dmqclib.prepare.features.basic\_values module
+---------------------------------------------
 
-   dmqclib.prepare.features.basic_values
-   dmqclib.prepare.features.day_of_year
-   dmqclib.prepare.features.location
-   dmqclib.prepare.features.profile_summary
+.. automodule:: dmqclib.prepare.features.basic_values
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.prepare.features.day\_of\_year module
+---------------------------------------------
+
+.. automodule:: dmqclib.prepare.features.day_of_year
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.prepare.features.location module
+----------------------------------------
+
+.. automodule:: dmqclib.prepare.features.location
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.prepare.features.profile\_summary module
+------------------------------------------------
+
+.. automodule:: dmqclib.prepare.features.profile_summary
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -177,7 +177,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["pres"]))
-        
+
         os.remove(ds.output_file_names["temp"])
         os.remove(ds.output_file_names["psal"])
         os.remove(ds.output_file_names["pres"])

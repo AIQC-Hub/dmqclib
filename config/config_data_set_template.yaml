@@ -2,9 +2,9 @@
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Modify this
+      base_path: /path/to/data # EDIT: Root output directory
     input:
-      base_path: /path/to/input # Modify this
+      base_path: /path/to/input # EDIT: Directory with input files
       step_folder_name: ""
     split:
       step_folder_name: training
@@ -85,7 +85,7 @@ step_param_sets:
 data_sets:
   - name: NRT_BO_001
     dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet
+    input_file_name: nrt_cora_bo_test.parquet  # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     feature_set: feature_set_1

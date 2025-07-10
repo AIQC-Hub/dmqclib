@@ -4,10 +4,6 @@ reading data from various file types, resolving input file paths,
 applying column renames, and filtering rows based on year criteria.
 """
 
-# Issue: The `_get_input_data` helper method is duplicated across
-# `TestInputDataSetA`, `TestInputDataSetARename`, and `TestInputDataSetAFilter`.
-# This redundancy could be resolved by introducing a common base test class.
-
 import unittest
 from pathlib import Path
 

@@ -1,11 +1,16 @@
 dmqclib.common package
 ======================
 
+.. automodule:: dmqclib.common
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 4
 
    dmqclib.common.base
    dmqclib.common.config

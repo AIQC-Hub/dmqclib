@@ -15,7 +15,7 @@ from dmqclib.common.base.feature_base import FeatureBase
 class LocationFeat(FeatureBase):
     """
     A feature extraction class designed specifically for location-based fields
-    (e.g., longitude, latitude) within the BO NRT + Cora dataset.
+    (e.g., longitude, latitude) within the Copernicus CTD dataset.
 
     This class uses the provided data frames to gather location-related fields
     and optionally apply scaling methods. It inherits from :class:`~dmqclib.common.base.feature_base.FeatureBase`

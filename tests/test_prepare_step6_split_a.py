@@ -190,23 +190,27 @@ class TestSplitDataSetA(unittest.TestCase):
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         # Ensure the directory exists
-        data_path.mkdir(parents=True, exist_ok=True) 
-        
+        data_path.mkdir(parents=True, exist_ok=True)
+
         ds.output_file_names["train"]["temp"] = str(
             data_path / "temp_train_set_temp.parquet"
         )
         ds.output_file_names["train"]["psal"] = str(
             data_path / "temp_train_set_psal.parquet"
         )
-        ds.output_file_names["train"]["pres"] = str( # This line tests for 'pres' which is not in target_features
-            data_path / "temp_train_set_pres.parquet"
+        ds.output_file_names["train"]["pres"] = (
+            str(  # This line tests for 'pres' which is not in target_features
+                data_path / "temp_train_set_pres.parquet"
+            )
         )
 
         ds.write_training_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"])) # This assertion is problematic
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["train"]["pres"])
+        )  # This assertion is problematic
 
         os.remove(ds.output_file_names["train"]["temp"])
         os.remove(ds.output_file_names["train"]["psal"])
@@ -231,15 +235,19 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["test"]["psal"] = str(
             data_path / "temp_test_set_psal.parquet"
         )
-        ds.output_file_names["test"]["pres"] = str( # This line tests for 'pres' which is not in target_features
-            data_path / "temp_test_set_pres.parquet"
+        ds.output_file_names["test"]["pres"] = (
+            str(  # This line tests for 'pres' which is not in target_features
+                data_path / "temp_test_set_pres.parquet"
+            )
         )
 
         ds.write_test_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"])) # This assertion is problematic
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["test"]["pres"])
+        )  # This assertion is problematic
 
         os.remove(ds.output_file_names["test"]["temp"])
         os.remove(ds.output_file_names["test"]["psal"])
@@ -264,8 +272,10 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["train"]["psal"] = str(
             data_path / "temp_train_set_psal.parquet"
         )
-        ds.output_file_names["train"]["pres"] = str( # This line tests for 'pres' which is not in target_features
-            data_path / "temp_train_set_pres.parquet"
+        ds.output_file_names["train"]["pres"] = (
+            str(  # This line tests for 'pres' which is not in target_features
+                data_path / "temp_train_set_pres.parquet"
+            )
         )
         ds.output_file_names["test"]["temp"] = str(
             data_path / "temp_test_set_temp.parquet"
@@ -273,18 +283,24 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["test"]["psal"] = str(
             data_path / "temp_test_set_psal.parquet"
         )
-        ds.output_file_names["test"]["pres"] = str( # This line tests for 'pres' which is not in target_features
-            data_path / "temp_test_set_pres.parquet"
+        ds.output_file_names["test"]["pres"] = (
+            str(  # This line tests for 'pres' which is not in target_features
+                data_path / "temp_test_set_pres.parquet"
+            )
         )
 
         ds.write_data_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"])) # This assertion is problematic
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["train"]["pres"])
+        )  # This assertion is problematic
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"])) # This assertion is problematic
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["test"]["pres"])
+        )  # This assertion is problematic
 
         os.remove(ds.output_file_names["train"]["temp"])
         os.remove(ds.output_file_names["train"]["psal"])

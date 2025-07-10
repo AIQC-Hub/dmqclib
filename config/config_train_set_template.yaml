@@ -2,12 +2,11 @@
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # Modify this
+      base_path: /path/to/data # EDIT: Root output directory
     input:
-      base_path: /path/to/data # Modify this
       step_folder_name: training
     model:
-      base_path: /path/to/data # Modify this
+      base_path: /path/to/model # EDIT: Directory with model files
       step_folder_name: model
 
 target_sets:
@@ -44,7 +43,7 @@ step_param_sets:
 
 training_sets:
   - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
+    dataset_folder_name: nrt_bo_001 # Must match the prepared dataset folder
     path_info: data_set_1
     target_set: target_set_1_3
     step_class_set: training_step_set_1

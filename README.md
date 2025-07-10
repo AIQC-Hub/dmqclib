@@ -1,377 +1,353 @@
 # dmqclib
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)](https://pypi.org/project/dmqclib/)
-[![Anaconda - Version](https://anaconda.org/takayasaito/dmqclib/badges/version.svg)](https://anaconda.org/takayasaito/dmqclib)
+[![Conda - Version](https://img.shields.io/conda/vn/conda-forge/dmqclib)](https://anaconda.org/conda-forge/dmqclib)
 [![Check Package](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml/badge.svg)](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml)
 [![Codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
 [![CodeFactor](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib/badge)](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib)
 
-The *dmqclib* package offers helper functions and classes that simplify model building and evaluation for the *AIQC* project.
+**dmqclib** is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project.
 
 ## Installation
-The package is indexed on [PyPI](https://pypi.org/project/dmqclib/) and [Anaconda.org](https://anaconda.org/takayasaito/dmqclib), allowing you to install it using either *pip* or *conda*.
 
-Using *pip*:
+The package is available on PyPI and conda-forge.
+
+**Using pip:**
 ```bash
 pip install dmqclib
 ```
 
-Using *conda*:
+**Using conda:**
 ```bash
-conda install takayasaito::dmqclib 
+conda install -c conda-forge dmqclib
 ```
+
+## Core Concepts
+
+The library is designed around a three-stage workflow:
+
+1.  **Dataset Preparation:** Ingest raw data and transform it into a feature-rich dataset ready for training.
+2.  **Training & Evaluation:** Train machine learning models and evaluate their performance using cross-validation.
+3.  **Classification:** Apply a trained model to classify new, unseen data.
+
+Each stage is controlled by a YAML configuration file, allowing you to define and reproduce your entire workflow with ease.
 
 ## Usage
 
+The general workflow for any task in `dmqclib` follows these steps:
+
+1.  **Generate a Configuration Template:** Create a starter YAML file for the task (e.g., `prepare`, `train`, `classify`).
+2.  **Customize the Configuration:** Edit the YAML file to specify paths, dataset names, and other parameters.
+3.  **Run the Task:** Load the configuration and execute the main function for the task.
+
 ### 1. Dataset Preparation
 
-#### 1.1 Create a Configuration File
-First, create a configuration file that will serve as a template for preparing your dataset.
+This workflow processes your input data and creates balanced training, validation, and test sets.
 
+**Step 1: Generate a configuration template.**
 ```python
 import dmqclib as dm
 
-config_file = "/path/to/config_file.yaml"
-dm.write_config_template(config_file, module="prepare")
+# This creates 'prepare_config.yaml' with predefined sections
+dm.write_config_template(
+    file_name="/path/to/prepare_config.yaml", 
+    module="prepare"
+)
 ```
 
-The function `write_config_template` generates a template configuration file at the specified location. You will need to edit this file to include entries relevant to the dataset you want to prepare for training. For detailed instructions, refer to the [Configuration](#configuration) section.
+**Step 2: Customize `prepare_config.yaml`.**
+You must edit the file to set the correct input/output paths and define your dataset. See the [Configuration](#configuration) section for details.
 
-#### 1.2 Create a Training Dataset
-Next, use the configuration file to create the training dataset.
-
+**Step 3: Run the preparation process.**
 ```python
-dataset_name = "NRT_BO_001"
+import dmqclib as dm
+
+config_file = "/path/to/prepare_config.yaml"
+dataset_name = "NRT_BO_001" # This must match a name in your config file
 
 config = dm.read_config(config_file, module="prepare")
 config.select(dataset_name)
 dm.create_training_dataset(config)
 ```
 
-The configuration file must contain the appropriate entries for the `dataset_name` variable to successfully execute the above command. The function `create_training_data_set` generates several folders and datasets, including:
-
-- **summary**: Summary statistics of input data to estimate normalization values.
-- **select**: Selected profiles with bad observation flags (positive) and associated profiles with good data (negative).
+This generates the following output folders:
+- **summary**: Statistics of input data used for normalization.
+- **select**: Profiles with bad observation flags (positive samples) and good profiles (negative samples).
 - **locate**: Observation records for both positive and negative profiles.
-- **extract**: Extracted features for positive and negative observation records.
-- **split**: Division of extracted feature records into training, validation, and test datasets.
+- **extract**: Features extracted from the observation records.
+- **training**: The final training, validation, and test datasets.
 
-### 2. Training and Evaluation
+### 2. Model Training and Evaluation
 
-#### 2.1 Create a Training Configuration File
-Before training your model, create a separate configuration file specifically for training purposes.
+This workflow uses the prepared dataset to train a model and evaluate its performance.
 
+**Step 1: Generate a training configuration template.**
 ```python
 import dmqclib as dm
 
-training_config_file = "/path/to/training_config_file.yaml"
-dm.write_config_template(training_config_file, module="train")
+dm.write_config_template(
+    file_name="/path/to/train_config.yaml", 
+    module="train"
+)
 ```
 
-The function `write_config_template` will produce a template configuration file at the specified location. You will need to edit this file to include entries related to your model training and evaluation. For details, please refer to the [Configuration](#configuration) section.
+**Step 2: Customize `train_config.yaml`.**
+Edit the file to point to your prepared dataset and define training parameters.
 
-#### 2.2 Train a Model and Evaluate Performance
-After editing the configuration file, you are ready to train your model and evaluate its performance.
-
-```python
-training_set_name = "NRT_BO_001"
-
-training_config = dm.read_config(training_config_file, module="train")
-training_config.select(training_set_name)
-dm.train_and_evaluate(training_config)
-```
-
-Similar to the previous steps, ensure that the configuration file contains the necessary entries for the `training_set_name` variable. The function `train_and_evaluate` generates several folders and datasets, including:
-
-- **validate**: Results from cross-validation processes.
-- **build**: Developed models and evaluation results on the test dataset.
-
-### 3. Classification
-
-#### 1.1 Create a Configuration File
-First, create a configuration file that will serve as a template for preparing your dataset.
-
+**Step 3: Train and evaluate the model.**
 ```python
 import dmqclib as dm
 
-classification_config_file = "/path/to/classification_config_file.yaml"
-dm.write_config_template(classification_config_file, module="classify")
+config_file = "/path/to/train_config.yaml"
+training_set_name = "NRT_BO_001" # This must match a name in your config
+
+config = dm.read_config(config_file, module="train")
+config.select(training_set_name)
+dm.train_and_evaluate(config)
 ```
 
-The function `write_config_template` generates a template configuration file at the specified location. You will need to edit this file to include entries relevant to the dataset you want to prepare for training. For detailed instructions, refer to the [Configuration](#configuration) section.
+This generates the following output folders:
+- **validate**: Results from the cross-validation process.
+- **build**: The final trained models and their evaluation results on the test dataset.
 
-#### 1.2 Create a Training Dataset
-Next, use the configuration file to perform classification on all observations.
+### 3. Data Classification
 
+This workflow applies a trained model to classify all observations in a dataset.
+
+**Step 1: Generate a classification configuration template.**
 ```python
-dataset_name = "NRT_BO_001"
+import dmqclib as dm
 
-classification_config = dm.read_config(classification_config_file, module="classify")
-classification_config.select(dataset_name)
-dm.classify_dataset(classification_config)
+dm.write_config_template(
+    file_name="/path/to/classify_config.yaml", 
+    module="classify"
+)
 ```
 
-The configuration file must contain the appropriate entries for the `dataset_name` variable to successfully execute the above command. The function `classify_dataset` generates several folders and datasets, including:
+**Step 2: Customize `classify_config.yaml`.**
+Edit the file to point to the input data and the trained model.
 
-- **summary**: Summary statistics of input data to estimate normalization values.
-- **select**: Selected profiles with bad observation flags (positive) and associated profiles with good data (negative).
-- **locate**: Observation records for both positive and negative profiles.
-- **extract**: Extracted features for positive and negative observation records.
-- **classify**: Classification results and reorts
+**Step 3: Run classification.**
+```python
+import dmqclib as dm
+
+config_file = "/path/to/classify_config.yaml"
+dataset_name = "NRT_BO_001" # This must match a name in your config
+
+config = dm.read_config(config_file, module="classify")
+config.select(dataset_name)
+dm.classify_dataset(config)
+```
+
+This workflow processes a dataset using a trained model and generates:
+- **classify**: The final classification results and a summary report.
 
 ## Configuration
 
-### 1. Dataset Preparation
-A configuration file for dataset preparation must include the following seven sections:
+Configuration is managed via YAML files. The `write_config_template` function provides a starting point that you must customize for each module.
 
-- **path_info_sets**: Information about paths and folders.
-- **target_sets**: Names of target variables that include NRT/DM flags.
-- **feature_sets**: Set of features utilised for training models.
-- **feature_param_sets**: Parameters associated with the features.
-- **step_class_sets**: Process steps necessary for creating training datasets.
-- **step_param_sets**: Parameters corresponding to the process steps.
-- **data_sets**: A list of datasets.
+### 1. Dataset Preparation (`module="prepare"`)
 
-Among these sections, **path_info_sets** and **data_sets** require modification before running the data generation function.
+The preparation config requires you to modify two key sections:
 
-#### Example of `path_info_sets`
-```yaml
-path_info_sets:
-  - name: data_set_1
-    common:
-      base_path: /path/to/data # Modify this
-    input:
-      base_path: /path/to/input # Modify this
-      step_folder_name: ""
-```
+- **`path_info_sets`**: Defines the location of input and output data.
+  ```yaml
+  path_info_sets:
+    - name: data_set_1
+      common:
+        base_path: /path/to/data # EDIT: Root output directory
+      input:
+        base_path: /path/to/input # EDIT: Directory with input files
+        step_folder_name: ""
+      split:
+        step_folder_name: training
+  ```
 
-In the *path_info_sets* section:
-- `common:base_path` indicates the default output data location.
-- `input:base_path` specifies the input data location.
-- The entry `input:step_folder_name` can remain as an empty string (`""`).
+- **`data_sets`**: Defines a specific dataset to be processed.
+  ```yaml
+  data_sets:
+    - name: NRT_BO_001
+      dataset_folder_name: nrt_bo_001
+      input_file_name: nrt_cora_bo_test.parquet # EDIT: The name of your input file.
+  ```
 
-#### Example of `data_sets`
-```yaml
-data_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet  # Modify this
-```
+### 2. Training and Evaluation (`module="train"`)
 
-In the *data_sets* section, you can edit all three entries above or add a new dataset entry as needed.
+The training config links the prepared data to the model training process.
 
-### 2. Training and Evaluation
-A configuration file for training and evaluation must include the following five sections:
+- **`path_info_sets`**: Defines where to find the prepared dataset and where to save model artifacts.
+  ```yaml
+  path_info_sets:
+    - name: data_set_1
+      common:
+        base_path: /path/to/output_data # EDIT: Must match the `common.base_path` from the preparation step.
+      input:
+        step_folder_name: training # Locates the split data (e.g., /path/to/output_data/training).
+      model:
+        base_path: /path/to/models # EDIT: Directory to save model files.
+        step_folder_name: model
+  ```
 
-- **path_info_sets**: Information about paths and folders.
-- **target_sets**: Names of target variables that include NRT/DM flags.
-- **step_class_sets**: Process steps necessary for creating training datasets.
-- **step_param_sets**: Parameters corresponding to the process steps.
-- **training_sets**: A list of training sets.
+- **`training_sets`**: Links to a dataset prepared in the previous workflow.
+  ```yaml
+  training_sets:
+    - name: NRT_BO_001
+      dataset_folder_name: nrt_bo_001 # Must match the `dataset_folder_name` from the preparation step.
+  ```
 
-Among these sections, **path_info_sets** and **training_sets** need to be modified before running the training function.
+### 3. Classification (`module="classify"`)
 
-#### Example of `path_info_sets`
-```yaml
-path_info_sets:
-  - name: data_set_1
-    common:
-      base_path: /path/to/data # Modify this
-    input:
-      base_path: /path/to/data # Modify this
-      step_folder_name: "training"
-```
+The classification config uses a trained model to classify new data.
 
-In the *path_info_sets* section:
-- `common:base_path` indicates the default output data location.
-- `input:base_path` specifies the location for the input data.
-- The entry `input:step_folder_name` can remain as "training".
+- **`path_info_sets`**: Defines paths for raw data, models, and classification results.
+  ```yaml
+  path_info_sets:
+    - name: data_set_1
+      common:
+        base_path: /path/to/output_data # EDIT: The root directory for classification outputs.
+      input:
+        step_folder_name: training
+      model:
+        base_path: /path/to/models # EDIT: Directory where model files are located.
+        step_folder_name: model
+      concat:
+        step_folder_name: classify
+  ```
 
-#### Example of `training_sets`
-```yaml
-training_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
-```
+- **`classification_sets`**: Defines a specific dataset to be classified.
+  ```yaml
+  classification_sets:
+    - name: NRT_BO_001
+      dataset_folder_name: nrt_bo_001　# Must match the `dataset_folder_name` from the preparation step
+      input_file_name: nrt_cora_bo_test.parquet # EDIT: The raw data file to classify.
+  ```
 
-In the *training_sets* section, you may edit the existing entries or add a new training set entry as needed.
+## Contributing & Development
 
-## Development Environment
+We welcome contributions! Please use the following guidelines for development.
 
-### Package Manager
-Using *[uv](https://docs.astral.sh/uv/)* is recommended when contributing modifications to the package. 
-After the installation of *uv*, running `uv sync` inside the project will create the environment.
+### Environment Setup
 
-#### Example of Environment Setup
-For example, the following commands create a new *conda* environment and set up the library environment with *uv*:
+We recommend using **uv** for managing the development environment.
 
-Using *conda*:
-```bash
-conda create --name aiqc -c conda-forge python=3.12 uv ruff
-conda activate aiqc
-```
-Or using *mamba* (an alternative to conda for faster dependency resolution):
-```bash
-mamba create -n aiqc -c conda-forge python=3.12 uv ruff
-mamba activate aiqc
-```
+1.  Install `python`, `uv`, and `ruff` (e.g., via conda or mamba):
+    ```bash
+    # Using mamba (recommended)
+    mamba create -n dmqclib-dev -c conda-forge python=3.12 uv ruff
+    mamba activate dmqclib-dev
+    ```
 
-To update the local environment with *uv*, navigate to your project directory:
-```bash
-cd /your/path/to/dmqclib
-uv sync
-```
+2.  Navigate to the project root and create the virtual environment:
+    ```bash
+    cd /path/to/dmqclib
+    uv sync
+    ```
 
-### Unit Test
+3.  (Optional) Install the library in editable mode. This is sometimes needed before running tests.
+    ```bash
+    uv pip install -e .
+    ```
 
-You can run unit tests using *pytest*.
+### Running Tests
+
+Unit tests are run with `pytest`.
 
 ```bash
 uv run pytest -v
 ```
 
-(Optional) You may need to install the library in editable mode at least once before running unit tests.
+### Code Style (Linting & Formatting)
 
+We use **Ruff** for linting and formatting.
+
+**Linting:**
 ```bash
-uv pip install -e .
-```
-
-
-### Python Linter
-To lint the code under the *src* folder with [ruff](https://astral.sh/ruff), use the following command:
-
-```bash
+# Lint the library source code
 uvx ruff check src
-```
 
-and the unit test code under the *tests* folder:
-
-```bash
+# Lint the test code
 uvx ruff check tests
 ```
 
-### Code Formatter
-To format the code under the *src* folder with [ruff](https://astral.sh/ruff), use the following command:
-
+**Formatting:**
 ```bash
+# Format the library source code
 uvx ruff format src
-```
 
-and the unit test code under the *tests* folder:
-
-```bash
+# Format the test code
 uvx ruff format tests
 ```
 
-## Deployment
+## Documentation (for Maintainers)
 
-### Release to PyPI
-The GitHub Action (.github/workflows/publish_to_pypi.yaml) automatically publishes the package to [PyPI](https://pypi.org/project/dmqclib/) whenever a GitHub release is created.
+Project documentation is hosted on [Read the Docs](https://dmqclib.readthedocs.io/en/latest/index.html).
 
-Alternatively, you can manually publish the package to PyPI:
+### Building Docs Locally
 
-```bash
-uv build
-uv publish --token pypi-xxxx-xxxx-xxxx-xxxx
-```
+1.  **Update Docstrings (Requires Google Gemini API Key):**
+    ```bash
+    # Update docstrings for source files
+    python ./docs/scripts/update_docstrings.py src docs/scripts/prompt_main.txt
 
-### Release to Anaconda.org
+    # Update docstrings for test files
+    python ./docs/scripts/update_docstrings.py tests docs/scripts/prompt_unittest.txt
+    ```
 
-Unlike using a GitHub Action for PyPI, publishing to [Anaconda.org](https://anaconda.org/takayasaito/dmqclib) is a manual process.
+2.  **Review Docstrings:**
+    Manually review all modified files. Remove generated headers/footers and correct any sections marked with "Issues:".
 
-You’ll need the following tools:
+3.  **Update API Documents:**
+    From the project root, run:
+    ```bash
+    uv run sphinx-apidoc -f --remove-old --separate --module-first -o docs/source/api src/dmqclib
+    ```
 
-  - conda-build
-  - anaconda-client
-  - grayskull
+4.  **Build HTML:**
+    From the project root, run:
+    ```bash
+    cd docs
+    uv run make html
+    cd ..
+    ```
+    You can view the generated site by opening `docs/build/html/index.html` in a browser.
 
-Install them with *conda* or *mamba* (preferably in a dedicated environment):
-```bash
-mamba install -c conda-forge conda-build anaconda-client grayskull
-```
+## Deployment (for Maintainers)
 
-#### 1. Generate the Conda Recipe with Grayskull
+### PyPI
 
-From the project root, run:
-```bash
-grayskull pypi dmqclib
-```
+The package is published to [PyPI](https://pypi.org/project/dmqclib/) automatically via a GitHub Action whenever a new release is created on GitHub.
 
-This creates a *meta.yaml* file in the *dmqclib/* directory.
+### Anaconda.org (Manual)
 
-> [!NOTE]
-> Make sure to review the *meta.yaml* file before building the package.
+Publishing to the `takayasaito` channel on [Anaconda.org](https://anaconda.org/takayasaito/dmqclib) is a manual process.
 
-#### 2. Build the Package
-```bash
-conda build dmqclib
-```
+1.  **Install build tools:**
+    ```bash
+    mamba install -c conda-forge conda-build anaconda-client grayskull
+    ```
 
-This creates a *.conda* package in your local conda-bld directory (e.g., ~/miniconda3/conda-bld/noarch/).
+2.  **Generate Recipe:**
+    From the project root, run `grayskull pypi dmqclib`. This creates `dmqclib/meta.yaml`.
 
-#### 3. Upload to Anaconda.org
+3.  **Build Package:**
+    `conda build dmqclib`
 
-```bash
-anaconda login
-anaconda upload /full/path/to/conda-bld/noarch/dmqclib-<version>-<build>.conda
-```
+4.  **Upload Package:**
+    ```bash
+    anaconda login
+    anaconda upload /path/to/your/conda-bld/noarch/dmqclib-*.conda
+    ```
 
-#### 4. Keep the Recipe Under Version Control
+5.  **Cleanup:**
+    Copy `dmqclib/meta.yaml` to `conda/meta.yaml` for version control and remove the temporary `dmqclib` directory.
 
-```bash
-cp dmqclib/meta.yaml conda/meta.yaml
-rm -r dmqclib
-```
+### conda-forge (Manual)
 
-### Release to conda-forge
+Submitting or updating the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` repository.
 
-#### 1. Fork and Clone the Staged-Recipes Repository  
-
-First, fork the conda-forge/staged-recipes repository on GitHub. Then clone your fork locally:
-
-```bash
-git clone https://github.com/<your_github>/staged-recipes.git    
-```
-
-#### 2. Create a New Branch from Main  
-
-From inside your cloned staged-recipes folder:  
-
-```bash
-git checkout -b dmqclib-recipe  
-```
-
-#### 3. Generate the Conda Recipe  
-
-Use Grayskull to generate a recipe for conda-forge:
-
-```bash
-cd staged-recipes
-grayskull pypi dmqclib --strict-conda-forge  
-```
-
-*Grayskull* creates a folder named *dmqclib* directly under *staged-recipes*.
-
-#### 4. Review the Generated meta.yaml  
-
-Compare the generated file *dmqclib/meta.yaml* with the existing *meta_conda_forge.yaml* from the *dmqclib* repository. Adjust as needed to meet conda-forge guidelines.
-
-#### 5. Commit and Push Your Changes  
-
-```bash
-git add dmqclib/meta.yaml  
-git commit -m "Adding dmqclib"  
-git push --set-upstream origin dmqclib-recipe  
-```
-
-#### 6. Open a Pull Request and Request a Review  
-
-On GitHub, open a Pull Request from your dmqclib-recipe branch to the main branch of conda-forge/staged-recipes.  
-Once the automated checks pass, leave a comment in your PR to request a review, for example:  
-*@conda-forge/help-python, ready for review!*
-
-#### 7. Keep the Recipe Under Version Control
-
-```bash
-cp dmqclib/meta.yaml /path/to/dmqclib/conda/meta_conda_forge.yaml
+1.  **Fork and clone** the `staged-recipes` repository.
+2.  **Create a new branch** (e.g., `git checkout -b dmqclib-recipe`).
+3.  **Generate a strict recipe:** `grayskull pypi dmqclib --strict-conda-forge`.
+4.  **Review `meta.yaml`** and ensure it meets `conda-forge` standards.
+5.  **Commit, push, and open a pull request** to the `staged-recipes` repository.
 ```

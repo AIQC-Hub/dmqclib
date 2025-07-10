@@ -3,7 +3,7 @@ This module provides the BasicValues3PlusFlanks class for extracting target
 values and their "flanking" (neighboring) observations from Polars DataFrames.
 
 It extends FeatureBase and is designed for specific data processing needs,
-such as those encountered with BO NRT + Cora test data.
+such as those encountered with Copernicus CTD data.
 """
 
 import polars as pl
@@ -15,7 +15,7 @@ from dmqclib.common.base.feature_base import FeatureBase
 class BasicValues3PlusFlanks(FeatureBase):
     """
     A feature-extraction class for retrieving target values and their "flanking" values
-    from BO NRT + Cora test data, extending :class:`FeatureBase`.
+    from Copernicus CTD data, extending :class:`FeatureBase`.
 
     The term "flanking values" refers to the concept of capturing neighboring observations
     around a specified index (e.g., observation_no) by shifting backward a specified amount.

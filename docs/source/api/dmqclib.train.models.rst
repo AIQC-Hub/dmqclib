@@ -1,10 +1,18 @@
 dmqclib.train.models package
 ============================
 
+.. automodule:: dmqclib.train.models
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 5
+dmqclib.train.models.xgboost module
+-----------------------------------
 
-   dmqclib.train.models.xgboost
+.. automodule:: dmqclib.train.models.xgboost
+   :members:
+   :show-inheritance:
+   :undoc-members:
