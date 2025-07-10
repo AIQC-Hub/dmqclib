@@ -78,15 +78,12 @@ class InputDataSetBase(DataSetBase):
         If ``sub_steps.rename_columns`` is enabled and a ``rename_dict`` is present,
         columns will be renamed accordingly. Otherwise, the method does nothing.
         """
-        if not self.config.get_step_params("input")["sub_steps"]["rename_columns"]:
-            return None # Issue: Redundant 'return None'. Functions that modify in-place and don't need to signal a specific result can implicitly return None.
-
-        if "rename_dict" in self.config.get_step_params("input"):
+        if self.config.get_step_params("input")["sub_steps"][
+            "rename_columns"
+        ] and "rename_dict" in self.config.get_step_params("input"):
             self.input_data = self.input_data.rename(
                 self.config.get_step_params("input")["rename_dict"]
             )
-
-        return None # Issue: Redundant 'return None'.
 
     def filter_rows(self) -> None:
         """
@@ -96,32 +93,19 @@ class InputDataSetBase(DataSetBase):
         it will either remove certain years via :meth:`remove_years` or keep
         only a specified set of years via :meth:`keep_years`.
         """
-        if not self.config.get_step_params("input")["sub_steps"][
-            "filter_rows"
-        ] or "filter_method_dict" not in self.config.get_step_params("input"):
-            return None # Issue: Redundant 'return None'.
-
+        input_params = self.config.get_step_params("input")
         if (
-            "remove_years" in self.config.get_step_params("input")["filter_method_dict"]
-            and len(
-                self.config.get_step_params("input")["filter_method_dict"][
-                    "remove_years"
-                ]
-            )
-            > 0
+            not input_params["sub_steps"]["filter_rows"]
+            or "filter_method_dict" not in input_params
         ):
+            return
+        filter_dict = input_params.get("filter_method_dict")
+
+        if "remove_years" in filter_dict and len(filter_dict["remove_years"]) > 0:
             self.remove_years()
 
-        if (
-            "keep_years" in self.config.get_step_params("input")["filter_method_dict"]
-            and len(
-                self.config.get_step_params("input")["filter_method_dict"]["keep_years"]
-            )
-            > 0
-        ):
+        if "keep_years" in filter_dict and len(filter_dict["keep_years"]) > 0:
             self.keep_years()
-
-        return None # Issue: Redundant 'return None'.
 
     def remove_years(self) -> None:
         """

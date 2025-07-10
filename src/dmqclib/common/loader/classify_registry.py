@@ -71,12 +71,6 @@ EXTRACT_CLASSIFY_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
 #: to their corresponding Python classes for step6_classify_dataset tasks in the
 #: classification pipeline.
 #:
-#: **ISSUE**: The value `ClassifyAll` is imported from `dmqclib.classify.step6_classify_dataset.dataset_all`,
-#: but the registry's type annotation is `Type[BuildModelBase]` which is imported
-#: from `dmqclib.train.step4_build_model.build_model_base`. This suggests a potential
-#: conceptual or inheritance mismatch if `ClassifyAll` is not intended to be a
-#: subclass of `BuildModelBase`.
-#:
 #: :type: Dict[str, Type[BuildModelBase]]
 CLASSIFY_CLASSIFY_REGISTRY: Dict[str, Type[BuildModelBase]] = {
     "ClassifyAll": ClassifyAll,

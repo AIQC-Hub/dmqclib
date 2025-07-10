@@ -1,6 +1,6 @@
 """
 This module defines the ExtractDataSetA class, a specialized feature extraction class
-for BO NRT + Cora test data. It extends ExtractFeatureBase to implement
+for Copernicus CTD data. It extends ExtractFeatureBase to implement
 specific data processing and feature generation steps for this dataset,
 integrating with the dmqclib framework's configuration and data flow.
 """
@@ -15,7 +15,7 @@ from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBa
 class ExtractDataSetA(ExtractFeatureBase):
     """
     A subclass of :class:`ExtractFeatureBase` designed to extract features
-    specifically from BO NRT + Cora test data.
+    specifically from Copernicus CTD data.
 
     This class sets its :attr:`expected_class_name` to ``"ExtractDataSetA"``,
     ensuring it is recognized in the YAML configuration as a valid
@@ -35,7 +35,7 @@ class ExtractDataSetA(ExtractFeatureBase):
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initializes the feature extraction workflow for BO NRT + Cora data.
+        Initializes the feature extraction workflow for Copernicus CTD data.
 
         This constructor sets up the necessary data and configuration for the
         feature extraction process, leveraging the capabilities of the base class.

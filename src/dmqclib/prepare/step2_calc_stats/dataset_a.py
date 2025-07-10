@@ -1,12 +1,14 @@
 """
 This module defines the SummaryDataSetA class, a specialized implementation
 of SummaryStatsBase for calculating summary statistics on specific datasets,
-such as BO NRT and Cora test data, using the Polars DataFrame library.
+such as Copernicus CTD data, using the Polars DataFrame library.
 It integrates with a configuration management system to ensure proper data processing.
 """
 
 import polars as pl
-from typing import Optional # Explicitly import Optional for clearer type hints in code and docstrings
+from typing import (
+    Optional,
+)  # Explicitly import Optional for clearer type hints in code and docstrings
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
@@ -14,7 +16,7 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 
 class SummaryDataSetA(SummaryStatsBase):
     """
-    Specialized class for calculating summary statistics for BO NRT + Cora test data.
+    Specialized class for calculating summary statistics for Copernicus CTD data.
 
     This class extends :class:`dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`
     and leverages the Polars DataFrame library for efficient data processing.
@@ -24,7 +26,9 @@ class SummaryDataSetA(SummaryStatsBase):
 
     expected_class_name: str = "SummaryDataSetA"
 
-    def __init__(self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None) -> None:
+    def __init__(
+        self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
+    ) -> None:
         """
         Initializes the SummaryDataSetA instance.
 

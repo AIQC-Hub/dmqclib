@@ -1,7 +1,7 @@
 """
 This module defines `SplitDataSetA`, a specialized class for splitting feature
 data into training and test sets. It handles unique requirements for
-BO NRT + Cora test data, including maintaining relationships between positive
+Copernicus CTD data, including maintaining relationships between positive
 and negative samples via shared identifiers and assigning k-fold indices for
 cross-validation.
 """
@@ -17,7 +17,7 @@ from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase
 class SplitDataSetA(SplitDataSetBase):
     """
     A subclass of :class:`SplitDataSetBase` that splits feature data into
-    training and test sets for BO NRT + Cora test data.
+    training and test sets for Copernicus CTD data.
 
     This class performs the following tasks:
 
@@ -32,7 +32,7 @@ class SplitDataSetA(SplitDataSetBase):
 
        This class, :class:`SplitDataSetA`, is specifically designed to split
        feature data into training and test sets with particular handling for
-       BO NRT + Cora test data.
+       Copernicus CTD data.
     """
 
     expected_class_name: str = "SplitDataSetA"
@@ -92,10 +92,9 @@ class SplitDataSetA(SplitDataSetBase):
 
         test_set = pos_test_set.vstack(neg_test_set)
         # Reassemble the final test set with "row_id" positioned as the first column.
-        # ISSUE: The original implementation `pl.concat([test_set.select(["row_id"]), test_set,], how="align_left",)`
-        # will cause data loss, retaining only 'row_id' due to `align_left` with a single-column DataFrame.
-        # The correct way to reorder columns is to explicitly select them.
-        self.test_sets[target_name] = test_set.select(["row_id", pl.all().exclude("row_id")])
+        self.test_sets[target_name] = test_set.select(
+            ["row_id", pl.all().exclude("row_id")]
+        )
 
         self.training_sets[target_name] = self.target_features[target_name].join(
             self.test_sets[target_name].select([pl.col("row_id")]),
@@ -142,10 +141,6 @@ class SplitDataSetA(SplitDataSetBase):
 
         training_set = pos_training_set.vstack(neg_training_set)
 
-        # Reassemble the final training set with "k_fold", "row_id", etc., positioned as the first columns.
-        # ISSUE: The original implementation `pl.concat([...], how="align_left",)`
-        # will cause data loss, retaining only the explicitly selected columns due to `align_left`
-        # with the first DataFrame having a limited column set.
         # The correct way to reorder columns is to explicitly select them.
         cols_to_front = [
             "k_fold",

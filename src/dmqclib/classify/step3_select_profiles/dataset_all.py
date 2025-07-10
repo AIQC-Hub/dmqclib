@@ -1,7 +1,7 @@
 """
 This module defines the `SelectDataSetAll` class, a specialized profile selection
 mechanism within the dmqclib library. It is designed to select all available
-profiles from a given input dataset (typically BO NRT + Cora test data) and
+profiles from a given input dataset (typically Copernicus CTD data) and
 assign initial labels and identifiers for subsequent classification tasks.
 """
 
@@ -15,7 +15,7 @@ from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBa
 class SelectDataSetAll(ProfileSelectionBase):
     """
     A subclass of :class:`ProfileSelectionBase` that selects all profiles from
-    BO NRT + Cora test data.
+    Copernicus CTD data.
 
     This class initializes a selection process where all input profiles are
     considered, and initial labels (e.g., 'negative') and unique identifiers

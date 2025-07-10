@@ -12,8 +12,6 @@ import xgboost as xgb
 from typing import Dict, Any
 
 from sklearn.metrics import (
-    accuracy_score,
-    balanced_accuracy_score,
     classification_report,
 )
 
@@ -165,39 +163,43 @@ class XGBoost(ModelBase):
         for label_key, metrics in classification_dict.items():
             if label_key == "accuracy":
                 # This is the overall accuracy. Add it as a distinct metric type.
-                report_rows.append({
-                    "k": self.k,
-                    "metric_type": "overall_accuracy",
-                    "value": metrics
-                })
+                report_rows.append(
+                    {"k": self.k, "metric_type": "overall_accuracy", "value": metrics}
+                )
             elif label_key == "macro avg":
                 # Balanced accuracy is the same as the recall of the macro average.
                 balanced_accuracy = metrics.get("recall")
-                report_rows.append({
-                    "k": self.k,
-                    "metric_type": "balanced_accuracy",
-                    "value": balanced_accuracy
-                })
+                report_rows.append(
+                    {
+                        "k": self.k,
+                        "metric_type": "balanced_accuracy",
+                        "value": balanced_accuracy,
+                    }
+                )
                 # Fall through to also add the full macro avg report row
-                report_rows.append({
-                    "k": self.k,
-                    "metric_type": "classification_report",
-                    "label": label_key,
-                    "precision": metrics.get("precision"),
-                    "recall": metrics.get("recall"),
-                    "f1-score": metrics.get("f1-score"),
-                    "support": metrics.get("support"),
-                })
+                report_rows.append(
+                    {
+                        "k": self.k,
+                        "metric_type": "classification_report",
+                        "label": label_key,
+                        "precision": metrics.get("precision"),
+                        "recall": metrics.get("recall"),
+                        "f1-score": metrics.get("f1-score"),
+                        "support": metrics.get("support"),
+                    }
+                )
             else:  # Handles class labels and 'weighted avg'
-                report_rows.append({
-                    "k": self.k,
-                    "metric_type": "classification_report",
-                    "label": label_key,
-                    "precision": metrics.get("precision"),
-                    "recall": metrics.get("recall"),
-                    "f1-score": metrics.get("f1-score"),
-                    "support": metrics.get("support"),
-                })
+                report_rows.append(
+                    {
+                        "k": self.k,
+                        "metric_type": "classification_report",
+                        "label": label_key,
+                        "precision": metrics.get("precision"),
+                        "recall": metrics.get("recall"),
+                        "f1-score": metrics.get("f1-score"),
+                        "support": metrics.get("support"),
+                    }
+                )
 
         self.report = pl.DataFrame(report_rows)
 

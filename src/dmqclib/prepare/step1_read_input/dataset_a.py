@@ -1,6 +1,6 @@
 """
 This module defines the InputDataSetA class, a specific implementation for
-reading and preparing BO NRT + Cora test data.
+reading and preparing Copernicus CTD data.
 
 It extends InputDataSetBase to provide concrete logic for data retrieval
 and initial processing, ensuring compatibility with the overall data
@@ -14,7 +14,7 @@ from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
 class InputDataSetA(InputDataSetBase):
     """
     A subclass of :class:`InputDataSetBase` providing specific
-    logic to read BO NRT + Cora test data.
+    logic to read Copernicus CTD data.
 
     This class sets the :attr:`expected_class_name` to match
     the YAML configuration, ensuring that the correct child
@@ -28,7 +28,7 @@ class InputDataSetA(InputDataSetBase):
         Initialize the input dataset.
 
         :param config: The dataset configuration object, which includes
-                       paths and parameters for retrieving BO NRT + Cora
+                       paths and parameters for retrieving Copernicus CTD
                        test data.
         :type config: ConfigBase
         """

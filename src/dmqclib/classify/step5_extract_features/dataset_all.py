@@ -1,6 +1,6 @@
 """
 This module defines the ExtractDataSetAll class, a specialized feature extraction
-component for processing BO NRT + Cora test data. It extends the base feature
+component for processing Copernicus CTD data. It extends the base feature
 extraction capabilities provided by ExtractFeatureBase and integrates with a
 configuration system for managing data paths and parameters.
 """
@@ -15,7 +15,7 @@ from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBa
 class ExtractDataSetAll(ExtractFeatureBase):
     """
     A subclass of :class:`ExtractFeatureBase` for extracting features
-    from BO NRT + Cora test data.
+    from Copernicus CTD data.
 
     This class sets its :attr:`expected_class_name` to ``ExtractDataSetAll`` so
     that it matches the relevant YAML configuration. All feature extraction logic
@@ -33,7 +33,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the feature extraction process for BO NRT + Cora test data.
+        Initialize the feature extraction process for Copernicus CTD data.
 
         :param config: A configuration object that manages paths, target definitions,
                        and parameters for feature extraction.

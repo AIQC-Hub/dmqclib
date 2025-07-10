@@ -1,7 +1,7 @@
 """
 This module defines the LocateDataSetAll class, a specialized implementation
 of LocatePositionBase for selecting all relevant data rows from combined
-BO NRT and Cora test data.
+Copernicus CTD data.
 
 It is designed to prepare data for machine learning tasks by identifying
 and labeling data points based on configured QC flags.
@@ -18,7 +18,7 @@ from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 class LocateDataSetAll(LocatePositionBase):
     """
     A subclass of :class:`LocatePositionBase` that locates all rows
-    from BO NRT + Cora test data for training or evaluation purposes.
+    from Copernicus CTD data for training or evaluation purposes.
 
     This class assigns a default file naming scheme for target rows
     and uses configuration details (e.g., QC flags) to identify
@@ -77,14 +77,12 @@ class LocateDataSetAll(LocatePositionBase):
                              including the relevant QC flag variable name
                              (e.g., ``{"flag": "BATHY_QC_FLAG"}``).
         :type target_value: dict
+        :raises ValueError: If :attr:`input_data` is None when this method is called.
         """
+        if self.input_data is None:
+            raise ValueError("Member variable 'input_data' must not be empty.")
+
         flag_var_name = target_value["flag"]
-        # Issue: The input_data attribute is accessed directly (self.input_data)
-        # without an explicit check for None. While the __init__ docstring
-        # indicates it "should be set later" if not provided, calling this method
-        # before input_data is set would raise an AttributeError.
-        # It is assumed that input_data is guaranteed to be a pl.DataFrame
-        # by the time this method is called within the library's workflow.
         self.selected_rows[target_name] = (
             self.input_data.with_row_index("row_id", offset=1)
             .with_columns(

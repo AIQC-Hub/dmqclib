@@ -129,9 +129,11 @@ class LocatePositionBase(DataSetBase):
                             that no target rows have been identified or processed.
         """
         if not self.selected_rows:
-            raise ValueError("Member variable 'selected_rows' must not be empty. "
-                             "Please ensure 'process_targets' has been called and "
-                             "data has been located.")
+            raise ValueError(
+                "Member variable 'selected_rows' must not be empty. "
+                "Please ensure 'process_targets' has been called and "
+                "data has been located."
+            )
 
         for target_name, df in self.selected_rows.items():
             file_path = self.output_file_names[target_name]

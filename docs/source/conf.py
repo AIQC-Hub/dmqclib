@@ -22,6 +22,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
+    'sphinx_tabs.tabs',
 ]
 autodoc_typehints = "description"
 
