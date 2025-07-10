@@ -17,7 +17,7 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 class SummaryDataSetAll(SummaryStatsBase):
     """
     Subclass of :class:`SummaryStatsBase` for calculating summary statistics
-    for BO NRT + Cora test data using Polars.
+    for Copernicus CTD data using Polars.
 
     Sets :attr:`expected_class_name` to ``SummaryDataSetAll`` to match
     the relevant YAML configuration.

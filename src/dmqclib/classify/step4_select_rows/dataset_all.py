@@ -18,7 +18,7 @@ from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 class LocateDataSetAll(LocatePositionBase):
     """
     A subclass of :class:`LocatePositionBase` that locates all rows
-    from BO NRT + Cora test data for training or evaluation purposes.
+    from Copernicus CTD data for training or evaluation purposes.
 
     This class assigns a default file naming scheme for target rows
     and uses configuration details (e.g., QC flags) to identify

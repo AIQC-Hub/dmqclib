@@ -155,10 +155,12 @@ The preparation config requires you to modify two key sections:
   path_info_sets:
     - name: data_set_1
       common:
-        base_path: /path/to/output_data # EDIT: The root directory for all outputs.
+        base_path: /path/to/data # EDIT: Root output directory
       input:
-        base_path: /path/to/input_data  # EDIT: The directory containing your raw data files.
+        base_path: /path/to/input # EDIT: Directory with input files
         step_folder_name: ""
+      split:
+        step_folder_name: training
   ```
 
 - **`data_sets`**: Defines a specific dataset to be processed.

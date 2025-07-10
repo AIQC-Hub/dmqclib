@@ -1,7 +1,7 @@
 """
 This module defines `SplitDataSetA`, a specialized class for splitting feature
 data into training and test sets. It handles unique requirements for
-BO NRT + Cora test data, including maintaining relationships between positive
+Copernicus CTD data, including maintaining relationships between positive
 and negative samples via shared identifiers and assigning k-fold indices for
 cross-validation.
 """
@@ -17,7 +17,7 @@ from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase
 class SplitDataSetA(SplitDataSetBase):
     """
     A subclass of :class:`SplitDataSetBase` that splits feature data into
-    training and test sets for BO NRT + Cora test data.
+    training and test sets for Copernicus CTD data.
 
     This class performs the following tasks:
 
@@ -32,7 +32,7 @@ class SplitDataSetA(SplitDataSetBase):
 
        This class, :class:`SplitDataSetA`, is specifically designed to split
        feature data into training and test sets with particular handling for
-       BO NRT + Cora test data.
+       Copernicus CTD data.
     """
 
     expected_class_name: str = "SplitDataSetA"

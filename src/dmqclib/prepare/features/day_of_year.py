@@ -18,7 +18,7 @@ from dmqclib.common.base.feature_base import FeatureBase
 class DayOfYearFeat(FeatureBase):
     """
     A feature-extraction class that derives day-of-year features
-    from BO NRT + Cora test data.
+    from Copernicus CTD data.
 
     This class specifically leverages the ``profile_timestamp``
     column to generate a day-of-year value, optionally applying

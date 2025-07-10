@@ -18,7 +18,7 @@ from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBa
 class SelectDataSetA(ProfileSelectionBase):
     """
     A subclass of :class:`ProfileSelectionBase` that defines negative
-    and positive profiles from BO NRT + Cora test data.
+    and positive profiles from Copernicus CTD data.
 
     Main Steps:
 

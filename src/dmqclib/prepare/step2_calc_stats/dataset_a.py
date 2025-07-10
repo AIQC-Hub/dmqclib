@@ -16,7 +16,7 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 
 class SummaryDataSetA(SummaryStatsBase):
     """
-    Specialized class for calculating summary statistics for BO NRT + Cora test data.
+    Specialized class for calculating summary statistics for Copernicus CTD data.
 
     This class extends :class:`dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`
     and leverages the Polars DataFrame library for efficient data processing.
