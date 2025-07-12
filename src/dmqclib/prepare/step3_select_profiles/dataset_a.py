@@ -10,6 +10,8 @@ control machine learning applications.
 
 import polars as pl
 from typing import Optional, List
+from functools import reduce
+import operator
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
@@ -73,14 +75,15 @@ class SelectDataSetA(ProfileSelectionBase):
 
         The resulting DataFrame is stored in :attr:`pos_profile_df`.
         """
+        conditions = reduce(operator.or_, [
+            pl.col(param["flag"]).is_in(param["pos_flag_values"])
+            for param in self.config.get_target_dict().values()
+        ])
+
         self.pos_profile_df = (
-            self.input_data.filter(
-                (pl.col("temp_qc") == 4)
-                | (pl.col("psal_qc") == 4)
-                | (pl.col("pres_qc") == 4)
-            )
+            self.input_data.filter(conditions)
             .select(self.key_col_names)
-            .unique(subset=self.key_col_names)
+            .unique()
             .sort(["platform_code", "profile_no"])
             .with_row_index("profile_id", offset=1)
             .with_columns(
@@ -95,27 +98,17 @@ class SelectDataSetA(ProfileSelectionBase):
 
         The resulting DataFrame is stored in :attr:`neg_profile_df`.
         """
+        exprs = reduce(operator.and_, [
+            (~pl.col(param["flag"]).is_in(param["pos_flag_values"]).any())
+            & (pl.col(param["flag"]).is_in(param["neg_flag_values"]).any())
+            for param in self.config.get_target_dict().values()
+        ])
+
         self.neg_profile_df = (
-            self.input_data.group_by(self.key_col_names)
-            .agg(
-                [
-                    pl.col("temp_qc").max().alias("max_temp_qc"),
-                    pl.col("psal_qc").max().alias("max_psal_qc"),
-                    pl.col("pres_qc").max().alias("max_pres_qc"),
-                    pl.col("temp_qc_dm").max().alias("max_temp_qc_dm"),
-                    pl.col("psal_qc_dm").max().alias("max_psal_qc_dm"),
-                    pl.col("pres_qc_dm").max().alias("max_pres_qc_dm"),
-                ]
-            )
-            .filter(
-                (pl.col("max_temp_qc") == 1)
-                & (pl.col("max_psal_qc") == 1)
-                & (pl.col("max_pres_qc") == 1)
-                & (pl.col("max_temp_qc_dm") == 1)
-                & (pl.col("max_psal_qc_dm") == 1)
-                & (pl.col("max_pres_qc_dm") == 1)
-            )
+            self.input_data
+            .filter(exprs.over(self.key_col_names))
             .select(self.key_col_names)
+            .unique()
             .sort(["platform_code", "profile_no"])
             .with_row_index("profile_id", offset=self.pos_profile_df.shape[0] + 1)
             .with_columns(
@@ -140,14 +133,12 @@ class SelectDataSetA(ProfileSelectionBase):
                 .abs()
                 .alias("day_diff")
             )
+            .sort(["profile_id", "day_diff", "profile_id_neg"])
             .group_by("profile_id")
             .agg(
-                pl.col("profile_id_neg")
-                .sort_by(["day_diff", "profile_id"])
-                .first()
-                .alias("neg_profile_id")
+                pl.col("profile_id_neg").head(1).alias("neg_profile_id")
             )
-        )
+        ).explode("neg_profile_id")
 
         self.pos_profile_df = (
             self.pos_profile_df.join(closest_neg_id, on="profile_id", how="left")
@@ -156,10 +147,10 @@ class SelectDataSetA(ProfileSelectionBase):
         )
 
         self.neg_profile_df = (
-            self.neg_profile_df.filter(
-                pl.col("profile_id").is_in(closest_neg_id["neg_profile_id"].to_list())
-            )
-            .with_columns(
+            self.neg_profile_df.join((closest_neg_id.select("neg_profile_id").unique()),
+                                     left_on="profile_id",
+                                     right_on="neg_profile_id", how="inner")
+           .with_columns(
                 pl.lit(0, dtype=pl.UInt32).alias("neg_profile_id"),
                 pl.lit(0).alias("label"),
             )

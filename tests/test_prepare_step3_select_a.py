@@ -126,7 +126,7 @@ class TestSelectDataSetA(unittest.TestCase):
         ds.label_profiles()
         ds.write_selected_profiles()
         self.assertTrue(os.path.exists(ds.output_file_name))
-        os.remove(ds.output_file_name)
+        #os.remove(ds.output_file_name)
 
     def test_write_empty_selected_profiles(self):
         """Check that writing empty profiles raises ValueError."""

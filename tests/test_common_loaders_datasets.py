@@ -305,7 +305,7 @@ class TestExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)
-        self.assertEqual(ds.filtered_input.shape[0], 9841)
+        self.assertEqual(ds.filtered_input.shape[0], 10683)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
