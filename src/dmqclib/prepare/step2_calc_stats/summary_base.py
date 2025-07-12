@@ -65,12 +65,7 @@ class SummaryStatsBase(DataSetBase):
         self.val_col_names = [
             "longitude",
             "latitude",
-            "temp",
-            "psal",
-            "pres",
-            "dist2coast",
-            "bath",
-        ]
+        ] + list(self.config.get_target_dict().keys())
         #: List of columns defining the schema of output statistics.
         self.stats_col_names = [
             "platform_code",

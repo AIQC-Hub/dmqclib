@@ -302,7 +302,7 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 595)
+        self.assertEqual(ds.summary_stats.shape[0], 425)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)

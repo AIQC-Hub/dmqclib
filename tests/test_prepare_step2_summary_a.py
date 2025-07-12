@@ -96,7 +96,7 @@ class TestSelectDataSetA(unittest.TestCase):
         """Check that calculate_stats populates summary_stats with correct dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
-        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[0], 2520)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):

@@ -100,7 +100,7 @@ class TestSelectDataSetAll(unittest.TestCase):
         """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
-        self.assertEqual(ds.summary_stats.shape[0], 595)
+        self.assertEqual(ds.summary_stats.shape[0], 425)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):

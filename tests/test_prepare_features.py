@@ -109,7 +109,7 @@ class _TestFeatureBase(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[0], 2520)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
 
