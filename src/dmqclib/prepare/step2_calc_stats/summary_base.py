@@ -1,4 +1,5 @@
-"""
+"""A base class for calculating and managing summary statistics.
+
 This module provides a base class, :class:`SummaryStatsBase`, for calculating and
 managing summary statistics for tabular data, primarily using the Polars library.
 It facilitates the computation of both global and per-profile statistics for
@@ -15,45 +16,58 @@ from dmqclib.common.base.dataset_base import DataSetBase
 
 
 class SummaryStatsBase(DataSetBase):
-    """
-    An abstract base class for calculating and writing summary statistics.
+    """Abstract base class for calculating summary statistics.
 
-    This class extends :class:`DataSetBase`, which provides configuration
-    validation for the YAML descriptor. It introduces utilities to handle
-    summary statistics, including writing them to a file.
+    This class provides a framework for generating and writing summary
+    statistics for a dataset. It handles both global (dataset-wide) and
+    per-profile statistics for a specified set of numeric columns. Subclasses
+    must define an ``expected_class_name`` to be instantiated.
 
-    This class uses Polars to generate both global and per-profile statistics
-    for a set of specified columns (:attr:`val_col_names`). It expects column names
-    related to measurement attributes such as temperature, salinity, etc.,
-    and also relies on certain profile identifiers (:attr:`profile_col_names`)
-    to group data by platform and profile number.
-
-    An ``expected_class_name`` value if a subclass is to be instantiated
-    (otherwise, :class:`DataSetBase` will raise a :class:`NotImplementedError`).
+    :ivar default_file_name: The default filename for the output stats file.
+    :vartype default_file_name: str
+    :ivar output_file_name: The full path for the output summary stats file,
+                            derived from the configuration.
+    :vartype output_file_name: str
+    :ivar input_data: The DataFrame containing the data to be analyzed.
+    :vartype input_data: polars.DataFrame, optional
+    :ivar summary_stats: DataFrame holding the combined global and per-profile
+                         statistics after calculation.
+    :vartype summary_stats: polars.DataFrame, optional
+    :ivar summary_stats_observation: DataFrame holding aggregated global statistics
+                                     for key variables.
+    :vartype summary_stats_observation: polars.DataFrame, optional
+    :ivar summary_stats_profile: DataFrame holding aggregated per-profile statistics
+                                 for key variables.
+    :vartype summary_stats_profile: polars.DataFrame, optional
+    :ivar val_col_names: List of numeric columns for which to compute statistics.
+    :vartype val_col_names: list[str]
+    :ivar stats_col_names: The schema (column names) for the output statistics
+                           DataFrame.
+    :vartype stats_col_names: list[str]
+    :ivar profile_col_names: List of columns used to identify unique profiles for
+                             grouping.
+    :vartype profile_col_names: list[str]
     """
 
     def __init__(
         self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
-        """
-        Initialize the summary statistics base with a dataset configuration
-        and optional DataFrame for input data.
+        """Initialize the summary statistics calculation process.
 
         :param config: Configuration object that includes paths and parameters
-                       for retrieving or storing summary statistics.
-        :type config: ConfigBase
-        :param input_data: A Polars DataFrame holding the data upon which
-                           statistics will be computed. Defaults to None.
-        :type input_data: Optional[pl.DataFrame]
-        :raises NotImplementedError: If the :attr:`expected_class_name` is not
-                                     defined by a subclass (when actually instantiated).
-        :raises ValueError: If the YAML's "base_class" does not match the
-                            :attr:`expected_class_name`.
-        :rtype: None
+                       for the statistics generation.
+        :type config: dmqclib.common.base.config_base.ConfigBase
+        :param input_data: A Polars DataFrame containing the data upon which
+                           statistics will be computed. If None, it is
+                           expected to be loaded by the base class.
+        :type input_data: polars.DataFrame, optional
+        :raises NotImplementedError: If ``expected_class_name`` is not defined by
+                                     a subclass upon instantiation.
+        :raises ValueError: If the configuration's ``base_class`` does not match
+                            the ``expected_class_name``.
         """
         super().__init__("summary", config)
 
-        # Prepare paths/filenames for output
         self.default_file_name: str = "summary_stats.tsv"
         self.output_file_name: str = self.config.get_full_file_name(
             "summary", self.default_file_name
@@ -63,12 +77,10 @@ class SummaryStatsBase(DataSetBase):
         self.summary_stats_observation: Optional[pl.DataFrame] = None
         self.summary_stats_profile: Optional[pl.DataFrame] = None
 
-        #: List of numeric columns on which summary statistics will be computed.
         self.val_col_names = [
             "longitude",
             "latitude",
         ] + list(self.config.get_target_dict().keys())
-        #: List of columns defining the schema of output statistics.
         self.stats_col_names = [
             "platform_code",
             "profile_no",
@@ -83,20 +95,17 @@ class SummaryStatsBase(DataSetBase):
             "max",
             "sd",
         ]
-        #: List of columns used as identifiers for grouping data by profile.
         self.profile_col_names = ["platform_code", "profile_no"]
 
     @staticmethod
-    def get_stats_expression(val_col_name: str) -> List:
-        """
-        Build a list of Polars expression objects used to compute summary
-        statistics for a given numeric column.
+    def get_stats_expression(val_col_name: str) -> List[pl.Expr]:
+        """Build a list of Polars expressions to compute summary statistics.
 
-        :param val_col_name: The name of the column for which to calculate global stats.
+        :param val_col_name: The name of the column to analyze.
         :type val_col_name: str
-        :return: A list of Polars expression objects that, when aggregated, compute
-                 the desired summary statistics (min, max, mean, etc.).
-        :rtype: List[pl.Expr]
+        :return: A list of Polars expressions for calculating min, max, mean,
+                 median, quantiles, and standard deviation.
+        :rtype: list[polars.Expr]
         """
         return [
             pl.col(val_col_name).min().cast(pl.Float64).alias("min"),
@@ -111,16 +120,16 @@ class SummaryStatsBase(DataSetBase):
         ]
 
     def calculate_global_stats(self, val_col_name: str) -> pl.DataFrame:
-        """
-        Compute global summary statistics for a specified numeric column
-        across all data rows.
+        """Compute global summary statistics for a specified column.
 
-        :param val_col_name: Name of the column for which to calculate global stats.
+        These statistics are calculated across the entire dataset.
+
+        :param val_col_name: Name of the column for which to calculate global
+                             statistics.
         :type val_col_name: str
-        :return: Polars DataFrame containing min, max, mean, etc., for the entire dataset,
-                 along with placeholders for platform_code and profile_no to match
-                 the structure of the per-profile statistics.
-        :rtype: pl.DataFrame
+        :return: A DataFrame with one row containing the summary statistics,
+                 structured to be compatible with per-profile stats.
+        :rtype: polars.DataFrame
         """
         return (
             self.input_data.select(self.get_stats_expression(val_col_name))
@@ -135,17 +144,16 @@ class SummaryStatsBase(DataSetBase):
     def calculate_profile_stats(
         self, grouped_df: pl.DataFrame, val_col_name: str
     ) -> pl.DataFrame:
-        """
-        Compute per-profile summary statistics for a numeric column, given
-        an already grouped DataFrame.
+        """Compute per-profile summary statistics for a column.
 
-        :param grouped_df: A Polars DataFrame grouped by profile-identifying columns.
-        :type grouped_df: pl.DataFrame
-        :param val_col_name: The name of the column for which to calculate per-profile stats.
+        :param grouped_df: A Polars DataFrame already grouped by profile
+                           identifier columns (e.g., platform_code, profile_no).
+        :type grouped_df: polars.DataFrame
+        :param val_col_name: The name of the column for which to calculate
+                             per-profile stats.
         :type val_col_name: str
-        :return: A Polars DataFrame containing per-profile metrics (e.g., min, max, mean)
-                 for the specified column.
-        :rtype: pl.DataFrame
+        :return: A DataFrame containing statistics for each profile.
+        :rtype: polars.DataFrame
         """
         return (
             grouped_df.agg(self.get_stats_expression(val_col_name))
@@ -154,14 +162,11 @@ class SummaryStatsBase(DataSetBase):
         )
 
     def calculate_stats(self) -> None:
-        """
-        Calculate summary statistics and store them in :attr:`summary_stats`.
+        """Calculate and combine global and per-profile statistics.
 
-        This method concatenates global statistics across all data rows and
-        per-profile statistics grouped by :attr:`profile_col_names` for each
-        column specified in :attr:`val_col_names`.
-
-        :rtype: None
+        This method computes statistics for each column in :attr:`val_col_names`
+        at both the global and per-profile level, then concatenates them into
+        a single DataFrame stored in :attr:`summary_stats`.
         """
         global_stats = pl.concat(
             [self.calculate_global_stats(x) for x in self.val_col_names]
@@ -174,12 +179,11 @@ class SummaryStatsBase(DataSetBase):
         self.summary_stats = global_stats.vstack(profile_stats)
 
     def write_summary_stats(self) -> None:
-        """
-        Write the computed summary statistics to a TSV file.
+        """Write the computed summary statistics to a TSV file.
 
-        :raises ValueError: If :attr:`summary_stats` is None or has not
-                            been assigned by :meth:`calculate_stats`.
-        :rtype: None
+        The output path is determined by :attr:`output_file_name`.
+
+        :raises ValueError: If :attr:`summary_stats` has not been calculated yet.
         """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")
@@ -188,6 +192,14 @@ class SummaryStatsBase(DataSetBase):
         self.summary_stats.write_csv(self.output_file_name, separator="\t")
 
     def create_summary_stats_observation(self):
+        """Create a summarized view of global observation statistics.
+
+        This method filters the main statistics table for global ("all") data,
+        selects a subset of key metrics, and stores the result in
+        :attr:`summary_stats_observation`.
+
+        :raises ValueError: If :attr:`summary_stats` has not been calculated yet.
+        """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")
 
@@ -199,6 +211,14 @@ class SummaryStatsBase(DataSetBase):
         )
 
     def create_summary_stats_profile(self):
+        """Create a summarized view of per-profile statistics.
+
+        This method filters the main statistics table for per-profile data,
+        reshapes it to aggregate statistics (min, mean, max, etc.) across all
+        profiles, and stores the result in :attr:`summary_stats_profile`.
+
+        :raises ValueError: If :attr:`summary_stats` has not been calculated yet.
+        """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")
 

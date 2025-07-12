@@ -47,7 +47,7 @@ class TestReadConfig(unittest.TestCase):
         without providing either `config_file` or `config_file_name`,
         as at least one parameter is required for the function to proceed.
         """
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             read_config()
 
     def test_read_config_nonexistent_file(self):

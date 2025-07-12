@@ -1,5 +1,9 @@
-"""
-Module
+"""Utilities for generating and formatting summary statistics.
+
+This module provides high-level functions to calculate and display summary
+statistics for a given dataset file. It uses a predefined configuration
+template to process the data, compute statistics at both global and
+per-profile levels, and format the results for human-readable output.
 """
 
 import io
@@ -15,8 +19,22 @@ from dmqclib.common.loader.dataset_loader import load_step2_summary_dataset
 
 
 def get_summary_stats(input_file: str, summary_type: str) -> pl.DataFrame:
-    """
-    Show stats
+    """Calculate and retrieve summary statistics from a dataset file.
+
+    This function loads a dataset, computes global and per-profile summary
+    statistics, and returns the requested type of summary as a Polars DataFrame.
+    It uses a built-in configuration template and dynamically sets the input
+    path based on the provided file.
+
+    :param input_file: The path to the input dataset file (e.g., a TSV or Parquet file).
+    :type input_file: str
+    :param summary_type: The type of summary to return. Supported values are
+                         "profiles" (for per-profile stats) and "all" (for global stats).
+    :type summary_type: str
+    :raises FileNotFoundError: If the ``input_file`` does not exist.
+    :raises ValueError: If the ``summary_type`` is not a supported value.
+    :return: A Polars DataFrame containing the requested summary statistics.
+    :rtype: polars.DataFrame
     """
     config = DataSetConfig("template:data_sets")
     if not os.path.exists(input_file):
@@ -48,8 +66,24 @@ def format_summary_stats(
     variables: List[str] = [],
     summary_stats: List[str] = ["mean", "median", "sd", "pct25", "pct75"],
 ) -> str:
-    """
-    Format stats
+    """Format a summary statistics DataFrame into a pretty-printed string.
+
+    This function takes a DataFrame of statistics (as produced by
+    :func:`get_summary_stats`) and converts it into a nested dictionary,
+    which is then formatted into a string for display. The output can be
+    filtered by variable and statistic type.
+
+    :param df: The input DataFrame containing summary statistics. It is expected
+               to have a "stats" column for profile-level summaries.
+    :type df: polars.DataFrame
+    :param variables: An optional list of variable names to include. If empty,
+                      all variables are included.
+    :type variables: list[str]
+    :param summary_stats: An optional list of statistic names (e.g., "mean", "sd")
+                          to include for profile-level summaries.
+    :type summary_stats: list[str]
+    :return: A string containing the pretty-printed, formatted statistics.
+    :rtype: str
     """
     if "stats" in df.columns:
         summary_type = "profiles"
@@ -63,7 +97,6 @@ def format_summary_stats(
 
     result = functions[summary_type](df, variables, summary_stats)
 
-    # Capture and print pretty output
     buf = io.StringIO()
     pprint.pprint(result, stream=buf, sort_dicts=False)
     pprint_output = buf.getvalue()
@@ -75,6 +108,7 @@ def format_summary_stats(
 def _format_with_stats_column(
     df: pl.DataFrame, variables: List[str], summary_stats: List[str]
 ) -> Dict:
+    """Format a DataFrame containing a 'stats' column into a nested dict."""
     stats_dict = {}
     for row in df.iter_rows(named=True):
         if (row["stats"] not in summary_stats) or (
@@ -92,6 +126,7 @@ def _format_with_stats_column(
 def _format_without_stats_column(
     df: pl.DataFrame, variables: List[str], _: List[str]
 ) -> Dict:
+    """Format a DataFrame without a 'stats' column into a dict."""
     stats_dict = {}
     for row in df.iter_rows(named=True):
         if len(variables) > 0 and row["variable"] not in variables:

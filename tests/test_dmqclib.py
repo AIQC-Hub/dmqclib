@@ -1,9 +1,13 @@
-"""
-This module contains integration tests that exercise various dmqclib functionality:
-1) Creating dataset and training configuration templates;
-2) Reading existing configuration files;
-3) Creating a training dataset for Argo-based data (prepare workflow);
-4) Training and evaluating models (train workflow).
+"""Integration tests for dmqclib.
+
+This module contains integration tests that exercise various dmqclib functionality,
+including:
+
+1. Creating dataset and training configuration templates.
+2. Reading existing configuration files.
+3. Creating a training dataset for Argo-based data (prepare workflow).
+4. Training and evaluating models (train workflow).
+5. Testing summary statistics utilities.
 """
 
 import os
@@ -19,15 +23,14 @@ from dmqclib.common.config.training_config import TrainingConfig
 
 
 class TestDMQCLibTemplateConfig(unittest.TestCase):
-    """
-    Tests for creating dataset and training configuration templates
+    """Tests for creating dataset and training configuration templates
     using the dmqclib library.
     """
 
     def setUp(self):
-        """
-        Prepare file paths for dataset and training configuration templates
-        that will be written and removed during testing.
+        """Prepare file paths for dataset and training configuration templates.
+
+        These temporary files will be written and removed during testing.
         """
         self.ds_config_template_file = str(
             Path(__file__).resolve().parent
@@ -43,34 +46,27 @@ class TestDMQCLibTemplateConfig(unittest.TestCase):
         )
 
     def test_ds_config_template(self):
-        """
-        Check that a dataset (prepare) configuration template can be written
-        to the specified path and then removed.
-        """
+        """Verify that a dataset (prepare) configuration template can be written and removed."""
         dm.write_config_template(self.ds_config_template_file, "prepare")
         self.assertTrue(os.path.exists(self.ds_config_template_file))
         os.remove(self.ds_config_template_file)
 
     def test_config_train_set_template(self):
-        """
-        Check that a training configuration template can be written
-        to the specified path and then removed.
-        """
+        """Verify that a training configuration template can be written and removed."""
         dm.write_config_template(self.config_train_set_template_file, "train")
         self.assertTrue(os.path.exists(self.config_train_set_template_file))
         os.remove(self.config_train_set_template_file)
 
 
 class TestDMQCLibReadConfig(unittest.TestCase):
-    """
-    Tests for reading dataset (prepare) and training (train) configuration files
+    """Tests for reading dataset (prepare) and training (train) configuration files
     using the dmqclib library.
     """
 
     def setUp(self):
-        """
-        Define paths to existing dataset and training configuration files
-        used in subsequent read tests.
+        """Define paths to existing dataset and training configuration files.
+
+        These files are used in subsequent read tests.
         """
         self.ds_config_file = str(
             Path(__file__).resolve().parent
@@ -86,29 +82,24 @@ class TestDMQCLibReadConfig(unittest.TestCase):
         )
 
     def test_ds_config(self):
-        """
-        Verify that reading a dataset configuration returns a DataSetConfig instance.
-        """
+        """Verify that reading a dataset configuration returns a DataSetConfig instance."""
         config = dm.read_config(self.ds_config_file, "prepare")
         self.assertIsInstance(config, DataSetConfig)
 
     def test_train_config(self):
-        """
-        Verify that reading a training configuration returns a TrainingConfig instance.
-        """
+        """Verify that reading a training configuration returns a TrainingConfig instance."""
         config = dm.read_config(self.train_config_file, "train")
         self.assertIsInstance(config, TrainingConfig)
 
 
 class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
-    """
-    Tests for creating a training dataset (prepare workflow)
-    using dmqclib to ensure that all expected outputs are generated.
+    """Tests for creating a training dataset (prepare workflow).
+
+    Ensures that all expected intermediate and final outputs are generated.
     """
 
     def setUp(self):
-        """
-        Load dataset configuration, specify file names and paths,
+        """Load dataset configuration, specify file names and paths,
         and prepare test output directories.
         """
         self.config_file_path = str(
@@ -129,9 +120,9 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
         }
 
     def test_create_training_data_set(self):
-        """
-        Use dm.create_training_dataset to run all 'prepare' steps,
-        then confirm the expected files and folders exist.
+        """Run the full 'prepare' workflow via `dm.create_training_dataset`.
+
+        Then, confirm that all expected output files and folders are created.
         """
         dm.create_training_dataset(self.config)
 
@@ -191,15 +182,15 @@ class TestDMQCLibCreateTrainingDataSet(unittest.TestCase):
         shutil.rmtree(output_folder)
 
 
-class TestDMQCCreateTrainingDataSet(unittest.TestCase):
-    """
-    Tests for the training workflow, ensuring training and evaluation
-    produce expected validation/test results and models.
+class TestDMQCLibTrainAndEvaluate(unittest.TestCase):
+    """Tests for the training workflow.
+
+    This suite ensures training and evaluation produce expected validation/test
+    results and model files.
     """
 
     def setUp(self):
-        """
-        Load a TrainingConfig, define the input and output paths,
+        """Load a TrainingConfig, define input and output paths,
         and prepare directories for the train-and-evaluate steps.
         """
         self.config_file_path = (
@@ -222,9 +213,10 @@ class TestDMQCCreateTrainingDataSet(unittest.TestCase):
         }
 
     def test_train_and_evaluate(self):
-        """
-        Run dm.train_and_evaluate on the loaded config,
-        then verify that validation results and model files are generated.
+        """Run the `dm.train_and_evaluate` function with the loaded configuration.
+
+        Then, verify that validation reports, test reports, and trained model
+        files are successfully generated.
         """
         dm.train_and_evaluate(self.config)
 
@@ -270,16 +262,14 @@ class TestDMQCCreateTrainingDataSet(unittest.TestCase):
 
 
 class TestGetSummaryStats(unittest.TestCase):
-    """
-    Tests for the training workflow, ensuring training and evaluation
-    produce expected validation/test results and models.
+    """Tests for the summary statistics utility functions in dmqclib.
+
+    This suite verifies the correct calculation and formatting of summary
+    statistics from a dataset.
     """
 
     def setUp(self):
-        """
-        Set up test environment by defining sample file path
-        for input file
-        """
+        """Set up the test environment by defining the sample input file path."""
         self.test_data_file = (
             Path(__file__).resolve().parent
             / "data"
@@ -288,22 +278,19 @@ class TestGetSummaryStats(unittest.TestCase):
         )
 
     def test_get_profile_summary_stats(self):
-        """
-        Check that test_ds_profile_summary_stats returns a data frame with correct data summary.
-        """
+        """Verify that `dm.get_summary_stats` returns a DataFrame with profile-level summaries."""
         ds = dm.get_summary_stats(self.test_data_file, "profiles")
         self.assertIsInstance(ds, pl.DataFrame)
 
     def test_get_global_summary_stats(self):
-        """
-        Check that test_ds_profile_summary_stats returns a data frame with correct data summary.
-        """
+        """Verify that `dm.get_summary_stats` returns a DataFrame with global summaries."""
         ds = dm.get_summary_stats(self.test_data_file, "all")
         self.assertIsInstance(ds, pl.DataFrame)
 
     def test_format_profile_summary_stats(self):
-        """
-        Check that test_ds_profile_summary_stats returns a data frame with correct data summary.
+        """Verify that `dm.format_summary_stats` correctly formats profile-level summaries.
+
+        Checks for presence/absence of variables and statistics based on filters.
         """
         ds = dm.get_summary_stats(self.test_data_file, "profiles")
 
@@ -323,8 +310,9 @@ class TestGetSummaryStats(unittest.TestCase):
         self.assertNotIn("pct25", stats_dict)
 
     def test_format_global_summary_stats(self):
-        """
-        Check that test_format_global_summary_stats returns a data frame with correct data summary.
+        """Verify that `dm.format_summary_stats` correctly formats global summaries.
+
+        Checks for presence/absence of variables based on filters.
         """
         ds = dm.get_summary_stats(self.test_data_file, "all")
 
