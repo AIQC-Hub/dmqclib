@@ -5,8 +5,9 @@ extraction capabilities provided by ExtractFeatureBase and integrates with a
 configuration system for managing data paths and parameters.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase

@@ -5,8 +5,9 @@ profiles from a given input dataset (typically Copernicus CTD data) and
 assign initial labels and identifiers for subsequent classification tasks.
 """
 
-import polars as pl
 from typing import Optional, List
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase

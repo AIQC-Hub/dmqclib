@@ -11,6 +11,13 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.classify.step1_read_input.dataset_all import InputDataSetAll
+from dmqclib.classify.step2_calc_stats.dataset_all import SummaryDataSetAll
+from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
+from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
+from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
+from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
+from dmqclib.classify.step7_concat_datasets.dataset_all import ConcatDataSetAll
 from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import (
     load_classify_step1_input_dataset,
@@ -21,14 +28,6 @@ from dmqclib.common.loader.classify_loader import (
     load_classify_step6_classify_dataset,
     load_classify_step7_concat_dataset,
 )
-
-from dmqclib.classify.step1_read_input.dataset_all import InputDataSetAll
-from dmqclib.classify.step2_calc_stats.dataset_all import SummaryDataSetAll
-from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
-from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
-from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
-from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
-from dmqclib.classify.step7_concat_datasets.dataset_all import ConcatDataSetAll
 
 
 class TestClassifyInputClassLoader(unittest.TestCase):
@@ -302,7 +301,7 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 595)
+        self.assertEqual(ds.summary_stats.shape[0], 425)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)

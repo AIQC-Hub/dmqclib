@@ -7,8 +7,9 @@ and orchestrates the training and evaluation of models for specified targets
 using Polars DataFrames.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
@@ -77,11 +78,20 @@ class BuildModel(BuildModelBase):
         :param target_name: The target variable name, used to index
                             :attr:`training_sets` and locate the training data.
         :type target_name: str
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets` is empty, indicating no tests
+                    have been carried out or no reports stored.
         """
         self.load_base_model()
-        self.base_model.training_set = self.training_sets[target_name].drop(
-            ["k_fold"] + self.drop_cols
-        )
+        if not self.training_sets:
+            raise ValueError("Member variable 'training_sets' must not be empty.")
+
+        if not self.test_sets:
+            raise ValueError("Member variable 'test_sets' must not be empty.")
+
+        training_set = self.training_sets[target_name].drop(["k_fold"] + self.drop_cols)
+        test_set = self.test_sets[target_name].drop(self.drop_cols)
+
+        self.base_model.training_set = training_set.vstack(test_set)
         self.base_model.build()
         self.models[target_name] = self.base_model
 

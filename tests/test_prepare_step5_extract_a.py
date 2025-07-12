@@ -11,13 +11,13 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.dataset_loader import (
     load_step1_input_dataset,
     load_step2_summary_dataset,
     load_step3_select_dataset,
     load_step4_locate_dataset,
 )
-from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step5_extract_features.dataset_a import ExtractDataSetA
 
 
@@ -98,7 +98,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[0], 2520)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -106,7 +106,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)
-        self.assertEqual(ds.filtered_input.shape[0], 9841)
+        self.assertEqual(ds.filtered_input.shape[0], 10683)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
@@ -116,6 +116,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.selected_rows["psal"].shape[0], 140)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
+
+        self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 122)
+        self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
 
     def test_location_features(self):
         """Check that features are correctly processed for temp and psal targets."""
@@ -137,6 +141,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_features["psal"].shape[0], 140)
         self.assertEqual(ds.target_features["psal"].shape[1], 43)
 
+        self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
+        self.assertEqual(ds.target_features["pres"].shape[0], 122)
+        self.assertEqual(ds.target_features["pres"].shape[1], 43)
+
     def test_write_target_features(self):
         """Confirm that target features are written to parquet files as expected."""
         ds = ExtractDataSetA(
@@ -147,9 +155,15 @@ class TestExtractDataSetA(unittest.TestCase):
             summary_stats=self.ds_summary.summary_stats,
         )
         data_path = Path(__file__).resolve().parent / "data" / "extract"
-        ds.output_file_names["temp"] = str(data_path / "temp_temp_features.parquet")
-        ds.output_file_names["psal"] = str(data_path / "temp_psal_features.parquet")
-        ds.output_file_names["pres"] = str(data_path / "temp_pres_features.parquet")
+        ds.output_file_names["temp"] = str(
+            data_path / "temp_extracted_features_temp.parquet"
+        )
+        ds.output_file_names["psal"] = str(
+            data_path / "temp_extracted_features_psal.parquet"
+        )
+        ds.output_file_names["pres"] = str(
+            data_path / "temp_extracted_features_pres.parquet"
+        )
 
         ds.process_targets()
         ds.write_target_features()

@@ -12,10 +12,16 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: psal
         flag: psal_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: pres
         flag: pres_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
 
 feature_sets:
   - name: feature_set_1

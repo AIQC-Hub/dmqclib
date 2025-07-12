@@ -13,8 +13,8 @@ from typing import Dict, Optional
 
 import polars as pl
 
-from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.common.base.dataset_base import DataSetBase
 
 
 class LocatePositionBase(DataSetBase):

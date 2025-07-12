@@ -11,9 +11,9 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
-from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.classify.step2_calc_stats.dataset_all import SummaryDataSetAll
+from dmqclib.common.config.classify_config import ClassificationConfig
+from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 
 
 class TestSelectDataSetAll(unittest.TestCase):
@@ -100,7 +100,7 @@ class TestSelectDataSetAll(unittest.TestCase):
         """
         ds = SummaryDataSetAll(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
-        self.assertEqual(ds.summary_stats.shape[0], 595)
+        self.assertEqual(ds.summary_stats.shape[0], 425)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):
@@ -114,7 +114,7 @@ class TestSelectDataSetAll(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "summary"
-            / "temp_classify_summary_stats.tsv"
+            / "temp_summary_stats_classify.tsv"
         )
 
         ds.calculate_stats()

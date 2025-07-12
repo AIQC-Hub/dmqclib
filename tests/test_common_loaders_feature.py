@@ -6,8 +6,8 @@ at various processing steps, using common loader functions.
 import unittest
 from pathlib import Path
 
-from dmqclib.common.loader.feature_loader import load_feature_class
 from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.loader.feature_loader import load_feature_class
 from dmqclib.prepare.features.location import LocationFeat
 
 

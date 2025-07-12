@@ -15,10 +15,10 @@ from typing import Optional, Dict
 
 import polars as pl
 
-from dmqclib.common.base.dataset_base import DataSetBase
-from dmqclib.common.loader.model_loader import load_model_class
-from dmqclib.common.base.model_base import ModelBase
 from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.common.base.model_base import ModelBase
+from dmqclib.common.loader.model_loader import load_model_class
 
 
 class BuildModelBase(DataSetBase):

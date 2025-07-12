@@ -14,6 +14,7 @@ from typing import Dict, Optional, Type
 import polars as pl
 
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.dataset_registry import (
     EXTRACT_DATASET_REGISTRY,
     INPUT_DATASET_REGISTRY,
@@ -22,7 +23,6 @@ from dmqclib.common.loader.dataset_registry import (
     SPLIT_DATASET_REGISTRY,
     SUMMARY_DATASET_REGISTRY,
 )
-from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase

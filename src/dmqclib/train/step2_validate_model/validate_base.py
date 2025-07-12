@@ -14,9 +14,9 @@ from typing import Optional, Dict, List
 
 import polars as pl
 
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
-from dmqclib.common.base.config_base import ConfigBase
 
 
 class ValidationBase(DataSetBase):

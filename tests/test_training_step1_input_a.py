@@ -67,12 +67,21 @@ class TestInputTrainingSetA(unittest.TestCase):
             str(ds.input_file_names["train"]["psal"]),
         )
         self.assertEqual(
+            "/path/to/input_1/nrt_bo_001/input_folder_1/train_set_pres.parquet",
+            str(ds.input_file_names["train"]["pres"]),
+        )
+        self.assertEqual(
             "/path/to/input_1/nrt_bo_001/input_folder_1/test_set_temp.parquet",
             str(ds.input_file_names["test"]["temp"]),
         )
         self.assertEqual(
             "/path/to/input_1/nrt_bo_001/input_folder_1/test_set_psal.parquet",
             str(ds.input_file_names["test"]["psal"]),
+        )
+
+        self.assertEqual(
+            "/path/to/input_1/nrt_bo_001/input_folder_1/test_set_pres.parquet",
+            str(ds.input_file_names["test"]["pres"]),
         )
 
     def test_read_files(self):
@@ -102,6 +111,14 @@ class TestInputTrainingSetA(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["pres"].shape[0], 110)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 42)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
 
     def test_read_training_set_incorrect_file_names(self):
         """

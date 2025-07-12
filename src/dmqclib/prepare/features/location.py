@@ -6,8 +6,9 @@ It extends the generic FeatureBase to handle the specific requirements of
 location data, including extraction from raw profiles and optional scaling.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.feature_base import FeatureBase
 

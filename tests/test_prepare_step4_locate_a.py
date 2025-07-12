@@ -10,9 +10,9 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.common.loader.dataset_loader import load_step3_select_dataset
-from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step4_select_rows.dataset_a import LocateDataSetA
 
 
@@ -104,6 +104,7 @@ class TestLocateDataSetA(unittest.TestCase):
         )
         ds.select_positive_rows("temp", {"flag": "temp_qc"})
         ds.select_positive_rows("psal", {"flag": "psal_qc"})
+        ds.select_positive_rows("pres", {"flag": "pres_qc"})
 
         self.assertIsInstance(ds.positive_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["temp"].shape[0], 64)
@@ -112,6 +113,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.positive_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["psal"].shape[0], 70)
         self.assertEqual(ds.positive_rows["psal"].shape[1], 11)
+
+        self.assertIsInstance(ds.positive_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.positive_rows["pres"].shape[0], 61)
+        self.assertEqual(ds.positive_rows["pres"].shape[1], 11)
 
     def test_negative_rows(self):
         """
@@ -124,9 +129,13 @@ class TestLocateDataSetA(unittest.TestCase):
             selected_profiles=self.ds_select.selected_profiles,
         )
         ds.select_positive_rows("temp", {"flag": "temp_qc"})
-        ds.select_positive_rows("psal", {"flag": "psal_qc"})
         ds.select_negative_rows("temp", {"flag": "temp_qc"})
+
+        ds.select_positive_rows("psal", {"flag": "psal_qc"})
         ds.select_negative_rows("psal", {"flag": "psal_qc"})
+
+        ds.select_positive_rows("pres", {"flag": "pres_qc"})
+        ds.select_negative_rows("pres", {"flag": "pres_qc"})
 
         self.assertIsInstance(ds.negative_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["temp"].shape[0], 64)
@@ -135,6 +144,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.negative_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["psal"].shape[0], 70)
         self.assertEqual(ds.negative_rows["psal"].shape[1], 11)
+
+        self.assertIsInstance(ds.negative_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.negative_rows["pres"].shape[0], 61)
+        self.assertEqual(ds.negative_rows["pres"].shape[1], 11)
 
     def test_selected_rows(self):
         """
@@ -157,6 +170,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[0], 140)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
+        self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 122)
+        self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
+
     def test_write_selected_rows(self):
         """
         Ensure that target rows are saved to Parquet files and
@@ -168,9 +185,15 @@ class TestLocateDataSetA(unittest.TestCase):
             selected_profiles=self.ds_select.selected_profiles,
         )
         data_path = Path(__file__).resolve().parent / "data" / "select"
-        ds.output_file_names["temp"] = str(data_path / "temp_temp_rows.parquet")
-        ds.output_file_names["psal"] = str(data_path / "temp_psal_rows.parquet")
-        ds.output_file_names["pres"] = str(data_path / "temp_pres_rows.parquet")
+        ds.output_file_names["temp"] = str(
+            data_path / "temp_selected_rows_temp.parquet"
+        )
+        ds.output_file_names["psal"] = str(
+            data_path / "temp_selected_rows_psal.parquet"
+        )
+        ds.output_file_names["pres"] = str(
+            data_path / "temp_selected_rows_pres.parquet"
+        )
 
         ds.process_targets()
         ds.write_selected_rows()

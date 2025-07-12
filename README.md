@@ -350,4 +350,3 @@ Submitting or updating the package on `conda-forge` involves creating a pull req
 3.  **Generate a strict recipe:** `grayskull pypi dmqclib --strict-conda-forge`.
 4.  **Review `meta.yaml`** and ensure it meets `conda-forge` standards.
 5.  **Commit, push, and open a pull request** to the `staged-recipes` repository.
-```

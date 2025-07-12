@@ -1,11 +1,14 @@
-"""
-This module defines the `ConfigBase` abstract base class, which provides a standardized
-interface for loading, validating, and accessing configuration data from YAML files
-for various components like datasets, training sets, and classification sets.
+"""A base class for handling YAML-based configurations.
 
-It aims to centralize configuration management, ensuring consistency and reusability
-across different parts of a machine learning pipeline by leveraging JSON schema
-validation and structured access methods.
+This module defines the `ConfigBase` abstract base class, which provides a
+standardized interface for loading, validating, and accessing configuration
+data from YAML files. It is designed to manage configurations for various
+components of a data processing pipeline, such as datasets, training tasks,
+and classification tasks.
+
+The class centralizes configuration management by using JSON schema for
+validation and providing structured methods for accessing configuration values,
+ensuring consistency and reusability.
 """
 
 import os
@@ -21,49 +24,75 @@ from dmqclib.common.config.yaml_schema import (
     get_training_config_schema,
     get_classification_config_schema,
 )
+from dmqclib.common.config.yaml_templates import (
+    get_config_data_set_template,
+    get_config_train_set_template,
+    get_config_classify_set_template,
+)
 from dmqclib.common.utils.config import get_config_item
 from dmqclib.common.utils.config import read_config
 
 
 class ConfigBase(ABC):
-    """
-    Base class for dataset or training configuration classes.
+    """Abstract base class for loading and accessing YAML configurations.
 
-    Subclasses must define an ``expected_class_name`` attribute, which is
-    used to validate that the YAML configuration matches the intended
-    class signature.
+    This class provides a common interface for handling configuration files.
+    It supports loading from a file path or from a built-in template,
+    validating the configuration against a predefined JSON schema, and
+    providing convenient methods to access specific parts of the config.
+
+    Subclasses must override the ``expected_class_name`` attribute to match
+    the ``base_class`` value specified in the YAML configuration, which ensures
+    that the correct configuration is used with the correct class.
 
     .. note::
+       This is an abstract base class and should not be instantiated directly.
 
-       This class extends :class:`abc.ABC` to indicate that it is an
-       abstract base class and should not be instantiated directly.
+    :ivar expected_class_name: Must be overridden by subclasses to match the
+                               YAML's ``base_class`` entry.
+    :vartype expected_class_name: str, optional
+    :ivar section_name: The top-level section of the config this instance manages
+                        (e.g., "data_sets").
+    :vartype section_name: str
+    :ivar yaml_schema: The JSON schema used for validating the configuration.
+    :vartype yaml_schema: dict
+    :ivar full_config: The entire configuration loaded from the YAML file.
+    :vartype full_config: dict
+    :ivar valid_yaml: A boolean flag indicating if the loaded configuration
+                      is valid against the schema.
+    :vartype valid_yaml: bool
+    :ivar data: The specific configuration dictionary for the selected dataset
+                or task, populated after calling :meth:`select`.
+    :vartype data: dict, optional
+    :ivar dataset_name: The name of the selected dataset or task.
+    :vartype dataset_name: str, optional
     """
 
     expected_class_name = None  # Must be overridden by child classes
 
     def __init__(self, section_name: str, config_file: str) -> None:
-        """
-        Initialize the configuration object for a specific section in the
-        YAML configuration file.
+        """Initialize the configuration object from a YAML file or template.
+
+        This loads a YAML configuration, either from a specified file path or
+        a predefined template string (e.g., "template:data_sets"), and
+        prepares it for validation and use.
 
         :param section_name: The name of the configuration section to load,
-                             for example "data_sets", "training_sets", or
-                             "classification_sets".
+                             e.g., "data_sets", "training_sets".
         :type section_name: str
-        :param config_file: The path to the YAML configuration file.
+        :param config_file: The path to the YAML configuration file or a
+                            template identifier string.
         :type config_file: str
-        :raises NotImplementedError: If no ``expected_class_name`` is set
-                                     by a child class.
-        :raises ValueError: If the provided ``section_name`` is not among
-                            the supported ones (i.e., "data_sets",
-                            "training_sets", or "classification_sets").
+        :raises NotImplementedError: If a subclass does not define the
+                                     ``expected_class_name`` attribute.
+        :raises ValueError: If ``section_name`` or a template name is not
+                            supported.
         """
         if not self.expected_class_name:
             raise NotImplementedError(
                 "Child class must define 'expected_class_name' attribute"
             )
 
-        # Associates each section with a schema-retrieval function
         yaml_schemas = {
             "data_sets": get_data_set_config_schema,
             "training_sets": get_training_config_schema,
@@ -72,18 +101,32 @@ class ConfigBase(ABC):
         if section_name not in yaml_schemas:
             raise ValueError(f"Section name {section_name} is not supported.")
 
+        yaml_templates = {
+            "template:data_sets": get_config_data_set_template,
+            "template:training_sets": get_config_train_set_template,
+            "template:classification_sets": get_config_classify_set_template,
+        }
+        if str(config_file).startswith("template:"):
+            if str(config_file) not in yaml_templates:
+                raise ValueError(f"Template name {config_file} is not supported.")
+            full_config = yaml.safe_load(yaml_templates.get(str(config_file))())
+        else:
+            full_config = read_config(config_file)
+
         self.section_name: str = section_name
         self.yaml_schema: Dict = yaml.safe_load(yaml_schemas.get(section_name)())
-        self.full_config: Dict = read_config(config_file, add_config_file_name=False)
+        self.full_config: Dict = full_config
         self.valid_yaml: bool = False
         self.data: Optional[Dict] = None
         self.dataset_name: Optional[str] = None
 
     def validate(self) -> str:
-        """
-        Validate the loaded configuration against the expected YAML schema.
+        """Validate the loaded configuration against the corresponding schema.
 
-        :return: A message indicating success or the error encountered during validation.
+        Sets the :attr:`valid_yaml` flag to ``True`` on success.
+
+        :return: A message indicating whether validation succeeded or failed.
+                 If it fails, the message includes the error details.
         :rtype: str
         """
         try:
@@ -95,16 +138,16 @@ class ConfigBase(ABC):
             return f"YAML file is invalid: {e.message}"
 
     def select(self, dataset_name: str) -> None:
-        """
-        Validate and select a specific dataset configuration entry from
-        the loaded YAML.
+        """Select and load a specific configuration entry from the YAML.
 
-        :param dataset_name: The identifier of the dataset to be selected
-                             (must appear in the YAML under the
-                             configured ``section_name``).
+        This method first validates the entire YAML file. If valid, it
+        extracts the configuration for the specified ``dataset_name`` and
+        populates the :attr:`data` attribute.
+
+        :param dataset_name: The name of the dataset or task configuration
+                             to select from the YAML file.
         :type dataset_name: str
-        :raises ValueError: If the YAML configuration is found invalid
-                            during validation.
+        :raises ValueError: If the YAML configuration is invalid.
         """
         message = self.validate()
         if not self.valid_yaml:
@@ -119,16 +162,17 @@ class ConfigBase(ABC):
         self.dataset_name = dataset_name
 
     def get_base_path(self, step_name: str) -> str:
-        """
-        Retrieve the base path for the given ``step_name`` from the configuration.
+        """Retrieve the base path for a given processing step.
 
-        :param step_name: The name of the step for which the base path is requested.
+        If a specific base path is not defined for the given ``step_name``,
+        it falls back to the "common" base path.
+
+        :param step_name: The name of the step (e.g., "summary", "preprocess").
         :type step_name: str
-        :return: A valid filesystem path (as a string).
+        :return: The configured base path as a string.
         :rtype: str
-        :raises ValueError: If the ``base_path`` is missing or set to None
-                            in the configuration for this step, and no common
-                            base path is defined.
+        :raises ValueError: If no ``base_path`` is found for the step or in
+                            the "common" section.
         """
         if step_name not in self.data["path_info"] or (
             step_name in self.data["path_info"]
@@ -145,23 +189,21 @@ class ConfigBase(ABC):
         return base_path
 
     def get_step_params(self, step_name: str) -> Dict:
-        """
-        Return the parameter dictionary for a specified step.
+        """Retrieve the parameters dictionary for a specific step.
 
-        :param step_name: The name of the step to retrieve parameters for.
+        :param step_name: The name of the step to get parameters for.
         :type step_name: str
-        :return: A dictionary containing parameters for the specified step.
-        :rtype: Dict
+        :return: A dictionary of parameters for the specified step.
+        :rtype: dict
         """
         return self.data["step_param_set"]["steps"][step_name]
 
     def get_dataset_folder_name(self, step_name: str) -> str:
-        """
-        Return the folder name for the dataset associated with a particular step.
+        """Get the dataset-specific folder name for a given step.
 
-        :param step_name: The name of the step to retrieve the folder name for.
+        :param step_name: The name of the step.
         :type step_name: str
-        :return: The designated folder name for the dataset if defined, otherwise an empty string.
+        :return: The folder name for the dataset, or an empty string if not defined.
         :rtype: str
         """
         dataset_folder_name = self.data.get("dataset_folder_name", "")
@@ -179,17 +221,18 @@ class ConfigBase(ABC):
     def get_step_folder_name(
         self, step_name: str, folder_name_auto: bool = True
     ) -> str:
-        """
-        Determine the folder name for a particular step. If none is available
-        in the config and ``folder_name_auto`` is True, the function falls
-        back to using the original step name.
+        """Get the folder name for a specific processing step.
 
-        :param step_name: The name of the step for which the folder is requested.
+        If no folder name is explicitly defined in the configuration, this
+        method can fall back to using the step name itself.
+
+        :param step_name: The name of the step.
         :type step_name: str
-        :param folder_name_auto: If True, automatically use the step name if
-                                 no folder name is defined in the config.
+        :param folder_name_auto: If ``True``, use ``step_name`` as the folder
+                                 name if it's not defined in the config.
+                                 Defaults to True.
         :type folder_name_auto: bool
-        :return: A step folder name, either derived or explicitly defined.
+        :return: The step's folder name.
         :rtype: str
         """
         orig_step_name = step_name
@@ -206,18 +249,17 @@ class ConfigBase(ABC):
         return step_folder_name
 
     def get_file_name(self, step_name: str, default_name: Optional[str] = None) -> str:
-        """
-        Retrieve the file name for a given step. If the step defines no
-        file name in the config and ``default_name`` is also None, an error
-        is raised.
+        """Retrieve the file name for a given step.
 
-        :param step_name: The step for which the file name is requested.
+        :param step_name: The name of the step.
         :type step_name: str
-        :param default_name: A fallback file name to use if none is in the config.
+        :param default_name: A fallback file name to use if not defined in
+                             the configuration. Defaults to None.
         :type default_name: str, optional
-        :return: The file name for the specified step.
+        :return: The file name for the step.
         :rtype: str
-        :raises ValueError: If no file name can be found in the config or default.
+        :raises ValueError: If no file name is found in the config and no
+                            ``default_name`` is provided.
         """
         file_name = default_name
         if (
@@ -242,20 +284,23 @@ class ConfigBase(ABC):
         use_dataset_folder: bool = True,
         folder_name_auto: bool = True,
     ) -> str:
-        """
-        Construct a full file path by combining base path, optional dataset folder,
-        step folder, and the file name. If placeholders are used, the function
-        allows for partial dynamic formatting (see also :meth:`get_target_file_names`).
+        """Construct a full, normalized file path for a step.
 
-        :param step_name: The step name used to gather folder/file information.
+        The path is built by combining the base path, dataset folder (optional),
+        step folder, and file name.
+
+        :param step_name: The name of the step to construct the path for.
         :type step_name: str
-        :param default_file_name: A default file name if none is found.
+        :param default_file_name: A default file name if one is not in the config.
+                                  Defaults to None.
         :type default_file_name: str, optional
-        :param use_dataset_folder: Include the dataset folder in the path if True.
+        :param use_dataset_folder: If ``True``, include the dataset-specific
+                                   folder in the path. Defaults to True.
         :type use_dataset_folder: bool
-        :param folder_name_auto: Derive a folder name from the step name if none is found.
+        :param folder_name_auto: If ``True``, auto-generate the step folder
+                                 name if not specified. Defaults to True.
         :type folder_name_auto: bool
-        :return: A normalized file system path combining all components.
+        :return: The complete, normalized file path.
         :rtype: str
         """
         base_path = self.get_base_path(step_name)
@@ -270,41 +315,37 @@ class ConfigBase(ABC):
         )
 
     def get_base_class(self, step_name: str) -> str:
-        """
-        Retrieve a class name for the specified step, as declared in the config.
+        """Retrieve the associated class name for a specified step.
 
-        :param step_name: The name of the step for which the class is requested.
+        :param step_name: The name of the step.
         :type step_name: str
-        :return: The base class name designated by the YAML configuration.
+        :return: The class name defined for the step in the configuration.
         :rtype: str
         """
         return self.data["step_class_set"]["steps"][step_name]
 
-    def get_target_variables(self) -> List:
-        """
-        Return the list of target variable dictionaries from the config.
+    def get_target_variables(self) -> List[Dict]:
+        """Get the list of target variable definitions from the configuration.
 
-        :return: A list of dictionaries describing each target variable.
-        :rtype: List
+        :return: A list where each item is a dictionary defining a target variable.
+        :rtype: list[dict]
         """
         return self.data["target_set"]["variables"]
 
     def get_target_names(self) -> List[str]:
-        """
-        Extract the target variable names from the list of target variable definitions.
+        """Get the names of all target variables.
 
-        :return: A list of target variable names.
-        :rtype: List[str]
+        :return: A list of target variable names as strings.
+        :rtype: list[str]
         """
         return [x["name"] for x in self.get_target_variables()]
 
     def get_target_dict(self) -> Dict[str, Dict]:
-        """
-        Convert the list of target variable definitions into a dictionary
-        keyed by variable name.
+        """Get target variable definitions as a name-keyed dictionary.
 
-        :return: A dictionary mapping target variable names to their definitions.
-        :rtype: Dict[str, Dict]
+        :return: A dictionary mapping each target variable name to its
+                 full definition dictionary.
+        :rtype: dict[str, dict]
         """
         return {x["name"]: x for x in self.get_target_variables()}
 
@@ -315,21 +356,23 @@ class ConfigBase(ABC):
         use_dataset_folder: bool = True,
         folder_name_auto: bool = True,
     ) -> Dict[str, str]:
-        """
-        Build a dictionary of full file names for each target variable,
-        formatting placeholders in the file name with each target name.
+        """Construct a dictionary of full file paths for each target variable.
 
-        :param step_name: The step name used to build the file path.
+        This is useful when file names are templatized with the target name,
+        e.g., ``"model_{target_name}.pkl"``.
+
+        :param step_name: The name of the step.
         :type step_name: str
-        :param default_file_name: A default file name if none is found in config.
+        :param default_file_name: A default file name template. Defaults to None.
         :type default_file_name: str, optional
-        :param use_dataset_folder: If True, include the dataset folder in the path.
+        :param use_dataset_folder: If ``True``, include the dataset folder.
+                                   Defaults to True.
         :type use_dataset_folder: bool
-        :param folder_name_auto: If True, derive the folder name from the step
-                                 name if not explicitly stated in the config.
+        :param folder_name_auto: If ``True``, auto-generate the step folder name.
+                                 Defaults to True.
         :type folder_name_auto: bool
-        :return: A dictionary mapping each target name (key) to a formatted file path.
-        :rtype: Dict[str, str]
+        :return: A dictionary mapping each target name to its formatted file path.
+        :rtype: dict[str, str]
         """
         full_file_name = self.get_full_file_name(
             step_name, default_file_name, use_dataset_folder, folder_name_auto
@@ -339,10 +382,9 @@ class ConfigBase(ABC):
         }
 
     def __repr__(self) -> str:
-        """
-        Return a simple string representation of the ConfigBase instance.
+        """Return a string representation of the configuration object.
 
-        :return: A description including the ``section_name`` used.
+        :return: A string identifying the instance and its managed section.
         :rtype: str
         """
         return f"ConfigBase(section_name={self.section_name})"
