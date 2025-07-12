@@ -107,12 +107,20 @@ class TestSplitDataSetA(unittest.TestCase):
             str(ds.output_file_names["train"]["psal"]),
         )
         self.assertEqual(
+            "/path/to/split_1/nrt_bo_001/split_folder_1/train_set_pres.parquet",
+            str(ds.output_file_names["train"]["pres"]),
+        )
+        self.assertEqual(
             "/path/to/split_1/nrt_bo_001/split_folder_1/test_set_temp.parquet",
             str(ds.output_file_names["test"]["temp"]),
         )
         self.assertEqual(
             "/path/to/split_1/nrt_bo_001/split_folder_1/test_set_psal.parquet",
             str(ds.output_file_names["test"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/split_1/nrt_bo_001/split_folder_1/test_set_pres.parquet",
+            str(ds.output_file_names["test"]["pres"]),
         )
 
     def test_target_features_data(self):
@@ -130,6 +138,10 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 140)
         self.assertEqual(ds.target_features["psal"].shape[1], 43)
+
+        self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
+        self.assertEqual(ds.target_features["pres"].shape[0], 122)
+        self.assertEqual(ds.target_features["pres"].shape[1], 43)
 
     def test_split_features_data(self):
         """
@@ -156,6 +168,14 @@ class TestSplitDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["pres"].shape[0], 110)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 42)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
 
     def test_default_test_set_fraction(self):
         """
@@ -198,19 +218,15 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["train"]["psal"] = str(
             data_path / "temp_train_set_psal.parquet"
         )
-        ds.output_file_names["train"]["pres"] = (
-            str(  # This line tests for 'pres' which is not in target_features
-                data_path / "temp_train_set_pres.parquet"
-            )
+        ds.output_file_names["train"]["pres"] = str(
+            data_path / "temp_train_set_pres.parquet"
         )
 
         ds.write_training_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["psal"]))
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["train"]["pres"])
-        )  # This assertion is problematic
+        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"]))
 
         os.remove(ds.output_file_names["train"]["temp"])
         os.remove(ds.output_file_names["train"]["psal"])
@@ -245,19 +261,15 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["test"]["psal"] = str(
             data_path / "temp_test_set_psal.parquet"
         )
-        ds.output_file_names["test"]["pres"] = (
-            str(  # This line tests for 'pres' which is not in target_features
-                data_path / "temp_test_set_pres.parquet"
-            )
+        ds.output_file_names["test"]["pres"] = str(
+            data_path / "temp_test_set_pres.parquet"
         )
 
         ds.write_test_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["psal"]))
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["test"]["pres"])
-        )  # This assertion is problematic
+        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"]))
 
         os.remove(ds.output_file_names["test"]["temp"])
         os.remove(ds.output_file_names["test"]["psal"])
@@ -292,10 +304,8 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["train"]["psal"] = str(
             data_path / "temp_train_set_psal.parquet"
         )
-        ds.output_file_names["train"]["pres"] = (
-            str(  # This line tests for 'pres' which is not in target_features
-                data_path / "temp_train_set_pres.parquet"
-            )
+        ds.output_file_names["train"]["pres"] = str(
+            data_path / "temp_train_set_pres.parquet"
         )
         ds.output_file_names["test"]["temp"] = str(
             data_path / "temp_test_set_temp.parquet"
@@ -303,24 +313,18 @@ class TestSplitDataSetA(unittest.TestCase):
         ds.output_file_names["test"]["psal"] = str(
             data_path / "temp_test_set_psal.parquet"
         )
-        ds.output_file_names["test"]["pres"] = (
-            str(  # This line tests for 'pres' which is not in target_features
-                data_path / "temp_test_set_pres.parquet"
-            )
+        ds.output_file_names["test"]["pres"] = str(
+            data_path / "temp_test_set_pres.parquet"
         )
 
         ds.write_data_sets()
 
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["train"]["psal"]))
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["train"]["pres"])
-        )  # This assertion is problematic
+        self.assertTrue(os.path.exists(ds.output_file_names["train"]["pres"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["test"]["psal"]))
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["test"]["pres"])
-        )  # This assertion is problematic
+        self.assertTrue(os.path.exists(ds.output_file_names["test"]["pres"]))
 
         os.remove(ds.output_file_names["train"]["temp"])
         os.remove(ds.output_file_names["train"]["psal"])

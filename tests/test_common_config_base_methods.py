@@ -293,12 +293,33 @@ class TestBaseConfigTargets(unittest.TestCase):
         ds.select("NRT_BO_001")
 
         target_dict = ds.get_target_dict()
-        self.assertEqual(target_dict["temp"], {"name": "temp", "flag": "temp_qc",
-                                               "pos_flag_values": [4], "neg_flag_values": [1]})
-        self.assertEqual(target_dict["psal"], {"name": "psal", "flag": "psal_qc",
-                                               "pos_flag_values": [4], "neg_flag_values": [1]})
-        self.assertEqual(target_dict["pres"], {"name": "pres", "flag": "pres_qc",
-                                               "pos_flag_values": [4], "neg_flag_values": [1]})
+        self.assertEqual(
+            target_dict["temp"],
+            {
+                "name": "temp",
+                "flag": "temp_qc",
+                "pos_flag_values": [4],
+                "neg_flag_values": [1],
+            },
+        )
+        self.assertEqual(
+            target_dict["psal"],
+            {
+                "name": "psal",
+                "flag": "psal_qc",
+                "pos_flag_values": [4],
+                "neg_flag_values": [1],
+            },
+        )
+        self.assertEqual(
+            target_dict["pres"],
+            {
+                "name": "pres",
+                "flag": "pres_qc",
+                "pos_flag_values": [4],
+                "neg_flag_values": [1],
+            },
+        )
 
     def test_target_file_names(self):
         """

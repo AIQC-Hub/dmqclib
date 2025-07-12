@@ -113,6 +113,10 @@ class TestBuildModel(unittest.TestCase):
             "/path/to/model_1/model_folder_1/model_psal.joblib",
             str(ds.model_file_names["psal"]),
         )
+        self.assertEqual(
+            "/path/to/model_1/model_folder_1/model_pres.joblib",
+            str(ds.model_file_names["pres"]),
+        )
 
         self.assertEqual(
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_temp.tsv",
@@ -121,6 +125,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_psal.tsv",
             str(ds.output_file_names["report"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_pres.tsv",
+            str(ds.output_file_names["report"]["pres"]),
         )
 
     def test_base_model(self):
@@ -142,6 +150,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 19480)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
 
     def test_read_models(self):
         """Confirm that reading models populates the 'models' dictionary with XGBoost instances."""
@@ -173,6 +185,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 19480)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
 
     def test_test_without_model(self):
         """Ensure that testing without loaded models raises a ValueError."""

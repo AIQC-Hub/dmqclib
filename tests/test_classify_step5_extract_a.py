@@ -79,6 +79,10 @@ class TestExtractDataSetA(unittest.TestCase):
             "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_psal.parquet",
             str(ds.output_file_names["psal"]),
         )
+        self.assertEqual(
+            "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_pres.parquet",
+            str(ds.output_file_names["pres"]),
+        )
 
     def test_step_name(self):
         """
@@ -122,6 +126,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[0], 19480)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
+        self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
+
     def test_location_features(self):
         """
         Test that the `process_targets` method correctly generates and
@@ -145,6 +153,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 19480)
         self.assertEqual(ds.target_features["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
+        self.assertEqual(ds.target_features["pres"].shape[0], 19480)
+        self.assertEqual(ds.target_features["pres"].shape[1], 41)
 
     def test_write_target_features(self):
         """

@@ -114,7 +114,7 @@ class TestSelectDataSetAll(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "summary"
-            / "temp_classify_summary_stats.tsv"
+            / "temp_summary_stats_classify.tsv"
         )
 
         ds.calculate_stats()

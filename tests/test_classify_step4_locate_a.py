@@ -65,6 +65,10 @@ class TestLocateDataSetA(unittest.TestCase):
             "/path/to/locate_1/nrt_bo_001/locate_folder_1/selected_rows_classify_psal.parquet",
             str(ds.output_file_names["psal"]),
         )
+        self.assertEqual(
+            "/path/to/locate_1/nrt_bo_001/locate_folder_1/selected_rows_classify_pres.parquet",
+            str(ds.output_file_names["pres"]),
+        )
 
     def test_step_name(self):
         """
@@ -113,6 +117,10 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["psal"].shape[0], 19480)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
+        self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
+
     def test_selected_rows_with_empty_input(self):
         """
         Check that a ValueError is raised if input data are absent
@@ -137,13 +145,13 @@ class TestLocateDataSetA(unittest.TestCase):
         )
         data_path = Path(__file__).resolve().parent / "data" / "select"
         ds.output_file_names["temp"] = str(
-            data_path / "temp_temp_classify_rows.parquet"
+            data_path / "temp_selected_rows_classify_temp.parquet"
         )
         ds.output_file_names["psal"] = str(
-            data_path / "temp_psal_classify_rows.parquet"
+            data_path / "temp_selected_rows_classify_psal.parquet"
         )
         ds.output_file_names["pres"] = str(
-            data_path / "temp_pres_classify_rows.parquet"
+            data_path / "temp_selected_rows_classify_pres.parquet"
         )
 
         ds.process_targets()

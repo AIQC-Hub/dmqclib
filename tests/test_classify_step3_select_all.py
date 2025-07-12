@@ -84,7 +84,7 @@ class TestSelectDataSetA(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "select"
-            / "temp_selected_classify_profiles.parquet"
+            / "temp_selected_profiles_classify.parquet"
         )
 
         # Assuming label_profiles populates selected_profiles before writing.
@@ -102,7 +102,7 @@ class TestSelectDataSetA(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "select"
-            / "temp_selected_classify_profiles.parquet"
+            / "temp_selected_profiles_classify.parquet"
         )
 
         # selected_profiles is not populated by select_all_profiles() or label_profiles() here,

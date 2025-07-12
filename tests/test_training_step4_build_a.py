@@ -72,6 +72,10 @@ class TestBuildModel(unittest.TestCase):
             "/path/to/model_1/nrt_bo_001/model_folder_1/model_psal.joblib",
             str(ds.model_file_names["psal"]),
         )
+        self.assertEqual(
+            "/path/to/model_1/nrt_bo_001/model_folder_1/model_pres.joblib",
+            str(ds.model_file_names["pres"]),
+        )
 
         self.assertEqual(
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_temp.tsv",
@@ -80,6 +84,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_psal.tsv",
             str(ds.output_file_names["report"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_pres.tsv",
+            str(ds.output_file_names["report"]["pres"]),
         )
 
     def test_base_model(self):
@@ -105,6 +113,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
         self.assertEqual(ds.training_sets["psal"].shape[1], 42)
 
+        self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["pres"].shape[0], 110)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 42)
+
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
         self.assertEqual(ds.test_sets["temp"].shape[1], 41)
@@ -112,6 +124,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
 
     def test_train_with_xgboost(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -180,6 +196,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
         self.assertEqual(ds.test_sets["psal"].shape[1], 41)
 
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
+
     def test_test_without_model(self):
         """Ensure that calling test_targets() without first building models raises a ValueError."""
         ds = BuildModel(
@@ -199,13 +219,13 @@ class TestBuildModel(unittest.TestCase):
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["report"]["temp"] = str(
-            data_path / "temp_temp_test_report.tsv"
+            data_path / "temp_test_report_temp.tsv"
         )
         ds.output_file_names["report"]["psal"] = str(
-            data_path / "temp_psal_test_report.tsv"
+            data_path / "temp_test_report_psal.tsv"
         )
         ds.output_file_names["report"]["pres"] = str(
-            data_path / "temp_pres_test_report.tsv"
+            data_path / "temp_test_report_pres.tsv"
         )
 
         ds.build_targets()
@@ -248,9 +268,9 @@ class TestBuildModel(unittest.TestCase):
             test_sets=self.ds_input.test_sets,
         )
         data_path = Path(__file__).resolve().parent / "data" / "training"
-        ds.model_file_names["temp"] = str(data_path / "temp_temp_model.joblib")
-        ds.model_file_names["psal"] = str(data_path / "temp_psal_model.joblib")
-        ds.model_file_names["pres"] = str(data_path / "temp_pres_model.joblib")
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres.joblib")
 
         ds.build_targets()
         ds.write_models()

@@ -75,10 +75,13 @@ class SelectDataSetA(ProfileSelectionBase):
 
         The resulting DataFrame is stored in :attr:`pos_profile_df`.
         """
-        conditions = reduce(operator.or_, [
-            pl.col(param["flag"]).is_in(param["pos_flag_values"])
-            for param in self.config.get_target_dict().values()
-        ])
+        conditions = reduce(
+            operator.or_,
+            [
+                pl.col(param["flag"]).is_in(param["pos_flag_values"])
+                for param in self.config.get_target_dict().values()
+            ],
+        )
 
         self.pos_profile_df = (
             self.input_data.filter(conditions)
@@ -98,15 +101,17 @@ class SelectDataSetA(ProfileSelectionBase):
 
         The resulting DataFrame is stored in :attr:`neg_profile_df`.
         """
-        exprs = reduce(operator.and_, [
-            (~pl.col(param["flag"]).is_in(param["pos_flag_values"]).any())
-            & (pl.col(param["flag"]).is_in(param["neg_flag_values"]).any())
-            for param in self.config.get_target_dict().values()
-        ])
+        exprs = reduce(
+            operator.and_,
+            [
+                (~pl.col(param["flag"]).is_in(param["pos_flag_values"]).any())
+                & (pl.col(param["flag"]).is_in(param["neg_flag_values"]).any())
+                for param in self.config.get_target_dict().values()
+            ],
+        )
 
         self.neg_profile_df = (
-            self.input_data
-            .filter(exprs.over(self.key_col_names))
+            self.input_data.filter(exprs.over(self.key_col_names))
             .select(self.key_col_names)
             .unique()
             .sort(["platform_code", "profile_no"])
@@ -135,9 +140,7 @@ class SelectDataSetA(ProfileSelectionBase):
             )
             .sort(["profile_id", "day_diff", "profile_id_neg"])
             .group_by("profile_id")
-            .agg(
-                pl.col("profile_id_neg").head(1).alias("neg_profile_id")
-            )
+            .agg(pl.col("profile_id_neg").head(1).alias("neg_profile_id"))
         ).explode("neg_profile_id")
 
         self.pos_profile_df = (
@@ -147,10 +150,13 @@ class SelectDataSetA(ProfileSelectionBase):
         )
 
         self.neg_profile_df = (
-            self.neg_profile_df.join((closest_neg_id.select("neg_profile_id").unique()),
-                                     left_on="profile_id",
-                                     right_on="neg_profile_id", how="inner")
-           .with_columns(
+            self.neg_profile_df.join(
+                (closest_neg_id.select("neg_profile_id").unique()),
+                left_on="profile_id",
+                right_on="neg_profile_id",
+                how="inner",
+            )
+            .with_columns(
                 pl.lit(0, dtype=pl.UInt32).alias("neg_profile_id"),
                 pl.lit(0).alias("label"),
             )

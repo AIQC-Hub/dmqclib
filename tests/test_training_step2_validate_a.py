@@ -105,6 +105,10 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
         self.assertEqual(ds.training_sets["psal"].shape[1], 42)
 
+        self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["pres"].shape[0], 110)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 42)
+
     def test_default_k_fold(self):
         """
         Confirm that the k_fold value defaults to 10 if no specific
@@ -133,6 +137,10 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.reports["psal"].shape[0], 18)
         self.assertEqual(ds.reports["psal"].shape[1], 8)
 
+        self.assertIsInstance(ds.reports["pres"], pl.DataFrame)
+        self.assertEqual(ds.reports["pres"].shape[0], 18)
+        self.assertEqual(ds.reports["pres"].shape[1], 8)
+
     def test_write_results(self):
         """
         Ensure validation reports are written to the specified output files
@@ -143,13 +151,13 @@ class TestKFoldValidation(unittest.TestCase):
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
         ds.output_file_names["report"]["temp"] = str(
-            data_path / "temp_temp_validation_report.tsv"
+            data_path / "temp_validation_report_temp.tsv"
         )
         ds.output_file_names["report"]["psal"] = str(
-            data_path / "temp_psal_validation_report.tsv"
+            data_path / "temp_validation_report_psal.tsv"
         )
         ds.output_file_names["report"]["pres"] = str(
-            data_path / "temp_pres_validation_report.tsv"
+            data_path / "temp_validation_report_pres.tsv"
         )
 
         ds.process_targets()

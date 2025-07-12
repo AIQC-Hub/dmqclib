@@ -185,9 +185,15 @@ class TestLocateDataSetA(unittest.TestCase):
             selected_profiles=self.ds_select.selected_profiles,
         )
         data_path = Path(__file__).resolve().parent / "data" / "select"
-        ds.output_file_names["temp"] = str(data_path / "temp_selected_rows_temp.parquet")
-        ds.output_file_names["psal"] = str(data_path / "temp_selected_rows_psal.parquet")
-        ds.output_file_names["pres"] = str(data_path / "temp_selected_rows_pres.parquet")
+        ds.output_file_names["temp"] = str(
+            data_path / "temp_selected_rows_temp.parquet"
+        )
+        ds.output_file_names["psal"] = str(
+            data_path / "temp_selected_rows_psal.parquet"
+        )
+        ds.output_file_names["pres"] = str(
+            data_path / "temp_selected_rows_pres.parquet"
+        )
 
         ds.process_targets()
         ds.write_selected_rows()
@@ -195,9 +201,9 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertTrue(os.path.exists(ds.output_file_names["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["pres"]))
-        #os.remove(ds.output_file_names["temp"])
-        #os.remove(ds.output_file_names["psal"])
-        #os.remove(ds.output_file_names["pres"])
+        os.remove(ds.output_file_names["temp"])
+        os.remove(ds.output_file_names["psal"])
+        os.remove(ds.output_file_names["pres"])
 
     def test_write_no_selected_rows(self):
         """

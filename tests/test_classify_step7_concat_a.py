@@ -132,6 +132,10 @@ class TestConcatPredictions(unittest.TestCase):
         self.assertEqual(ds.predictions["psal"].shape[0], 19480)
         self.assertEqual(ds.predictions["psal"].shape[1], 6)
 
+        self.assertIsInstance(ds.predictions["pres"], pl.DataFrame)
+        self.assertEqual(ds.predictions["pres"].shape[0], 19480)
+        self.assertEqual(ds.predictions["pres"].shape[1], 6)
+
     def test_merge_predictions(self):
         """
         Confirm that merging predictions correctly combines input data and
