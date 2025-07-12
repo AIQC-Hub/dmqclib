@@ -50,10 +50,16 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: psal
         flag: psal_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: pres
         flag: pres_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
 
 feature_sets:
   - name: feature_set_1
@@ -160,16 +166,22 @@ path_info_sets:
     model:
       base_path: /path/to/model # EDIT: Directory with model files
       step_folder_name: model
-      
+
 target_sets:
   - name: target_set_1_3
     variables:
       - name: temp
         flag: temp_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: psal
         flag: psal_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: pres
         flag: pres_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
 
 step_class_sets:
   - name: training_step_set_1
@@ -190,7 +202,7 @@ step_param_sets:
     steps:
       input: { }
       validate: { k_fold: 10 }
-      model: { }
+      model: { model_params: { scale_pos_weight: 10 } }
       build: { }
 
 training_sets:
@@ -247,16 +259,21 @@ path_info_sets:
     concat:
       step_folder_name: classify # EDIT: Directory with classification results
 
-            
 target_sets:
   - name: target_set_1_3
     variables:
       - name: temp
         flag: temp_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: psal
         flag: psal_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: pres
         flag: pres_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
 
 feature_sets:
   - name: feature_set_1
@@ -306,6 +323,7 @@ step_class_sets:
       extract: ExtractDataSetAll
       model: XGBoost
       classify: ClassifyDataSetAll
+      concat: ConcatDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -321,6 +339,7 @@ step_param_sets:
       extract: { }
       model: { }
       classify: { }
+      concat: { }
 
 classification_sets:
   - name: NRT_BO_001

@@ -10,14 +10,14 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
+from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import (
     load_classify_step1_input_dataset,
     load_classify_step2_summary_dataset,
     load_classify_step3_select_dataset,
     load_classify_step4_locate_dataset,
 )
-from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
 
 
 class TestExtractDataSetA(unittest.TestCase):
@@ -79,6 +79,10 @@ class TestExtractDataSetA(unittest.TestCase):
             "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_psal.parquet",
             str(ds.output_file_names["psal"]),
         )
+        self.assertEqual(
+            "/path/to/data_1/nrt_bo_001/extract/extracted_features_classify_pres.parquet",
+            str(ds.output_file_names["pres"]),
+        )
 
     def test_step_name(self):
         """
@@ -107,7 +111,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 595)
+        self.assertEqual(ds.summary_stats.shape[0], 425)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -121,6 +125,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.selected_rows["psal"].shape[0], 19480)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
+
+        self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 19480)
+        self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
 
     def test_location_features(self):
         """
@@ -145,6 +153,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 19480)
         self.assertEqual(ds.target_features["psal"].shape[1], 41)
+
+        self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
+        self.assertEqual(ds.target_features["pres"].shape[0], 19480)
+        self.assertEqual(ds.target_features["pres"].shape[1], 41)
 
     def test_write_target_features(self):
         """

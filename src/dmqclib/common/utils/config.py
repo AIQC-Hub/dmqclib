@@ -1,127 +1,75 @@
-"""
-This module provides utility functions for locating, reading, and parsing
-configuration files, typically in YAML format.
+"""A set of utilities for handling YAML configuration files.
 
-It supports flexible methods for locating config files based on relative paths
-or explicit paths, and facilitates easy retrieval of specific items within
-the parsed configuration data.
+This module provides utility functions for locating, reading, and parsing
+configuration files, typically in YAML format. It facilitates easy retrieval
+of specific items within the parsed configuration data.
 """
 
 import os
-from pathlib import Path
 from typing import Dict, Optional, Any
 
 import yaml
 
 
-def get_config_file(
-    config_file: Optional[str] = None,
-    config_file_name: Optional[str] = None,
-    parent_level: int = 4,
-) -> str:
-    """
-    Determine the file path for a configuration file.
+def get_config_file(config_file: Optional[str]) -> str:
+    """Determine the absolute path for a configuration file.
 
-    If ``config_file`` is not provided, this function constructs a path
-    by traversing ``parent_level`` directories upward from the location
-    of this file, then descending into a "config" directory using
-    ``config_file_name``. If the resulting file path does not exist,
-    a :class:`FileNotFoundError` is raised.
+    If the provided path does not exist, a ``FileNotFoundError`` is raised.
 
-    :param config_file: The full path of the configuration file, if already known.
+    :param config_file: The path to the configuration file.
     :type config_file: str, optional
-    :param config_file_name: The name of the configuration file (e.g., "datasets.yaml").
-                             Required if ``config_file`` is not given.
-    :type config_file_name: str, optional
-    :param parent_level: Number of directories to go up from this file's location
-                         to find the base project directory before descending into "config".
-    :type parent_level: int
-    :raises ValueError: If both ``config_file`` and ``config_file_name`` are missing.
-    :raises FileNotFoundError: If the resolved ``config_file`` path does not exist.
-    :return: A string representing the resolved absolute path to the configuration file.
+    :raises FileNotFoundError: If the path specified by ``config_file`` does not exist.
+    :return: The resolved absolute path to the configuration file.
     :rtype: str
     """
-    if config_file is None:
-        if config_file_name is None:
-            raise ValueError(
-                "'config_file_name' cannot be None when 'config_file' is None"
-            )
-        config_file = (
-            Path(__file__).resolve().parents[parent_level] / "config" / config_file_name
-        )
-
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"File '{config_file}' does not exist.")
 
     return str(config_file)
 
 
-def read_config(
-    config_file: Optional[str] = None,
-    config_file_name: Optional[str] = None,
-    parent_level: int = 3,
-    add_config_file_name: bool = True,
-) -> Dict[str, Any]:
-    """
-    Read and parse a YAML configuration file, returning its contents as a dictionary.
+def read_config(config_file: Optional[str] = None) -> Dict[str, Any]:
+    """Read and parse a YAML configuration file.
 
-    Depending on the arguments, this function either:
-      1. Uses the provided ``config_file`` path directly.
-      2. Constructs a path by moving upward ``parent_level`` directories,
-         then down into a "config" directory, naming the file ``config_file_name``.
+    This function uses the provided ``config_file`` path to locate,
+    read, and parse a YAML file into a Python dictionary.
 
-    After reading the YAML file, if requested, the absolute path of the
-    configuration file is added to the returned dictionary under the key
-    "config_file_name".
-
-    :param config_file: Full path to the config file, if already known.
+    :param config_file: Full path to the config file.
     :type config_file: str, optional
-    :param config_file_name: Name of the config file (e.g., "datasets.yaml"),
-                             required if ``config_file`` is not given.
-    :type config_file_name: str, optional
-    :param parent_level: Number of directories to go up from this file's location
-                         before going down into "config" (used if constructing the path).
-    :type parent_level: int
-    :param add_config_file_name: If True, the absolute path of the configuration file
-                                 is added to the returned dictionary under
-                                 the key "config_file_name". Defaults to True.
-    :type add_config_file_name: bool
-    :raises ValueError: If both ``config_file`` and ``config_file_name`` are missing (propagated from :func:`get_config_file`).
-    :raises FileNotFoundError: If no file is found at the resolved path (propagated from :func:`get_config_file`).
+    :raises ValueError: If ``config_file`` is ``None`` (propagated from
+                        :func:`get_config_file`).
+    :raises FileNotFoundError: If no file is found at the resolved path
+                               (propagated from :func:`get_config_file`).
     :raises yaml.YAMLError: If the configuration file is not valid YAML.
-    :return: A dictionary representing the parsed YAML config.
+    :return: A dictionary representing the parsed YAML configuration.
     :rtype: dict
     """
-    resolved_file = get_config_file(config_file, config_file_name, parent_level)
+    resolved_file = get_config_file(config_file)
 
     with open(resolved_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
-
-    if add_config_file_name:
-        data["config_file_name"] = resolved_file
 
     return data
 
 
 def get_config_item(config: Dict[str, Any], section: str, name: str) -> Dict[str, Any]:
-    """
-    Retrieve a named item from a specified section of a configuration dictionary.
+    """Retrieve a specific item from a section of a configuration dictionary.
 
-    Iterates through the list of items in ``config[section]`` to find
-    one whose "name" key matches the provided ``name``. If no matching
-    item is found, a :class:`ValueError` is raised.
+    This function iterates through a list of items within a specified
+    ``section`` of the configuration, looking for an item where the ``"name"``
+    key matches the given ``name``.
 
-    :param config: The parsed configuration dictionary (as returned by :func:`read_config`).
-    :type config: dict
-    :param section: The section (key) in ``config`` whose list is searched.
+    :param config: The configuration dictionary, e.g., from :func:`read_config`.
+    :type config: dict[str, any]
+    :param section: The top-level key in ``config`` that contains a list of items.
     :type section: str
-    :param name: The "name" field of the desired item in that section.
+    :param name: The value of the "name" key to match within the item.
     :type name: str
-    :raises KeyError: If the specified ``section`` does not exist in the configuration dictionary.
-    :raises TypeError: If the value associated with the ``section`` key is not an iterable (e.g., not a list of dictionaries).
-    :raises ValueError: If no matching item with the specified ``name`` is found in the given ``section``.
-    :return: A dictionary representing the desired item from the config.
-    :rtype: dict
+    :raises KeyError: If the ``section`` does not exist in the ``config`` dictionary.
+    :raises TypeError: If the value at ``config[section]`` is not iterable.
+    :raises ValueError: If no item with the specified ``name`` is found in the section.
+    :return: The dictionary of the matching configuration item.
+    :rtype: dict[str, any]
     """
     for item in config[section]:
         if item.get("name") == name:

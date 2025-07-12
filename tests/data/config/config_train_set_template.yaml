@@ -14,10 +14,16 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: psal
         flag: psal_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
       - name: pres
         flag: pres_qc
+        pos_flag_values: [4, ]
+        neg_flag_values: [1, ]
 
 step_class_sets:
   - name: training_step_set_1
@@ -38,7 +44,7 @@ step_param_sets:
     steps:
       input: { }
       validate: { k_fold: 10 }
-      model: { }
+      model: { model_params: { scale_pos_weight: 10 } }
       build: { }
 
 training_sets:

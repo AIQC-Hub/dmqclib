@@ -5,8 +5,9 @@ specific data processing and feature generation steps for this dataset,
 integrating with the dmqclib framework's configuration and data flow.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase

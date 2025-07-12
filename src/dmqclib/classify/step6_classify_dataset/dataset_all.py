@@ -5,8 +5,9 @@ across multiple targets. It manages configuration, data handling, and
 result persistence for a comprehensive classification workflow.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase

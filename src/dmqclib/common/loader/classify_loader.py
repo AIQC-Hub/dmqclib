@@ -12,7 +12,9 @@ from typing import Dict, Optional, Type
 
 import polars as pl
 
+from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 from dmqclib.common.base.dataset_base import DataSetBase
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.classify_registry import (
     INPUT_CLASSIFY_REGISTRY,
     SUMMARY_CLASSIFY_REGISTRY,
@@ -22,14 +24,12 @@ from dmqclib.common.loader.classify_registry import (
     CLASSIFY_CLASSIFY_REGISTRY,
     CLASSIFY_CONCAT_REGISTRY,
 )
-from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
 from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
-from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 
 
 def _get_prepare_class(

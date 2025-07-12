@@ -12,6 +12,7 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.dataset_loader import (
     load_step1_input_dataset,
     load_step2_summary_dataset,
@@ -20,7 +21,6 @@ from dmqclib.common.loader.dataset_loader import (
     load_step5_extract_dataset,
     load_step6_split_dataset,
 )
-from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step1_read_input.dataset_a import InputDataSetA
 from dmqclib.prepare.step2_calc_stats.dataset_a import SummaryDataSetA
 from dmqclib.prepare.step3_select_profiles.dataset_a import SelectDataSetA
@@ -297,7 +297,7 @@ class TestExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[0], 2520)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -305,7 +305,7 @@ class TestExtractClassLoader(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)
-        self.assertEqual(ds.filtered_input.shape[0], 9841)
+        self.assertEqual(ds.filtered_input.shape[0], 10683)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)

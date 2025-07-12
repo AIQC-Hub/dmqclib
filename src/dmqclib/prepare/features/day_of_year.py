@@ -8,9 +8,10 @@ specifically the day-of-year, and optionally apply a sinusoidal
 transformation for cyclical encoding.
 """
 
+from typing import Optional, Dict
+
 import numpy as np
 import polars as pl
-from typing import Optional, Dict
 
 from dmqclib.common.base.feature_base import FeatureBase
 

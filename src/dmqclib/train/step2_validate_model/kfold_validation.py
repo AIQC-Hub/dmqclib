@@ -4,8 +4,9 @@ for model training and evaluation. It extends ValidationBase to perform iterativ
 building and testing across defined data folds, accumulating performance reports.
 """
 
-import polars as pl
 from typing import Optional, List, Dict
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step2_validate_model.validate_base import ValidationBase

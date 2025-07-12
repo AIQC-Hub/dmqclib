@@ -7,8 +7,8 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.loader.dataset_loader import load_step1_input_dataset
 from dmqclib.prepare.step2_calc_stats.dataset_a import SummaryDataSetA
 
 
@@ -96,7 +96,7 @@ class TestSelectDataSetA(unittest.TestCase):
         """Check that calculate_stats populates summary_stats with correct dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
-        self.assertEqual(ds.summary_stats.shape[0], 3528)
+        self.assertEqual(ds.summary_stats.shape[0], 2520)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):
@@ -120,3 +120,31 @@ class TestSelectDataSetA(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             ds.write_summary_stats()
+
+    def test_summary_stats_observation(self):
+        """Check that create_summary_stats_observation calculates observation level summary correctly."""
+        ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
+        ds.calculate_stats()
+        ds.create_summary_stats_observation()
+        self.assertEqual(ds.summary_stats_observation.shape[0], 5)
+        self.assertEqual(ds.summary_stats_observation.shape[1], 5)
+
+    def test_summary_stats_observation_without_stats_ds(self):
+        """Ensure ValueError is raised if create_summary_stats_observation is called with empty stats."""
+        ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
+        with self.assertRaises(ValueError):
+            ds.create_summary_stats_observation()
+
+    def test_summary_stats_profile(self):
+        """Check that summary_stats_observation calculates profile level summary correctly."""
+        ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
+        ds.calculate_stats()
+        ds.create_summary_stats_profile()
+        self.assertEqual(ds.summary_stats_profile.shape[0], 27)
+        self.assertEqual(ds.summary_stats_profile.shape[1], 6)
+
+    def test_summary_stats_profile_without_stats_ds(self):
+        """Ensure ValueError is raised if create_summary_stats_profile is called with empty stats."""
+        ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
+        with self.assertRaises(ValueError):
+            ds.create_summary_stats_profile()

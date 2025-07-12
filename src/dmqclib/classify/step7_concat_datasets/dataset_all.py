@@ -5,11 +5,12 @@ It is designed to integrate into a larger data quality control (DQC) workflow,
 specifically within the classification and merging steps.
 """
 
-import polars as pl
 from typing import Optional, Dict
 
-from dmqclib.common.base.config_base import ConfigBase
+import polars as pl
+
 from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
+from dmqclib.common.base.config_base import ConfigBase
 
 
 class ConcatDataSetAll(ConcatDatasetsBase):

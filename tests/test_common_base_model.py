@@ -6,9 +6,9 @@ This module verifies the correct functionality of DataSetBase's methods.
 import unittest
 from pathlib import Path
 
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
 from dmqclib.common.config.training_config import TrainingConfig
-from dmqclib.common.base.config_base import ConfigBase
 
 
 class ModelBaseWithEmptyName(ModelBase):

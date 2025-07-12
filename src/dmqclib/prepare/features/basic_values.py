@@ -6,8 +6,9 @@ It extends FeatureBase and is designed for specific data processing needs,
 such as those encountered with Copernicus CTD data.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.feature_base import FeatureBase
 

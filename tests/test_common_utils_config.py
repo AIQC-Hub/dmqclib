@@ -41,28 +41,13 @@ class TestReadConfig(unittest.TestCase):
             "path_info_sets", config, "Key 'path_info_sets' should be in the YAML"
         )
 
-    def test_read_config_with_config_name(self):
-        """
-        Verify that read_config can locate and load a configuration file
-        by its name, searching up through multiple parent directories.
-        It confirms the presence of expected keys in the loaded configuration.
-        """
-        config = read_config(
-            config_file_name="config_data_set_template.yaml", parent_level=4
-        )
-        self.assertIsNotNone(config, "Data should not be None")
-        self.assertIn("data_sets", config, "Key 'data_sets' should be in the YAML")
-        self.assertIn(
-            "path_info_sets", config, "Key 'path_info_sets' should be in the YAML"
-        )
-
     def test_read_config_no_params_raises_error(self):
         """
         Check that a ValueError is raised when `read_config` is called
         without providing either `config_file` or `config_file_name`,
         as at least one parameter is required for the function to proceed.
         """
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             read_config()
 
     def test_read_config_nonexistent_file(self):
