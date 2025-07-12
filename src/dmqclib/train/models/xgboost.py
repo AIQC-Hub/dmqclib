@@ -7,10 +7,10 @@ methods for building the model, making predictions, and generating a comprehensi
 report using `sklearn.metrics`.
 """
 
-import polars as pl
-import xgboost as xgb
 from typing import Dict, Any
 
+import polars as pl
+import xgboost as xgb
 from sklearn.metrics import (
     classification_report,
 )

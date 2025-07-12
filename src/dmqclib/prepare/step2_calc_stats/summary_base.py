@@ -10,8 +10,8 @@ from typing import Optional, List
 
 import polars as pl
 
-from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.common.base.dataset_base import DataSetBase
 
 
 class SummaryStatsBase(DataSetBase):
@@ -60,6 +60,8 @@ class SummaryStatsBase(DataSetBase):
         )
         self.input_data: Optional[pl.DataFrame] = input_data
         self.summary_stats: Optional[pl.DataFrame] = None
+        self.summary_stats_observation: Optional[pl.DataFrame] = None
+        self.summary_stats_profile: Optional[pl.DataFrame] = None
 
         #: List of numeric columns on which summary statistics will be computed.
         self.val_col_names = [
@@ -184,3 +186,37 @@ class SummaryStatsBase(DataSetBase):
 
         os.makedirs(os.path.dirname(self.output_file_name), exist_ok=True)
         self.summary_stats.write_csv(self.output_file_name, separator="\t")
+
+    def create_summary_stats_observation(self):
+        if self.summary_stats is None:
+            raise ValueError("Member variable 'summary_stats' must not be empty.")
+
+        self.summary_stats_observation = (
+            self.summary_stats.filter(pl.col("platform_code") == "all")
+            .drop(["platform_code", "profile_no"])
+            .select(["variable", "min", "mean", "pct97.5", "max"])
+            .sort(["variable"])
+        )
+
+    def create_summary_stats_profile(self):
+        if self.summary_stats is None:
+            raise ValueError("Member variable 'summary_stats' must not be empty.")
+
+        self.summary_stats_profile = (
+            self.summary_stats.filter(
+                (pl.col("platform_code") != "all")
+                & ~pl.col("variable").is_in(["longitude", "latitude"])
+            )
+            .unpivot(
+                index=["platform_code", "profile_no", "variable"], variable_name="stats"
+            )
+            .group_by(["variable", "stats"])
+            .agg(
+                min=pl.col("value").min(),
+                mean=pl.col("value").mean(),
+                pct97_5=pl.col("value").quantile(0.975),
+                max=pl.col("value").max(),
+            )
+            .rename({"pct97_5": "pct97.5"})
+            .sort(["variable", "stats"])
+        )

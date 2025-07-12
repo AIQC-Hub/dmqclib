@@ -5,10 +5,11 @@ such as Copernicus CTD data, using the Polars DataFrame library.
 It integrates with a configuration management system to ensure proper data processing.
 """
 
-import polars as pl
 from typing import (
     Optional,
 )  # Explicitly import Optional for clearer type hints in code and docstrings
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase

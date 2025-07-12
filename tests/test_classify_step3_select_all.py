@@ -11,9 +11,9 @@ from pathlib import Path
 
 import polars as pl
 
-from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
-from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
+from dmqclib.common.config.classify_config import ClassificationConfig
+from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 
 
 class TestSelectDataSetA(unittest.TestCase):

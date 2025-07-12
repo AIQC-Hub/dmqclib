@@ -21,6 +21,11 @@ from dmqclib.common.config.yaml_schema import (
     get_training_config_schema,
     get_classification_config_schema,
 )
+from dmqclib.common.config.yaml_templates import (
+    get_config_data_set_template,
+    get_config_train_set_template,
+    get_config_classify_set_template,
+)
 from dmqclib.common.utils.config import get_config_item
 from dmqclib.common.utils.config import read_config
 
@@ -72,9 +77,21 @@ class ConfigBase(ABC):
         if section_name not in yaml_schemas:
             raise ValueError(f"Section name {section_name} is not supported.")
 
+        yaml_templates = {
+            "template:data_sets": get_config_data_set_template,
+            "template:training_sets": get_config_train_set_template,
+            "template:classification_sets": get_config_classify_set_template,
+        }
+        if str(config_file).startswith("template:"):
+            if str(config_file) not in yaml_templates:
+                raise ValueError(f"Template name {config_file} is not supported.")
+            full_config = yaml.safe_load(yaml_templates.get(str(config_file))())
+        else:
+            full_config = read_config(config_file)
+
         self.section_name: str = section_name
         self.yaml_schema: Dict = yaml.safe_load(yaml_schemas.get(section_name)())
-        self.full_config: Dict = read_config(config_file, add_config_file_name=False)
+        self.full_config: Dict = full_config
         self.valid_yaml: bool = False
         self.data: Optional[Dict] = None
         self.dataset_name: Optional[str] = None

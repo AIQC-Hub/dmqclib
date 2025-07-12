@@ -5,8 +5,9 @@ from Polars DataFrames. It is designed to extract, transform, and optionally
 scale statistical features based on pre-computed summary data.
 """
 
-import polars as pl
 from typing import Optional, Dict
+
+import polars as pl
 
 from dmqclib.common.base.feature_base import FeatureBase
 
@@ -101,9 +102,14 @@ class ProfileSummaryStats5(FeatureBase):
              the final feature set.
         """
         self._filter_selected_rows_cols()
-        for variable_name, variable_stats in self.feature_info["stats"].items():
-            for metric_name in variable_stats.keys():
-                self._extract_single_summary(variable_name, metric_name)
+
+        variables_and_metrics = [
+            (variable_name, metric_name)
+            for variable_name, variable_stats in self.feature_info["stats"].items()
+            for metric_name in variable_stats.keys()
+        ]
+        for variable_name, metric_name in variables_and_metrics:
+            self._extract_single_summary(variable_name, metric_name)
 
         self.features = self.features.drop(["platform_code", "profile_no"])
 
@@ -158,11 +164,13 @@ class ProfileSummaryStats5(FeatureBase):
         named "temp_mean" or "temp_min" etc. according to specified
         min and max.
         """
-        for col_name, variable_stats in self.feature_info["stats"].items():
-            for stat_name, scale_info in variable_stats.items():
-                self.features = self.features.with_columns(
-                    (
-                        (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
-                        / (scale_info["max"] - scale_info["min"])
-                    ).alias(f"{col_name}_{stat_name}")
-                )
+        columns_to_add = [
+            (
+                (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
+                / (scale_info["max"] - scale_info["min"])
+            ).alias(f"{col_name}_{stat_name}")
+            for col_name, variable_stats in self.feature_info["stats"].items()
+            for stat_name, scale_info in variable_stats.items()
+        ]
+
+        self.features = self.features.with_columns(columns_to_add)

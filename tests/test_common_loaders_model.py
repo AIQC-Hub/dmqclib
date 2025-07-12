@@ -6,8 +6,8 @@ at various processing steps, using common loader functions.
 import unittest
 from pathlib import Path
 
-from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.common.config.training_config import TrainingConfig
+from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.train.models.xgboost import XGBoost
 
 

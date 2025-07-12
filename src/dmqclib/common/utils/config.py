@@ -36,9 +36,7 @@ def get_config_file(config_file: Optional[str] = None) -> str:
     return str(config_file)
 
 
-def read_config(
-    config_file: Optional[str] = None, add_config_file_name: bool = True
-) -> Dict[str, Any]:
+def read_config(config_file: Optional[str] = None) -> Dict[str, Any]:
     """
     Read and parse a YAML configuration file, returning its contents as a dictionary.
 
@@ -53,10 +51,6 @@ def read_config(
 
     :param config_file: Full path to the config file, if already known.
     :type config_file: str, optional
-    :param add_config_file_name: If True, the absolute path of the configuration file
-                                 is added to the returned dictionary under
-                                 the key "config_file_name". Defaults to True.
-    :type add_config_file_name: bool
     :raises ValueError: If ``config_file`` is missing (propagated from :func:`get_config_file`).
     :raises FileNotFoundError: If no file is found at the resolved path (propagated from :func:`get_config_file`).
     :raises yaml.YAMLError: If the configuration file is not valid YAML.
@@ -67,9 +61,6 @@ def read_config(
 
     with open(resolved_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
-
-    if add_config_file_name:
-        data["config_file_name"] = resolved_file
 
     return data
 

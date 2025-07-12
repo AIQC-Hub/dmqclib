@@ -7,6 +7,9 @@ import unittest
 from pathlib import Path
 
 from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.common.config.classify_config import ClassificationConfig
+from dmqclib.common.config.dataset_config import DataSetConfig
+from dmqclib.common.config.training_config import TrainingConfig
 
 
 class ConfigBaseWithExpectedName(ConfigBase):
@@ -87,3 +90,30 @@ class TestDatasetBaseMethods(unittest.TestCase):
         ds.data["path_info"]["common"]["base_path"] = None
         with self.assertRaises(ValueError):
             ds.get_base_path("invalid_step_name")
+
+
+class TestConfigTemplates(unittest.TestCase):
+    def test_read_datasets_template(self):
+        conf = DataSetConfig("template:data_sets")
+        self.assertIsNotNone(conf.full_config)
+
+        self.assertIsNone(conf.data)
+        conf.select("NRT_BO_001")
+        self.assertIsNotNone(conf.data)
+        print(conf.data)
+
+    def test_read_training_template(self):
+        conf = TrainingConfig("template:training_sets")
+        self.assertIsNotNone(conf.full_config)
+
+        self.assertIsNone(conf.data)
+        conf.select("NRT_BO_001")
+        self.assertIsNotNone(conf.data)
+
+    def test_read_classification_template(self):
+        conf = ClassificationConfig("template:classification_sets")
+        self.assertIsNotNone(conf.full_config)
+
+        self.assertIsNone(conf.data)
+        conf.select("NRT_BO_001")
+        self.assertIsNotNone(conf.data)

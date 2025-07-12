@@ -10,6 +10,8 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
+from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import (
     load_classify_step1_input_dataset,
     load_classify_step2_summary_dataset,
@@ -17,9 +19,7 @@ from dmqclib.common.loader.classify_loader import (
     load_classify_step4_locate_dataset,
     load_classify_step5_extract_dataset,
 )
-from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
 
 
 class TestBuildModel(unittest.TestCase):

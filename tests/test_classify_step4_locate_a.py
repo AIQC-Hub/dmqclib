@@ -10,10 +10,10 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
+from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 from dmqclib.common.loader.classify_loader import load_classify_step3_select_dataset
-from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
 
 
 class TestLocateDataSetA(unittest.TestCase):

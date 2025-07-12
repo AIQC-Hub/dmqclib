@@ -6,9 +6,10 @@ and negative samples via shared identifiers and assigning k-fold indices for
 cross-validation.
 """
 
+from typing import Optional, Dict
+
 import numpy as np
 import polars as pl
-from typing import Optional, Dict
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase

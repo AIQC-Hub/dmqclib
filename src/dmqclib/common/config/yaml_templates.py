@@ -169,6 +169,7 @@ path_info_sets:
 
 target_sets:
   - name: target_set_1_3
+    variables:
       - name: temp
         flag: temp_qc
         pos_flag_values: [4, ]

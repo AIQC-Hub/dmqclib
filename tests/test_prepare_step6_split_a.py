@@ -13,6 +13,7 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.loader.dataset_loader import (
     load_step1_input_dataset,
     load_step2_summary_dataset,
@@ -20,7 +21,6 @@ from dmqclib.common.loader.dataset_loader import (
     load_step4_locate_dataset,
     load_step5_extract_dataset,
 )
-from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.prepare.step6_split_dataset.dataset_a import SplitDataSetA
 
 

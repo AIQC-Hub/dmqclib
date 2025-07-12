@@ -6,9 +6,9 @@ This module verifies the correct functionality of DataSetBase's methods.
 import unittest
 from pathlib import Path
 
+from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.config.dataset_config import DataSetConfig
-from dmqclib.common.base.config_base import ConfigBase
 
 
 class DataSetWithExpectedName(DataSetBase):

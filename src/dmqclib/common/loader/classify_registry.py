@@ -12,15 +12,14 @@ from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
 from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
 from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
 from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
+from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 from dmqclib.classify.step7_concat_datasets.dataset_all import ConcatDataSetAll
-
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
 from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBase
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
-from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 
 #: A registry mapping class names (as strings, typically from YAML configuration)
 #: to their corresponding Python classes for step1_read_input tasks in the

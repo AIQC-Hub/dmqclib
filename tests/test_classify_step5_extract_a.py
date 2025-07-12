@@ -10,14 +10,14 @@ from pathlib import Path
 
 import polars as pl
 
+from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
+from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import (
     load_classify_step1_input_dataset,
     load_classify_step2_summary_dataset,
     load_classify_step3_select_dataset,
     load_classify_step4_locate_dataset,
 )
-from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
 
 
 class TestExtractDataSetA(unittest.TestCase):

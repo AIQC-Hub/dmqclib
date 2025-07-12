@@ -7,15 +7,15 @@ reading them as instantiated configuration objects. Supports "prepare",
 import os
 
 from dmqclib.common.base.config_base import ConfigBase
+from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.config.training_config import TrainingConfig
-from dmqclib.common.config.classify_config import ClassificationConfig
-from dmqclib.common.utils.config import get_config_file
 from dmqclib.common.config.yaml_templates import (
     get_config_train_set_template,
     get_config_data_set_template,
     get_config_classify_set_template,
 )
+from dmqclib.common.utils.config import get_config_file
 
 
 def write_config_template(file_name: str, module: str) -> None:

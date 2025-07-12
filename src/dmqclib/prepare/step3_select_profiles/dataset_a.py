@@ -8,10 +8,11 @@ pairs them temporally to construct a labeled dataset suitable for quality
 control machine learning applications.
 """
 
-import polars as pl
-from typing import Optional, List
-from functools import reduce
 import operator
+from functools import reduce
+from typing import Optional, List
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
