@@ -44,7 +44,7 @@ step_param_sets:
     steps:
       input: { }
       validate: { k_fold: 10 }
-      model: { }
+      model: { model_params: { scale_pos_weight: 10 } }
       build: { }
 
 training_sets:

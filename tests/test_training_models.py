@@ -1,6 +1,7 @@
-"""
-Unit tests for the XGBoost model class, verifying its integration with
-the dmqclib configuration system.
+"""Unit tests for the XGBoost model class.
+
+This module verifies the integration of the XGBoost model with the dmqclib
+configuration system, ensuring parameters are correctly loaded and processed.
 """
 
 import unittest
@@ -11,14 +12,12 @@ from dmqclib.train.models.xgboost import XGBoost
 
 
 class TestXGBoost(unittest.TestCase):
-    """
-    A suite of tests verifying basic XGBoost model setup and functionality
+    """A suite of tests verifying basic XGBoost model setup and functionality
     through the dmqclib configuration system.
     """
 
     def setUp(self):
-        """
-        Define the path to the training configuration file
+        """Define the path to the training configuration file
         and select the appropriate dataset prior to each test.
         """
         self.config_file_path = (
@@ -31,8 +30,26 @@ class TestXGBoost(unittest.TestCase):
         self.config.select("NRT_BO_001")
 
     def test_init_class(self):
-        """
-        Check that initializing an XGBoost object sets default values correctly.
-        """
+        """Verify that initializing an XGBoost object sets default values correctly."""
         ds = XGBoost(self.config)
         self.assertEqual(ds.k, 0)
+
+    def test_model_params_scale_pos_weight(self):
+        """Verify that the `scale_pos_weight` parameter can be set via configuration."""
+        self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
+            "scale_pos_weight": 10
+        }
+        ds = XGBoost(self.config)
+
+        self.assertIn("scale_pos_weight", ds.model_params)
+        self.assertEqual(ds.model_params["scale_pos_weight"], 10)
+
+    def test_model_params_max_depth(self):
+        """Verify that the `max_depth` parameter can be set via configuration."""
+        self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
+            "max_depth": 10
+        }
+        ds = XGBoost(self.config)
+
+        self.assertIn("max_depth", ds.model_params)
+        self.assertEqual(ds.model_params["max_depth"], 10)

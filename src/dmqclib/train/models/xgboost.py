@@ -59,14 +59,15 @@ class XGBoost(ModelBase):
         """
         super().__init__(config)
 
-        params: Dict[str, Any] = {
+        self.model_params: Dict[str, Any] = {
             "n_estimators": 100,
             "max_depth": 6,
             "learning_rate": 0.1,
             "eval_metric": "logloss",
         }
-        # If model_params were not provided by the config, use defaults
-        self.model_params = params if len(self.model_params) == 0 else self.model_params
+        # Update model parameters with config step parameters
+        model_params = self.config.get_step_params("model").get("model_params", {})
+        self.model_params.update(model_params)
 
     def build(self) -> None:
         """
