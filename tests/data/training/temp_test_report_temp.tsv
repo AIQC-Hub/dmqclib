@@ -1,7 +1,0 @@
-metric_type	label	precision	recall	f1-score	support	value
-classification_report	0	0.8571428571428571	1.0	0.9230769230769231	6.0	
-classification_report	1	1.0	0.8333333333333334	0.9090909090909091	6.0	
-overall_accuracy						0.9166666666666666
-balanced_accuracy						0.9166666666666667
-classification_report	macro avg	0.9285714285714286	0.9166666666666667	0.916083916083916	12.0	
-classification_report	weighted avg	0.9285714285714285	0.9166666666666666	0.9160839160839161	12.0	

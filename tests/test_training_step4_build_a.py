@@ -160,21 +160,24 @@ class TestBuildModel(unittest.TestCase):
         self.assertNotEqual(ds.models["psal"], ds.models["pres"])
 
     def test_build_without_test_sets(self):
-        """Confirm that building models populates a unique model object for each target ."""
+        """Ensure that empty test_sets raise a ValueError."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
             test_sets=None,
         )
-        ds.build_targets()
+        with self.assertRaises(ValueError):
+            ds.build_targets()
 
-        self.assertIsNot(ds.models["temp"], ds.models["psal"])
-        self.assertIsNot(ds.models["temp"], ds.models["pres"])
-        self.assertIsNot(ds.models["psal"], ds.models["pres"])
-
-        self.assertNotEqual(ds.models["temp"], ds.models["psal"])
-        self.assertNotEqual(ds.models["temp"], ds.models["pres"])
-        self.assertNotEqual(ds.models["psal"], ds.models["pres"])
+    def test_build_without_training_sets(self):
+        """Ensure that empty training_sets raise a ValueError."""
+        ds = BuildModel(
+            self.config,
+            training_sets=None,
+            test_sets=None,
+        )
+        with self.assertRaises(ValueError):
+            ds.build_targets()
 
     def test_test_with_xgboost(self):
         """Check that testing sets after model building populates the result columns,
