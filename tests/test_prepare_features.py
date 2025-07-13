@@ -18,7 +18,7 @@ from dmqclib.common.loader.dataset_loader import (
     load_step4_locate_dataset,
     load_step5_extract_dataset,
 )
-from dmqclib.prepare.features.basic_values import BasicValues3PlusFlanks
+from dmqclib.prepare.features.basic_values import BasicValues
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.location import LocationFeat
 from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
@@ -330,7 +330,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         necessary data and configuring the specific feature information,
         including flank parameters and statistics for variables.
         """
-        super()._setup(BasicValues3PlusFlanks)
+        super()._setup(BasicValues)
         self.feature_info = {
             "class": "basic_values3_plus_flanks",
             "flank_up": 5,
@@ -354,7 +354,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         'flank' data (values from adjacent points), checking the resulting
         DataFrame type and dimensions.
         """
-        ds = BasicValues3PlusFlanks(
+        ds = BasicValues(
             "temp",
             self.feature_info,
             self.ds_select.selected_profiles,

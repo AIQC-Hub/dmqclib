@@ -94,7 +94,8 @@ feature_sets:
       - location
       - day_of_year
       - profile_summary_stats5
-      - basic_values3_plus_flanks,
+      - basic_values,
+      - flank_up,
 
 feature_param_sets:
   - name: feature_set_1_param_set_3
@@ -105,7 +106,9 @@ feature_param_sets:
         convert: sine
       - feature: profile_summary_stats5
         stats_set: {name: profile_summary_stats5, type: min_max}
-      - feature: basic_values3_plus_flanks
+      - feature: basic_values
+        stats_set: {name: basic_values3, type: min_max}
+      - feature: flank_up
         flank_up: 5
         stats_set: {name: basic_values3, type: min_max}
 
@@ -319,7 +322,8 @@ feature_sets:
       - location
       - day_of_year
       - profile_summary_stats5
-      - basic_values3_plus_flanks,
+      - basic_values,
+      - flank_up,
 
 feature_param_sets:
   - name: feature_set_1_param_set_3
@@ -330,7 +334,9 @@ feature_param_sets:
         convert: sine
       - feature: profile_summary_stats5
         stats_set: {name: profile_summary_stats5, type: min_max}
-      - feature: basic_values3_plus_flanks
+      - feature: basic_values
+        stats_set: {name: basic_values3, type: min_max}
+      - feature: flank_up
         flank_up: 5
         stats_set: {name: basic_values3, type: min_max}
 

@@ -12,7 +12,8 @@ extractions.
 from typing import Dict, Type
 
 from dmqclib.common.base.feature_base import FeatureBase
-from dmqclib.prepare.features.basic_values import BasicValues3PlusFlanks
+from dmqclib.prepare.features.basic_values import BasicValues
+from dmqclib.prepare.features.flak_up import FlankUp
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.location import LocationFeat
 from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
@@ -24,5 +25,6 @@ FEATURE_REGISTRY: Dict[str, Type[FeatureBase]] = {
     "location": LocationFeat,
     "day_of_year": DayOfYearFeat,
     "profile_summary_stats5": ProfileSummaryStats5,
-    "basic_values3_plus_flanks": BasicValues3PlusFlanks,
+    "basic_values": BasicValues,
+    "flank_up": FlankUp,
 }

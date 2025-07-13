@@ -13,7 +13,7 @@ import polars as pl
 from dmqclib.common.base.feature_base import FeatureBase
 
 
-class BasicValues(FeatureBase):
+class FlankUp(FeatureBase):
     """
     A feature-extraction class for retrieving target values and their "flanking" values
     from Copernicus CTD data, extending :class:`FeatureBase`.
@@ -82,8 +82,10 @@ class BasicValues(FeatureBase):
           4. :meth:`_clean_features` - Drop columns no longer needed.
         """
         self._init_features()
+        self._expand_observations()
         for col_name in self.feature_info["stats"].keys():
-            self._add_features(col_name)
+            self._pivot_features(col_name)
+            self._add_features()
         self._clean_features()
 
     def _init_features(self) -> None:
@@ -92,23 +94,80 @@ class BasicValues(FeatureBase):
         from :attr:`selected_rows[target_name]`.
         """
         self.features = self.selected_rows[self.target_name].select(
-            ["row_id", "platform_code", "profile_no", "observation_no"]
+            ["row_id", "platform_code", "profile_no"]
         )
 
-    def _add_features(self, col_name: str) -> None:
+    def _expand_observations(self) -> None:
         """
-        Join the pivoted columns from :attr:`_feature_wide` onto :attr:`features`.
+        Generate a DataFrame with additional rows for each "flank" step.
+
+        This expands each row in :attr:`selected_rows[target_name]` by
+        cross joining with a sequence from 0 to ``feature_info["flank_up"]``,
+        then adjusts ``observation_no`` to shift backwards for each flank step.
         """
-        self.features = self.features.join(
-            (
+        self._expanded_observations = (
+            self.selected_rows[self.target_name]
+            .select(["row_id", "platform_code", "profile_no", "observation_no"])
+            .join(
+                pl.DataFrame(
+                    {"flank_seq": list(range(1, self.feature_info.get("flank_up") + 1))}
+                ),
+                how="cross",
+            )
+            .with_columns(
+                (pl.col("observation_no") - pl.col("flank_seq")).alias("observation_no")
+            )
+            .with_columns(
+                pl.when(pl.col("observation_no") < 1)
+                .then(1)
+                .otherwise(pl.col("observation_no"))
+                .alias("observation_no")
+            )
+        )
+
+    def _pivot_features(self, col_name: str) -> None:
+        """
+        Pivot the expanded observations to create columns for each flank step
+        of the specified data column.
+
+        :param col_name: The original data column to be pivoted (e.g., "temp").
+        :type col_name: str
+        """
+        self._feature_wide = (
+            self._expanded_observations.join(
                 self.filtered_input.select(
                     pl.col("platform_code"),
                     pl.col("profile_no"),
                     pl.col("observation_no"),
-                    pl.col(col_name),
-                )
-            ),
-            on=["platform_code", "profile_no", "observation_no"],
+                    pl.col(col_name).alias("value"),
+                ),
+                on=["platform_code", "profile_no", "observation_no"],
+                maintain_order="left",
+            )
+            .with_columns(
+                pl.concat_str(
+                    [
+                        pl.lit(f"{col_name}_up"),
+                        pl.col("flank_seq").cast(pl.Utf8),
+                    ],
+                    separator="_",
+                ).alias("col_name")
+            )
+            .drop(["observation_no", "flank_seq"])
+            .pivot(
+                "col_name",
+                index=["row_id", "platform_code", "profile_no"],
+                values="value",
+            )
+        )
+
+    def _add_features(self) -> None:
+        """
+        Join the pivoted columns from :attr:`_feature_wide` onto :attr:`features`.
+        """
+        self.features = self.features.join(
+            self._feature_wide,
+            on=["row_id", "platform_code", "profile_no"],
             maintain_order="left",
         )
 
@@ -116,9 +175,7 @@ class BasicValues(FeatureBase):
         """
         Drop columns that are no longer needed in the final feature set.
         """
-        self.features = self.features.drop(
-            ["platform_code", "profile_no", "observation_no"]
-        )
+        self.features = self.features.drop(["platform_code", "profile_no"])
 
     def scale_first(self) -> None:
         """

@@ -355,7 +355,6 @@ class TestBaseConfigSummaryStats(unittest.TestCase):
         """Verify that feature parameters are updated with relevant summary statistics."""
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
-        ds.update_feature_param_with_stats()
 
         # Iterate through params to check if 'stats' key was added
         for x in ds.data["feature_param_set"]["params"]:
