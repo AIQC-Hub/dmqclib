@@ -61,6 +61,33 @@ target_sets:
         pos_flag_values: [4, ]
         neg_flag_values: [1, ]
 
+summary_stats_sets:
+  - name: summary_stats_set_1
+    stats:
+      - name: location
+        min_max: { longitude: { min: 14.5, max: 23.5 },
+                   latitude: { min: 55, max: 66 } }
+      - name: profile_summary_stats5
+        min_max: { temp: { mean: { min: 0, max: 12.5 },
+                           median: { min: 0, max: 15 },
+                           sd: { min: 0, max: 6.5 },
+                           pct25: { min: 0, max: 12 },
+                           pct75: { min: 1, max: 19 } },
+                   psal: { mean: { min: 2.9, max: 12 },
+                           median: { min: 2.9, max: 12 },
+                           sd: { min: 0, max: 4 },
+                           pct25: { min: 2.5, max: 8.5 },
+                           pct75: { min: 3, max: 16 } },
+                   pres: { mean: { min: 24, max: 105 },
+                           median: { min: 24, max: 105 },
+                           sd: { min: 13, max: 60 },
+                           pct25: { min: 12, max: 53 },
+                           pct75: { min: 35, max: 156 } } }
+      - name: basic_values3
+        min_max: { temp: { min: 0, max: 20 },
+                   psal: { min: 0, max: 20 },
+                   pres: { min: 0, max: 200 } }
+
 feature_sets:
   - name: feature_set_1
     features:
@@ -73,31 +100,14 @@ feature_param_sets:
   - name: feature_set_1_param_set_3
     params:
       - feature: location
-        stats: { longitude: { min: 14.5, max: 23.5 },
-                 latitude: { min: 55, max: 66 } }
+        stats_set: {name: location, type: min_max}
       - feature: day_of_year
         convert: sine
       - feature: profile_summary_stats5
-        stats: { temp: { mean: { min: 0, max: 12.5 },
-                         median: { min: 0, max: 15 },
-                         sd: { min: 0, max: 6.5 },
-                         pct25: { min: 0, max: 12 },
-                         pct75: { min: 1, max: 19 } },
-                 psal: { mean: { min: 2.9, max: 12 },
-                         median: { min: 2.9, max: 12 },
-                         sd: { min: 0, max: 4 },
-                         pct25: { min: 2.5, max: 8.5 },
-                         pct75: { min: 3, max: 16 } },
-                 pres: { mean: { min: 24, max: 105 },
-                         median: { min: 24, max: 105 },
-                         sd: { min: 13, max: 60 },
-                         pct25: { min: 12, max: 53 },
-                         pct75: { min: 35, max: 156 } } }
+        stats_set: {name: profile_summary_stats5, type: min_max}
       - feature: basic_values3_plus_flanks
         flank_up: 5
-        stats: { temp: { min: 0, max: 20 },
-                 psal: { min: 0, max: 20 },
-                 pres: { min: 0, max: 200 } }
+        stats_set: {name: basic_values3, type: min_max}
 
 step_class_sets:
   - name: data_set_step_set_1
@@ -130,6 +140,7 @@ data_sets:
     input_file_name: nrt_cora_bo_test.parquet # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
+    summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
     feature_param_set: feature_set_1_param_set_3
     step_class_set: data_set_step_set_1
@@ -275,6 +286,33 @@ target_sets:
         pos_flag_values: [4, ]
         neg_flag_values: [1, ]
 
+summary_stats_sets:
+  - name: summary_stats_set_1
+    stats:
+      - name: location
+        min_max: { longitude: { min: 14.5, max: 23.5 },
+                   latitude: { min: 55, max: 66 } }
+      - name: profile_summary_stats5
+        min_max: { temp: { mean: { min: 0, max: 12.5 },
+                           median: { min: 0, max: 15 },
+                           sd: { min: 0, max: 6.5 },
+                           pct25: { min: 0, max: 12 },
+                           pct75: { min: 1, max: 19 } },
+                   psal: { mean: { min: 2.9, max: 12 },
+                           median: { min: 2.9, max: 12 },
+                           sd: { min: 0, max: 4 },
+                           pct25: { min: 2.5, max: 8.5 },
+                           pct75: { min: 3, max: 16 } },
+                   pres: { mean: { min: 24, max: 105 },
+                           median: { min: 24, max: 105 },
+                           sd: { min: 13, max: 60 },
+                           pct25: { min: 12, max: 53 },
+                           pct75: { min: 35, max: 156 } } }
+      - name: basic_values3
+        min_max: { temp: { min: 0, max: 20 },
+                   psal: { min: 0, max: 20 },
+                   pres: { min: 0, max: 200 } }
+
 feature_sets:
   - name: feature_set_1
     features:
@@ -287,31 +325,14 @@ feature_param_sets:
   - name: feature_set_1_param_set_3
     params:
       - feature: location
-        stats: { longitude: { min: 14.5, max: 23.5 },
-                 latitude: { min: 55, max: 66 } }
+        stats_set: {name: location, type: min_max}
       - feature: day_of_year
         convert: sine
       - feature: profile_summary_stats5
-        stats: { temp: { mean: { min: 0, max: 12.5 },
-                         median: { min: 0, max: 15 },
-                         sd: { min: 0, max: 6.5 },
-                         pct25: { min: 0, max: 12 },
-                         pct75: { min: 1, max: 19 } },
-                 psal: { mean: { min: 2.9, max: 12 },
-                         median: { min: 2.9, max: 12 },
-                         sd: { min: 0, max: 4 },
-                         pct25: { min: 2.5, max: 8.5 },
-                         pct75: { min: 3, max: 16 } },
-                 pres: { mean: { min: 24, max: 105 },
-                         median: { min: 24, max: 105 },
-                         sd: { min: 13, max: 60 },
-                         pct25: { min: 12, max: 53 },
-                         pct75: { min: 35, max: 156 } } }
+        stats_set: {name: profile_summary_stats5, type: min_max}
       - feature: basic_values3_plus_flanks
         flank_up: 5
-        stats: { temp: { min: 0, max: 20 },
-                 psal: { min: 0, max: 20 },
-                 pres: { min: 0, max: 200 } }
+        stats_set: {name: basic_values3, type: min_max}
 
 step_class_sets:
   - name: data_set_step_set_1
@@ -347,6 +368,7 @@ classification_sets:
     input_file_name: nrt_cora_bo_test.parquet   # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
+    summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
     feature_param_set: feature_set_1_param_set_3
     step_class_set: data_set_step_set_1
