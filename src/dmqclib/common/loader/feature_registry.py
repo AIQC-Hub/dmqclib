@@ -13,7 +13,8 @@ from typing import Dict, Type
 
 from dmqclib.common.base.feature_base import FeatureBase
 from dmqclib.prepare.features.basic_values import BasicValues
-from dmqclib.prepare.features.flak_up import FlankUp
+from dmqclib.prepare.features.flank_up import FlankUp
+from dmqclib.prepare.features.flank_down import FlankDown
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.location import LocationFeat
 from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
@@ -27,4 +28,5 @@ FEATURE_REGISTRY: Dict[str, Type[FeatureBase]] = {
     "profile_summary_stats5": ProfileSummaryStats5,
     "basic_values": BasicValues,
     "flank_up": FlankUp,
+    "flank_down": FlankDown,
 }

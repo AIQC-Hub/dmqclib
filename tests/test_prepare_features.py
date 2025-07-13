@@ -348,7 +348,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         """
         super()._test_init_arguments(self.feature_info)
 
-    def test_basic_values3_plus_flanks_features(self):
+    def test_basic_values3_features(self):
         """
         Validates the extraction and scaling of basic statistics combined with
         'flank' data (values from adjacent points), checking the resulting
@@ -368,4 +368,4 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
-        self.assertEqual(ds.features.shape[1], 19)
+        self.assertEqual(ds.features.shape[1], 4)

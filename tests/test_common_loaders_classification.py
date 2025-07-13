@@ -395,11 +395,11 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
 
 class TestClassifyConcatClassLoader(unittest.TestCase):

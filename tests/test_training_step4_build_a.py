@@ -107,27 +107,27 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.training_sets["temp"].shape[0], 116)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 42)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 57)
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.training_sets["psal"].shape[0], 126)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 42)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 57)
 
         self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.training_sets["pres"].shape[0], 110)
-        self.assertEqual(ds.training_sets["pres"].shape[1], 42)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 57)
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.test_sets["pres"].shape[0], 12)
-        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
 
     def test_train_with_xgboost(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -193,15 +193,15 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.test_sets["pres"].shape[0], 12)
-        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
 
     def test_test_without_model(self):
         """Ensure that calling test_targets() without first building models raises a ValueError."""
@@ -306,11 +306,11 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
     def test_read_models_no_file(self):
         """Check that FileNotFoundError is raised if model files are missing during reading."""

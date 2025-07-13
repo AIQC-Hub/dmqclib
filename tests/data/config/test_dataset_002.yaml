@@ -56,8 +56,9 @@ feature_sets:
       - location
       - day_of_year
       - profile_summary_stats5
-      - basic_values,
-      - flank_up,
+      - basic_values
+      - flank_up
+      - flank_down
 
 feature_param_sets:
   - name: feature_set_1_param_set_3
@@ -72,6 +73,9 @@ feature_param_sets:
         stats_set: {name: basic_values3, type: min_max}
       - feature: flank_up
         flank_up: 5
+        stats_set: {name: basic_values3, type: min_max}
+      - feature: flank_down
+        flank_down: 5
         stats_set: {name: basic_values3, type: min_max}
 
 step_class_sets:
