@@ -18,7 +18,7 @@ from dmqclib.common.loader.dataset_loader import (
     load_step4_locate_dataset,
     load_step5_extract_dataset,
 )
-from dmqclib.prepare.features.basic_values import BasicValues3PlusFlanks
+from dmqclib.prepare.features.basic_values import BasicValues
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.location import LocationFeat
 from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
@@ -93,7 +93,7 @@ class _TestFeatureBase(unittest.TestCase):
         )
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
-        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[0], 50)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)
@@ -330,7 +330,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         necessary data and configuring the specific feature information,
         including flank parameters and statistics for variables.
         """
-        super()._setup(BasicValues3PlusFlanks)
+        super()._setup(BasicValues)
         self.feature_info = {
             "class": "basic_values3_plus_flanks",
             "flank_up": 5,
@@ -348,13 +348,13 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
         """
         super()._test_init_arguments(self.feature_info)
 
-    def test_basic_values3_plus_flanks_features(self):
+    def test_basic_values3_features(self):
         """
         Validates the extraction and scaling of basic statistics combined with
         'flank' data (values from adjacent points), checking the resulting
         DataFrame type and dimensions.
         """
-        ds = BasicValues3PlusFlanks(
+        ds = BasicValues(
             "temp",
             self.feature_info,
             self.ds_select.selected_profiles,
@@ -368,4 +368,4 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
 
         self.assertIsInstance(ds.features, pl.DataFrame)
         self.assertEqual(ds.features.shape[0], 128)
-        self.assertEqual(ds.features.shape[1], 19)
+        self.assertEqual(ds.features.shape[1], 4)

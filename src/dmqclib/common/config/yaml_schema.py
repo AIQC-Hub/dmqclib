@@ -109,6 +109,27 @@ properties:
         - variables
       additionalProperties: false
 
+  summary_stats_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              min_max:
+                type: object
+      required:
+        - name
+        - stats
+      additionalProperties: false
+
   feature_sets:
     type: array
     items:
@@ -262,6 +283,8 @@ properties:
           type: string
         target_set:
           type: string
+        summary_stats_set:
+          type: string
         feature_set:
           type: string
         feature_param_set:
@@ -276,6 +299,7 @@ properties:
         - input_file_name
         - path_info
         - target_set
+        - summary_stats_set
         - feature_set
         - feature_param_set
         - step_class_set
@@ -286,6 +310,7 @@ additionalProperties: false
 required:
   - path_info_sets
   - target_sets
+  - summary_stats_sets
   - feature_sets
   - feature_param_sets
   - step_class_sets
@@ -616,6 +641,27 @@ properties:
         - variables
       additionalProperties: false
 
+  summary_stats_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              min_max:
+                type: object
+      required:
+        - name
+        - stats
+      additionalProperties: false
+
   feature_sets:
     type: array
     items:
@@ -778,6 +824,8 @@ properties:
           type: string
         target_set:
           type: string
+        summary_stats_set:
+          type: string
         feature_set:
           type: string
         feature_param_set:
@@ -792,6 +840,7 @@ properties:
         - input_file_name
         - path_info
         - target_set
+        - summary_stats_set
         - feature_set
         - feature_param_set
         - step_class_set
@@ -802,6 +851,7 @@ additionalProperties: false
 required:
   - path_info_sets
   - target_sets
+  - summary_stats_sets
   - feature_sets
   - feature_param_sets
   - step_class_sets

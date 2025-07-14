@@ -148,15 +148,15 @@ class TestExtractDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
         self.assertEqual(ds.target_features["temp"].shape[0], 19480)
-        self.assertEqual(ds.target_features["temp"].shape[1], 41)
+        self.assertEqual(ds.target_features["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
         self.assertEqual(ds.target_features["psal"].shape[0], 19480)
-        self.assertEqual(ds.target_features["psal"].shape[1], 41)
+        self.assertEqual(ds.target_features["psal"].shape[1], 56)
 
         self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
         self.assertEqual(ds.target_features["pres"].shape[0], 19480)
-        self.assertEqual(ds.target_features["pres"].shape[1], 41)
+        self.assertEqual(ds.target_features["pres"].shape[1], 56)
 
     def test_write_target_features(self):
         """

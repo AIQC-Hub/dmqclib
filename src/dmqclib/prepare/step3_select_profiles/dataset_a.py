@@ -84,7 +84,7 @@ class SelectDataSetA(ProfileSelectionBase):
         conditions = reduce(
             operator.or_,
             [
-                pl.col(param["flag"]).is_in(param["pos_flag_values"])
+                pl.col(param["flag"]).is_in(param.get("pos_flag_values", [4]))
                 for param in self.config.get_target_dict().values()
             ],
         )
@@ -112,8 +112,8 @@ class SelectDataSetA(ProfileSelectionBase):
         exprs = reduce(
             operator.and_,
             [
-                (~pl.col(param["flag"]).is_in(param["pos_flag_values"]).any())
-                & (pl.col(param["flag"]).is_in(param["neg_flag_values"]).any())
+                (~pl.col(param["flag"]).is_in(param.get("pos_flag_values", [4])).any())
+                & (pl.col(param["flag"]).is_in(param.get("neg_flag_values", [1])).any())
                 for param in self.config.get_target_dict().values()
             ],
         )
@@ -140,6 +140,8 @@ class SelectDataSetA(ProfileSelectionBase):
         ``neg_profile_id`` columns. It also updates :attr:`neg_profile_df`
         by filtering it to the matched profiles and adding corresponding labels.
         """
+        neg_pos_ratio = self.config.get_step_params("select").get("neg_pos_ratio", 1)
+
         closest_neg_id = (
             self.pos_profile_df.join(self.neg_profile_df, how="cross", suffix="_neg")
             .with_columns(
@@ -147,26 +149,24 @@ class SelectDataSetA(ProfileSelectionBase):
                 .abs()
                 .alias("day_diff")
             )
-            .sort(["profile_id", "day_diff", "profile_id_neg"])
-            .group_by("profile_id")
-            .agg(pl.col("profile_id_neg").head(1).alias("neg_profile_id"))
-        ).explode("neg_profile_id")
-
-        self.pos_profile_df = (
-            self.pos_profile_df.join(closest_neg_id, on="profile_id", how="left")
-            .with_columns(pl.lit(1).alias("label"))
-            .drop("pos_day_of_year")
+            .rename({"profile_id": "pos_profile_id"})
+            .sort(["pos_profile_id", "day_diff", "profile_id_neg"])
+            .group_by("pos_profile_id")
+            .agg(pl.col("profile_id_neg").head(neg_pos_ratio).alias("profile_id"))
+            .explode("profile_id")
         )
+
+        self.pos_profile_df = self.pos_profile_df.with_columns(
+            pl.col("profile_id").alias("pos_profile_id"), pl.lit(1).alias("label")
+        ).drop("pos_day_of_year")
 
         self.neg_profile_df = (
             self.neg_profile_df.join(
-                (closest_neg_id.select("neg_profile_id").unique()),
-                left_on="profile_id",
-                right_on="neg_profile_id",
+                closest_neg_id,
+                on="profile_id",
                 how="inner",
             )
             .with_columns(
-                pl.lit(0, dtype=pl.UInt32).alias("neg_profile_id"),
                 pl.lit(0).alias("label"),
             )
             .drop("neg_day_of_year")

@@ -92,15 +92,23 @@ class SplitDataSetA(SplitDataSetBase):
         )
 
         test_set = pos_test_set.vstack(neg_test_set)
-        # Reassemble the final test set with "row_id" positioned as the first column.
         self.test_sets[target_name] = test_set.select(
             ["row_id", pl.all().exclude("row_id")]
         )
 
-        self.training_sets[target_name] = self.target_features[target_name].join(
-            self.test_sets[target_name].select([pl.col("row_id")]),
-            on="row_id",
-            how="anti",
+        pos_training_set = (
+            self.target_features[target_name].filter(pl.col("label") == 1)
+        ).join(pos_test_set, on="row_id", how="anti")
+
+        neg_training_set = (
+            self.target_features[target_name]
+            .filter(pl.col("label") == 0)
+            .join(pos_training_set.select([pl.col("pair_id")]), on="pair_id")
+        )
+        training_set = pos_training_set.vstack(neg_training_set)
+
+        self.training_sets[target_name] = training_set.select(
+            ["row_id", pl.all().exclude("row_id")]
         )
 
     def add_k_fold(self, target_name: str) -> None:

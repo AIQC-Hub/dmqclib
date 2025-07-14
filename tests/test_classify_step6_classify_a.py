@@ -145,15 +145,15 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.test_sets["pres"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
 
     def test_read_models(self):
         """Confirm that reading models populates the 'models' dictionary with XGBoost instances."""
@@ -180,15 +180,15 @@ class TestBuildModel(unittest.TestCase):
 
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 41)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 41)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.test_sets["pres"].shape[0], 19480)
-        self.assertEqual(ds.test_sets["pres"].shape[1], 41)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
 
     def test_test_without_model(self):
         """Ensure that testing without loaded models raises a ValueError."""

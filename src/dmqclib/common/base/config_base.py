@@ -188,6 +188,33 @@ class ConfigBase(ABC):
 
         return base_path
 
+    def get_summary_stats(self, stats_name: str, stats_type: str = "min_max") -> Dict:
+        """Retrieve specific summary statistics parameters from the configuration.
+
+        This method iterates through the `summary_stats_set` in the loaded
+        configuration to find the entry matching `stats_name` and returns
+        the dictionary associated with `stats_type` for that entry.
+
+        :param stats_name: The name of the summary statistics set to retrieve
+                           (e.g., "global_temperature_stats").
+        :type stats_name: str
+        :param stats_type: The specific type of statistics to retrieve from
+                           the named set (e.g., "min_max", "mean_sd").
+                           Defaults to "min_max".
+        :type stats_type: str
+        :raises ValueError: If the specified ``stats_name`` is not found in
+                            the configuration's ``summary_stats_set``.
+        :return: A dictionary containing the requested summary statistics parameters.
+        :rtype: dict
+        """
+        for stats in self.data["summary_stats_set"]["stats"]:
+            if stats["name"] == stats_name:
+                return stats.get(stats_type)
+
+        raise ValueError(
+            f"Summary statistics set '{stats_name}' not found in the config file."
+        )
+
     def get_step_params(self, step_name: str) -> Dict:
         """Retrieve the parameters dictionary for a specific step.
 
@@ -380,6 +407,26 @@ class ConfigBase(ABC):
         return {
             x: full_file_name.format(target_name=x) for x in self.get_target_names()
         }
+
+    def update_feature_param_with_stats(self):
+        """Update feature parameters with corresponding summary statistics.
+
+        This method iterates through the `feature_param_set` and, for any
+        parameter dictionary that contains a "stats_set" key, it retrieves
+        the relevant summary statistics using :meth:`get_summary_stats` and
+        assigns them to a new "stats" key within that parameter dictionary.
+        This modifies the `self.data` attribute in-place.
+
+        :raises ValueError: If a referenced ``stats_set`` name is not found
+                            in the configuration (propagated from
+                            :meth:`get_summary_stats`).
+        :rtype: None
+        """
+        for x in self.data["feature_param_set"]["params"]:
+            if "stats_set" in x:
+                x["stats"] = self.get_summary_stats(
+                    x["stats_set"]["name"], x["stats_set"]["type"]
+                )
 
     def __repr__(self) -> str:
         """Return a string representation of the configuration object.
