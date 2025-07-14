@@ -245,11 +245,11 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
-        self.assertEqual(ds.input_data.shape[0], 132342)
+        self.assertEqual(ds.input_data.shape[0], 115872)
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 2520)
+        self.assertEqual(ds.summary_stats.shape[0], 2185)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -257,7 +257,7 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)
-        self.assertEqual(ds.filtered_input.shape[0], 27456)
+        self.assertEqual(ds.filtered_input.shape[0], 26362)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)

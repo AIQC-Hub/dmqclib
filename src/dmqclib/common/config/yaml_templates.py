@@ -130,9 +130,9 @@ step_param_sets:
   - name: data_set_param_set_1
     steps:
       input: { sub_steps: { rename_columns: false,
-                            filter_rows: false },
+                            filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [],
+               filter_method_dict: { remove_years: [2023],
                                      keep_years: [] } }
       summary: { }
       select: { neg_pos_ratio: 5 }
@@ -357,17 +357,17 @@ step_class_sets:
       locate: LocateDataSetAll
       extract: ExtractDataSetAll
       model: XGBoost
-      classify: ClassifyDataSetAll
+      classify: ClassifyAll
       concat: ConcatDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1
     steps:
       input: { sub_steps: { rename_columns: false,
-                            filter_rows: false },
+                            filter_rows: true },
                rename_dict: { },
                filter_method_dict: { remove_years: [],
-                                     keep_years: [] } }
+                                     keep_years: [2023] } }
       summary: { }
       select: { }
       locate: { }
