@@ -214,4 +214,3 @@ class TestCreateTrainingDataSetNegX5(unittest.TestCase):
         )
         if os.path.exists(output_folder):
             shutil.rmtree(output_folder)
-
