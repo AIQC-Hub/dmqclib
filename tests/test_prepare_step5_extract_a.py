@@ -102,7 +102,7 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
-        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[0], 50)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)

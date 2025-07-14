@@ -93,7 +93,7 @@ class _TestFeatureBase(unittest.TestCase):
         )
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
-        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[0], 50)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)

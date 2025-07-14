@@ -89,7 +89,7 @@ class TestLocateDataSetA(unittest.TestCase):
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
-        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[0], 50)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_positive_rows(self):
@@ -108,15 +108,15 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.positive_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["temp"].shape[0], 64)
-        self.assertEqual(ds.positive_rows["temp"].shape[1], 11)
+        self.assertEqual(ds.positive_rows["temp"].shape[1], 9)
 
         self.assertIsInstance(ds.positive_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["psal"].shape[0], 70)
-        self.assertEqual(ds.positive_rows["psal"].shape[1], 11)
+        self.assertEqual(ds.positive_rows["psal"].shape[1], 9)
 
         self.assertIsInstance(ds.positive_rows["pres"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["pres"].shape[0], 61)
-        self.assertEqual(ds.positive_rows["pres"].shape[1], 11)
+        self.assertEqual(ds.positive_rows["pres"].shape[1], 9)
 
     def test_negative_rows(self):
         """
@@ -139,15 +139,15 @@ class TestLocateDataSetA(unittest.TestCase):
 
         self.assertIsInstance(ds.negative_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["temp"].shape[0], 64)
-        self.assertEqual(ds.negative_rows["temp"].shape[1], 11)
+        self.assertEqual(ds.negative_rows["temp"].shape[1], 8)
 
         self.assertIsInstance(ds.negative_rows["psal"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["psal"].shape[0], 70)
-        self.assertEqual(ds.negative_rows["psal"].shape[1], 11)
+        self.assertEqual(ds.negative_rows["psal"].shape[1], 8)
 
         self.assertIsInstance(ds.negative_rows["pres"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["pres"].shape[0], 61)
-        self.assertEqual(ds.negative_rows["pres"].shape[1], 11)
+        self.assertEqual(ds.negative_rows["pres"].shape[1], 8)
 
     def test_selected_rows(self):
         """

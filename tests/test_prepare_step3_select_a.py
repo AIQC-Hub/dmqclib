@@ -103,14 +103,14 @@ class TestSelectDataSetA(unittest.TestCase):
         ds.find_profile_pairs()
         self.assertEqual(ds.pos_profile_df.shape[0], 25)
         self.assertEqual(ds.pos_profile_df.shape[1], 8)
-        self.assertEqual(ds.neg_profile_df.shape[0], 19)
+        self.assertEqual(ds.neg_profile_df.shape[0], 25)
         self.assertEqual(ds.neg_profile_df.shape[1], 8)
 
     def test_label_profiles(self):
         """Check that profiles are labeled correctly."""
         ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
         ds.label_profiles()
-        self.assertEqual(ds.selected_profiles.shape[0], 44)
+        self.assertEqual(ds.selected_profiles.shape[0], 50)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_write_selected_profiles(self):
@@ -140,3 +140,46 @@ class TestSelectDataSetA(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             ds.write_selected_profiles()
+
+
+class TestSelectDataSetANegatives(unittest.TestCase):
+    """
+    A suite of tests ensuring the SelectDataSetA class operates correctly
+    for selecting and labeling profiles, as well as writing results to disk.
+    """
+
+    def setUp(self):
+        """Set up test environment and load input dataset."""
+        self.config_file_path = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_dataset_003.yaml"
+        )
+        self.config = DataSetConfig(str(self.config_file_path))
+        self.config.select("NRT_BO_001")
+        self.test_data_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "input"
+            / "nrt_cora_bo_test.parquet"
+        )
+        self.ds = load_step1_input_dataset(self.config)
+        self.ds.input_file_name = str(self.test_data_file)
+        self.ds.read_input_data()
+
+    def test_neg_pos_ratio(self):
+        """Check that writing empty profiles raises ValueError."""
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
+        self.assertEqual(ds.config.get_step_params("select").get("neg_pos_ratio", 1), 5)
+
+    def test_find_profile_pairs(self):
+        """Validate the creation of matching profile pairs."""
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
+        ds.select_positive_profiles()
+        ds.select_negative_profiles()
+        ds.find_profile_pairs()
+        self.assertEqual(ds.pos_profile_df.shape[0], 25)
+        self.assertEqual(ds.pos_profile_df.shape[1], 8)
+        self.assertEqual(ds.neg_profile_df.shape[0], 125)
+        self.assertEqual(ds.neg_profile_df.shape[1], 8)

@@ -90,7 +90,7 @@ class DayOfYearFeat(FeatureBase):
             .join(
                 self.selected_profiles.select(
                     ["platform_code", "profile_no", "profile_timestamp"]
-                ),
+                ).unique(),
                 on=["platform_code", "profile_no"],
                 maintain_order="left",
             )
