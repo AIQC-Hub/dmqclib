@@ -142,7 +142,7 @@ class TestSelectDataSetA(unittest.TestCase):
             ds.write_selected_profiles()
 
 
-class TestSelectDataSetANegatives(unittest.TestCase):
+class TestSelectDataSetANegX5(unittest.TestCase):
     """
     A suite of tests ensuring the SelectDataSetA class operates correctly
     for selecting and labeling profiles, as well as writing results to disk.
@@ -183,3 +183,25 @@ class TestSelectDataSetANegatives(unittest.TestCase):
         self.assertEqual(ds.pos_profile_df.shape[1], 8)
         self.assertEqual(ds.neg_profile_df.shape[0], 125)
         self.assertEqual(ds.neg_profile_df.shape[1], 8)
+
+    def test_label_profiles(self):
+        """Check that profiles are labeled correctly."""
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
+        ds.label_profiles()
+        self.assertEqual(ds.selected_profiles.shape[0], 150)
+        self.assertEqual(ds.selected_profiles.shape[1], 8)
+
+    def test_write_selected_profiles(self):
+        """Confirm that selected profiles are written to a file successfully."""
+        ds = SelectDataSetA(self.config, input_data=self.ds.input_data)
+        ds.output_file_name = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "select"
+            / "temp_selected_profiles.parquet"
+        )
+
+        ds.label_profiles()
+        ds.write_selected_profiles()
+        self.assertTrue(os.path.exists(ds.output_file_name))
+        os.remove(ds.output_file_name)
