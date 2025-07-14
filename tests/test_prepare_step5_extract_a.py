@@ -189,7 +189,6 @@ class TestExtractDataSetA(unittest.TestCase):
             ds.write_target_features()
 
 
-
 class TestExtractDataSetANegX5(unittest.TestCase):
     """
     A suite of tests verifying that the ExtractDataSetA class gathers
@@ -262,15 +261,15 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.selected_rows["temp"].shape[0], 384)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 831)
         self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
         self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.selected_rows["psal"].shape[0], 420)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 903)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
         self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
-        self.assertEqual(ds.selected_rows["pres"].shape[0], 366)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 783)
         self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
 
     def test_location_features(self):
@@ -286,15 +285,15 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         ds.process_targets()
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_features["temp"].shape[0], 384)
+        self.assertEqual(ds.target_features["temp"].shape[0], 831)
         self.assertEqual(ds.target_features["temp"].shape[1], 58)
 
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_features["psal"].shape[0], 420)
+        self.assertEqual(ds.target_features["psal"].shape[0], 903)
         self.assertEqual(ds.target_features["psal"].shape[1], 58)
 
         self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
-        self.assertEqual(ds.target_features["pres"].shape[0], 366)
+        self.assertEqual(ds.target_features["pres"].shape[0], 783)
         self.assertEqual(ds.target_features["pres"].shape[1], 58)
 
     def test_write_target_features(self):

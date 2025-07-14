@@ -51,6 +51,34 @@ class TestLocateDataSetA(unittest.TestCase):
         )
         self.ds_select.label_profiles()
 
+        self.target_value_temp = {
+            "flag": "temp_qc",
+            "pos_flag_values": [
+                4,
+            ],
+            "neg_flag_values": [
+                1,
+            ],
+        }
+        self.target_value_psal = {
+            "flag": "psal_qc",
+            "pos_flag_values": [
+                4,
+            ],
+            "neg_flag_values": [
+                1,
+            ],
+        }
+        self.target_value_pres = {
+            "flag": "pres_qc",
+            "pos_flag_values": [
+                4,
+            ],
+            "neg_flag_values": [
+                1,
+            ],
+        }
+
     def test_output_file_names(self):
         """
         Validate that the output file names for each variable
@@ -102,9 +130,9 @@ class TestLocateDataSetA(unittest.TestCase):
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
         )
-        ds.select_positive_rows("temp", {"flag": "temp_qc"})
-        ds.select_positive_rows("psal", {"flag": "psal_qc"})
-        ds.select_positive_rows("pres", {"flag": "pres_qc"})
+        ds.select_positive_rows("temp", self.target_value_temp)
+        ds.select_positive_rows("psal", self.target_value_psal)
+        ds.select_positive_rows("pres", self.target_value_pres)
 
         self.assertIsInstance(ds.positive_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["temp"].shape[0], 64)
@@ -128,14 +156,14 @@ class TestLocateDataSetA(unittest.TestCase):
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
         )
-        ds.select_positive_rows("temp", {"flag": "temp_qc"})
-        ds.select_negative_rows("temp", {"flag": "temp_qc"})
+        ds.select_positive_rows("temp", self.target_value_temp)
+        ds.select_negative_rows("temp", self.target_value_temp)
 
-        ds.select_positive_rows("psal", {"flag": "psal_qc"})
-        ds.select_negative_rows("psal", {"flag": "psal_qc"})
+        ds.select_positive_rows("psal", self.target_value_psal)
+        ds.select_negative_rows("psal", self.target_value_psal)
 
-        ds.select_positive_rows("pres", {"flag": "pres_qc"})
-        ds.select_negative_rows("pres", {"flag": "pres_qc"})
+        ds.select_positive_rows("pres", self.target_value_pres)
+        ds.select_negative_rows("pres", self.target_value_pres)
 
         self.assertIsInstance(ds.negative_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.negative_rows["temp"].shape[0], 64)
@@ -255,6 +283,34 @@ class TestLocateDataSetANegX5(unittest.TestCase):
         )
         self.ds_select.label_profiles()
 
+        self.target_value_temp = {
+            "flag": "temp_qc",
+            "pos_flag_values": [
+                4,
+            ],
+            "neg_flag_values": [
+                1,
+            ],
+        }
+        self.target_value_psal = {
+            "flag": "psal_qc",
+            "pos_flag_values": [
+                4,
+            ],
+            "neg_flag_values": [
+                1,
+            ],
+        }
+        self.target_value_pres = {
+            "flag": "pres_qc",
+            "pos_flag_values": [
+                4,
+            ],
+            "neg_flag_values": [
+                1,
+            ],
+        }
+
     def test_positive_rows(self):
         """
         Check that positive row data is identified and stored
@@ -265,9 +321,9 @@ class TestLocateDataSetANegX5(unittest.TestCase):
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
         )
-        ds.select_positive_rows("temp", {"flag": "temp_qc"})
-        ds.select_positive_rows("psal", {"flag": "psal_qc"})
-        ds.select_positive_rows("pres", {"flag": "pres_qc"})
+        ds.select_positive_rows("temp", self.target_value_temp)
+        ds.select_positive_rows("psal", self.target_value_psal)
+        ds.select_positive_rows("pres", self.target_value_pres)
 
         self.assertIsInstance(ds.positive_rows["temp"], pl.DataFrame)
         self.assertEqual(ds.positive_rows["temp"].shape[0], 64)
@@ -291,25 +347,25 @@ class TestLocateDataSetANegX5(unittest.TestCase):
             input_data=self.ds_input.input_data,
             selected_profiles=self.ds_select.selected_profiles,
         )
-        ds.select_positive_rows("temp", {"flag": "temp_qc"})
-        ds.select_negative_rows("temp", {"flag": "temp_qc"})
+        ds.select_positive_rows("temp", self.target_value_temp)
+        ds.select_negative_rows("temp", self.target_value_temp)
 
-        ds.select_positive_rows("psal", {"flag": "psal_qc"})
-        ds.select_negative_rows("psal", {"flag": "psal_qc"})
+        ds.select_positive_rows("psal", self.target_value_psal)
+        ds.select_negative_rows("psal", self.target_value_psal)
 
-        ds.select_positive_rows("pres", {"flag": "pres_qc"})
-        ds.select_negative_rows("pres", {"flag": "pres_qc"})
+        ds.select_positive_rows("pres", self.target_value_pres)
+        ds.select_negative_rows("pres", self.target_value_pres)
 
         self.assertIsInstance(ds.negative_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.negative_rows["temp"].shape[0], 320)
+        self.assertEqual(ds.negative_rows["temp"].shape[0], 767)
         self.assertEqual(ds.negative_rows["temp"].shape[1], 8)
 
         self.assertIsInstance(ds.negative_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.negative_rows["psal"].shape[0], 350)
+        self.assertEqual(ds.negative_rows["psal"].shape[0], 833)
         self.assertEqual(ds.negative_rows["psal"].shape[1], 8)
 
         self.assertIsInstance(ds.negative_rows["pres"], pl.DataFrame)
-        self.assertEqual(ds.negative_rows["pres"].shape[0], 305)
+        self.assertEqual(ds.negative_rows["pres"].shape[0], 722)
         self.assertEqual(ds.negative_rows["pres"].shape[1], 8)
 
     def test_selected_rows(self):
@@ -326,15 +382,15 @@ class TestLocateDataSetANegX5(unittest.TestCase):
         ds.process_targets()
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
-        self.assertEqual(ds.selected_rows["temp"].shape[0], 384)
+        self.assertEqual(ds.selected_rows["temp"].shape[0], 831)
         self.assertEqual(ds.selected_rows["temp"].shape[1], 9)
 
         self.assertIsInstance(ds.selected_rows["psal"], pl.DataFrame)
-        self.assertEqual(ds.selected_rows["psal"].shape[0], 420)
+        self.assertEqual(ds.selected_rows["psal"].shape[0], 903)
         self.assertEqual(ds.selected_rows["psal"].shape[1], 9)
 
         self.assertIsInstance(ds.selected_rows["pres"], pl.DataFrame)
-        self.assertEqual(ds.selected_rows["pres"].shape[0], 366)
+        self.assertEqual(ds.selected_rows["pres"].shape[0], 783)
         self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
 
     def test_write_selected_rows(self):

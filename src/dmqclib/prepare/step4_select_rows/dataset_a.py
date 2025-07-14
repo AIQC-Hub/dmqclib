@@ -111,12 +111,33 @@ class LocateDataSetA(LocatePositionBase):
         forming pairs where possible. Negative rows are typically "good"
         observations from nearby profiles, matched by pressure.
 
+        :param target_name: The target name used to locate the corresponding positive rows.
+        :type target_name: str
+        :param target_value: A dictionary of target metadata, including the QC flag
+                             variable name used for selecting negative observations
+                             (e.g., flag=1 or any "good" flag).
+        :type target_value: Dict
+        """
+        self.select_negative_rows_closest_day(target_name, target_value)
+        neighbor_n = self.config.get_step_params("locate").get("neighbor_n", 0)
+        if neighbor_n > 0:
+            self.select_negative_rows_neighbor_n(target_name, target_value)
+
+    def select_negative_rows_closest_day(
+        self, target_name: str, target_value: Dict
+    ) -> None:
+        """
+        Identify and collect negative rows that align with positive rows,
+        forming pairs where possible. Negative rows are typically "good"
+        observations from nearby profiles, matched by pressure.
+
         The alignment process involves:
 
-        1. Selecting negative profiles.
-        2. Joining with the full input data to get observation details.
-        3. Calculating pressure differences with corresponding positive observations.
-        4. Selecting the negative observation that best matches in pressure
+        1. Selecting positive rows.
+        2. Joining with negative profiles.
+        3. Joining with the full input data to get observation details.
+        4. Calculating pressure differences with corresponding positive observations.
+        5. Selecting the negative observation that best matches in pressure
            for each positive observation to form a pair.
 
         :param target_name: The target name used to locate the corresponding positive rows.
@@ -126,7 +147,7 @@ class LocateDataSetA(LocatePositionBase):
                              (e.g., flag=1 or any "good" flag).
         :type target_value: Dict
         """
-        self.negative_rows[target_name] = (
+        negative_rows = (
             self.positive_rows[target_name]
             .select(
                 pl.col("platform_code").alias("pos_platform_code"),
@@ -134,6 +155,7 @@ class LocateDataSetA(LocatePositionBase):
                 pl.col("pos_profile_id"),
                 pl.col("observation_no").alias("pos_observation_no"),
                 pl.col("pres").alias("pos_pres"),
+                pl.col("pair_id"),
             )
             .join(
                 self.selected_profiles.filter(pl.col("label") == 0).select(
@@ -167,11 +189,80 @@ class LocateDataSetA(LocatePositionBase):
                 ]
             )
             .agg(pl.all().sort_by("pres_diff").first())
+            .select(
+                [
+                    pl.col("profile_id"),
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                    pl.col("observation_no"),
+                    pl.col("pres"),
+                    pl.col("flag"),
+                    pl.col("pair_id"),
+                    pl.lit(0).alias("label"),
+                ]
+            )
+        )
+
+        self.negative_rows[target_name] = negative_rows
+
+    def select_negative_rows_neighbor_n(
+        self, target_name: str, target_value: Dict
+    ) -> None:
+        """
+        Identify and collect negative rows that align with positive rows,
+        forming pairs where possible. Negative rows are typically "good"
+        observations from nearby profiles, matched by pressure.
+
+        The alignment process involves:
+
+        1. Selecting positive profiles.
+        2. Generating neighbouring observation numbers
+        3. Joining with the full input data to get observation details.
+        4. Selecting the negative observations.
+
+        :param target_name: The target name used to locate the corresponding positive rows.
+        :type target_name: str
+        :param target_value: A dictionary of target metadata, including the QC flag
+                             variable name used for selecting negative observations
+                             (e.g., flag=1 or any "good" flag).
+        :type target_value: Dict
+        """
+        neighbor_n = self.config.get_step_params("locate").get("neighbor_n", 0)
+        neighbor_no = list(range(1, neighbor_n + 1)) + [
+            -x for x in range(1, neighbor_n + 1)
+        ]
+        neg_flag_values = target_value.get("neg_flag_values", [1])
+
+        negative_rows = (
+            self.positive_rows[target_name]
+            .select(
+                pl.col("profile_id"),
+                pl.col("platform_code"),
+                pl.col("profile_no"),
+                pl.col("observation_no"),
+                pl.col("pair_id"),
+            )
+            .join(
+                pl.DataFrame({"neighbor_no": neighbor_no}),
+                how="cross",
+            )
             .with_columns(
-                pl.concat_str(
-                    ["pos_platform_code", "pos_profile_no", "pos_observation_no"],
-                    separator="|",
-                ).alias("pair_id")
+                (pl.col("observation_no") + pl.col("neighbor_no"))
+                .cast(pl.Int32)
+                .alias("observation_no")
+            )
+            .join(
+                self.input_data.filter(
+                    pl.col(target_value["flag"]).is_in(neg_flag_values)
+                ).select(
+                    pl.col("platform_code"),
+                    pl.col("profile_no"),
+                    pl.col("observation_no"),
+                    pl.col("pres"),
+                    pl.col(target_value["flag"]).alias("flag"),
+                ),
+                how="inner",
+                on=["platform_code", "profile_no", "observation_no"],
             )
             .select(
                 [
@@ -185,6 +276,9 @@ class LocateDataSetA(LocatePositionBase):
                     pl.lit(0).alias("label"),
                 ]
             )
+        )
+        self.negative_rows[target_name] = self.negative_rows[target_name].vstack(
+            negative_rows
         )
 
     def locate_target_rows(self, target_name: str, target_value: Dict) -> None:

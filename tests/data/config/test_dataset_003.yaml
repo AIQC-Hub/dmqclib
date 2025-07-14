@@ -125,7 +125,7 @@ step_param_sets:
                                      keep_years: [] } }
       summary: { }
       select: { neg_pos_ratio: 5 }
-      locate: { }
+      locate: { neighbor_n: 5 }
       extract: { }
       split: { test_set_fraction: 0.1,
                k_fold: 3 }

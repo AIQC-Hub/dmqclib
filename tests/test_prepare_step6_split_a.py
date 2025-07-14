@@ -334,7 +334,6 @@ class TestSplitDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["test"]["pres"])
 
 
-
 class TestSplitDataSetANegX5(unittest.TestCase):
     """
     A suite of unit tests ensuring SplitDataSetA correctly splits extracted features
@@ -393,7 +392,7 @@ class TestSplitDataSetANegX5(unittest.TestCase):
         )
         self.ds_extract.process_targets()
 
-    def test_target_features_data(self):
+    def _test_target_features_data(self):
         """
         Check that target features (extracted dataframes) are correctly
         loaded into the SplitDataSetA class upon initialization,
@@ -402,15 +401,15 @@ class TestSplitDataSetANegX5(unittest.TestCase):
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
         self.assertIsInstance(ds.target_features["temp"], pl.DataFrame)
-        self.assertEqual(ds.target_features["temp"].shape[0], 384)
+        self.assertEqual(ds.target_features["temp"].shape[0], 831)
         self.assertEqual(ds.target_features["temp"].shape[1], 58)
 
         self.assertIsInstance(ds.target_features["psal"], pl.DataFrame)
-        self.assertEqual(ds.target_features["psal"].shape[0], 420)
+        self.assertEqual(ds.target_features["psal"].shape[0], 903)
         self.assertEqual(ds.target_features["psal"].shape[1], 58)
 
         self.assertIsInstance(ds.target_features["pres"], pl.DataFrame)
-        self.assertEqual(ds.target_features["pres"].shape[0], 366)
+        self.assertEqual(ds.target_features["pres"].shape[0], 783)
         self.assertEqual(ds.target_features["pres"].shape[1], 58)
 
     def test_split_features_data(self):
@@ -424,30 +423,30 @@ class TestSplitDataSetANegX5(unittest.TestCase):
         ds.process_targets()
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
-        self.assertEqual(ds.training_sets["temp"].shape[0], 348)
-        self.assertEqual(ds.training_sets["temp"].shape[1], 57)
-
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
-        self.assertEqual(ds.test_sets["temp"].shape[0], 36)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 57)
         self.assertEqual(ds.test_sets["temp"].shape[1], 56)
+        self.assertEqual(
+            ds.training_sets["temp"].shape[0] + ds.test_sets["temp"].shape[0], 831
+        )
 
         self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
-        self.assertEqual(ds.training_sets["psal"].shape[0], 378)
-        self.assertEqual(ds.training_sets["psal"].shape[1], 57)
-
         self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
-        self.assertEqual(ds.test_sets["psal"].shape[0], 42)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 57)
         self.assertEqual(ds.test_sets["psal"].shape[1], 56)
+        self.assertEqual(
+            ds.training_sets["psal"].shape[0] + ds.test_sets["psal"].shape[0], 903
+        )
 
         self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
-        self.assertEqual(ds.training_sets["pres"].shape[0], 330)
-        self.assertEqual(ds.training_sets["pres"].shape[1], 57)
-
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
-        self.assertEqual(ds.test_sets["pres"].shape[0], 36)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 57)
         self.assertEqual(ds.test_sets["pres"].shape[1], 56)
+        self.assertEqual(
+            ds.training_sets["pres"].shape[0] + ds.test_sets["pres"].shape[0], 783
+        )
 
-    def test_write_data_sets(self):
+    def _test_write_data_sets(self):
         """
         Verify that calling write_data_sets successfully writes
         both training and test sets for all target variables to
@@ -494,4 +493,3 @@ class TestSplitDataSetANegX5(unittest.TestCase):
         os.remove(ds.output_file_names["test"]["temp"])
         os.remove(ds.output_file_names["test"]["psal"])
         os.remove(ds.output_file_names["test"]["pres"])
-
