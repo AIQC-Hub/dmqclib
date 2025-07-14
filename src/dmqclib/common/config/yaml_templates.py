@@ -135,8 +135,8 @@ step_param_sets:
                filter_method_dict: { remove_years: [],
                                      keep_years: [] } }
       summary: { }
-      select: { }
-      locate: { }
+      select: { neg_pos_ratio: 5 }
+      locate: { neighbor_n: 5 }
       extract: { }
       split: { test_set_fraction: 0.1,
                k_fold: 10 }
@@ -220,7 +220,7 @@ step_param_sets:
     steps:
       input: { }
       validate: { k_fold: 10 }
-      model: { model_params: { scale_pos_weight: 10 } }
+      model: { model_params: { scale_pos_weight: 200 } }
       build: { }
 
 training_sets:
