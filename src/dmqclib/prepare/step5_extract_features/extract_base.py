@@ -112,7 +112,7 @@ class ExtractFeatureBase(DataSetBase):
             self.selected_profiles.select(
                 pl.col("platform_code"),
                 pl.col("profile_no"),
-            ),
+            ).unique(),
             on=["platform_code", "profile_no"],
         )
 

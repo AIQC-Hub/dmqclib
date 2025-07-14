@@ -92,7 +92,7 @@ class LocationFeat(FeatureBase):
             .join(
                 self.selected_profiles.select(
                     ["platform_code", "profile_no", "longitude", "latitude"]
-                ),
+                ).unique(),
                 on=["platform_code", "profile_no"],
                 maintain_order="left",
             )

@@ -12,15 +12,9 @@ path_info_sets:
     locate:
       base_path: /path/to/locate_1
       step_folder_name: locate_folder_1
-    model:
-      base_path: /path/to/model_1
-      step_folder_name: model_folder_1
-    classify:
-      base_path: /path/to/classify_1
-      step_folder_name: classify_folder_1
-    concat:
-      base_path: /path/to/concat_1
-      step_folder_name: concat_folder_1
+    split:
+      base_path: /path/to/split_1
+      step_folder_name: split_folder_1
 
 target_sets:
   - name: target_set_1_2
@@ -106,14 +100,12 @@ feature_param_sets:
 step_class_sets:
   - name: data_set_step_set_1
     steps:
-      input: InputDataSetAll
-      summary: SummaryDataSetAll
-      select: SelectDataSetAll
-      locate: LocateDataSetAll
-      extract: ExtractDataSetAll
-      model: XGBoost
-      classify: ClassifyAll
-      concat: ConcatDataSetAll
+      input: InputDataSetA
+      summary: SummaryDataSetA
+      select: SelectDataSetA
+      locate: LocateDataSetA
+      extract: ExtractDataSetA
+      split: SplitDataSetA
   - name: data_set_step_set_invalid
     steps:
       input: InvalidClass
@@ -121,27 +113,24 @@ step_class_sets:
       select: InvalidClass
       locate: InvalidClass
       extract: InvalidClass
-      model: InvalidClass
-      classify: InvalidClass
-      concat: InvalidClass
+      split: InvalidClass
 
 step_param_sets:
   - name: data_set_param_set_1
     steps:
-      input: { sub_steps: { rename_columns: false,
-                            filter_rows: true },
+      input: { sub_steps: { rename_columns: true,
+                            filter_rows: false },
                rename_dict: { },
-               filter_method_dict: { remove_years: [],
-                                     keep_years: [2023] } }
+               filter_method_dict: { remove_years: [2023],
+                                     keep_years: [] } }
       summary: { }
-      select: { }
-      locate: { }
+      select: { neg_pos_ratio: 5 }
+      locate: { neighbor_n: 5 }
       extract: { }
-      model: { }
-      classify: { }
-      concat: { }
+      split: { test_set_fraction: 0.1,
+               k_fold: 3 }
 
-classification_sets:
+data_sets:
   - name: NRT_BO_001
     dataset_folder_name: nrt_bo_001
     input_file_name: nrt_cora_bo_test.parquet
