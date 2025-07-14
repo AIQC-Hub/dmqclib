@@ -186,7 +186,10 @@ class TestClassifyDataSetNegX5(unittest.TestCase):
             "name": "data_set_1",
             "common": {"base_path": str(self.test_data_location)},
             "input": {"base_path": str(self.input_data_path), "step_folder_name": ""},
-            "model": {"base_path": str(self.data_path), "step_folder_name": "negx5_model"},
+            "model": {
+                "base_path": str(self.data_path),
+                "step_folder_name": "negx5_model",
+            },
             "concat": {"step_folder_name": "classify"},
         }
 
@@ -295,4 +298,3 @@ class TestClassifyDataSetNegX5(unittest.TestCase):
         self.assertTrue(
             os.path.exists(str(output_folder / "classify" / "predictions.parquet"))
         )
-

@@ -145,7 +145,7 @@ class TestCreateTrainingDataSetNegX5(unittest.TestCase):
             },
         }
 
-    def __tearDown(self):
+    def tearDown(self):
         """
         Clean up the test environment by removing any generated output folders
         and files after each test method has completed.
