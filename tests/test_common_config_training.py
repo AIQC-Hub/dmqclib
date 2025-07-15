@@ -84,9 +84,9 @@ class TestTrainingConfig(unittest.TestCase):
         when using the template configuration.
         """
         ds = TrainingConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("training_0001")
         input_file_name = ds.get_full_file_name("input", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/training/test.txt")
 
     def test_valid_folder(self):
         """
@@ -94,9 +94,9 @@ class TestTrainingConfig(unittest.TestCase):
         when using the template configuration.
         """
         ds = TrainingConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("training_0001")
         input_file_name = ds.get_full_file_name("valid", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/valid/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/valid/test.txt")
 
     def test_build_folder(self):
         """
@@ -104,6 +104,6 @@ class TestTrainingConfig(unittest.TestCase):
         when using the template configuration.
         """
         ds = TrainingConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("training_0001")
         input_file_name = ds.get_full_file_name("build", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/build/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/build/test.txt")

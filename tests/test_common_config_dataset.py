@@ -90,29 +90,29 @@ class TestDataSetConfig(unittest.TestCase):
         Verify that input folder paths are generated as expected using template config.
         """
         ds = DataSetConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name(
             "input",
             ds.data["input_file_name"],
             use_dataset_folder=False,
             folder_name_auto=False,
         )
-        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_test.parquet")
+        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_4.parquet")
 
     def test_summary_folder(self):
         """
         Confirm that files placed in a 'summary' folder are resolved correctly.
         """
         ds = DataSetConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name("summary", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/summary/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/summary/test.txt")
 
     def test_split_folder(self):
         """
         Confirm that files placed in a 'split' folder are resolved correctly.
         """
         ds = DataSetConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name("split", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/training/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/training/test.txt")

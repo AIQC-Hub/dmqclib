@@ -16,7 +16,7 @@ from dmqclib.common.config.yaml_templates import (
     get_config_classify_set_template,
 )
 from dmqclib.common.utils.config import get_config_file
-
+from dmqclib.common.utils.config import read_config as utils_read_config
 
 def write_config_template(file_name: str, module: str) -> None:
     """
@@ -55,34 +55,36 @@ def write_config_template(file_name: str, module: str) -> None:
         yaml_file.write(yaml_text)
 
 
-def read_config(file_name: str, module: str) -> ConfigBase:
+def read_config(file_name: str) -> ConfigBase:
     """
     Read a YAML configuration file as a :class:`ConfigBase` object,
     automatically selecting the appropriate subclass based on the given module.
 
     This function:
-      1. Matches the specified module (either "prepare", "train", or "classify")
+
+      1. Resolves the file path by calling :meth:`get_config_file`.
+      2. Read the specified YAML file to pick up the main key ("data_sets", "training_sets", or "classification_sets")
          to the corresponding configuration class (DataSetConfig, TrainingConfig,
          or ClassificationConfig).
-      2. Resolves the file path by calling :meth:`get_config_file`.
       3. Instantiates and returns the matched configuration class with the resolved path.
 
     :param file_name: The path (including filename) to the YAML file.
     :type file_name: str
-    :param module: Determines which configuration class to instantiate;
-                   must be one of "prepare", "train", or "classify".
-    :type module: str
     :raises ValueError: If the module is not supported.
     :return: An instantiated configuration object (either DataSetConfig, TrainingConfig, or ClassificationConfig).
     :rtype: ConfigBase
     """
-    config_classes = {
-        "prepare": DataSetConfig,
-        "train": TrainingConfig,
-        "classify": ClassificationConfig,
-    }
-    if module not in config_classes:
-        raise ValueError(f"Module {module} is not supported.")
-
     config_file_name = get_config_file(file_name)
-    return config_classes[module](config_file_name)
+    config = utils_read_config(config_file_name)
+
+    config_classes = {
+        "data_sets": DataSetConfig,
+        "training_sets": TrainingConfig,
+        "classification_sets": ClassificationConfig,
+    }
+    matching_key = next((key for key in config_classes.keys() if key in config), None)
+
+    if matching_key is not None:
+        return config_classes[matching_key](config_file_name)
+
+    raise ValueError("No valid configuration found in the provided YAML file.")

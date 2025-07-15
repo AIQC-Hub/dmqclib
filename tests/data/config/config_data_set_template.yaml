@@ -106,9 +106,9 @@ step_param_sets:
                k_fold: 10 }
 
 data_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet # EDIT: Your input filename
+  - name: dataset_0001  # EDIT: Your data set name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
+    input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     summary_stats_set: summary_stats_set_1

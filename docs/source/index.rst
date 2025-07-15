@@ -24,6 +24,7 @@ These tutorials provide a step-by-step guide to the core workflows of the librar
    :maxdepth: 2
    :caption: 📘 Getting Started
 
+   tutorial/overview
    tutorial/installation
    tutorial/preparation
    tutorial/training

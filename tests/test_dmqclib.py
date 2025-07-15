@@ -83,12 +83,12 @@ class TestDMQCLibReadConfig(unittest.TestCase):
 
     def test_ds_config(self):
         """Verify that reading a dataset configuration returns a DataSetConfig instance."""
-        config = dm.read_config(self.ds_config_file, "prepare")
+        config = dm.read_config(self.ds_config_file)
         self.assertIsInstance(config, DataSetConfig)
 
     def test_train_config(self):
         """Verify that reading a training configuration returns a TrainingConfig instance."""
-        config = dm.read_config(self.train_config_file, "train")
+        config = dm.read_config(self.train_config_file)
         self.assertIsInstance(config, TrainingConfig)
 
 

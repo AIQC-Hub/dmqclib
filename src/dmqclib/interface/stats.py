@@ -39,7 +39,7 @@ def get_summary_stats(input_file: str, summary_type: str) -> pl.DataFrame:
     config = DataSetConfig("template:data_sets")
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"File '{input_file}' does not exist.")
-    config.select("NRT_BO_001")
+    config.select("dataset_0001")
     config.data["path_info"]["input"]["base_path"] = os.path.dirname(input_file)
     config.data["input_file_name"] = os.path.basename(input_file)
 

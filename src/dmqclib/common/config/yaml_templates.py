@@ -61,7 +61,7 @@ target_sets:
         pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
         neg_flag_values: [1, 2]
 
-summary_stats_sets:
+summary_stats_sets: # EDIT: Summary stats for normalisation
   - name: summary_stats_set_1
     stats:
       - name: location
@@ -142,9 +142,9 @@ step_param_sets:
                k_fold: 10 }
 
 data_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet # EDIT: Your input filename
+  - name: dataset_0001  # EDIT: Your data set name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
+    input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     summary_stats_set: summary_stats_set_1
@@ -221,8 +221,8 @@ step_param_sets:
       build: { }
 
 training_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001 # Must match the prepared dataset folder
+  - name: training_0001  # EDIT: Your training name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
     path_info: data_set_1
     target_set: target_set_1_3
     step_class_set: training_step_set_1
@@ -272,7 +272,7 @@ path_info_sets:
       base_path: /path/to/model  # EDIT: Directory with model files
       step_folder_name: model
     concat:
-      step_folder_name: classification # EDIT: Directory with classification results
+      step_folder_name: classify # EDIT: Directory with classification results
 
 target_sets:
   - name: target_set_1_3
@@ -290,7 +290,7 @@ target_sets:
         pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
         neg_flag_values: [1, 2]
 
-summary_stats_sets:
+summary_stats_sets: # EDIT: Summary stats for normalisation
   - name: summary_stats_set_1
     stats:
       - name: location
@@ -374,9 +374,9 @@ step_param_sets:
       concat: { }
 
 classification_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001  # Must match the prepared dataset folder
-    input_file_name: nrt_cora_bo_test.parquet   # EDIT: Your input filename
+  - name: classification_0001  # EDIT: Your classification name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
+    input_file_name: nrt_cora_bo_4.parquet   # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     summary_stats_set: summary_stats_set_1

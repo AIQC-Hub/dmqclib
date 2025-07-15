@@ -112,7 +112,7 @@ class TestConfigTemplates(unittest.TestCase):
         self.assertIsNotNone(conf.full_config)
 
         self.assertIsNone(conf.data)
-        conf.select("NRT_BO_001")
+        conf.select("dataset_0001")
         self.assertIsNotNone(conf.data)
 
     def test_read_training_template(self):
@@ -125,7 +125,7 @@ class TestConfigTemplates(unittest.TestCase):
         self.assertIsNotNone(conf.full_config)
 
         self.assertIsNone(conf.data)
-        conf.select("NRT_BO_001")
+        conf.select("training_0001")
         self.assertIsNotNone(conf.data)
 
     def test_read_classification_template(self):
@@ -138,5 +138,5 @@ class TestConfigTemplates(unittest.TestCase):
         self.assertIsNotNone(conf.full_config)
 
         self.assertIsNone(conf.data)
-        conf.select("NRT_BO_001")
+        conf.select("classification_0001")
         self.assertIsNotNone(conf.data)

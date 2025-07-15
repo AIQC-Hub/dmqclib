@@ -42,7 +42,7 @@ The general workflow for any task in `dmqclib` follows these steps:
 
 ### 1. Dataset Preparation
 
-This workflow processes your input data and creates balanced training, validation, and test sets.
+This workflow processes your input data and creates training, validation, and test sets.
 
 **Step 1: Generate a configuration template.**
 ```python
@@ -62,11 +62,7 @@ You must edit the file to set the correct input/output paths and define your dat
 ```python
 import dmqclib as dm
 
-config_file = "/path/to/prepare_config.yaml"
-dataset_name = "NRT_BO_001" # This must match a name in your config file
-
-config = dm.read_config(config_file, module="prepare")
-config.select(dataset_name)
+config = dm.read_config("/path/to/prepare_config.yaml")
 dm.create_training_dataset(config)
 ```
 
@@ -86,23 +82,19 @@ This workflow uses the prepared dataset to train a model and evaluate its perfor
 import dmqclib as dm
 
 dm.write_config_template(
-    file_name="/path/to/train_config.yaml", 
+    file_name="/path/to/training_config.yaml", 
     module="train"
 )
 ```
 
-**Step 2: Customize `train_config.yaml`.**
+**Step 2: Customize `training_config.yaml`.**
 Edit the file to point to your prepared dataset and define training parameters.
 
 **Step 3: Train and evaluate the model.**
 ```python
 import dmqclib as dm
 
-config_file = "/path/to/train_config.yaml"
-training_set_name = "NRT_BO_001" # This must match a name in your config
-
-config = dm.read_config(config_file, module="train")
-config.select(training_set_name)
+config = dm.read_config("/path/to/training_config.yaml")
 dm.train_and_evaluate(config)
 ```
 
@@ -119,23 +111,19 @@ This workflow applies a trained model to classify all observations in a dataset.
 import dmqclib as dm
 
 dm.write_config_template(
-    file_name="/path/to/classify_config.yaml", 
+    file_name="/path/to/classification_config.yaml", 
     module="classify"
 )
 ```
 
-**Step 2: Customize `classify_config.yaml`.**
+**Step 2: Customize `classification_config.yaml`.**
 Edit the file to point to the input data and the trained model.
 
 **Step 3: Run classification.**
 ```python
 import dmqclib as dm
 
-config_file = "/path/to/classify_config.yaml"
-dataset_name = "NRT_BO_001" # This must match a name in your config
-
-config = dm.read_config(config_file, module="classify")
-config.select(dataset_name)
+config = dm.read_config("/path/to/classification_config.yaml")
 dm.classify_dataset(config)
 ```
 
@@ -166,9 +154,9 @@ The preparation config requires you to modify two key sections:
 - **`data_sets`**: Defines a specific dataset to be processed.
   ```yaml
   data_sets:
-    - name: NRT_BO_001
-      dataset_folder_name: nrt_bo_001
-      input_file_name: nrt_cora_bo_test.parquet # EDIT: The name of your input file.
+    - name: dataset_0001  # EDIT: Your data set name
+      dataset_folder_name: dataset_0001  # EDIT: Your output folder
+      input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
   ```
 
 ### 2. Training and Evaluation (`module="train"`)
@@ -180,19 +168,16 @@ The training config links the prepared data to the model training process.
   path_info_sets:
     - name: data_set_1
       common:
-        base_path: /path/to/output_data # EDIT: Must match the `common.base_path` from the preparation step.
+        base_path: /path/to/data # EDIT: Root output directory
       input:
-        step_folder_name: training # Locates the split data (e.g., /path/to/output_data/training).
-      model:
-        base_path: /path/to/models # EDIT: Directory to save model files.
-        step_folder_name: model
+        step_folder_name: training
   ```
 
 - **`training_sets`**: Links to a dataset prepared in the previous workflow.
   ```yaml
   training_sets:
-    - name: NRT_BO_001
-      dataset_folder_name: nrt_bo_001 # Must match the `dataset_folder_name` from the preparation step.
+    - name: training_0001  # EDIT: Your training name
+      dataset_folder_name: dataset_0001  # EDIT: Your output folder
   ```
 
 ### 3. Classification (`module="classify"`)
@@ -204,22 +189,23 @@ The classification config uses a trained model to classify new data.
   path_info_sets:
     - name: data_set_1
       common:
-        base_path: /path/to/output_data # EDIT: The root directory for classification outputs.
+        base_path: /path/to/data # EDIT: Root output directory
       input:
-        step_folder_name: training
+        base_path: /path/to/input # EDIT: Directory with input files
+        step_folder_name: ""
       model:
-        base_path: /path/to/models # EDIT: Directory where model files are located.
+        base_path: /path/to/model  # EDIT: Directory with model files
         step_folder_name: model
       concat:
-        step_folder_name: classify
+        step_folder_name: classification # EDIT: Directory with classification results
   ```
 
 - **`classification_sets`**: Defines a specific dataset to be classified.
   ```yaml
   classification_sets:
-    - name: NRT_BO_001
-      dataset_folder_name: nrt_bo_001　# Must match the `dataset_folder_name` from the preparation step
-      input_file_name: nrt_cora_bo_test.parquet # EDIT: The raw data file to classify.
+    - name: classification_0001  # EDIT: Your classification name
+      dataset_folder_name: dataset_0001  # EDIT: Your output folder
+      input_file_name: nrt_cora_bo_4.parquet   # EDIT: Your input filename
   ```
 
 ## Contributing & Development
