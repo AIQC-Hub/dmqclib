@@ -8,9 +8,8 @@ path_info_sets:
       step_folder_name: ""
     model:
       base_path: /path/to/model  # EDIT: Directory with model files
-      step_folder_name: model
     concat:
-      step_folder_name: classification # EDIT: Directory with classification results
+      step_folder_name: classify # EDIT: Directory with classification results
 
 target_sets:
   - name: target_set_1_3

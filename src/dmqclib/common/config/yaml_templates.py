@@ -205,12 +205,6 @@ step_class_sets:
       validate: KFoldValidation
       model: XGBoost
       build: BuildModel
-  - name: training_step_set_invalid
-    steps:
-      input: InvalidClass
-      validate: InvalidClass
-      model: InvalidClass
-      build: InvalidClass
 
 step_param_sets:
   - name: training_param_set_1
@@ -270,7 +264,6 @@ path_info_sets:
       step_folder_name: ""
     model:
       base_path: /path/to/model  # EDIT: Directory with model files
-      step_folder_name: model
     concat:
       step_folder_name: classify # EDIT: Directory with classification results
 

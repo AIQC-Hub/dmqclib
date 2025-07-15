@@ -7,12 +7,12 @@ This process is driven by a YAML configuration file, ensuring your data preparat
 
 .. admonition:: A Note on Running the Examples
 
-   The examples in these tutorials are presented as complete Python scripts (``.py`` files). This approach is great for building a reusable workflow.
+   The examples in these tutorials are presented as commands for interactive Python sessions.
 
    However, you are encouraged to use the method you are most comfortable with. The code can be run in several ways:
 
-   *   **As Python Scripts:** Copy the code into a ``.py`` file and run it from your terminal with ``python your_script_name.py``.
    *   **In an Interactive Python Session:** Launch Python (``python``) or IPython (``ipython``) and paste the code line by line. This is great for quick tests.
+   *   **As Python Scripts:** Copy the code into a ``.py`` file and run it from your terminal with ``python your_script_name.py``.
    *   **In a Jupyter Notebook or Lab:** This is a fantastic option for experimentation, as it allows you to run code in cells, add notes, and visualize results interactively.
 
    Feel free to adapt the examples to your preferred environment.
@@ -29,9 +29,9 @@ First, create the directories for your project, regardless of which download met
    # Create a main project directory
    mkdir -p ~/aiqc_project
 
-   # Create subdirectories for input and output data
+   # Create subdirectories for configuration and input data
+   mkdir -p ~/aiqc_project/config
    mkdir -p ~/aiqc_project/input
-   mkdir -p ~/aiqc_project/data
 
 Now, choose one of the following options to download the data.
 
@@ -87,24 +87,22 @@ The workflow consists of three main steps: generating a configuration template, 
 Step 2.1: Generate the Configuration Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, create a Python script (e.g., ``run_prepare.py``) and use ``dmqclib`` to generate a configuration template. This file will contain all the necessary sections for the preparation task.
+First, use ``dmqclib`` to generate a configuration template. This file will contain all the necessary sections for the preparation task.
 
 .. code-block:: python
 
    import dmqclib as dm
 
-   # This creates 'prepare_config.yaml' in the current directory
+   # This creates 'prepare_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
-       file_name="prepare_config.yaml",
+       file_name="~/aiqc_project/config/prepare_config.yaml",
        module="prepare"
    )
-   print("Configuration template 'prepare_config.yaml' has been created.")
-
 
 Step 2.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now, open the newly created ``prepare_config.yaml`` in a text editor. You need to tell ``dmqclib`` where to find your input data and where to save the processed output.
+Now, open the newly created ``~/aiqc_project/config/prepare_config.yaml`` in a text editor. You need to tell ``dmqclib`` where to find your input data and where to save the processed output.
 
 You will primarily edit two sections: ``path_info_sets`` and ``data_sets``.
 
@@ -112,25 +110,22 @@ Update your ``prepare_config.yaml`` to match the following, replacing the placeh
 
 .. code-block:: yaml
 
-   path_info_sets:
-     - name: data_set_1
-       common:
-         # EDIT: Set this to your output directory
-         base_path: /home/user/aiqc_project/data
-       input:
-         # EDIT: Set this to your input directory
-         base_path: /home/user/aiqc_project/input
-         step_folder_name: ""
-       split:
-         step_folder_name: training
+    path_info_sets:
+      - name: data_set_1
+        common:
+          base_path: ~/aiqc_project/data # Root output directory
+        input:
+          base_path: ~/aiqc_project/input # Directory with input files
+          step_folder_name: ""
+        split:
+          step_folder_name: training
 
 .. code-block:: yaml
 
-   data_sets:
-     - name: NRT_BO_001
-       dataset_folder_name: nrt_bo_001
-       # EDIT: Ensure this matches your downloaded file name
-       input_file_name: nrt_cora_bo_4.parquet
+    data_sets:
+      - name: dataset_0001  # Your data set name
+        dataset_folder_name: dataset_0001  # Your output folder
+        input_file_name: nrt_cora_bo_4.parquet # Your input filename
 
 .. note::
    For a complete reference of all available configuration options, see the :doc:`../configuration/preparation` page.
@@ -138,35 +133,17 @@ Update your ``prepare_config.yaml`` to match the following, replacing the placeh
 Step 2.3: Run the Preparation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally, modify your Python script (``run_prepare.py``) to load the configuration and execute the ``create_training_dataset`` function.
+Finally, load the configuration and execute the ``create_training_dataset`` function.
 
 .. code-block:: python
 
-   import dmqclib as dm
-
-   # Path to your customized configuration file
-   config_file = "prepare_config.yaml"
-   # This name must match the 'name' field in the 'data_sets' section of your YAML
-   dataset_name = "NRT_BO_001"
-
-   print(f"Loading configuration for '{dataset_name}' from '{config_file}'...")
-   config = dm.read_config(config_file, module="prepare")
-   config.select(dataset_name)
-
-   print("Starting dataset preparation...")
+   config = dm.read_config("~/aiqc_project/config/prepare_config.yaml")
    dm.create_training_dataset(config)
-   print("Dataset preparation complete!")
-
-Run the script from your terminal:
-
-.. code-block:: bash
-
-   python run_prepare.py
 
 Understanding the Output
 ------------------------
 
-After the script finishes, your output directory (e.g., ``~/aiqc_project/data``) will contain a new folder named ``nrt_bo_001`` (from ``dataset_folder_name``). Inside, you will find several subdirectories:
+After the commands finishes, your output directory (e.g., ``~/aiqc_project/data``) will contain a new folder named ``dataset_0001`` (from ``dataset_folder_name``). Inside, you will find several subdirectories:
 
 - **summary**: Contains summary statistics of the input data, used for normalization.
 - **select**: Stores profiles identified as having bad observations (positive samples) and associated good profiles (negative samples).

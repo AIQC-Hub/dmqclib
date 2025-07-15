@@ -20,91 +20,69 @@ The process is consistent with the previous stages: generate a configuration tem
 Step 4.1: Generate the Configuration Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create a final Python script for this task (e.g., ``run_classify.py``). Use ``dmqclib`` to generate the configuration template for the ``classify`` module.
+Use ``dmqclib`` to generate the configuration template for the ``classify`` module.
 
 .. code-block:: python
 
    import dmqclib as dm
 
-   # This creates 'classify_config.yaml' in the current directory
+   # This creates 'classification_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
-       file_name="classify_config.yaml",
+       file_name="~/aiqc_project/config/classification_config.yaml",
        module="classify"
    )
-   print("Configuration template 'classify_config.yaml' has been created.")
 
 Step 4.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Open the new ``classify_config.yaml`` file. You need to configure the paths for the input data, the trained model, and the final output.
+Open the new ``~/aiqc_project/config/classification_config.yaml`` file. You need to configure the paths for the input data, the trained model, and the final output.
 
-Update your ``classify_config.yaml`` file to match the following, ensuring the paths are correct for your project setup.
+Update your ``classification_config.yaml`` file to match the following, ensuring the paths are correct for your project setup.
 
 .. code-block:: yaml
 
-   path_info_sets:
-     - name: data_set_1
-       # EDIT: The root directory where classification outputs will be saved.
-       common:
-         base_path: /home/user/aiqc_project/data
-       # This section is used internally and can often be left as is.
-       input:
-         step_folder_name: training
-       # EDIT: Point this to the directory where your trained models are stored.
-       model:
-         base_path: /home/user/aiqc_project/models
-         step_folder_name: model
-       # This defines the sub-folder for the final output.
-       concat:
-         step_folder_name: classify
+    path_info_sets:
+      - name: data_set_1
+        common:
+          base_path: ~/aiqc_project/data # Root output directory
+        input:
+          base_path: ~/aiqc_project/input # Directory with input files
+          step_folder_name: ""
+        model:
+          base_path: ~/aiqc_project/data/dataset_0001/model # Directory with models
+        concat:
+          step_folder_name: classify # Directory with classification results
 
 .. code-block:: yaml
 
    classification_sets:
-     - name: NRT_BO_001
-       # This must match the folder name used during preparation and training.
-       dataset_folder_name: nrt_bo_001
-       # EDIT: This is the raw data file you want to classify.
-       input_file_name: nrt_cora_bo_4.parquet
+      - name: classification_0001  #Your classification name
+        dataset_folder_name: dataset_0001  # Your output folder
+        input_file_name: nrt_cora_bo_4.parquet   # Your input filename
 
 .. note::
-   The classification configuration has fewer options than preparation or training, as its primary role is execution. For a complete reference, see the :doc:`../../configuration/classification` page.
+   The classification configuration has similar options to both preparation and training. For a complete reference, see the :doc:`../../configuration/classification` page.
 
 Step 4.3: Run the Classification Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally, update your ``run_classify.py`` script to load the configuration and execute the ``classify_dataset`` function.
+Finally, load the configuration and execute the ``classify_dataset`` function.
 
 .. code-block:: python
 
-   import dmqclib as dm
-
-   # Path to your customized classification configuration file
-   config_file = "classify_config.yaml"
-   # This name must match the 'name' in the 'classification_sets' of your YAML
-   dataset_name = "NRT_BO_001"
-
-   print(f"Loading configuration for '{dataset_name}' from '{config_file}'...")
-   config = dm.read_config(config_file, module="classify")
-   config.select(dataset_name)
-
-   print("Starting dataset classification...")
+   config = dm.read_config("~/aiqc_project/config/classification_config.yaml")
    dm.classify_dataset(config)
-   print("Classification complete!")
-
-Run the script from your terminal:
-
-.. code-block:: bash
-
-   python run_classify.py
 
 Understanding the Output
 ------------------------
 
-After the script completes, a new directory named **classify** is created inside your ``data/nrt_bo_001`` folder. This directory contains:
+After the commands finishes, your output directory (e.g., ``~/aiqc_project/data``) will contain a new folder named ``dataset_0001`` (from ``dataset_folder_name``). Inside, you will find several subdirectories:
 
-- A ``.parquet`` file with the original data plus new columns for the model's predictions and prediction probabilities.
-- A summary report detailing the classification results (e.g., the distribution of predicted classes).
+- **summary**: Contains summary statistics of the input data, used for normalization.
+- **select**: Stores all profiles.
+- **locate**: Contains all observation records.
+- **extract**: Holds the features extracted from the observation records.
+- **classify**: The final output, containing a ``.parquet`` file with the original data plus new columns for the model's predictions and prediction probabilities, and s summary report detailing the classification results.
 
 Conclusion
 ----------
