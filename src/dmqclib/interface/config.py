@@ -5,6 +5,7 @@ reading them as instantiated configuration objects. Supports "prepare",
 """
 
 import os
+from typing import Optional
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.config.classify_config import ClassificationConfig
@@ -55,7 +56,8 @@ def write_config_template(file_name: str, module: str) -> None:
         yaml_file.write(yaml_text)
 
 
-def read_config(file_name: str) -> ConfigBase:
+def read_config(file_name: str, set_name: Optional[str]=None,
+                auto_select: bool=True) -> ConfigBase:
     """
     Read a YAML configuration file as a :class:`ConfigBase` object,
     automatically selecting the appropriate subclass based on the given module.
@@ -70,6 +72,10 @@ def read_config(file_name: str) -> ConfigBase:
 
     :param file_name: The path (including filename) to the YAML file.
     :type file_name: str
+    :param set_name: The name (key) of the desired dataset in the YAML's dictionary.
+    :type set_name: str
+    :param auto_select: Select the data set name automatically if set to True
+    :type auto_select: bool
     :raises ValueError: If the module is not supported.
     :return: An instantiated configuration object (either DataSetConfig, TrainingConfig, or ClassificationConfig).
     :rtype: ConfigBase
@@ -83,8 +89,12 @@ def read_config(file_name: str) -> ConfigBase:
         "classification_sets": ClassificationConfig,
     }
     matching_key = next((key for key in config_classes.keys() if key in config), None)
+    if matching_key is None:
+        raise ValueError("No valid 'set' name found in the provided YAML file.")
 
-    if matching_key is not None:
-        return config_classes[matching_key](config_file_name)
+    config = config_classes[matching_key](config_file_name, auto_select)
 
-    raise ValueError("No valid configuration found in the provided YAML file.")
+    if set_name is not None:
+        config.select(set_name)
+
+    return config

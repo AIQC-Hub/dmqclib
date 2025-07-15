@@ -119,3 +119,13 @@ class TestClassificationConfig(unittest.TestCase):
         ds.select("classification_0001")
         input_file_name = ds.get_full_file_name("classify", "test.txt")
         self.assertEqual(input_file_name, "/path/to/data/dataset_0001/classify/test.txt")
+
+    def test_auto_select(self):
+        """
+        Confirm that auto select options works.
+        """
+        ds = ClassificationConfig(str(self.template_file), False)
+        self.assertIsNone(ds.data)
+
+        ds = ClassificationConfig(str(self.template_file), True)
+        self.assertIsNotNone(ds.data)

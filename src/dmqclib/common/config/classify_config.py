@@ -29,7 +29,7 @@ class ClassificationConfig(ConfigBase):
     aligns with the YAML definition. Used by :class:`dmqclib.common.base.config_base.ConfigBase`.
     """
 
-    def __init__(self, config_file: str) -> None:
+    def __init__(self, config_file: str, auto_select: bool = False) -> None:
         """
         Initialize a new :class:`ClassificationConfig` instance.
 
@@ -39,7 +39,7 @@ class ClassificationConfig(ConfigBase):
         :raises ValueError: If the YAML is invalid or missing the
                             "classification_sets" section.
         """
-        super().__init__("classification_sets", config_file=config_file)
+        super().__init__("classification_sets", config_file=config_file, auto_select=auto_select)
 
     def select(self, dataset_name: str) -> None:
         """

@@ -34,7 +34,7 @@ class TrainingConfig(ConfigBase):
     when instantiating TrainingConfig from YAML.
     """
 
-    def __init__(self, config_file: Optional[str] = None) -> None:
+    def __init__(self, config_file: str, auto_select: bool = False) -> None:
         """
         Initialize the training configuration.
 
@@ -44,7 +44,7 @@ class TrainingConfig(ConfigBase):
         :raises ValueError: If the YAML structure is invalid
                             or `training_sets` cannot be found.
         """
-        super().__init__("training_sets", config_file=config_file)
+        super().__init__("training_sets", config_file=config_file, auto_select=auto_select)
 
     def select(self, dataset_name: str) -> None:
         """

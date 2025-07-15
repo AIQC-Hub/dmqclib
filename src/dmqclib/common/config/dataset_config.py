@@ -33,7 +33,7 @@ class DataSetConfig(ConfigBase):
     :class:`ConfigBase` to validate consistency with the YAML data.
     """
 
-    def __init__(self, config_file: str) -> None:
+    def __init__(self, config_file: str, auto_select: bool = False) -> None:
         """
         Initialize a new :class:`DataSetConfig` instance.
 
@@ -42,7 +42,7 @@ class DataSetConfig(ConfigBase):
         :raises ValueError: If the YAML structure is invalid or the
                             file does not contain `data_sets` section.
         """
-        super().__init__("data_sets", config_file=config_file)
+        super().__init__("data_sets", config_file=config_file, auto_select=auto_select)
 
     def select(self, dataset_name: str) -> None:
         """
