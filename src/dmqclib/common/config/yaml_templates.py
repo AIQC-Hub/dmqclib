@@ -50,16 +50,16 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
 
 summary_stats_sets:
   - name: summary_stats_set_1
@@ -181,25 +181,22 @@ path_info_sets:
       base_path: /path/to/data # EDIT: Root output directory
     input:
       step_folder_name: training
-    model:
-      base_path: /path/to/model # EDIT: Directory with model files
-      step_folder_name: model
 
 target_sets:
   - name: target_set_1_3
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
 
 step_class_sets:
   - name: training_step_set_1
@@ -275,23 +272,23 @@ path_info_sets:
       base_path: /path/to/model  # EDIT: Directory with model files
       step_folder_name: model
     concat:
-      step_folder_name: classify # EDIT: Directory with classification results
+      step_folder_name: classification # EDIT: Directory with classification results
 
 target_sets:
   - name: target_set_1_3
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
 
 summary_stats_sets:
   - name: summary_stats_set_1
