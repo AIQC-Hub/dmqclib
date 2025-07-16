@@ -70,7 +70,9 @@ class ConfigBase(ABC):
 
     expected_class_name = None  # Must be overridden by child classes
 
-    def __init__(self, section_name: str, config_file: str, auto_select: bool = False) -> None:
+    def __init__(
+        self, section_name: str, config_file: str, auto_select: bool = False
+    ) -> None:
         """Initialize the configuration object from a YAML file or template.
 
         This loads a YAML configuration, either from a specified file path or
@@ -131,7 +133,9 @@ class ConfigBase(ABC):
         if len(self.full_config[self.section_name]) == 1:
             self.select(self.full_config[self.section_name][0]["name"])
         else:
-            raise ValueError("'auto_select' option is invalid when there are multiple data set names")
+            raise ValueError(
+                "'auto_select' option is invalid when there are multiple data set names"
+            )
 
     def validate(self) -> str:
         """Validate the loaded configuration against the corresponding schema.

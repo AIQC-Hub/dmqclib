@@ -115,7 +115,9 @@ class TestDataSetConfig(unittest.TestCase):
         ds = DataSetConfig(str(self.template_file))
         ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name("split", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/training/test.txt")
+        self.assertEqual(
+            input_file_name, "/path/to/data/dataset_0001/training/test.txt"
+        )
 
     def test_auto_select(self):
         """

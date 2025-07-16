@@ -39,7 +39,9 @@ class ClassificationConfig(ConfigBase):
         :raises ValueError: If the YAML is invalid or missing the
                             "classification_sets" section.
         """
-        super().__init__("classification_sets", config_file=config_file, auto_select=auto_select)
+        super().__init__(
+            "classification_sets", config_file=config_file, auto_select=auto_select
+        )
 
     def select(self, dataset_name: str) -> None:
         """

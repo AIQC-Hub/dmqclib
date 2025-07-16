@@ -13,9 +13,9 @@ from typing import Dict, Type
 
 from dmqclib.common.base.feature_base import FeatureBase
 from dmqclib.prepare.features.basic_values import BasicValues
-from dmqclib.prepare.features.flank_up import FlankUp
-from dmqclib.prepare.features.flank_down import FlankDown
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
+from dmqclib.prepare.features.flank_down import FlankDown
+from dmqclib.prepare.features.flank_up import FlankUp
 from dmqclib.prepare.features.location import LocationFeat
 from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
 

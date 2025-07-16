@@ -7,8 +7,6 @@ structured access to dataset settings, including targets, step classes,
 and step parameters, by resolving references within the configuration.
 """
 
-from typing import Optional
-
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.utils.config import get_config_item
 
@@ -44,7 +42,9 @@ class TrainingConfig(ConfigBase):
         :raises ValueError: If the YAML structure is invalid
                             or `training_sets` cannot be found.
         """
-        super().__init__("training_sets", config_file=config_file, auto_select=auto_select)
+        super().__init__(
+            "training_sets", config_file=config_file, auto_select=auto_select
+        )
 
     def select(self, dataset_name: str) -> None:
         """

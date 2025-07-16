@@ -19,6 +19,7 @@ from dmqclib.common.config.yaml_templates import (
 from dmqclib.common.utils.config import get_config_file
 from dmqclib.common.utils.config import read_config as utils_read_config
 
+
 def write_config_template(file_name: str, stage: str) -> None:
     """
     Write a YAML configuration template for the specified stage
@@ -56,8 +57,9 @@ def write_config_template(file_name: str, stage: str) -> None:
         yaml_file.write(yaml_text)
 
 
-def read_config(file_name: str, set_name: Optional[str]=None,
-                auto_select: bool=True) -> ConfigBase:
+def read_config(
+    file_name: str, set_name: Optional[str] = None, auto_select: bool = True
+) -> ConfigBase:
     """
     Read a YAML configuration file as a :class:`ConfigBase` object,
     automatically selecting the appropriate subclass based on the given stage.
