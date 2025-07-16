@@ -45,14 +45,12 @@ The general workflow for any task in `dmqclib` follows these steps:
 This workflow processes your input data and creates training, validation, and test sets.
 
 **Step 1: Generate a configuration template.**
+
 ```python
 import dmqclib as dm
 
 # This creates 'prepare_config.yaml' with predefined sections
-dm.write_config_template(
-    file_name="/path/to/prepare_config.yaml", 
-    module="prepare"
-)
+dm.write_config_template(file_name="/path/to/prepare_config.yaml", stage="prepare")
 ```
 
 **Step 2: Customize `prepare_config.yaml`.**
@@ -78,13 +76,11 @@ This generates the following output folders:
 This workflow uses the prepared dataset to train a model and evaluate its performance.
 
 **Step 1: Generate a training configuration template.**
+
 ```python
 import dmqclib as dm
 
-dm.write_config_template(
-    file_name="/path/to/training_config.yaml", 
-    module="train"
-)
+dm.write_config_template(file_name="/path/to/training_config.yaml", stage="train")
 ```
 
 **Step 2: Customize `training_config.yaml`.**
@@ -107,13 +103,11 @@ This generates the following output folders:
 This workflow applies a trained model to classify all observations in a dataset.
 
 **Step 1: Generate a classification configuration template.**
+
 ```python
 import dmqclib as dm
 
-dm.write_config_template(
-    file_name="/path/to/classification_config.yaml", 
-    module="classify"
-)
+dm.write_config_template(file_name="/path/to/classification_config.yaml", stage="classify")
 ```
 
 **Step 2: Customize `classification_config.yaml`.**
@@ -134,7 +128,7 @@ This workflow processes a dataset using a trained model and generates:
 
 Configuration is managed via YAML files. The `write_config_template` function provides a starting point that you must customize for each module.
 
-### 1. Dataset Preparation (`module="prepare"`)
+### 1. Dataset Preparation (`stage="prepare"`)
 
 The preparation config requires you to modify two key sections:
 
@@ -159,7 +153,7 @@ The preparation config requires you to modify two key sections:
       input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
   ```
 
-### 2. Training and Evaluation (`module="train"`)
+### 2. Training and Evaluation (`stage="train"`)
 
 The training config links the prepared data to the model training process.
 
@@ -180,7 +174,7 @@ The training config links the prepared data to the model training process.
       dataset_folder_name: dataset_0001  # EDIT: Your output folder
   ```
 
-### 3. Classification (`module="classify"`)
+### 3. Classification (`stage="classify"`)
 
 The classification config uses a trained model to classify new data.
 

@@ -114,7 +114,7 @@ First, use ``dmqclib`` to generate a boilerplate configuration template. This fi
    # This creates 'prepare_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
        file_name=config_path,
-       module="prepare"
+       stage="prepare"
    )
    print(f"Configuration template generated at: {config_path}")
 

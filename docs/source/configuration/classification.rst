@@ -1,6 +1,6 @@
 Classification (Configuration)
 ===============================
-The `classify` workflow (`module="classify"`) is designed to apply a pre-trained machine learning model to new, unseen datasets to generate predictions. It leverages the same modular "building blocks" concept found in the `prepare` and `train` workflows, but its configuration is streamlined.
+The `classify` workflow (`stage="classify"`) is designed to apply a pre-trained machine learning model to new, unseen datasets to generate predictions. It leverages the same modular "building blocks" concept found in the `prepare` and `train` workflows, but its configuration is streamlined.
 
 Unlike preparation or training, classification doesn't involve model learning or complex feature engineering from scratch. Instead, its primary role is to orchestrate the application of an existing model. This involves:
 

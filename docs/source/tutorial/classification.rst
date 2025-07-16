@@ -33,7 +33,7 @@ First, use ``dmqclib`` to generate the boilerplate configuration template specif
    # This creates 'classification_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
        file_name=config_path,
-       module="classify"
+       stage="classify"
    )
    print(f"Configuration template generated at: {config_path}")
 

@@ -30,7 +30,7 @@ First, use ``dmqclib`` to generate a boilerplate configuration template specific
    # This creates 'training_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
        file_name=config_path,
-       module="train"
+       stage="train"
    )
    print(f"Configuration template generated at: {config_path}")
 
