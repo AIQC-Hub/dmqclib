@@ -52,7 +52,7 @@ class ClassifyAll(BuildModelBase):
         :type test_sets: Optional[Dict[str, pl.DataFrame]]
         """
         super().__init__(
-            config, training_sets=None, test_sets=test_sets, step_name="classify"
+            config=config, training_sets=None, test_sets=test_sets, step_name="classify"
         )
 
         #: Default names for model files and test reports,
@@ -73,7 +73,9 @@ class ClassifyAll(BuildModelBase):
         #: A dictionary mapping "model" to target-specific file paths,
         #: derived from configuration.
         self.model_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "model", self.default_model_file_name, use_dataset_folder=False
+            step_name="model",
+            default_file_name=self.default_model_file_name,
+            use_dataset_folder=False,
         )
 
         #: Columns to be dropped from the test set before passing to the base model.

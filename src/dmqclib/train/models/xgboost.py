@@ -32,7 +32,7 @@ class XGBoost(ModelBase):
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
     - Computation and storage of metrics (accuracy, balanced accuracy,
-      classification report) in :attr:`result`.
+      classification report) in :attr:`report`.
 
     .. note::
 
@@ -47,9 +47,9 @@ class XGBoost(ModelBase):
         """
         Initialize the XGBoost model with default or user-specified parameters.
 
-        This constructor calls the parent `ModelBase` constructor and then sets
-        up default XGBoost parameters if no `model_params` are provided via the
-        `config` object (i.e., if `self.model_params` is empty after `super().__init__`).
+        This constructor calls the parent :class:`ModelBase` constructor and then sets
+        up default XGBoost parameters if no ``model_params`` are provided via the
+        ``config`` object (i.e., if :attr:`self.model_params` is empty after :meth:`super().__init__`).
 
         :param config: A configuration object providing model parameters
                        (e.g., learning rate, max depth) and other metadata.
@@ -57,7 +57,7 @@ class XGBoost(ModelBase):
         :raises ValueError: If inherited requirements of :class:`ModelBase`
                             (like missing attributes) are not satisfied.
         """
-        super().__init__(config)
+        super().__init__(config=config)
 
         self.model_params: Dict[str, Any] = {
             "n_estimators": 100,
@@ -80,7 +80,7 @@ class XGBoost(ModelBase):
           3. Initialize and fit an XGBoost classifier with
              :attr:`model_params`.
 
-        :raises ValueError: If :attr:`training_set` is None or empty.
+        :raises ValueError: If :attr:`training_set` is ``None`` or empty during the training process.
         """
         if self.training_set is None:
             raise ValueError("Member variable 'training_set' must not be empty.")
@@ -98,16 +98,16 @@ class XGBoost(ModelBase):
         Steps:
 
           1. Call :meth:`predict` to generate predictions on the test set.
-          2. Call :meth:`create_report` to compute and store various evaluation metrics.
-          3. Store results in :attr:`result` as a Polars DataFrame.
+          2. Call :meth:`create_report` to compute and store various evaluation metrics
+             in :attr:`report`.
 
         The :attr:`k` attribute (provided by parent class or
         cross-validation context) is used to identify the fold number:
 
-          - If :attr:`k` is 0, the column is dropped from the final :attr:`result`.
+          - If :attr:`k` is 0, the 'k' column is dropped from the final :attr:`report`.
 
-        :raises ValueError: If :attr:`test_set` is None or empty during prediction.
-        :raises ValueError: If :attr:`predictions` is None during report creation.
+        :raises ValueError: If :attr:`test_set` is ``None`` or empty during prediction.
+        :raises ValueError: If :attr:`predictions` is ``None`` during report creation.
         """
         self.predict()
         self.create_report()
@@ -120,7 +120,7 @@ class XGBoost(ModelBase):
         using the stored XGBoost model, and stores the results in the
         :attr:`predictions` attribute as a Polars DataFrame.
 
-        :raises ValueError: If :attr:`test_set` is None or empty.
+        :raises ValueError: If :attr:`test_set` is ``None`` or empty.
         """
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty.")
@@ -140,9 +140,9 @@ class XGBoost(ModelBase):
         The overall balanced accuracy is derived from the macro average recall.
 
         All computed metrics are stored in the :attr:`report` attribute as a Polars DataFrame.
-        The `k` attribute (fold number) is included in the report rows and dropped if `k` is 0.
+        The :attr:`k` attribute (fold number) is included in the report rows and dropped if :attr:`k` is 0.
 
-        :raises ValueError: If :attr:`test_set` or :attr:`predictions` are None.
+        :raises ValueError: If :attr:`test_set` or :attr:`predictions` are ``None``.
         """
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty.")

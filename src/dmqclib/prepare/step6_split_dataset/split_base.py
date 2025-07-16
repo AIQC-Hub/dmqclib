@@ -23,17 +23,17 @@ class SplitDataSetBase(DataSetBase):
     Abstract base class to perform train/test splitting and k-fold assignment
     for target feature DataFrames.
 
-    This class extends :class:`DataSetBase` to validate and incorporate
-    YAML-based configuration. It provides methods for writing out
-    the resulting training and test sets into Parquet files.
+    This class extends :class:`dmqclib.common.base.dataset_base.DataSetBase`
+    to validate and incorporate YAML-based configuration. It provides methods
+    for writing out the resulting training and test sets into Parquet files.
 
     Subclasses must implement the abstract methods:
     :meth:`split_test_set`, :meth:`add_k_fold`, and :meth:`drop_columns`.
 
     .. note::
 
-       Since this class inherits from :class:`DataSetBase` and is marked as
-       an abstract base class, it may require an ``expected_class_name``
+       Since this class inherits from :class:`dmqclib.common.base.dataset_base.DataSetBase`
+       and is marked as an abstract base class, it may require an ``expected_class_name``
        defined by subclasses if they are intended to be instantiated.
     """
 
@@ -48,17 +48,18 @@ class SplitDataSetBase(DataSetBase):
 
         :param config: A dataset configuration object containing parameters
                        and paths for splitting.
-        :type config: ConfigBase
+        :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
         :param target_features: A dictionary where keys are target names (str)
                                 and values are Polars DataFrames holding combined
                                 features for each target, or None if not yet available.
-        :type target_features: Optional[Dict[str, pl.DataFrame]]
+        :type target_features: Optional[Dict[str, polars.DataFrame]]
+
         :raises NotImplementedError: If ``expected_class_name`` is not set in a subclass
                                      and an instance is directly created.
         :raises ValueError: If the YAML's ``base_class`` does not match
                             the subclass's ``expected_class_name``.
         """
-        super().__init__("split", config)
+        super().__init__(step_name="split", config=config)
 
         #: Default file naming templates for train and test sets.
         self.default_file_names: Dict[str, str] = {
@@ -67,7 +68,7 @@ class SplitDataSetBase(DataSetBase):
         }
         #: File paths for each target's train/test sets, keyed by "train" and "test".
         self.output_file_names: Dict[str, Dict[str, str]] = {
-            k: self.config.get_target_file_names("split", v)
+            k: self.config.get_target_file_names(step_name="split", default_file_name=v)
             for k, v in self.default_file_names.items()
         }
 
@@ -87,8 +88,8 @@ class SplitDataSetBase(DataSetBase):
         """
         Retrieve the test set fraction (0-1) from configuration or fallback.
 
-        :return: A float in the range [0, 1] representing the fraction of data
-                 reserved for testing.
+        :returns: A float in the range [0, 1] representing the fraction of data
+                  reserved for testing.
         :rtype: float
         """
         return (
@@ -102,8 +103,8 @@ class SplitDataSetBase(DataSetBase):
         """
         Retrieve the number of folds for cross-validation from configuration or fallback.
 
-        :return: An integer representing how many folds are used during k-fold
-                 cross-validation steps.
+        :returns: An integer representing how many folds are used during k-fold
+                  cross-validation steps.
         :rtype: int
         """
         return (

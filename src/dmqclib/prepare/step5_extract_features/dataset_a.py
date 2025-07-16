@@ -64,7 +64,7 @@ class ExtractDataSetA(ExtractFeatureBase):
         :type summary_stats: :class:`polars.DataFrame` or None
         """
         super().__init__(
-            config,
+            config=config,
             input_data=input_data,
             selected_profiles=selected_profiles,
             selected_rows=selected_rows,

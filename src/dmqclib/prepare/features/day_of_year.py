@@ -76,6 +76,7 @@ class DayOfYearFeat(FeatureBase):
         in :attr:`selected_profiles` and merge it with the target rows.
 
         Steps:
+
           1. Select columns ``row_id``, ``platform_code``, and ``profile_no``
              from :attr:`selected_rows[target_name]`.
           2. Join the subset with ``profile_timestamp`` from :attr:`selected_profiles`

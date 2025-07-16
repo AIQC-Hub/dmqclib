@@ -60,7 +60,8 @@ class TestBuildModel(unittest.TestCase):
 
     def test_output_file_names(self):
         """
-        Verify that default output file names (model and results) are as expected.
+        Verify that default output file names (model and results) are as expected
+        based on the configuration.
         """
         ds = BuildModel(self.config)
 
@@ -96,7 +97,8 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
-        """Check that training and test sets are loaded into BuildModel correctly,
+        """
+        Check that training and test sets are loaded into BuildModel correctly,
         verifying their types and dimensions.
         """
         ds = BuildModel(
@@ -143,7 +145,10 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["pres"], XGBoost)
 
     def test_model_objects(self):
-        """Confirm that building models populates a unique model object for each target ."""
+        """
+        Confirm that building models populates a unique model object for each target.
+        Ensures distinct model instances are created, not just references to the same object.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -155,12 +160,14 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsNot(ds.models["temp"], ds.models["pres"])
         self.assertIsNot(ds.models["psal"], ds.models["pres"])
 
+        # Note: assertNotEqual may depend on XGBoost's __eq__ implementation,
+        # but assertIsNot is a stronger check for distinct instances.
         self.assertNotEqual(ds.models["temp"], ds.models["psal"])
         self.assertNotEqual(ds.models["temp"], ds.models["pres"])
         self.assertNotEqual(ds.models["psal"], ds.models["pres"])
 
     def test_build_without_test_sets(self):
-        """Ensure that empty test_sets raise a ValueError."""
+        """Ensure that calling build_targets() with no test sets available raises a ValueError."""
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -170,7 +177,7 @@ class TestBuildModel(unittest.TestCase):
             ds.build_targets()
 
     def test_build_without_training_sets(self):
-        """Ensure that empty training_sets raise a ValueError."""
+        """Ensure that calling build_targets() with no training sets available raises a ValueError."""
         ds = BuildModel(
             self.config,
             training_sets=None,
@@ -180,7 +187,8 @@ class TestBuildModel(unittest.TestCase):
             ds.build_targets()
 
     def test_test_with_xgboost(self):
-        """Check that testing sets after model building populates the result columns,
+        """
+        Check that testing sets after model building populates the result columns,
         verifying data types and dimensions remain consistent.
         """
         ds = BuildModel(
@@ -214,7 +222,10 @@ class TestBuildModel(unittest.TestCase):
             ds.test_targets()
 
     def test_write_reports(self):
-        """Check that test reports are correctly written to file, and then remove them."""
+        """
+        Check that test reports are correctly written to file,
+        and then remove the temporary files created.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -244,7 +255,10 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["report"]["pres"])
 
     def test_write_no_results(self):
-        """Ensure ValueError is raised if write_reports is called with no test results available."""
+        """
+        Ensure that ValueError is raised if write_reports is called
+        with no test results available.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -254,7 +268,9 @@ class TestBuildModel(unittest.TestCase):
             ds.write_reports()
 
     def test_write_no_models(self):
-        """Ensure ValueError is raised if write_models is called without any built models."""
+        """
+        Ensure ValueError is raised if write_models is called without any built models.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -264,7 +280,10 @@ class TestBuildModel(unittest.TestCase):
             ds.write_models()
 
     def test_write_models(self):
-        """Check that the trained models are serialized to files correctly, and then remove them."""
+        """
+        Check that the trained models are serialized to files correctly,
+        and then remove the temporary files created.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -287,7 +306,10 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.model_file_names["pres"])
 
     def test_read_models(self):
-        """Verify that existing models can be reloaded from disk and successfully used for testing."""
+        """
+        Verify that existing models can be reloaded from disk and successfully
+        used for testing.
+        """
         ds = BuildModel(
             self.config, training_sets=None, test_sets=self.ds_input.test_sets
         )
@@ -326,7 +348,10 @@ class TestBuildModel(unittest.TestCase):
             ds.read_models()
 
     def test_write_predictions(self):
-        """Check that test predictions are correctly written to file, and then remove them."""
+        """
+        Check that test predictions are correctly written to file,
+        and then remove the temporary files created.
+        """
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -357,7 +382,8 @@ class TestBuildModel(unittest.TestCase):
 
     def test_write_empty_predictions(self):
         """
-        Ensure that empty predictions raise a ValueError:.
+        Ensure that calling write_predictions() before predictions are generated
+        (i.e., before test_targets() is called) raises a ValueError.
         """
         ds = BuildModel(
             self.config,

@@ -234,10 +234,11 @@ class TestSplitDataSetA(unittest.TestCase):
 
     def test_write_empty_training_sets(self):
         """
-        Ensure that empty test sets raise a ValueError.
+        Ensure that writing empty training sets raises a ValueError.
         """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.process_targets()
+        # Set training_sets to None to simulate an empty state or error condition
         ds.training_sets = None
         with self.assertRaises(ValueError):
             ds.write_training_sets()
@@ -277,10 +278,11 @@ class TestSplitDataSetA(unittest.TestCase):
 
     def test_write_empty_test_sets(self):
         """
-        Ensure that empty test sets raise a ValueError.
+        Ensure that writing empty test sets raises a ValueError.
         """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
         ds.process_targets()
+        # Set test_sets to None to simulate an empty state or error condition
         ds.test_sets = None
         with self.assertRaises(ValueError):
             ds.write_test_sets()
@@ -336,16 +338,17 @@ class TestSplitDataSetA(unittest.TestCase):
 
 class TestSplitDataSetANegX5(unittest.TestCase):
     """
-    A suite of unit tests ensuring SplitDataSetA correctly splits extracted features
-    into training and test sets, writes them to files, and respects user-defined
-    configurations such as test set fraction and k-fold.
+    A suite of unit tests for SplitDataSetA specifically using the
+    'test_dataset_003.yaml' configuration, which likely involves
+    different parameters or larger data, verifying correct data
+    splitting and handling.
     """
 
     def setUp(self):
         """
         Set up test environment and load data from previous steps
         (input, summary, select, locate, extract) to provide necessary
-        dependencies for SplitDataSetA.
+        dependencies for SplitDataSetA using a specific configuration.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -392,11 +395,11 @@ class TestSplitDataSetANegX5(unittest.TestCase):
         )
         self.ds_extract.process_targets()
 
-    def _test_target_features_data(self):
+    def test_target_features_data(self):
         """
         Check that target features (extracted dataframes) are correctly
         loaded into the SplitDataSetA class upon initialization,
-        verifying their type and dimensions.
+        verifying their type and dimensions for the specific config.
         """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
@@ -414,9 +417,9 @@ class TestSplitDataSetANegX5(unittest.TestCase):
 
     def test_split_features_data(self):
         """
-        Verify the splitting of features into training and test sets,
-        checking the resulting dimensions of the dataframes for both
-        "temp" and "psal" target variables.
+        Verify the splitting of features into training and test sets
+        for the given configuration, checking the resulting dimensions
+        of the dataframes and ensuring row counts sum correctly.
         """
         ds = SplitDataSetA(self.config, target_features=self.ds_extract.target_features)
 
@@ -446,7 +449,7 @@ class TestSplitDataSetANegX5(unittest.TestCase):
             ds.training_sets["pres"].shape[0] + ds.test_sets["pres"].shape[0], 783
         )
 
-    def _test_write_data_sets(self):
+    def test_write_data_sets(self):
         """
         Verify that calling write_data_sets successfully writes
         both training and test sets for all target variables to

@@ -28,29 +28,29 @@ class ConcatDatasetsBase(DataSetBase):
         predictions: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
-        Initialize the feature extraction base class.
+        Initialize the dataset concatenation base class.
 
         :param config: The configuration object, containing paths and target definitions.
-        :type config: ~dmqclib.common.base.config_base.ConfigBase
-        :param input_data: A Polars DataFrame providing the full dataset from which
-                           features are extracted, defaults to None.
+        :type config: dmqclib.common.base.config_base.ConfigBase
+        :param input_data: A Polars DataFrame providing the full dataset to which
+                           predictions will be concatenated, defaults to None.
         :type input_data: Optional[polars.DataFrame]
         :param predictions: A dictionary mapping each target to its respective
                             subset of predictions, defaults to None.
         :type predictions: Optional[Dict[str, polars.DataFrame]]
         :raises NotImplementedError: If the subclass does not define
-                                     ``expected_class_name`` (when instantiating a real subclass).
+                                     ``expected_class_name`` (raised by base class init).
         :raises ValueError: If the provided YAML config does not match this class's
-                            ``expected_class_name``.
+                            ``expected_class_name`` (raised by base class init).
         """
-        super().__init__("concat", config)
+        super().__init__(step_name="concat", config=config)
 
         #: The default pattern to use when writing feature files for each target.
         self.default_file_name: str = "predictions.parquet"
 
         #: Output file name to store the concatenated dataset
         self.output_file_name: str = self.config.get_full_file_name(
-            "concat", self.default_file_name
+            step_name="concat", default_file_name=self.default_file_name
         )
 
         self.input_data: Optional[pl.DataFrame] = input_data

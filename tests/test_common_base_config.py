@@ -24,6 +24,11 @@ class ConfigBaseWithExpectedName(ConfigBase):
     expected_class_name: str = "ConfigBaseWithExpectedName"
 
     def __init__(self, section_name: str, config_file: str) -> None:
+        """Initialize a new instance of ConfigBaseWithExpectedName.
+
+        This constructor calls the parent `ConfigBase` constructor with the
+        provided section name and configuration file path.
+        """
         super().__init__(section_name, config_file)
 
 

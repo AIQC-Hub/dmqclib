@@ -91,7 +91,7 @@ class BasicValues(FeatureBase):
 
     def _add_features(self, col_name: str) -> None:
         """
-        Join the pivoted columns from :attr:`_feature_wide` onto :attr:`features`.
+        Join the specified column from :attr:`filtered_input` onto :attr:`features`.
 
         :param col_name: The name of the column to add as a feature.
         :type col_name: str

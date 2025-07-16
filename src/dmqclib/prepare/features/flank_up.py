@@ -16,7 +16,7 @@ from dmqclib.common.base.feature_base import FeatureBase
 class FlankUp(FeatureBase):
     """
     A feature-extraction class for retrieving target values and their "flanking" values
-    from Copernicus CTD data, extending :class:`FeatureBase`.
+    from Copernicus CTD data, extending :class:`dmqclib.common.base.feature_base.FeatureBase`.
 
     The term "flanking values" refers to the concept of capturing neighboring observations
     around a specified index (e.g., observation_no) by shifting backward a specified amount.
@@ -35,24 +35,24 @@ class FlankUp(FeatureBase):
         Initialize an instance of FlankUp.
 
         :param target_name: The key identifying which target's rows to extract
-                            features for from :attr:`selected_rows`, defaults to None.
+            features for from :attr:`selected_rows`, defaults to None.
         :type target_name: Optional[str]
         :param feature_info: A dictionary containing feature-related parameters,
-                             including a "stats" sub-dict with min/max info
-                             and a "flank_up" integer specifying how many
-                             upstream observations to retrieve, defaults to None.
+            including a "stats" sub-dict with min/max info
+            and a "flank_up" integer specifying how many
+            upstream observations to retrieve, defaults to None.
         :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame with selected profiles, typically
-                                  used for further merges or lookups, defaults to None.
+            used for further merges or lookups, defaults to None.
         :type selected_profiles: Optional[pl.DataFrame]
         :param filtered_input: A potentially filtered Polars DataFrame containing
-                               full observed variables, defaults to None.
+            full observed variables, defaults to None.
         :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary mapping target names to their respective
-                              DataFrames of relevant rows, defaults to None.
+            DataFrames of relevant rows, defaults to None.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: A Polars DataFrame of summary statistics
-                              (unused in this subclass), defaults to None.
+            (unused in this subclass), defaults to None.
         :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
@@ -72,14 +72,14 @@ class FlankUp(FeatureBase):
 
         Steps:
 
-          1. :meth:`_init_features` - Prepare a base DataFrame with essential columns
-             (row_id, platform_code, profile_no).
-          2. :meth:`_expand_observations` - Expand observations by adding rows for
-             the specified number of "flank" steps (based on ``feature_info["flank_up"]``).
-          3. For each column in ``feature_info["stats"]``, call:
-             - :meth:`_pivot_features` to pivot the data for that column,
-             - :meth:`_add_features` to join the pivoted data onto our feature table.
-          4. :meth:`_clean_features` - Drop columns no longer needed.
+        1. :meth:`_init_features` - Prepare a base DataFrame with essential columns
+           (row_id, platform_code, profile_no).
+        2. :meth:`_expand_observations` - Expand observations by adding rows for
+           the specified number of "flank" steps (based on ``feature_info["flank_up"]``).
+        3. For each column in ``feature_info["stats"]``, call:
+           - :meth:`_pivot_features` to pivot the data for that column,
+           - :meth:`_add_features` to join the pivoted data onto our feature table.
+        4. :meth:`_clean_features` - Drop columns no longer needed.
         """
         self._init_features()
         self._expand_observations()

@@ -23,7 +23,7 @@ class TestTemplateConfig(unittest.TestCase):
     def setUp(self):
         """
         Set up test environment by defining sample file paths
-        for dataset and training configuration templates.
+        for dataset, training, and classification configuration templates.
         """
         self.ds_config_template_file = str(
             Path(__file__).resolve().parent
@@ -99,8 +99,8 @@ class TestReadConfig(unittest.TestCase):
 
     def setUp(self):
         """
-        Define sample file paths for dataset and training configuration
-        files used in subsequent tests.
+        Define sample file paths for dataset, training, and classification
+        configuration files used in subsequent tests.
         """
         self.ds_config_file = str(
             Path(__file__).resolve().parent
@@ -148,15 +148,16 @@ class TestReadConfig(unittest.TestCase):
 
     def test_classify_config(self):
         """
-        Verify that reading a training config file returns
-        a TrainingConfig instance.
+        Verify that reading a classification config file returns
+        a ClassificationConfig instance.
         """
         config = read_config(self.classification_config_file)
         self.assertIsInstance(config, ClassificationConfig)
 
     def test_config_with_invalid_module(self):
         """
-        Check that specifying an invalid module name raises ValueError.
+        Check that specifying an invalid module name (config_type within file)
+        raises ValueError.
         """
         with self.assertRaises(ValueError):
             _ = read_config(self.invalid_config_file)

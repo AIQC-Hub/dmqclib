@@ -49,12 +49,13 @@ class SplitDataSetA(SplitDataSetBase):
 
         :param config: A dataset configuration object that specifies
                        paths, test-set fraction, and k-fold details.
-        :type config: ConfigBase
+        :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
         :param target_features: A dictionary mapping target names to Polars
-                                DataFrames containing extracted features. Defaults to None.
+                                DataFrames containing extracted features.
+                                Defaults to None.
         :type target_features: Optional[Dict[str, pl.DataFrame]]
         """
-        super().__init__(config, target_features=target_features)
+        super().__init__(config=config, target_features=target_features)
 
         #: Column names used for intermediate processing (e.g., to maintain
         #: matching references between positive and negative rows).

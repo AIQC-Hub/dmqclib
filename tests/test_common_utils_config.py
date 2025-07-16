@@ -19,7 +19,8 @@ class TestReadConfig(unittest.TestCase):
 
     def setUp(self):
         """
-        Set the test data configuration file path for use in multiple tests.
+        Set up the test environment before each test method is run.
+        Initializes the path to a sample configuration file for use in tests.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -43,7 +44,7 @@ class TestReadConfig(unittest.TestCase):
 
     def test_read_config_no_params_raises_error(self):
         """
-        Check that a ValueError is raised when `read_config` is called
+        Check that a TypeError is raised when `read_config` is called
         without providing either `config_file` or `config_file_name`,
         as at least one parameter is required for the function to proceed.
         """

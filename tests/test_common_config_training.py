@@ -112,7 +112,8 @@ class TestTrainingConfig(unittest.TestCase):
 
     def test_auto_select(self):
         """
-        Confirm that auto select options works.
+        Confirm that auto select options works as expected, loading data
+        when auto_select is True and not loading it when False.
         """
         ds = TrainingConfig(str(self.template_file), False)
         self.assertIsNone(ds.data)

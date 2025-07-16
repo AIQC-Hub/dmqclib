@@ -36,11 +36,16 @@ class ClassificationConfig(ConfigBase):
         :param config_file: The path to the YAML file containing
                             classification datasets and their sub-configurations.
         :type config_file: str
+        :param auto_select: If :obj:`True`, automatically select the first
+                            available dataset from the configuration file.
+        :type auto_select: bool
         :raises ValueError: If the YAML is invalid or missing the
                             "classification_sets" section.
         """
         super().__init__(
-            "classification_sets", config_file=config_file, auto_select=auto_select
+            section_name="classification_sets",
+            config_file=config_file,
+            auto_select=auto_select,
         )
 
     def select(self, dataset_name: str) -> None:
@@ -62,7 +67,12 @@ class ClassificationConfig(ConfigBase):
                           or if a referenced sub-configuration name (e.g.,
                           "target_set" within the selected dataset) is not
                           found in its corresponding top-level section
-                          (e.g., "target_sets").
+                          (e.g., "target_sets"), or if any of the required
+                          sub-configuration keys (e.g., "target_set",
+                          "feature_set") are missing from the selected
+                          dataset configuration itself.
+        :returns: None
+        :rtype: None
         """
         super().select(dataset_name)
         self.data["target_set"] = get_config_item(

@@ -62,14 +62,14 @@ class ExtractFeatureBase(DataSetBase):
         :raises ValueError: If the provided YAML config does not match this class's
                             ``expected_class_name``.
         """
-        super().__init__("extract", config)
+        super().__init__(step_name="extract", config=config)
 
         #: The default pattern to use when writing feature files for each target.
         self.default_file_name: str = "extracted_features_{target_name}.parquet"
 
         #: A dictionary mapping target names to corresponding output Parquet file paths.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "extract", self.default_file_name
+            step_name="extract", default_file_name=self.default_file_name
         )
 
         self.input_data: Optional[pl.DataFrame] = input_data

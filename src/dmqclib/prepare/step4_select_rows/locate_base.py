@@ -60,7 +60,7 @@ class LocatePositionBase(DataSetBase):
                             the subclass's ``expected_class_name``.
                             (Raised by :class:`DataSetBase` constructor).
         """
-        super().__init__("locate", config)
+        super().__init__(step_name="locate", config=config)
 
         #: str: Default file name template for writing target rows (one file per target).
         #: The ``{target_name}`` placeholder will be replaced.
@@ -69,7 +69,7 @@ class LocatePositionBase(DataSetBase):
         #: Dict[str, str]: Dictionary mapping each target name to the corresponding
         #: output Parquet file path derived from the configuration.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "locate", self.default_file_name
+            step_name="locate", default_file_name=self.default_file_name
         )
 
         #: Optional[:class:`polars.DataFrame`]: An optional Polars DataFrame from which

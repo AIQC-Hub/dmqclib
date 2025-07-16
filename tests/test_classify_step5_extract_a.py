@@ -20,7 +20,7 @@ from dmqclib.common.loader.classify_loader import (
 )
 
 
-class TestExtractDataSetA(unittest.TestCase):
+class TestExtractDataSetAll(unittest.TestCase):
     """
     A suite of tests verifying that the ExtractDataSetA class gathers
     and outputs extracted features from multiple prior steps (input, summary,
@@ -133,7 +133,7 @@ class TestExtractDataSetA(unittest.TestCase):
     def test_location_features(self):
         """
         Test that the `process_targets` method correctly generates and
-        stores extracted features for both 'temp' and 'psal' targets
+        stores extracted features for all configured targets (temp, psal, pres)
         with the expected DataFrame shapes.
         """
         ds = ExtractDataSetAll(

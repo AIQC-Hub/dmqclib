@@ -46,7 +46,7 @@ class ConcatDataSetAll(ConcatDatasetsBase):
         :type predictions: Optional[Dict[str, pl.DataFrame]]
         """
         super().__init__(
-            config,
+            config=config,
             input_data=input_data,
             predictions=predictions,
         )

@@ -13,6 +13,7 @@ def get_config_data_set_template() -> str:
 
     - ``path_info_sets``: specifying common, input, and split paths.
     - ``target_sets``: defining which variables to process and their flags.
+    - ``summary_stats_sets``: defining summary statistics for normalization.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
     - ``step_class_sets``: referencing classes for each preparation step
@@ -23,15 +24,6 @@ def get_config_data_set_template() -> str:
 
     :returns: A string containing the YAML template.
     :rtype: str
-
-    .. note::
-
-       There is a trailing comma in the ``feature_sets`` field:
-
-         basic_values3_plus_flanks,
-
-       which may be interpreted as part of the feature name.
-       If that is unintentional, remove the comma for valid YAML parsing.
     """
     yaml_template = """
 ---
@@ -231,27 +223,19 @@ def get_config_classify_set_template() -> str:
 
     This template includes:
 
-    - ``path_info_sets``: specifying common, input, and split paths.
+    - ``path_info_sets``: specifying common, input, model, and concatenation paths.
     - ``target_sets``: defining which variables to process and their flags.
+    - ``summary_stats_sets``: defining summary statistics for normalization.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
-    - ``step_class_sets``: referencing classes for each preparation step
-      (e.g., input, summary, select, locate, extract, split).
-    - ``step_param_sets``: referencing parameters for the preparation steps.
+    - ``step_class_sets``: referencing classes for each classification step
+      (e.g., input, summary, select, locate, extract, model, classify, concat).
+    - ``step_param_sets``: referencing parameters for the classification steps.
     - ``classification_sets``: referencing specific dataset folders, files, and
       associated configuration sets (e.g., ``step_class_set``, ``step_param_set``).
 
     :returns: A string containing the YAML template.
     :rtype: str
-
-    .. note::
-
-       There is a trailing comma in the ``feature_sets`` field:
-
-         basic_values3_plus_flanks,
-
-       which may be interpreted as part of the feature name.
-       If that is unintentional, remove the comma for valid YAML parsing.
     """
     yaml_template = """
 ---

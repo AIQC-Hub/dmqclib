@@ -83,12 +83,17 @@ class ConfigBase(ABC):
                              e.g., "data_sets", "training_sets".
         :type section_name: str
         :param config_file: The path to the YAML configuration file or a
-                            template identifier string.
+                            template identifier string (e.g., "template:data_sets").
         :type config_file: str
+        :param auto_select: If ``True``, automatically validates the config and
+                            attempts to select the single configuration entry
+                            if only one is present. Defaults to ``False``.
+        :type auto_select: bool
         :raises NotImplementedError: If a subclass does not define the
                                      ``expected_class_name`` attribute.
         :raises ValueError: If ``section_name`` or a template name is not
-                            supported.
+                            supported, or if ``auto_select`` is True but
+                            multiple configuration entries exist.
         """
         if not self.expected_class_name:
             raise NotImplementedError(
@@ -126,6 +131,18 @@ class ConfigBase(ABC):
             self.auto_select()
 
     def auto_select(self):
+        """Automatically validate and select a single configuration entry.
+
+        This method validates the configuration and, if it contains exactly
+        one top-level entry within the specified ``section_name``, it
+        automatically selects that entry. This is useful for simple
+        configurations with only one dataset or task.
+
+        :raises ValueError: If the YAML configuration is invalid, or if
+                            ``auto_select`` is called when there are multiple
+                            configuration entries.
+        :rtype: None
+        """
         message = self.validate()
         if not self.valid_yaml:
             raise ValueError(message)
@@ -164,7 +181,11 @@ class ConfigBase(ABC):
         :param dataset_name: The name of the dataset or task configuration
                              to select from the YAML file.
         :type dataset_name: str
-        :raises ValueError: If the YAML configuration is invalid.
+        :raises ValueError: If the YAML configuration is invalid or the
+                            specified ``dataset_name`` (or its associated
+                            ``path_info`` reference) is not found in the
+                            configuration.
+        :rtype: None
         """
         message = self.validate()
         if not self.valid_yaml:
@@ -189,7 +210,7 @@ class ConfigBase(ABC):
         :return: The configured base path as a string.
         :rtype: str
         :raises ValueError: If no ``base_path`` is found for the step or in
-                            the "common" section.
+                            the "common" section of the selected configuration.
         """
         if step_name not in self.data["path_info"] or (
             step_name in self.data["path_info"]
@@ -221,6 +242,8 @@ class ConfigBase(ABC):
         :type stats_type: str
         :raises ValueError: If the specified ``stats_name`` is not found in
                             the configuration's ``summary_stats_set``.
+        :raises KeyError: If 'summary_stats_set' or 'stats' keys are missing from
+                          the configuration data within the current context of `self.data`.
         :return: A dictionary containing the requested summary statistics parameters.
         :rtype: dict
         """
@@ -239,15 +262,23 @@ class ConfigBase(ABC):
         :type step_name: str
         :return: A dictionary of parameters for the specified step.
         :rtype: dict
+        :raises KeyError: If the specified ``step_name`` is not found in the
+                          ``step_param_set.steps`` section of the configuration,
+                          or if 'step_param_set' or 'steps' are missing from
+                          the configuration data within the current context of `self.data`.
         """
         return self.data["step_param_set"]["steps"][step_name]
 
     def get_dataset_folder_name(self, step_name: str) -> str:
         """Get the dataset-specific folder name for a given step.
 
+        This method attempts to retrieve a ``dataset_folder_name`` defined
+        at the dataset level or overridden within the specific step's parameters.
+
         :param step_name: The name of the step.
         :type step_name: str
-        :return: The folder name for the dataset, or an empty string if not defined.
+        :return: The folder name for the dataset specific to the step, or an
+                 empty string if not defined.
         :rtype: str
         """
         dataset_folder_name = self.data.get("dataset_folder_name", "")
@@ -274,7 +305,7 @@ class ConfigBase(ABC):
         :type step_name: str
         :param folder_name_auto: If ``True``, use ``step_name`` as the folder
                                  name if it's not defined in the config.
-                                 Defaults to True.
+                                 Defaults to ``True``.
         :type folder_name_auto: bool
         :return: The step's folder name.
         :rtype: str
@@ -295,14 +326,17 @@ class ConfigBase(ABC):
     def get_file_name(self, step_name: str, default_name: Optional[str] = None) -> str:
         """Retrieve the file name for a given step.
 
+        This method looks for a 'file_name' entry within the step's parameters.
+        If not found, it falls back to a provided default name.
+
         :param step_name: The name of the step.
         :type step_name: str
         :param default_name: A fallback file name to use if not defined in
-                             the configuration. Defaults to None.
+                             the configuration. Defaults to ``None``.
         :type default_name: str, optional
         :return: The file name for the step.
         :rtype: str
-        :raises ValueError: If no file name is found in the config and no
+        :raises ValueError: If no file name is found in the config for the step and no
                             ``default_name`` is provided.
         """
         file_name = default_name
@@ -336,16 +370,22 @@ class ConfigBase(ABC):
         :param step_name: The name of the step to construct the path for.
         :type step_name: str
         :param default_file_name: A default file name if one is not in the config.
-                                  Defaults to None.
+                                  Defaults to ``None``.
         :type default_file_name: str, optional
         :param use_dataset_folder: If ``True``, include the dataset-specific
-                                   folder in the path. Defaults to True.
+                                   folder in the path. Defaults to ``True``.
         :type use_dataset_folder: bool
         :param folder_name_auto: If ``True``, auto-generate the step folder
-                                 name if not specified. Defaults to True.
+                                 name if not specified. Defaults to ``True``.
         :type folder_name_auto: bool
         :return: The complete, normalized file path.
         :rtype: str
+        :raises ValueError: If a base path or file name cannot be determined
+                            (propagated from :meth:`get_base_path` or
+                            :meth:`get_file_name`).
+        :raises KeyError: If 'step_param_set' or 'steps' are missing when trying
+                          to get the file name or folder (propagated from
+                          :meth:`get_dataset_folder_name` or :meth:`get_file_name`).
         """
         base_path = self.get_base_path(step_name)
         dataset_folder_name = (
@@ -365,6 +405,10 @@ class ConfigBase(ABC):
         :type step_name: str
         :return: The class name defined for the step in the configuration.
         :rtype: str
+        :raises KeyError: If the specified ``step_name`` is not found in the
+                          ``step_class_set.steps`` section of the configuration,
+                          or if 'step_class_set' or 'steps' are missing from
+                          the configuration data within the current context of `self.data`.
         """
         return self.data["step_class_set"]["steps"][step_name]
 
@@ -373,6 +417,8 @@ class ConfigBase(ABC):
 
         :return: A list where each item is a dictionary defining a target variable.
         :rtype: list[dict]
+        :raises KeyError: If 'target_set' or 'variables' keys are missing from
+                          the configuration data within the current context of `self.data`.
         """
         return self.data["target_set"]["variables"]
 
@@ -381,6 +427,9 @@ class ConfigBase(ABC):
 
         :return: A list of target variable names as strings.
         :rtype: list[str]
+        :raises KeyError: If 'target_set' or 'variables' keys are missing from
+                          the configuration data (propagated from
+                          :meth:`get_target_variables`).
         """
         return [x["name"] for x in self.get_target_variables()]
 
@@ -390,6 +439,9 @@ class ConfigBase(ABC):
         :return: A dictionary mapping each target variable name to its
                  full definition dictionary.
         :rtype: dict[str, dict]
+        :raises KeyError: If 'target_set' or 'variables' keys are missing from
+                          the configuration data (propagated from
+                          :meth:`get_target_variables`).
         """
         return {x["name"]: x for x in self.get_target_variables()}
 
@@ -407,16 +459,22 @@ class ConfigBase(ABC):
 
         :param step_name: The name of the step.
         :type step_name: str
-        :param default_file_name: A default file name template. Defaults to None.
+        :param default_file_name: A default file name template. Defaults to ``None``.
         :type default_file_name: str, optional
         :param use_dataset_folder: If ``True``, include the dataset folder.
-                                   Defaults to True.
+                                   Defaults to ``True``.
         :type use_dataset_folder: bool
         :param folder_name_auto: If ``True``, auto-generate the step folder name.
-                                 Defaults to True.
+                                 Defaults to ``True``.
         :type folder_name_auto: bool
         :return: A dictionary mapping each target name to its formatted file path.
         :rtype: dict[str, str]
+        :raises ValueError: If a base path or file name cannot be determined
+                            (propagated from :meth:`get_full_file_name`).
+        :raises KeyError: If 'target_set' or 'variables' keys are missing from
+                          the configuration data, or if keys for path/step
+                          parameters are missing (propagated from
+                          :meth:`get_target_names` or :meth:`get_full_file_name`).
         """
         full_file_name = self.get_full_file_name(
             step_name, default_file_name, use_dataset_folder, folder_name_auto
@@ -437,6 +495,8 @@ class ConfigBase(ABC):
         :raises ValueError: If a referenced ``stats_set`` name is not found
                             in the configuration (propagated from
                             :meth:`get_summary_stats`).
+        :raises KeyError: If 'feature_param_set' or 'params' keys are missing
+                          from the configuration data within the current context of `self.data`.
         :rtype: None
         """
         for x in self.data["feature_param_set"]["params"]:

@@ -31,8 +31,8 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_read_input_file_explicit_type(self):
         """
-        Verify that the function can read various file types
-        when the file_type is explicitly specified.
+        Tests reading various file types when 'file_type' is explicitly provided.
+        Verifies correct row count and DataFrame type.
         """
         test_cases = [
             ("nrt_cora_bo_test.parquet", 132342, "parquet"),
@@ -51,8 +51,8 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_read_input_file_infer_type(self):
         """
-        Verify that the function can infer file types
-        when file_type is not explicitly specified.
+        Tests reading various file types when 'file_type' is inferred from the file extension.
+        Verifies correct row count and DataFrame type.
         """
         test_cases = [
             ("nrt_cora_bo_test.parquet", 132342),
@@ -71,8 +71,7 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_unsupported_file_type(self):
         """
-        Verify that specifying an unsupported file type
-        raises a ValueError.
+        Verifies that passing an explicitly unsupported 'file_type' raises a ValueError.
         """
         file_path = self.test_data_dir / "nrt_cora_bo_test.parquet"
         with self.assertRaises(ValueError) as context:
@@ -81,8 +80,7 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_non_existent_file(self):
         """
-        Verify that attempting to read a non-existent file
-        raises FileNotFoundError.
+        Verifies that attempting to read a non-existent file raises a FileNotFoundError.
         """
         with self.assertRaises(FileNotFoundError):
             _ = read_input_file(
@@ -91,8 +89,8 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_pass_additional_options(self):
         """
-        Demonstrate passing additional options to the reader,
-        such as has_header=False for CSV.
+        Tests passing additional reader-specific options, like 'has_header=False',
+        to ensure they are correctly applied.
         """
         file_name = "nrt_cora_bo_test_2023_row1.csv.gz"
         file_path = self.test_data_dir / file_name
@@ -103,16 +101,18 @@ class TestReadInputFile(unittest.TestCase):
 
     def test_empty_options(self):
         """
-        Demonstrate passing empty options to the reader.
+        Tests that passing 'None' as options argument does not cause issues
+        and the file can still be read.
         """
         file_name = "nrt_cora_bo_test_2023_row1.csv.gz"
         file_path = self.test_data_dir / file_name
         df = read_input_file(file_path, file_type="csv.gz", options=None)
         self.assertIsInstance(df, pl.DataFrame)
 
-    def test_file_type_inference(self):
+    def test_file_type_inference_unsupported_extension(self):
         """
-        Ensure that unsupported file type raises a ValueError.
+        Verifies that attempting to read a file with an unhandled or unsupported
+        extension (e.g., '.txt') without explicit type raises a ValueError during inference.
         """
         file_name = "empty_text_file.txt"
         file_path = self.test_data_dir / file_name

@@ -27,8 +27,9 @@ def write_config_template(file_name: str, stage: str) -> None:
 
     This function:
 
-      1. Chooses a template generator (from get_config_data_set_template,
-         get_config_train_set_template, or get_config_classify_set_template)
+      1. Chooses a template generator (from :func:`dmqclib.common.config.yaml_templates.get_config_data_set_template`,
+         :func:`dmqclib.common.config.yaml_templates.get_config_train_set_template`, or
+         :func:`dmqclib.common.config.yaml_templates.get_config_classify_set_template`)
          based on the ``stage`` argument.
       2. Validates that the directory for ``file_name`` exists.
       3. Writes the generated YAML template text to the specified file.
@@ -62,24 +63,33 @@ def read_config(
 ) -> ConfigBase:
     """
     Read a YAML configuration file as a :class:`ConfigBase` object,
-    automatically selecting the appropriate subclass based on the given stage.
+    automatically selecting the appropriate subclass based on the content.
 
     This function:
 
-      1. Resolves the file path by calling :meth:`get_config_file`.
-      2. Read the specified YAML file to pick up the main key ("data_sets", "training_sets", or "classification_sets")
-         to the corresponding configuration class (DataSetConfig, TrainingConfig,
-         or ClassificationConfig).
+      1. Resolves the file path by calling :func:`dmqclib.common.utils.config.get_config_file`.
+      2. Reads the specified YAML file and identifies the main key
+         (e.g., "data_sets", "training_sets", or "classification_sets")
+         to map to the corresponding configuration class
+         (:class:`dmqclib.common.config.dataset_config.DataSetConfig`,
+         :class:`dmqclib.common.config.training_config.TrainingConfig`, or
+         :class:`dmqclib.common.config.classify_config.ClassificationConfig`).
       3. Instantiates and returns the matched configuration class with the resolved path.
+      4. If ``set_name`` is provided, it calls the ``select`` method on the instantiated
+         configuration object to choose a specific named configuration within the file.
 
     :param file_name: The path (including filename) to the YAML file.
     :type file_name: str
-    :param set_name: The name (key) of the desired dataset in the YAML's dictionary.
-    :type set_name: str
-    :param auto_select: Select the data set name automatically if set to True
+    :param set_name: The name (key) of the desired configuration set within the YAML's dictionary.
+                     If None, no specific set is selected unless auto_select is True. Defaults to None.
+    :type set_name: Optional[str]
+    :param auto_select: If True, the first available data set name will be selected automatically
+                        if no specific ``set_name`` is provided. Defaults to True.
     :type auto_select: bool
-    :raises ValueError: If the set name is not supported.
-    :return: An instantiated configuration object (either DataSetConfig, TrainingConfig, or ClassificationConfig).
+    :raises ValueError: If no valid top-level configuration key (e.g., "data_sets", "training_sets",
+                        "classification_sets") is found in the YAML file.
+    :return: An instantiated configuration object (either :class:`DataSetConfig`,
+             :class:`TrainingConfig`, or :class:`ClassificationConfig`).
     :rtype: ConfigBase
     """
     config_file_name = get_config_file(file_name)

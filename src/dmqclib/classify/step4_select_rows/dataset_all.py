@@ -44,15 +44,15 @@ class LocateDataSetAll(LocatePositionBase):
                            from which positive and negative rows will be derived.
                            If not provided, it should be set later using
                            :meth:`set_input_data`.
-        :type input_data: polars.DataFrame, optional
+        :type input_data: polars.DataFrame or None
         :param selected_profiles: An optional Polars DataFrame containing profiles
                                   labeled as positive or negative. If not provided,
                                   it should be set later using
                                   :meth:`set_selected_profiles`.
-        :type selected_profiles: polars.DataFrame, optional
+        :type selected_profiles: polars.DataFrame or None
         """
         super().__init__(
-            config, input_data=input_data, selected_profiles=selected_profiles
+            config=config, input_data=input_data, selected_profiles=selected_profiles
         )
 
         #: Default file name template for writing target rows (one file per target).
@@ -60,7 +60,7 @@ class LocateDataSetAll(LocatePositionBase):
 
         #: Dictionary mapping each target name to the corresponding output Parquet file path.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "locate", self.default_file_name
+            step_name="locate", default_file_name=self.default_file_name
         )
 
     def select_all_rows(self, target_name: str, target_value: Dict) -> None:

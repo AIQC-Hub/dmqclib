@@ -45,11 +45,11 @@ class ValidationBase(DataSetBase):
 
         :param config: A training configuration object containing
                        paths, target definitions, and model parameters.
-        :type config: ConfigBase
+        :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
         :param training_sets: A dictionary of Polars DataFrames where keys
                               are target names and values are the corresponding
                               training data, or None if no training sets are provided.
-        :type training_sets: Optional[Dict[str, pl.DataFrame]]
+        :type training_sets: Optional[Dict[str, polars.DataFrame]]
         :raises NotImplementedError: If a subclass does not define
                                      ``expected_class_name`` and is instantiated
                                      with a YAML config specifying
@@ -57,7 +57,7 @@ class ValidationBase(DataSetBase):
         :raises ValueError: If the YAML's ``base_class`` does not match the
                             ``expected_class_name`` for a subclass.
         """
-        super().__init__("validate", config)
+        super().__init__(step_name="validate", config=config)
 
         #: Default file naming pattern for validation reports.
         self.default_file_names: Dict[str, str] = {
@@ -66,7 +66,9 @@ class ValidationBase(DataSetBase):
 
         #: A dictionary mapping "result" to a dictionary of target-specific file paths.
         self.output_file_names: Dict[str, Dict[str, str]] = {
-            k: self.config.get_target_file_names("validate", v)
+            k: self.config.get_target_file_names(
+                step_name="validate", default_file_name=v
+            )
             for k, v in self.default_file_names.items()
         }
 

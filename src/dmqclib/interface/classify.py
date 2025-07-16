@@ -27,8 +27,8 @@ def classify_dataset(config: ConfigBase) -> None:
     This function performs the following steps in sequence:
 
       1. Load and read the initial input data.
-      2. Label and write selected profiles.
-      3. Calculate and write summary statistics.
+      2. Calculate and write summary statistics.
+      3. Label and write selected profiles.
       4. Locate and write target rows.
       5. Extract and write target features.
       6. Use the model to predict labels in the input data.
@@ -50,13 +50,13 @@ def classify_dataset(config: ConfigBase) -> None:
     ds_input = load_classify_step1_input_dataset(config)
     ds_input.read_input_data()
 
-    ds_select = load_classify_step3_select_dataset(config, ds_input.input_data)
-    ds_select.label_profiles()
-    ds_select.write_selected_profiles()
-
     ds_summary = load_classify_step2_summary_dataset(config, ds_input.input_data)
     ds_summary.calculate_stats()
     ds_summary.write_summary_stats()
+
+    ds_select = load_classify_step3_select_dataset(config, ds_input.input_data)
+    ds_select.label_profiles()
+    ds_select.write_selected_profiles()
 
     ds_locate = load_classify_step4_locate_dataset(
         config, ds_input.input_data, ds_select.selected_profiles

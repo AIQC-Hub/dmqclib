@@ -2,10 +2,6 @@
 This module provides a high-level interface to the dmqclib library,
 exposing core functionalities for configuration management, dataset
 preparation, model training and evaluation, and dataset classification.
-
-It re-exports key functions from submodules to offer a consolidated
-entry point for common workflows within the dmqclib ecosystem, enhancing
-usability and discoverability of core library features.
 """
 
 from importlib.metadata import version
