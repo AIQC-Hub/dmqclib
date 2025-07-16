@@ -34,15 +34,15 @@ def _get_train_class(
 
     :param config: A training configuration object, which should provide
                    a base class name for the given step.
-    :type config: TrainingConfig
+    :type config: dmqclib.common.config.training_config.TrainingConfig
     :param step: A string indicating which step name to look up (e.g., "input", "validate", "build").
     :type step: str
     :param registry: A dictionary mapping class names (str) to class types
-                     derived from :class:`DataSetBase`.
-    :type registry: dict of (str, Type[DataSetBase])
+                     derived from :class:`dmqclib.common.base.dataset_base.DataSetBase`.
+    :type registry: dict[str, Type[dmqclib.common.base.dataset_base.DataSetBase]]
     :raises ValueError: If the retrieved class name is not found in ``registry``.
     :return: The dataset class (uninstantiated) that is used for the specified step.
-    :rtype: Type[DataSetBase]
+    :rtype: Type[dmqclib.common.base.dataset_base.DataSetBase]
     """
     class_name = config.get_base_class(step)
     dataset_class = registry.get(class_name)
@@ -54,18 +54,18 @@ def _get_train_class(
 
 def load_step1_input_training_set(config: TrainingConfig) -> InputTrainingSetBase:
     """
-    Retrieve and instantiate an :class:`InputTrainingSetBase` subclass
+    Retrieve and instantiate an :class:`dmqclib.train.step1_read_input.input_base.InputTrainingSetBase` subclass
     for the "input" step, based on the YAML configuration.
 
     1. Extract the class name with :meth:`TrainingConfig.get_base_class("input")`.
-    2. Retrieve the corresponding class from :data:`INPUT_TRAINING_SET_REGISTRY`.
+    2. Retrieve the corresponding class from :data:`dmqclib.common.loader.training_registry.INPUT_TRAINING_SET_REGISTRY`.
     3. Instantiate the class and return it.
 
     :param config: The training configuration object containing a ``base_class``
                    entry under the "input" section.
-    :type config: TrainingConfig
-    :return: An instantiated object of a class that inherits from :class:`InputTrainingSetBase`.
-    :rtype: InputTrainingSetBase
+    :type config: dmqclib.common.config.training_config.TrainingConfig
+    :return: An instantiated object of a class that inherits from :class:`dmqclib.train.step1_read_input.input_base.InputTrainingSetBase`.
+    :rtype: dmqclib.train.step1_read_input.input_base.InputTrainingSetBase
     """
     dataset_class = _get_train_class(config, "input", INPUT_TRAINING_SET_REGISTRY)
     return dataset_class(config)
@@ -75,22 +75,22 @@ def load_step2_model_validation_class(
     config: TrainingConfig, training_sets: Optional[dict[str, pl.DataFrame]] = None
 ) -> ValidationBase:
     """
-    Retrieve and instantiate a :class:`ValidationBase` subclass for
+    Retrieve and instantiate a :class:`dmqclib.train.step2_validate_model.validate_base.ValidationBase` subclass for
     the "validate" step, based on the YAML configuration.
 
     Steps:
       1. Extract the class name with :meth:`TrainingConfig.get_base_class("validate")`.
-      2. Retrieve the corresponding class from :data:`MODEL_VALIDATION_REGISTRY`.
+      2. Retrieve the corresponding class from :data:`dmqclib.common.loader.training_registry.MODEL_VALIDATION_REGISTRY`.
       3. Instantiate the class, optionally passing the provided training sets.
 
     :param config: The training configuration object referencing a ``base_class``
                    under the "validate" section.
-    :type config: TrainingConfig
+    :type config: dmqclib.common.config.training_config.TrainingConfig
     :param training_sets: A dictionary of Polars DataFrames containing data for model validation,
                           defaults to None. Keys typically represent data categories (e.g., "train", "test").
-    :type training_sets: dict[str, pl.DataFrame], optional
-    :return: An instantiated object of a class that inherits from :class:`ValidationBase`.
-    :rtype: ValidationBase
+    :type training_sets: Optional[dict[str, polars.DataFrame]]
+    :return: An instantiated object of a class that inherits from :class:`dmqclib.train.step2_validate_model.validate_base.ValidationBase`.
+    :rtype: dmqclib.train.step2_validate_model.validate_base.ValidationBase
     """
     dataset_class = _get_train_class(config, "validate", MODEL_VALIDATION_REGISTRY)
     return dataset_class(config, training_sets=training_sets)
@@ -102,25 +102,25 @@ def load_step4_build_model_class(
     test_sets: Optional[dict[str, pl.DataFrame]] = None,
 ) -> BuildModelBase:
     """
-    Retrieve and instantiate a :class:`BuildModelBase` subclass for
+    Retrieve and instantiate a :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase` subclass for
     the "build" step, based on the YAML configuration.
 
     Steps:
       1. Extract the class name with :meth:`TrainingConfig.get_base_class("build")`.
-      2. Retrieve the corresponding class from :data:`BUILD_MODEL_REGISTRY`.
+      2. Retrieve the corresponding class from :data:`dmqclib.common.loader.training_registry.BUILD_MODEL_REGISTRY`.
       3. Instantiate the class, providing any training and test sets.
 
     :param config: The training configuration object referencing a ``base_class``
                    under the "build" section.
-    :type config: TrainingConfig
+    :type config: dmqclib.common.config.training_config.TrainingConfig
     :param training_sets: A dictionary of Polars DataFrames of training data, defaults to None.
                           Keys typically represent data categories (e.g., "features", "target").
-    :type training_sets: dict[str, pl.DataFrame], optional
+    :type training_sets: Optional[dict[str, polars.DataFrame]]
     :param test_sets: A dictionary of Polars DataFrames of test data, defaults to None.
                       Keys typically represent data categories (e.g., "features", "target").
-    :type test_sets: dict[str, pl.DataFrame], optional
-    :return: An instantiated object of a class that inherits from :class:`BuildModelBase`.
-    :rtype: BuildModelBase
+    :type test_sets: Optional[dict[str, polars.DataFrame]]
+    :return: An instantiated object of a class that inherits from :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase`.
+    :rtype: dmqclib.train.step4_build_model.build_model_base.BuildModelBase
     """
     dataset_class = _get_train_class(config, "build", BUILD_MODEL_REGISTRY)
     return dataset_class(

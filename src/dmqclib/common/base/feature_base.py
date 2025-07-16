@@ -60,6 +60,7 @@ class FeatureBase(ABC):
         :param summary_stats: A Polars DataFrame of summary statistics that might
                               guide transformations (e.g., scaling) of features.
         :type summary_stats: Optional[pl.DataFrame]
+        :rtype: None
         """
         self.target_name: Optional[str] = target_name
         self.feature_info: Optional[Dict] = feature_info

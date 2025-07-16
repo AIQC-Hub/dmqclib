@@ -16,7 +16,7 @@ from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import load_classify_step1_input_dataset
 
 
-class TestSelectDataSetAll(unittest.TestCase):
+class TestSummaryDataSetAll(unittest.TestCase):
     """
     A suite of tests for verifying summary dataset operations in SummaryDataSetAll.
     Ensures output filenames, data loading, and profile/statistical calculations

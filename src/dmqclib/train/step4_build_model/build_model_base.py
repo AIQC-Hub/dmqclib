@@ -66,7 +66,7 @@ class BuildModelBase(DataSetBase):
                           defaults to "build".
         :type step_name: str
         """
-        super().__init__(step_name, config)
+        super().__init__(step_name=step_name, config=config)
 
         #: Default names for model files and test reports,
         #: with placeholders for the target name.
@@ -79,7 +79,7 @@ class BuildModelBase(DataSetBase):
         #: A dictionary mapping "model" or "result" to
         #: target-specific file paths.
         self.output_file_names: Dict[str, Dict[str, str]] = {
-            k: self.config.get_target_file_names("build", v)
+            k: self.config.get_target_file_names(step_name="build", default_file_name=v)
             for k, v in self.default_file_names.items()
         }
 

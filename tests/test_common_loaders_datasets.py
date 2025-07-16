@@ -59,8 +59,7 @@ class TestInputClassLoader(unittest.TestCase):
 
     def test_load_input_class_with_invalid_config(self):
         """
-        Ensure that invalid input class name raises a ValueError.
-
+        Ensure that an invalid input class name raises a ValueError.
         """
         self.config.data["step_class_set"]["steps"]["input"] = "InvalidClass"
         with self.assertRaises(ValueError):
@@ -74,8 +73,8 @@ class TestSummaryClassLoader(unittest.TestCase):
 
     def setUp(self):
         """
-        Define the path to the test config file and select a dataset
-        prior to each test.
+        Define the path to the test config file, select a dataset,
+        and set up the test data file path prior to each test.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -104,7 +103,7 @@ class TestSummaryClassLoader(unittest.TestCase):
     def test_load_dataset_input_data(self):
         """
         Check that load_step2_summary_dataset sets input_data properly
-        when provided.
+        when provided and retains its expected structure.
         """
         ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -124,8 +123,8 @@ class TestSelectClassLoader(unittest.TestCase):
 
     def setUp(self):
         """
-        Define the path to the test config file and select a dataset
-        prior to each test.
+        Define the path to the test config file, select a dataset,
+        and set up the test data file path prior to each test.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -154,7 +153,7 @@ class TestSelectClassLoader(unittest.TestCase):
     def test_load_dataset_input_data(self):
         """
         Check that load_step3_select_dataset sets input_data properly
-        when provided.
+        when provided and retains its expected structure.
         """
         ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -174,8 +173,8 @@ class TestLocateClassLoader(unittest.TestCase):
 
     def setUp(self):
         """
-        Define the path to the test config file and select a dataset
-        prior to each test.
+        Define the path to the test config file, select a dataset,
+        and set up the test data file path prior to each test.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -204,7 +203,7 @@ class TestLocateClassLoader(unittest.TestCase):
     def test_load_dataset_input_data_and_profiles(self):
         """
         Check that load_step4_locate_dataset sets input_data and selected_profiles
-        properly when provided.
+        properly when provided and retains their expected structure.
         """
         ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -235,8 +234,8 @@ class TestExtractClassLoader(unittest.TestCase):
 
     def setUp(self):
         """
-        Define the path to the test config file and select a dataset
-        prior to each test.
+        Define the path to the test config file, select a dataset,
+        and set up the test data file path prior to each test.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -264,8 +263,9 @@ class TestExtractClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data_and_profiles(self):
         """
-        Check that load_step5_extract_dataset sets input_data, selected_profiles,
-        selected_rows, summary_stats, and filtered_input properly when provided.
+        Check that load_step5_extract_dataset correctly initializes the dataset
+        with provided inputs and that derived attributes (e.g., `filtered_input`,
+        `selected_rows`) are properly set and retain their expected structure.
         """
         ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)
@@ -324,8 +324,8 @@ class TestSplitClassLoader(unittest.TestCase):
 
     def setUp(self):
         """
-        Define the path to the test config file and select a dataset
-        prior to each test.
+        Define the path to the test config file, select a dataset,
+        and set up the test data file path prior to each test.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -353,8 +353,8 @@ class TestSplitClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step6_split_dataset sets target_features properly
-        when provided, after all prior steps.
+        Check that load_step6_split_dataset properly sets the `target_features`
+        input provided from previous steps and retains its expected structure.
         """
         ds_input = load_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)

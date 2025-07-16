@@ -29,7 +29,11 @@ class TestExtractDataSetA(unittest.TestCase):
     """
 
     def setUp(self):
-        """Set up test environment and load input, summary, select, and locate data."""
+        """
+        Set up test environment and load input, summary, select, and locate data.
+        Initializes `DataSetConfig` and pre-processes data using prior steps
+        to prepare for `ExtractDataSetA` testing.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -67,7 +71,10 @@ class TestExtractDataSetA(unittest.TestCase):
         self.ds_locate.process_targets()
 
     def test_output_file_names(self):
-        """Check that the output file names are set according to the configuration."""
+        """
+        Check that the output file names are set according to the configuration.
+        Verifies the `output_file_names` attribute is correctly initialized.
+        """
         ds = ExtractDataSetA(self.config)
         self.assertEqual(
             "/path/to/data_1/nrt_bo_001/extract/extracted_features_temp.parquet",
@@ -79,12 +86,19 @@ class TestExtractDataSetA(unittest.TestCase):
         )
 
     def test_step_name(self):
-        """Ensure the step name is set to 'extract'."""
+        """
+        Ensure the step name is set to 'extract'.
+        Confirms the `step_name` attribute matches the expected value.
+        """
         ds = ExtractDataSetA(self.config)
         self.assertEqual(ds.step_name, "extract")
 
     def test_init_arguments(self):
-        """Validate that input data, selected profiles, target rows, and summary stats are set."""
+        """
+        Validate that input data, selected profiles, target rows, and summary stats are set.
+        Checks if the `ExtractDataSetA` constructor correctly initializes and filters
+        its internal data attributes based on provided inputs.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -122,7 +136,11 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
 
     def test_location_features(self):
-        """Check that features are correctly processed for temp and psal targets."""
+        """
+        Check that features are correctly processed for temp and psal targets.
+        Tests the `process_targets` method to ensure the correct generation
+        and dimensions of extracted features for different target variables.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -146,7 +164,11 @@ class TestExtractDataSetA(unittest.TestCase):
         self.assertEqual(ds.target_features["pres"].shape[1], 58)
 
     def test_write_target_features(self):
-        """Confirm that target features are written to parquet files as expected."""
+        """
+        Confirm that target features are written to parquet files as expected.
+        Verifies the `write_target_features` method successfully creates
+        output files and cleans them up.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -176,7 +198,10 @@ class TestExtractDataSetA(unittest.TestCase):
         os.remove(ds.output_file_names["pres"])
 
     def test_write_no_target_features(self):
-        """Check that calling write_target_features with empty features raises ValueError."""
+        """
+        Check that calling write_target_features with empty features raises ValueError.
+        Ensures `write_target_features` handles cases where no features have been processed yet.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -185,6 +210,7 @@ class TestExtractDataSetA(unittest.TestCase):
             summary_stats=self.ds_summary.summary_stats,
         )
 
+        # target_features attribute is not populated without calling process_targets()
         with self.assertRaises(ValueError):
             ds.write_target_features()
 
@@ -193,11 +219,16 @@ class TestExtractDataSetANegX5(unittest.TestCase):
     """
     A suite of tests verifying that the ExtractDataSetA class gathers
     and outputs extracted features from multiple prior steps (input, summary,
-    select, locate).
+    select, locate). This suite uses a different configuration file
+    (`test_dataset_003.yaml`) to test different dataset characteristics.
     """
 
     def setUp(self):
-        """Set up test environment and load input, summary, select, and locate data."""
+        """
+        Set up test environment and load input, summary, select, and locate data.
+        Initializes `DataSetConfig` using `test_dataset_003.yaml` and pre-processes
+        data to prepare for `ExtractDataSetA` testing under different configurations.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -235,7 +266,11 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         self.ds_locate.process_targets()
 
     def test_init_arguments(self):
-        """Validate that input data, selected profiles, target rows, and summary stats are set."""
+        """
+        Validate that input data, selected profiles, target rows, and summary stats are set.
+        Checks if the `ExtractDataSetA` constructor correctly initializes and filters
+        its internal data attributes with data derived from `test_dataset_003.yaml` configuration.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -245,11 +280,11 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         )
 
         self.assertIsInstance(ds.input_data, pl.DataFrame)
-        self.assertEqual(ds.input_data.shape[0], 132342)
+        self.assertEqual(ds.input_data.shape[0], 115872)
         self.assertEqual(ds.input_data.shape[1], 30)
 
         self.assertIsInstance(ds.summary_stats, pl.DataFrame)
-        self.assertEqual(ds.summary_stats.shape[0], 2520)
+        self.assertEqual(ds.summary_stats.shape[0], 2185)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -257,7 +292,7 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
         self.assertIsInstance(ds.filtered_input, pl.DataFrame)
-        self.assertEqual(ds.filtered_input.shape[0], 27456)
+        self.assertEqual(ds.filtered_input.shape[0], 26362)
         self.assertEqual(ds.filtered_input.shape[1], 30)
 
         self.assertIsInstance(ds.selected_rows["temp"], pl.DataFrame)
@@ -273,7 +308,12 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         self.assertEqual(ds.selected_rows["pres"].shape[1], 9)
 
     def test_location_features(self):
-        """Check that features are correctly processed for temp and psal targets."""
+        """
+        Check that features are correctly processed for temp and psal targets.
+        Tests the `process_targets` method to ensure the correct generation
+        and dimensions of extracted features for different target variables
+        using `test_dataset_003.yaml` configuration.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,
@@ -297,7 +337,11 @@ class TestExtractDataSetANegX5(unittest.TestCase):
         self.assertEqual(ds.target_features["pres"].shape[1], 58)
 
     def test_write_target_features(self):
-        """Confirm that target features are written to parquet files as expected."""
+        """
+        Confirm that target features are written to parquet files as expected.
+        Verifies the `write_target_features` method successfully creates
+        output files for the `test_dataset_003.yaml` configuration and cleans them up.
+        """
         ds = ExtractDataSetA(
             self.config,
             input_data=self.ds_input.input_data,

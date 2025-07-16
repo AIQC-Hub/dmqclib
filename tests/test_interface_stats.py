@@ -14,7 +14,13 @@ from dmqclib.interface.stats import get_summary_stats, format_summary_stats
 
 
 class TestSummaryStats(unittest.TestCase):
-    """A test suite for the summary statistics functions."""
+    """A test suite for the summary statistics functions.
+
+    This suite includes tests for both `get_summary_stats` and
+    `format_summary_stats` functions, covering different types of
+    summary statistics (profile-level and global) and various
+    formatting options.
+    """
 
     def setUp(self):
         """Set up the test environment by defining the sample input file path.

@@ -1,18 +1,18 @@
 Step 2: Dataset Preparation
 ===========================
 
-The dataset preparation workflow is the first crucial step in the ``dmqclib`` pipeline. It takes raw data, extracts features, and creates balanced training, validation, and test sets for your machine learning model.
+The dataset preparation workflow is the first crucial step in the ``dmqclib`` pipeline. It's designed to transform your raw data into a clean, feature-engineered, and properly structured dataset, ready for machine learning model training and evaluation. This includes creating balanced training, validation, and test sets.
 
-This process is driven by a YAML configuration file, ensuring your data preparation is repeatable and easy to manage.
+This entire process is driven by a YAML configuration file, ensuring your data preparation is repeatable, transparent, and easy to manage across different experiments.
 
 .. admonition:: A Note on Running the Examples
 
-   The examples in these tutorials are presented as complete Python scripts (``.py`` files). This approach is great for building a reusable workflow.
+   The examples in these tutorials are presented as commands suitable for an interactive Python session (e.g., in a terminal with ``python`` or ``ipython``, or within a Jupyter Notebook/Lab).
 
    However, you are encouraged to use the method you are most comfortable with. The code can be run in several ways:
 
-   *   **As Python Scripts:** Copy the code into a ``.py`` file and run it from your terminal with ``python your_script_name.py``.
-   *   **In an Interactive Python Session:** Launch Python (``python``) or IPython (``ipython``) and paste the code line by line. This is great for quick tests.
+   *   **In an Interactive Python Session:** Launch Python (``python``) or IPython (``ipython``) and paste the code line by line. This is great for quick tests and exploration.
+   *   **As Python Scripts:** Copy the code into a ``.py`` file (e.g., `prepare_data.py`) and execute it from your terminal with ``python your_script_name.py``. This is suitable for automation and batch processing.
    *   **In a Jupyter Notebook or Lab:** This is a fantastic option for experimentation, as it allows you to run code in cells, add notes, and visualize results interactively.
 
    Feel free to adapt the examples to your preferred environment.
@@ -20,35 +20,35 @@ This process is driven by a YAML configuration file, ensuring your data preparat
 Getting the Example Data
 ------------------------
 
-This tutorial uses the Copernicus Marine NRT CTD dataset from Kaggle. We provide two methods for downloading it.
+This tutorial uses the Copernicus Marine NRT CTD dataset, publicly available on Kaggle. Before proceeding, let's set up your project directory structure and download the necessary data.
 
-First, create the directories for your project, regardless of which download method you choose:
+First, create the directories for your project. This structure will be used consistently throughout the tutorials:
 
 .. code-block:: bash
 
-   # Create a main project directory
+   # Create a main project directory for all dmqclib outputs and configs
    mkdir -p ~/aiqc_project
 
-   # Create subdirectories for input and output data
+   # Create subdirectories for configuration files and raw input data
+   mkdir -p ~/aiqc_project/config
    mkdir -p ~/aiqc_project/input
-   mkdir -p ~/aiqc_project/data
 
-Now, choose one of the following options to download the data.
+Now, choose one of the following options to download the dataset. Both methods will place the required data in `~/aiqc_project/input/`.
 
 .. tabs::
 
    .. tab:: Option 1: Kaggle API (Recommended)
 
-      This method is ideal for reproducibility and for users who frequently work with Kaggle.
+      This method is ideal for reproducibility and for users who frequently work with Kaggle datasets.
 
       1. **Install and configure the Kaggle API:**
-         If you haven't already, install the client and set up your credentials.
+         If you haven't already, install the `kaggle` client and set up your API credentials.
 
          .. code-block:: bash
 
             pip install kaggle
 
-         Follow the `Kaggle API authentication instructions <https://www.kaggle.com/docs/api#getting-started-installation-&-authentication>`_ to get your ``kaggle.json`` file.
+         Follow the official `Kaggle API authentication instructions <https://www.kaggle.com/docs/api#getting-started-installation-&-authentication>`_ to obtain your ``kaggle.json`` file and place it in the correct location (`~/.kaggle/`).
 
       2. **Download and unzip the data:**
          This single command downloads and extracts the dataset directly into your ``input`` folder.
@@ -59,7 +59,7 @@ Now, choose one of the following options to download the data.
 
    .. tab:: Option 2: cURL (Quickstart)
 
-      This method is the fastest way to get the data, as it requires no extra tools or setup.
+      This method is the fastest way to get the data, as it requires no extra tools or setup beyond standard command-line utilities.
 
       1. **Download the zip file using cURL:**
 
@@ -69,7 +69,7 @@ Now, choose one of the following options to download the data.
               https://www.kaggle.com/api/v1/datasets/download/takaya88/copernicus-marine-nrt-ctd-data-for-aiqc
 
       2. **Unzip the file:**
-         Navigate to the directory and extract the archive.
+         Extract the downloaded archive into your input directory.
 
          .. code-block:: bash
 
@@ -79,104 +79,142 @@ Now, choose one of the following options to download the data.
 
 After following either set of instructions, you should now have a file named ``nrt_cora_bo_4.parquet`` inside ``~/aiqc_project/input/``.
 
+Required Input Data Structure
+-----------------------------
+``dmqclib`` expects your raw input data (a Parquet file) to contain specific columns, which are crucial for identifying unique profiles and observations. If your raw data already contains these, you're good to go. Otherwise, you may need to preprocess your data to create them.
+
+The required columns are:
+
+*   **`platform_code`**: A unique identifier for the measurement platform (e.g., buoy, ship).
+*   **`profile_no`**: A unique, sequential number identifying each distinct "profile" (a set of measurements taken at a specific time and location) within a `platform_code`.
+*   **`profile_timestamp`**: The exact datetime of the profile. This column should be of a datetime type (e.g., Pandas/Polars datetime, or similar).
+*   **`longitude`**: The longitude of the measurement profile.
+*   **`latitude`**: The latitude of the measurement profile.
+*   **`observation_no`**: A unique, sequential number identifying each individual observation (row) within a `profile_no`.
+*   **`pres`**: Pressure values for each observation.
+
+If your raw data lacks `profile_no`, `profile_timestamp`, or `observation_no`, you will need to generate them. For detailed examples and helper code on how to perform these common data preprocessing steps (e.g., converting float timestamps, generating unique IDs), please refer to the :doc:`../../how-to/data_preprocessing_utilities` guide.
+
 The Dataset Preparation Workflow
 --------------------------------
-
-The workflow consists of three main steps: generating a configuration template, customizing it, and running the preparation script.
+The ``dmqclib`` data preparation workflow consists of three main programmatic steps: generating a configuration template, customizing this template to match your data and desired processing, and finally running the preparation script.
 
 Step 2.1: Generate the Configuration Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-First, create a Python script (e.g., ``run_prepare.py``) and use ``dmqclib`` to generate a configuration template. This file will contain all the necessary sections for the preparation task.
+First, use ``dmqclib`` to generate a boilerplate configuration template. This file will contain all the necessary sections for the data preparation task, which you will then customize.
 
 .. code-block:: python
 
    import dmqclib as dm
+   import os
 
-   # This creates 'prepare_config.yaml' in the current directory
+   # Define the path for the config file
+   config_path = os.path.expanduser("~/aiqc_project/config/prepare_config.yaml")
+
+   # This creates 'prepare_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
-       file_name="prepare_config.yaml",
-       module="prepare"
+       file_name=config_path,
+       stage="prepare"
    )
-   print("Configuration template 'prepare_config.yaml' has been created.")
+   print(f"Configuration template generated at: {config_path}")
 
 
 Step 2.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Now, open the newly created ``~/aiqc_project/config/prepare_config.yaml`` in a text editor. You need to tell ``dmqclib`` where to find your input data, where to save the processed output, and define your targets and features.
 
-Now, open the newly created ``prepare_config.yaml`` in a text editor. You need to tell ``dmqclib`` where to find your input data and where to save the processed output.
+You will primarily focus on updating the following sections:
 
-You will primarily edit two sections: ``path_info_sets`` and ``data_sets``.
+*   **`path_info_sets`**: Define your input and output directories.
+*   **`target_sets`**: Specify your prediction targets and their quality control flags.
+*   **`summary_stats_sets`**: Provide statistics for feature normalization.
+*   **`feature_sets` & `feature_param_sets`**: List the feature engineering methods and their parameters.
+*   **`data_sets`**: Assemble the full pipeline by linking the named blocks.
 
-Update your ``prepare_config.yaml`` to match the following, replacing the placeholder paths with the ones you created.
-
-.. code-block:: yaml
-
-   path_info_sets:
-     - name: data_set_1
-       common:
-         # EDIT: Set this to your output directory
-         base_path: /home/user/aiqc_project/data
-       input:
-         # EDIT: Set this to your input directory
-         base_path: /home/user/aiqc_project/input
-         step_folder_name: ""
-       split:
-         step_folder_name: training
+**Updating `path_info_sets` and `data_sets`:**
+Update your `prepare_config.yaml` to match the following for the `path_info_sets` and `data_sets` sections, replacing the placeholder paths with the ones you created in "Getting the Example Data".
 
 .. code-block:: yaml
 
-   data_sets:
-     - name: NRT_BO_001
-       dataset_folder_name: nrt_bo_001
-       # EDIT: Ensure this matches your downloaded file name
-       input_file_name: nrt_cora_bo_4.parquet
+    path_info_sets:
+      - name: data_set_1
+        common:
+          base_path: ~/aiqc_project/data # Root directory for all processed output data
+        input:
+          base_path: ~/aiqc_project/input # Directory where your raw input files are located
+          step_folder_name: "" # Set to "" if input files are directly in base_path
+        split:
+          step_folder_name: training # Subdirectory for the final training/validation/test splits
 
-.. note::
-   For a complete reference of all available configuration options, see the :doc:`../configuration/preparation` page.
+.. code-block:: yaml
 
-Step 2.3: Run the Preparation Process
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    data_sets:
+      - name: dataset_0001  # A unique name for this dataset preparation job
+        dataset_folder_name: dataset_0001  # The name of the output folder for this job
+        input_file_name: nrt_cora_bo_4.parquet # The specific raw input file to process
 
-Finally, modify your Python script (``run_prepare.py``) to load the configuration and execute the ``create_training_dataset`` function.
+**Gathering Summary Statistics (for `summary_stats_sets`):**
+To correctly normalize features, you need to provide summary statistics (like min/max values) of your data. The `dmqclib` library offers convenient functions to calculate these. Run the following Python code to print formatted summary statistics that you can then copy directly into the `summary_stats_sets` section of your `prepare_config.yaml`.
 
 .. code-block:: python
 
    import dmqclib as dm
+   import os
 
-   # Path to your customized configuration file
-   config_file = "prepare_config.yaml"
-   # This name must match the 'name' field in the 'data_sets' section of your YAML
-   dataset_name = "NRT_BO_001"
+   input_file = os.path.expanduser("~/aiqc_project/input/nrt_cora_bo_4.parquet")
 
-   print(f"Loading configuration for '{dataset_name}' from '{config_file}'...")
-   config = dm.read_config(config_file, module="prepare")
-   config.select(dataset_name)
+   print("--- Summary statistics for 'all' features ---")
+   stats_all = dm.get_summary_stats(input_file, "all")
+   print(dm.format_summary_stats(stats_all))
 
-   print("Starting dataset preparation...")
+   print("\n--- Summary statistics for 'profiles' features ---")
+   stats_profiles = dm.get_summary_stats(input_file, "profiles")
+   print(dm.format_summary_stats(stats_profiles))
+
+   # Use the output from the prints above to populate your summary_stats_sets section.
+   # For example, your summary_stats_sets section might look like this (simplified):
+   # summary_stats_sets:
+   #   - name: summary_stats_set_1
+   #     stats:
+   #       - name: location
+   #         min_max: { longitude: { min: 14.5, max: 23.5 }, latitude: { min: 55, max: 66 } }
+   #       - name: profile_summary_stats5
+   #         min_max: { temp: { mean: { min: ..., max: ... }, ... }, ... }
+   #       - name: basic_values3
+   #         min_max: { temp: { min: ..., max: ... }, ... }
+
+
+.. note::
+   The `prepare_config.yaml` can be quite detailed. For a complete reference of all available configuration options, including full examples for `target_sets`, `feature_sets`, `feature_param_sets`, `step_class_sets`, and `step_param_sets`, please consult the dedicated :doc:`../../configuration/preparation` page. You will need to populate these sections in your configuration file based on your specific requirements.
+
+Step 2.3: Run the Preparation Process
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Once you have customized your `prepare_config.yaml` with the correct paths, input file name, and definitions for targets, features, and summary statistics, you can execute the data preparation workflow.
+
+Load the configuration file and then call the `create_training_dataset` function:
+
+.. code-block:: python
+
+   import dmqclib as dm
+   import os
+
+   config_path = os.path.expanduser("~/aiqc_project/config/prepare_config.yaml")
+   config = dm.read_config(config_path)
    dm.create_training_dataset(config)
-   print("Dataset preparation complete!")
-
-Run the script from your terminal:
-
-.. code-block:: bash
-
-   python run_prepare.py
+   print(f"Data preparation complete! Outputs saved to: {os.path.join(config.path_info_sets[0].common.base_path, config.data_sets[0].dataset_folder_name)}")
 
 Understanding the Output
 ------------------------
+After the commands finishes, your main output directory (as defined by `path_info_sets.common.base_path`, e.g., `~/aiqc_project/data`) will contain a new folder named `dataset_0001` (derived from `data_sets.dataset_folder_name`). Inside this folder, you will find several subdirectories, each representing a stage of the data preparation pipeline:
 
-After the script finishes, your output directory (e.g., ``~/aiqc_project/data``) will contain a new folder named ``nrt_bo_001`` (from ``dataset_folder_name``). Inside, you will find several subdirectories:
-
-- **summary**: Contains summary statistics of the input data, used for normalization.
-- **select**: Stores profiles identified as having bad observations (positive samples) and associated good profiles (negative samples).
-- **locate**: Contains the specific observation records for both positive and negative profiles.
-- **extract**: Holds the features extracted from the observation records.
-- **training**: The final output, containing the split training, validation, and test datasets ready for model training.
+*   **`summary`**: Contains intermediate files with summary statistics of the input data, often used for normalization or feature scaling.
+*   **`select`**: Stores data points identified as "good" (negative samples) and "bad" (positive samples) based on your target and QC flag definitions.
+*   **`locate`**: Contains specific observation records for both positive and negative profiles, often after a proximity-based selection.
+*   **`extract`**: Holds the features extracted from the observation records, ready for model consumption.
+*   **`training`**: The final output directory. This contains the split training, validation, and test datasets in Parquet format, ready for model training and evaluation.
 
 Next Steps
 ----------
-
-Congratulations! You have successfully prepared your dataset. You are now ready to train a model.
+Congratulations! You have successfully prepared your dataset, transforming raw data into a structured format with engineered features and appropriate splits. You are now ready to train your first machine learning model using ``dmqclib``.
 
 Proceed to the next tutorial: :doc:`./training`.

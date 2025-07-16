@@ -43,15 +43,15 @@ def _get_prepare_class(
 
     :param config: A dataset configuration object that determines the base class name
                    under a specific ``step``.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :param step: The step name (e.g., "input", "summary", "select") in the YAML config.
     :type step: str
     :param registry: A dictionary mapping class names (str) to class types inheriting
                      from :class:`~dmqclib.common.base.dataset_base.DataSetBase`.
-    :type registry: dict of (str to Type[DataSetBase])
+    :type registry: Dict[str, Type[DataSetBase]]
     :raises ValueError: If the class name from the config is not found in ``registry``.
     :return: The class constructor corresponding to the requested step.
-    :rtype: Type[DataSetBase]
+    :rtype: Type[:class:`~dmqclib.common.base.dataset_base.DataSetBase`]
     """
     class_name = config.get_base_class(step)
     dataset_class = registry.get(class_name)
@@ -71,10 +71,10 @@ def load_step1_input_dataset(config: DataSetConfig) -> InputDataSetBase:
 
     :param config: The dataset configuration object, which includes a ``base_class``
                    field under the "input" step in the YAML.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :return: An instantiated object that inherits from
              :class:`~dmqclib.prepare.step1_read_input.input_base.InputDataSetBase`.
-    :rtype: InputDataSetBase
+    :rtype: :class:`~dmqclib.prepare.step1_read_input.input_base.InputDataSetBase`
     """
     dataset_class = _get_prepare_class(config, "input", INPUT_DATASET_REGISTRY)
     return dataset_class(config)
@@ -91,13 +91,13 @@ def load_step2_summary_dataset(
     to fetch the correct class from :data:`SUMMARY_DATASET_REGISTRY`, then instantiates it.
 
     :param config: The dataset configuration object, referencing the "summary" step.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: A Polars DataFrame from which summary stats can be computed,
                        defaults to None.
-    :type input_data: polars.DataFrame, optional
+    :type input_data: Optional[:class:`polars.DataFrame`]
     :return: An instantiated object that inherits from
              :class:`~dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`.
-    :rtype: SummaryStatsBase
+    :rtype: :class:`~dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`
     """
     dataset_class = _get_prepare_class(config, "summary", SUMMARY_DATASET_REGISTRY)
     return dataset_class(config, input_data=input_data)
@@ -114,12 +114,12 @@ def load_step3_select_dataset(
     to fetch the correct class from :data:`SELECT_DATASET_REGISTRY`, then instantiates it.
 
     :param config: The dataset configuration object, referencing the "select" step.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: A Polars DataFrame from which profiles can be selected, defaults to None.
-    :type input_data: polars.DataFrame, optional
+    :type input_data: Optional[:class:`polars.DataFrame`]
     :return: An instantiated object that inherits from
              :class:`~dmqclib.prepare.step3_select_profiles.select_base.ProfileSelectionBase`.
-    :rtype: ProfileSelectionBase
+    :rtype: :class:`~dmqclib.prepare.step3_select_profiles.select_base.ProfileSelectionBase`
     """
     dataset_class = _get_prepare_class(config, "select", SELECT_DATASET_REGISTRY)
     return dataset_class(config, input_data=input_data)
@@ -138,16 +138,16 @@ def load_step4_locate_dataset(
     to fetch the correct class from :data:`LOCATE_DATASET_REGISTRY`, then instantiates it.
 
     :param config: The dataset configuration object, referencing the "locate" step.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: A Polars DataFrame containing data from which locations can be derived,
                        defaults to None.
-    :type input_data: polars.DataFrame, optional
+    :type input_data: Optional[:class:`polars.DataFrame`]
     :param selected_profiles: A Polars DataFrame representing pre-selected profiles,
                               defaults to None.
-    :type selected_profiles: polars.DataFrame, optional
+    :type selected_profiles: Optional[:class:`polars.DataFrame`]
     :return: An instantiated object that inherits from
              :class:`~dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`.
-    :rtype: LocatePositionBase
+    :rtype: :class:`~dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
     """
     dataset_class = _get_prepare_class(config, "locate", LOCATE_DATASET_REGISTRY)
     return dataset_class(
@@ -172,19 +172,19 @@ def load_step5_extract_dataset(
     to fetch the correct class from :data:`EXTRACT_DATASET_REGISTRY`, then instantiates it.
 
     :param config: The dataset configuration object, referencing the "extract" step.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: An optional Polars DataFrame containing data for extraction steps.
-    :type input_data: polars.DataFrame, optional
+    :type input_data: Optional[:class:`polars.DataFrame`]
     :param selected_profiles: A Polars DataFrame of selected profiles, if applicable.
-    :type selected_profiles: polars.DataFrame, optional
+    :type selected_profiles: Optional[:class:`polars.DataFrame`]
     :param selected_rows: A dictionary mapping target names (str) to Polars DataFrames
                           of rows to be processed. Defaults to None.
-    :type selected_rows: Dict[str, polars.DataFrame], optional
+    :type selected_rows: Optional[Dict[str, :class:`polars.DataFrame`]]
     :param summary_stats: A Polars DataFrame containing summary stats for scaling or references.
-    :type summary_stats: polars.DataFrame, optional
+    :type summary_stats: Optional[:class:`polars.DataFrame`]
     :return: An instantiated object that inherits from
              :class:`~dmqclib.prepare.step5_extract_features.extract_base.ExtractFeatureBase`.
-    :rtype: ExtractFeatureBase
+    :rtype: :class:`~dmqclib.prepare.step5_extract_features.extract_base.ExtractFeatureBase`
     """
     dataset_class = _get_prepare_class(config, "extract", EXTRACT_DATASET_REGISTRY)
     return dataset_class(
@@ -207,14 +207,14 @@ def load_step6_split_dataset(
     to fetch the correct class from :data:`SPLIT_DATASET_REGISTRY`, then instantiates it.
 
     :param config: The dataset configuration object, referencing the "split" step.
-    :type config: DataSetConfig
+    :type config: :class:`~dmqclib.common.config.dataset_config.DataSetConfig`
     :param target_features: A dictionary mapping target names (str) to Polars DataFrames
                             containing features to be split into train/test sets or folds.
                             Defaults to None.
-    :type target_features: Dict[str, polars.DataFrame], optional
+    :type target_features: Optional[Dict[str, :class:`polars.DataFrame`]]
     :return: An instantiated object that inherits from
              :class:`~dmqclib.prepare.step6_split_dataset.split_base.SplitDataSetBase`.
-    :rtype: SplitDataSetBase
+    :rtype: :class:`~dmqclib.prepare.step6_split_dataset.split_base.SplitDataSetBase`
     """
     dataset_class = _get_prepare_class(config, "split", SPLIT_DATASET_REGISTRY)
     return dataset_class(

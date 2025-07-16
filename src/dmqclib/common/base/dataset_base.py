@@ -20,6 +20,10 @@ class DataSetBase(ABC):
     Subclasses must define an ``expected_class_name`` attribute, which is used to
     validate the YAML entry's ``step_class_sets``.
 
+    :ivar expected_class_name: The expected class name for validation against configuration.
+                                This must be overridden by child classes.
+    :vartype expected_class_name: str or None
+
     .. note::
 
        This class extends the :class:`abc.ABC` in order to indicate that it is

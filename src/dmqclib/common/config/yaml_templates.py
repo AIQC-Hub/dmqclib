@@ -13,6 +13,7 @@ def get_config_data_set_template() -> str:
 
     - ``path_info_sets``: specifying common, input, and split paths.
     - ``target_sets``: defining which variables to process and their flags.
+    - ``summary_stats_sets``: defining summary statistics for normalization.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
     - ``step_class_sets``: referencing classes for each preparation step
@@ -23,15 +24,6 @@ def get_config_data_set_template() -> str:
 
     :returns: A string containing the YAML template.
     :rtype: str
-
-    .. note::
-
-       There is a trailing comma in the ``feature_sets`` field:
-
-         basic_values3_plus_flanks,
-
-       which may be interpreted as part of the feature name.
-       If that is unintentional, remove the comma for valid YAML parsing.
     """
     yaml_template = """
 ---
@@ -50,18 +42,18 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
 
-summary_stats_sets:
+summary_stats_sets: # EDIT: Summary stats for normalisation
   - name: summary_stats_set_1
     stats:
       - name: location
@@ -130,9 +122,9 @@ step_param_sets:
   - name: data_set_param_set_1
     steps:
       input: { sub_steps: { rename_columns: false,
-                            filter_rows: false },
+                            filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [],
+               filter_method_dict: { remove_years: [2023],
                                      keep_years: [] } }
       summary: { }
       select: { neg_pos_ratio: 5 }
@@ -142,9 +134,9 @@ step_param_sets:
                k_fold: 10 }
 
 data_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001
-    input_file_name: nrt_cora_bo_test.parquet # EDIT: Your input filename
+  - name: dataset_0001  # EDIT: Your data set name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
+    input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     summary_stats_set: summary_stats_set_1
@@ -181,25 +173,22 @@ path_info_sets:
       base_path: /path/to/data # EDIT: Root output directory
     input:
       step_folder_name: training
-    model:
-      base_path: /path/to/model # EDIT: Directory with model files
-      step_folder_name: model
 
 target_sets:
   - name: target_set_1_3
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
 
 step_class_sets:
   - name: training_step_set_1
@@ -208,12 +197,6 @@ step_class_sets:
       validate: KFoldValidation
       model: XGBoost
       build: BuildModel
-  - name: training_step_set_invalid
-    steps:
-      input: InvalidClass
-      validate: InvalidClass
-      model: InvalidClass
-      build: InvalidClass
 
 step_param_sets:
   - name: training_param_set_1
@@ -224,8 +207,8 @@ step_param_sets:
       build: { }
 
 training_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001 # Must match the prepared dataset folder
+  - name: training_0001  # EDIT: Your training name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
     path_info: data_set_1
     target_set: target_set_1_3
     step_class_set: training_step_set_1
@@ -240,27 +223,19 @@ def get_config_classify_set_template() -> str:
 
     This template includes:
 
-    - ``path_info_sets``: specifying common, input, and split paths.
+    - ``path_info_sets``: specifying common, input, model, and concatenation paths.
     - ``target_sets``: defining which variables to process and their flags.
+    - ``summary_stats_sets``: defining summary statistics for normalization.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
-    - ``step_class_sets``: referencing classes for each preparation step
-      (e.g., input, summary, select, locate, extract, split).
-    - ``step_param_sets``: referencing parameters for the preparation steps.
+    - ``step_class_sets``: referencing classes for each classification step
+      (e.g., input, summary, select, locate, extract, model, classify, concat).
+    - ``step_param_sets``: referencing parameters for the classification steps.
     - ``classification_sets``: referencing specific dataset folders, files, and
       associated configuration sets (e.g., ``step_class_set``, ``step_param_set``).
 
     :returns: A string containing the YAML template.
     :rtype: str
-
-    .. note::
-
-       There is a trailing comma in the ``feature_sets`` field:
-
-         basic_values3_plus_flanks,
-
-       which may be interpreted as part of the feature name.
-       If that is unintentional, remove the comma for valid YAML parsing.
     """
     yaml_template = """
 ---
@@ -273,7 +248,6 @@ path_info_sets:
       step_folder_name: ""
     model:
       base_path: /path/to/model  # EDIT: Directory with model files
-      step_folder_name: model
     concat:
       step_folder_name: classify # EDIT: Directory with classification results
 
@@ -282,18 +256,18 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [4, ]
-        neg_flag_values: [1, ]
+        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
+        neg_flag_values: [1, 2]
 
-summary_stats_sets:
+summary_stats_sets: # EDIT: Summary stats for normalisation
   - name: summary_stats_set_1
     stats:
       - name: location
@@ -357,17 +331,17 @@ step_class_sets:
       locate: LocateDataSetAll
       extract: ExtractDataSetAll
       model: XGBoost
-      classify: ClassifyDataSetAll
+      classify: ClassifyAll
       concat: ConcatDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1
     steps:
       input: { sub_steps: { rename_columns: false,
-                            filter_rows: false },
+                            filter_rows: true },
                rename_dict: { },
                filter_method_dict: { remove_years: [],
-                                     keep_years: [] } }
+                                     keep_years: [2023] } }
       summary: { }
       select: { }
       locate: { }
@@ -377,9 +351,9 @@ step_param_sets:
       concat: { }
 
 classification_sets:
-  - name: NRT_BO_001
-    dataset_folder_name: nrt_bo_001  # Must match the prepared dataset folder
-    input_file_name: nrt_cora_bo_test.parquet   # EDIT: Your input filename
+  - name: classification_0001  # EDIT: Your classification name
+    dataset_folder_name: dataset_0001  # EDIT: Your output folder
+    input_file_name: nrt_cora_bo_4.parquet   # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1_3
     summary_stats_set: summary_stats_set_1

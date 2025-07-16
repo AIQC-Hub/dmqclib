@@ -32,7 +32,8 @@ class TestFeatureClassLoader(unittest.TestCase):
 
     def test_load_model_valid_config(self):
         """
-        Check that load_feature_class returns an LocationFeat
+        Test that `load_feature_class` successfully loads and returns an instance
+        of `LocationFeat` when provided with valid configuration parameters.
         """
         ds = load_feature_class(
             "temp", self.config.data["feature_param_set"]["params"][0]
@@ -41,8 +42,8 @@ class TestFeatureClassLoader(unittest.TestCase):
 
     def test_load_model_invalid_config(self):
         """
-        Ensure that invalid feature name raises a ValueError.
-
+        Test that `load_feature_class` raises a `ValueError` when an
+        invalid feature name is provided in the configuration.
         """
         self.config.data["feature_param_set"]["params"][0]["feature"] = (
             "invalid_feature_name"

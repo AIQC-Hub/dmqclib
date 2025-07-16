@@ -44,21 +44,21 @@ class TestDatasetBaseMethods(unittest.TestCase):
 
     def test_common_base_path(self):
         """
-        Ensure that undefined expected_class_name raises a NotImplementedError.
+        Verifies that direct instantiation of DataSetBase (an abstract base class) raises NotImplementedError.
         """
         with self.assertRaises(NotImplementedError):
             _ = DataSetBase("input", self.config)
 
     def test_step_name(self):
         """
-        Ensure that unmatched step_name raises a ValueError.
+        Ensures that creating a DataSet instance with an unmatched step name raises a ValueError.
         """
         with self.assertRaises(ValueError):
             _ = DataSetWithExpectedName("select", self.config)
 
     def test_represented_str(self):
         """
-        Ensure that the instance returns a correct string representation.
+        Ensures that the DataSet instance returns a correct string representation via its __str__ method.
         """
 
         ds = DataSetWithExpectedName("input", self.config)

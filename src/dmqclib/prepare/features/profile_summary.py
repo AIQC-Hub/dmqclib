@@ -93,6 +93,7 @@ class ProfileSummaryStats5(FeatureBase):
         columns from :attr:`summary_stats`, merging them into :attr:`features`.
 
         Steps:
+
           1. :meth:`_filter_selected_rows_cols` - initialize :attr:`features` by selecting
              base columns (row_id, platform_code, profile_no).
           2. For each top-level key and subkey in :attr:`feature_info["stats"]`,
@@ -122,25 +123,23 @@ class ProfileSummaryStats5(FeatureBase):
             ["row_id", "platform_code", "profile_no"]
         )
 
-    def _extract_single_summary(self, target_name: str, var_name: str) -> None:
+    def _extract_single_summary(self, variable_name: str, metric_name: str) -> None:
         """
         Join a single summary statistic (e.g., min, mean, max) from :attr:`summary_stats`
         onto :attr:`features`.
 
-        :param target_name: The variable category key (e.g., "temp", "psal") in
-                            :attr:`summary_stats`. Note: This parameter name is
-                            `variable_name` when called from `extract_features`
-                            to avoid confusion with `self.target_name`.
-        :type target_name: str
-        :param var_name: The specific metric key (e.g., "min", "mean", "max")
-                         under the variable category.
-        :type var_name: str
+        :param variable_name: The variable category key (e.g., "temp", "psal") in
+                              :attr:`summary_stats`. This was previously named `target_name`.
+        :type variable_name: str
+        :param metric_name: The specific metric key (e.g., "min", "mean", "max")
+                            under the variable category. This was previously named `var_name`.
+        :type metric_name: str
         """
         self.features = self.features.join(
-            self.summary_stats.filter(pl.col("variable") == target_name).select(
+            self.summary_stats.filter(pl.col("variable") == variable_name).select(
                 pl.col("platform_code"),
                 pl.col("profile_no"),
-                pl.col(var_name).alias(f"{target_name}_{var_name}"),
+                pl.col(metric_name).alias(f"{variable_name}_{metric_name}"),
             ),
             on=["platform_code", "profile_no"],
             maintain_order="left",

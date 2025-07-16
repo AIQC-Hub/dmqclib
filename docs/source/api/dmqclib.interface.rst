@@ -33,6 +33,14 @@ dmqclib.interface.prepare module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.interface.stats module
+------------------------------
+
+.. automodule:: dmqclib.interface.stats
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.interface.train module
 ------------------------------
 

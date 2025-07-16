@@ -7,6 +7,7 @@ import os
 import unittest
 from pathlib import Path
 
+from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.config.dataset_config import DataSetConfig
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.interface.config import read_config
@@ -22,7 +23,7 @@ class TestTemplateConfig(unittest.TestCase):
     def setUp(self):
         """
         Set up test environment by defining sample file paths
-        for dataset and training configuration templates.
+        for dataset, training, and classification configuration templates.
         """
         self.ds_config_template_file = str(
             Path(__file__).resolve().parent
@@ -98,8 +99,8 @@ class TestReadConfig(unittest.TestCase):
 
     def setUp(self):
         """
-        Define sample file paths for dataset and training configuration
-        files used in subsequent tests.
+        Define sample file paths for dataset, training, and classification
+        configuration files used in subsequent tests.
         """
         self.ds_config_file = str(
             Path(__file__).resolve().parent
@@ -115,12 +116,26 @@ class TestReadConfig(unittest.TestCase):
             / "test_training_001.yaml"
         )
 
+        self.classification_config_file = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_classify_001.yaml"
+        )
+
+        self.invalid_config_file = str(
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_dataset_invalid.yaml"
+        )
+
     def test_ds_config(self):
         """
         Verify that reading a dataset (prepare) config file returns
         a DataSetConfig instance.
         """
-        config = read_config(self.ds_config_file, "prepare")
+        config = read_config(self.ds_config_file)
         self.assertIsInstance(config, DataSetConfig)
 
     def test_train_config(self):
@@ -128,19 +143,28 @@ class TestReadConfig(unittest.TestCase):
         Verify that reading a training config file returns
         a TrainingConfig instance.
         """
-        config = read_config(self.train_config_file, "train")
+        config = read_config(self.train_config_file)
         self.assertIsInstance(config, TrainingConfig)
+
+    def test_classify_config(self):
+        """
+        Verify that reading a classification config file returns
+        a ClassificationConfig instance.
+        """
+        config = read_config(self.classification_config_file)
+        self.assertIsInstance(config, ClassificationConfig)
 
     def test_config_with_invalid_module(self):
         """
-        Check that specifying an invalid module name raises ValueError.
+        Check that specifying an invalid module name (config_type within file)
+        raises ValueError.
         """
         with self.assertRaises(ValueError):
-            _ = read_config(self.ds_config_file, "prepare2")
+            _ = read_config(self.invalid_config_file)
 
     def test_config_with_invalid_path(self):
         """
         Check that providing an invalid file path raises IOError.
         """
         with self.assertRaises(IOError):
-            _ = read_config(str(self.ds_config_file) + "zzz", "prepare")
+            _ = read_config(str(self.ds_config_file) + "abc")

@@ -39,11 +39,11 @@ class SelectDataSetA(ProfileSelectionBase):
         configuration validation.
     :vartype expected_class_name: str
     :ivar pos_profile_df: DataFrame containing positively-labeled profiles.
-    :vartype pos_profile_df: polars.DataFrame, optional
+    :vartype pos_profile_df: Optional[polars.DataFrame]
     :ivar neg_profile_df: DataFrame containing negatively-labeled profiles.
-    :vartype neg_profile_df: polars.DataFrame, optional
+    :vartype neg_profile_df: Optional[polars.DataFrame]
     :ivar key_col_names: Column names used as unique identifiers for profiles.
-    :vartype key_col_names: list[str]
+    :vartype key_col_names: List[str]
     """
 
     expected_class_name: str = "SelectDataSetA"
@@ -59,9 +59,9 @@ class SelectDataSetA(ProfileSelectionBase):
         :param input_data: A Polars DataFrame containing the full set
                            of profiles from which to select examples. If None,
                            it is expected to be loaded by the base class.
-        :type input_data: polars.DataFrame, optional
+        :type input_data: Optional[polars.DataFrame]
         """
-        super().__init__(config, input_data=input_data)
+        super().__init__(config=config, input_data=input_data)
 
         self.pos_profile_df: Optional[pl.DataFrame] = None
         self.neg_profile_df: Optional[pl.DataFrame] = None
@@ -176,6 +176,7 @@ class SelectDataSetA(ProfileSelectionBase):
         """Execute the full profile selection and labeling workflow.
 
         This method orchestrates the process by calling, in order:
+
         1. :meth:`select_positive_profiles`
         2. :meth:`select_negative_profiles`
         3. :meth:`find_profile_pairs`

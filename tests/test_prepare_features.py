@@ -32,7 +32,9 @@ class _TestFeatureBase(unittest.TestCase):
     def _setup(self, class_name):
         """
         Loads necessary data from multiple processing steps (input, summary, select, locate, extract)
-        to prepare the environment for feature extraction tests.
+        to prepare the environment for feature extraction tests. This method initializes
+        `self.config`, `self.ds_input`, `self.ds_summary`, `self.ds_select`,
+        `self.ds_locate`, and `self.ds_extract` attributes.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -208,9 +210,8 @@ class TestDayOfYearFeature(_TestFeatureBase):
 
     def test_day_of_year_features_no_param(self):
         """
-        Verifies that day-of-year features are correctly extracted and scaled,
-        specifically testing with sine conversion, and checking the resulting
-        DataFrame type and dimensions.
+        Verifies that the `scale_second` method does not modify features
+        when `feature_info` is set to `None`, implying no scaling parameters.
         """
         ds = DayOfYearFeat(
             "temp",
@@ -221,16 +222,16 @@ class TestDayOfYearFeature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
-        ds.feature_info = None
         features = ds.features
+        ds.feature_info = None  # Simulate missing feature info for scaling
         ds.scale_second()
         self.assertTrue(ds.features.equals(features))
 
     def test_day_of_year_features_no_convert_param(self):
         """
-        Verifies that day-of-year features are correctly extracted and scaled,
-        specifically testing with sine conversion, and checking the resulting
-        DataFrame type and dimensions.
+        Verifies that the `scale_second` method does not modify features
+        when the 'convert' parameter is missing from `feature_info`,
+        implying no specific conversion/scaling is applied.
         """
         ds = DayOfYearFeat(
             "temp",
@@ -241,10 +242,10 @@ class TestDayOfYearFeature(_TestFeatureBase):
             self.ds_summary.summary_stats,
         )
         ds.extract_features()
+        features = ds.features
         ds.feature_info = {
             "class": "day_of_year",
-        }
-        features = ds.features
+        }  # Simulate missing 'convert' parameter
         ds.scale_second()
         self.assertTrue(ds.features.equals(features))
 
@@ -320,13 +321,13 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
 
 class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
     """
-    Tests for verifying the BasicValues3PlusFlanks class, which extracts
-    basic stats (mean, median, max, etc.) and includes 'flank' data.
+    Tests for verifying the BasicValues class, specifically its implementation
+    for extracting basic statistics and 'flank' values from data points.
     """
 
     def setUp(self):
         """
-        Initializes the test environment for BasicValues3PlusFlanks, loading
+        Initializes the test environment for BasicValues, loading
         necessary data and configuring the specific feature information,
         including flank parameters and statistics for variables.
         """
@@ -343,7 +344,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
 
     def test_init_arguments(self):
         """
-        Checks the initialization of required data for the BasicValues3PlusFlanks class
+        Checks the initialization of required data for the BasicValues class
         by calling the shared validation method from the base class.
         """
         super()._test_init_arguments(self.feature_info)

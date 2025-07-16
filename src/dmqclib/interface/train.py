@@ -15,6 +15,9 @@ def train_and_evaluate(config: ConfigBase) -> None:
     """
     Perform a training and evaluation process based on the specified configuration.
 
+    This function orchestrates the end-to-end workflow, including data loading,
+    model validation, and final model building and testing.
+
     Steps:
 
       1. Load and process input training data.
@@ -26,12 +29,16 @@ def train_and_evaluate(config: ConfigBase) -> None:
         Specifies which classes and parameters to use at each step
         (input, model validation, and model building).
     :type config: ConfigBase
-    :return:
-        None (the function performs I/O operations and does not return a value).
+    :returns:
+        None. The function performs I/O operations and does not return a value.
     :rtype: None
+
+    :raises SomeSpecificError: If a configuration parameter is invalid or a step fails.
+        (Example: Add specific exceptions if known to be raised).
 
     Example Usage:
       >>> from dmqclib.common.base.config_base import ConfigBase
+      >>> # Assuming cfg is an initialized ConfigBase object
       >>> cfg = ConfigBase(...)
       >>> train_and_evaluate(cfg)
     """

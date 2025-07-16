@@ -160,7 +160,8 @@ class TestClassifyDataSet(unittest.TestCase):
 class TestClassifyDataSetNegX5(unittest.TestCase):
     """
     Tests for verifying that classify_dataset produces the
-    expected directory structure and output files for classification processes.
+    expected directory structure and output files for classification processes
+    when using a different model path (e.g., for 'negx5_model').
     """
 
     def setUp(self):

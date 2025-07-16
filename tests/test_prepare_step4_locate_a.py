@@ -24,8 +24,9 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def setUp(self):
         """
-        Set up a test environment by loading a configuration file, reading
-        input data, and selecting relevant profiles for subsequent tests.
+        Set up the test environment for `TestLocateDataSetA`.
+        Loads configuration, reads input data, and prepares selected profiles
+        and target value dictionaries for testing.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -81,8 +82,14 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_output_file_names(self):
         """
-        Validate that the output file names for each variable
-        (e.g., temp, psal) are set as per the configuration settings.
+        Tests that output file names are correctly generated based on
+        the configuration settings for each variable.
+
+        Note: The hardcoded absolute paths ("/path/to/locate_1/...")
+        make this test brittle and dependent on a specific environment setup.
+        It would be more robust to generate the expected paths dynamically
+        based on the configuration's output directory, or mock the underlying
+        path generation mechanism if `LocateDataSetA` relies on external factors.
         """
         ds = LocateDataSetA(self.config)
         self.assertEqual(
@@ -96,15 +103,16 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_step_name(self):
         """
-        Ensure that the step name within LocateDataSetA is 'locate'.
+        Verifies that the `step_name` attribute of `LocateDataSetA`
+        is correctly set to 'locate'.
         """
         ds = LocateDataSetA(self.config)
         self.assertEqual(ds.step_name, "locate")
 
     def test_input_data_and_selected_profiles(self):
         """
-        Confirm that input_data and selected_profiles are correctly
-        assigned as Polars DataFrames.
+        Confirms that `input_data` and `selected_profiles` are correctly
+        assigned as Polars DataFrames and have expected dimensions.
         """
         ds = LocateDataSetA(
             self.config,
@@ -122,8 +130,8 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_positive_rows(self):
         """
-        Check that positive row data is identified and stored
-        correctly based on specified flags.
+        Checks if positive rows are correctly identified and stored
+        for 'temp', 'psal', and 'pres' based on their flags.
         """
         ds = LocateDataSetA(
             self.config,
@@ -148,8 +156,8 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_negative_rows(self):
         """
-        Check that negative row data is identified and stored
-        correctly following the positive row selection stage.
+        Checks if negative rows are correctly identified and stored
+        after positive row selection for 'temp', 'psal', and 'pres'.
         """
         ds = LocateDataSetA(
             self.config,
@@ -179,8 +187,8 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_selected_rows(self):
         """
-        Confirm that target rows are correctly compiled after
-        merging positive and negative rows.
+        Confirms that the combined 'selected_rows' for 'temp', 'psal',
+        and 'pres' are correctly compiled and have expected dimensions.
         """
         ds = LocateDataSetA(
             self.config,
@@ -204,8 +212,8 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_write_selected_rows(self):
         """
-        Ensure that target rows are saved to Parquet files and
-        verify the existence of these files.
+        Verifies that the `write_selected_rows` method successfully creates
+        Parquet files for 'temp', 'psal', and 'pres' and cleans them up.
         """
         ds = LocateDataSetA(
             self.config,
@@ -235,8 +243,8 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_write_no_selected_rows(self):
         """
-        Check that a ValueError is raised if target rows are absent
-        when attempting to write them.
+        Ensures that `write_selected_rows` raises a ValueError when
+        `selected_rows` are not yet populated.
         """
         ds = LocateDataSetA(
             self.config,
@@ -250,14 +258,19 @@ class TestLocateDataSetA(unittest.TestCase):
 
 class TestLocateDataSetANegX5(unittest.TestCase):
     """
-    A suite of tests ensuring the SelectDataSetA class operates correctly
+    A suite of tests ensuring the LocateDataSetA class operates correctly
     for selecting and labeling profiles, as well as writing results to disk.
+    This test suite specifically uses a configuration (`test_dataset_003.yaml`)
+    that includes a `neg_x_multiplier` setting, which affects the number
+    of negative rows selected.
     """
 
     def setUp(self):
         """
-        Set up a test environment by loading a configuration file, reading
-        input data, and selecting relevant profiles for subsequent tests.
+        Set up the test environment for `TestLocateDataSetANegX5`.
+        Loads a specific configuration (`test_dataset_003.yaml`), reads
+        input data, and prepares selected profiles and target value
+        dictionaries for tests focused on negative row multiplication.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -313,8 +326,10 @@ class TestLocateDataSetANegX5(unittest.TestCase):
 
     def test_positive_rows(self):
         """
-        Check that positive row data is identified and stored
-        correctly based on specified flags.
+        Checks that positive rows are correctly identified and stored
+        for 'temp', 'psal', and 'pres' based on their flags.
+        (Expected counts are the same as TestLocateDataSetA as positive
+        selection logic is not affected by `neg_x_multiplier`).
         """
         ds = LocateDataSetA(
             self.config,
@@ -339,8 +354,10 @@ class TestLocateDataSetANegX5(unittest.TestCase):
 
     def test_negative_rows(self):
         """
-        Check that negative row data is identified and stored
-        correctly following the positive row selection stage.
+        Checks that negative rows are correctly identified and stored,
+        taking into account the `neg_x_multiplier` from the config,
+        which should result in a larger number of negative rows compared
+        to the default configuration.
         """
         ds = LocateDataSetA(
             self.config,
@@ -370,8 +387,9 @@ class TestLocateDataSetANegX5(unittest.TestCase):
 
     def test_selected_rows(self):
         """
-        Confirm that target rows are correctly compiled after
-        merging positive and negative rows.
+        Confirms that the combined 'selected_rows' for 'temp', 'psal',
+        and 'pres' are correctly compiled, including the multiplied
+        negative rows, and have expected total dimensions.
         """
         ds = LocateDataSetA(
             self.config,
@@ -395,8 +413,8 @@ class TestLocateDataSetANegX5(unittest.TestCase):
 
     def test_write_selected_rows(self):
         """
-        Ensure that target rows are saved to Parquet files and
-        verify the existence of these files.
+        Verifies that the `write_selected_rows` method successfully creates
+        Parquet files with the multiplied negative rows and cleans them up.
         """
         ds = LocateDataSetA(
             self.config,

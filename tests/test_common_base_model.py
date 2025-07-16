@@ -82,14 +82,14 @@ class TestModelBaseMethods(unittest.TestCase):
 
     def test_expected_class_name(self):
         """
-        Ensure that undefined expected class_name raises a NotImplementedError.
+        Ensure that an undefined expected class_name raises a NotImplementedError.
         """
         with self.assertRaises(NotImplementedError):
             _ = ModelBaseWithEmptyName(self.config)
 
     def test_model_name(self):
         """
-        Ensure that unmatched model name raises a ValueError.
+        Ensure that an unmatched model name raises a ValueError.
         """
         with self.assertRaises(ValueError):
             _ = ModelBaseWithWrongName(self.config)
@@ -98,15 +98,13 @@ class TestModelBaseMethods(unittest.TestCase):
         """
         Ensure that the instance returns a correct string representation.
         """
-
         ds = ModelBaseWithExpectedName(self.config)
         self.assertEqual(str(ds), "ModelBase(class=XGBoost)")
 
     def test_load_input_with_invalid_path(self):
         """
-        Ensure that invalid file path raises a ValueError.
+        Ensure that an invalid file path raises a FileNotFoundError.
         """
-
         ds = ModelBaseWithExpectedName(self.config)
         with self.assertRaises(FileNotFoundError):
             ds.load_model("invalid_file_path")

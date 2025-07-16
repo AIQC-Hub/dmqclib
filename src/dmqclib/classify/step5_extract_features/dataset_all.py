@@ -57,7 +57,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
         :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
-            config,
+            config=config,
             input_data=input_data,
             selected_profiles=selected_profiles,
             selected_rows=selected_rows,
@@ -71,7 +71,7 @@ class ExtractDataSetAll(ExtractFeatureBase):
 
         #: Dictionary mapping target names to the corresponding Parquet file paths.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
-            "extract", self.default_file_name
+            step_name="extract", default_file_name=self.default_file_name
         )
 
         #: Column names used for intermediate or reference purposes
