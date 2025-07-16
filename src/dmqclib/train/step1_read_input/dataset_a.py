@@ -11,23 +11,27 @@ from dmqclib.train.step1_read_input.input_base import InputTrainingSetBase
 
 class InputTrainingSetA(InputTrainingSetBase):
     """
-    A specialized input class for reading training and test sets
-    for Copernicus CTD data.
+    A specialized input class for reading training and test sets for Copernicus CTD data.
 
-    This class sets its :attr:`expected_class_name` to "InputTrainingSetA"
-    so that config validation in the parent class matches the YAML's
-    ``base_class`` value.
+    This class extends :class:`dmqclib.train.step1_read_input.input_base.InputTrainingSetBase`
+    and provides specific implementations or configurations for handling CTD datasets.
+    It sets its :attr:`expected_class_name` to "InputTrainingSetA" so that configuration
+    validation in the parent class can correctly match the ``base_class`` value specified in YAML.
     """
 
     expected_class_name: str = "InputTrainingSetA"
 
     def __init__(self, config: ConfigBase) -> None:
         """
-        Initialize the specialized input training set class with the provided
-        training configuration.
+        Initialize the specialized input training set class with the provided training configuration.
+
+        This constructor calls the parent class's `__init__` method, passing the
+        configuration object. It ensures that the base setup for reading training
+        and test data is performed.
 
         :param config: A training configuration object containing paths,
-                       file names, and target definitions.
-        :type config: ConfigBase
+                       file names, and target definitions necessary for
+                       data loading and processing.
+        :type config: dmqclib.common.base.config_base.ConfigBase
         """
-        super().__init__(config)
+        super().__init__(config=config)

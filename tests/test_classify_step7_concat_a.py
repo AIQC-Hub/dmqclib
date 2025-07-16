@@ -28,7 +28,11 @@ class TestConcatPredictions(unittest.TestCase):
     """
 
     def setUp(self):
-        """Set up test environment and load input, summary, select, and locate data."""
+        """
+        Set up test environment by loading necessary configuration and preparing
+        input data, summary statistics, selected profiles, located data, extracted features,
+        and classified predictions from previous steps.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -101,7 +105,7 @@ class TestConcatPredictions(unittest.TestCase):
         self.assertEqual(ds.step_name, "concat")
 
     def test_output_file_names(self):
-        """Verify that the default output file name for merged predictions is as expected."""
+        """Verify that the default output file name for merged predictions is as expected from config."""
         ds = ConcatDataSetAll(self.config)
 
         self.assertEqual(
@@ -112,7 +116,7 @@ class TestConcatPredictions(unittest.TestCase):
     def test_test_sets(self):
         """
         Check that input data and predictions are correctly loaded into ConcatDataSetAll
-        and have the expected shapes.
+        and have the expected shapes for further processing.
         """
         ds = ConcatDataSetAll(
             self.config,
@@ -139,7 +143,7 @@ class TestConcatPredictions(unittest.TestCase):
     def test_merge_predictions(self):
         """
         Confirm that merging predictions correctly combines input data and
-        individual parameter predictions into a single DataFrame.
+        individual parameter predictions into a single Polars DataFrame with the expected shape.
         """
         ds = ConcatDataSetAll(
             self.config,
@@ -154,7 +158,7 @@ class TestConcatPredictions(unittest.TestCase):
 
     def test_merge_predictions_with_empty_input(self):
         """
-        Check that a ValueError is raised if input data are absent
+        Check that a ValueError is raised if the input data for merging is absent (None).
         """
         ds = ConcatDataSetAll(
             self.config,
@@ -166,7 +170,7 @@ class TestConcatPredictions(unittest.TestCase):
 
     def test_merge_predictions_with_empty_predictions(self):
         """
-        Check that a ValueError is raised if predictions are absent
+        Check that a ValueError is raised if the predictions for merging are absent (None).
         """
         ds = ConcatDataSetAll(
             self.config,
@@ -177,7 +181,10 @@ class TestConcatPredictions(unittest.TestCase):
             ds.merge_predictions()
 
     def test_write_predictions(self):
-        """Check that the merged predictions are correctly written to a Parquet file."""
+        """
+        Check that the merged predictions are correctly written to a Parquet file
+        and that the file exists afterwards, then clean up the created file.
+        """
         ds = ConcatDataSetAll(
             self.config,
             input_data=self.ds_input.input_data,
@@ -197,7 +204,7 @@ class TestConcatPredictions(unittest.TestCase):
     def test_write_no_results(self):
         """
         Ensure ValueError is raised if write_merged_predictions is called
-        before predictions have been merged.
+        before predictions have been merged, as `merged_predictions` would be None.
         """
         ds = ConcatDataSetAll(
             self.config,

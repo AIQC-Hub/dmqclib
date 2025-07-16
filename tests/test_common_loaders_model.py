@@ -1,6 +1,9 @@
 """
 Unit tests for verifying the correct loading and initialization of model classes
 at various processing steps, using common loader functions.
+
+This module contains tests for the `load_model_class` function and
+initial state validation of loaded model instances.
 """
 
 import unittest
@@ -18,8 +21,8 @@ class TestModelClassLoader(unittest.TestCase):
 
     def setUp(self):
         """
-        Define the path to the test config file and select a dataset
-        prior to each test.
+        Defines the path to the test configuration file and selects a dataset
+        prior to each test execution.
         """
         self.config_file_path = (
             Path(__file__).resolve().parent
@@ -32,14 +35,16 @@ class TestModelClassLoader(unittest.TestCase):
 
     def test_load_model_valid_config(self):
         """
-        Check that load_model_class returns an XGBoost
+        Tests that load_model_class successfully returns an XGBoost instance
+        when provided with a valid configuration.
         """
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, XGBoost)
 
     def test_load_model_invalid_config(self):
         """
-        Ensure that invalid model name raises a ValueError.
+        Verifies that load_model_class raises a ValueError when an
+        invalid model name is specified in the configuration.
         """
         self.config.data["step_class_set"]["steps"]["model"] = "invalid_model_name"
         with self.assertRaises(ValueError):
@@ -47,7 +52,8 @@ class TestModelClassLoader(unittest.TestCase):
 
     def test_build_model_empty_training_set(self):
         """
-        Ensure that build raises a ValueError when training set is not set.
+        Ensures that the model's build method raises a ValueError
+        if the training set has not been provided.
         """
         ds = load_model_class(self.config)
         with self.assertRaises(ValueError):
@@ -55,7 +61,8 @@ class TestModelClassLoader(unittest.TestCase):
 
     def test_predict_model_empty_test_set(self):
         """
-        Ensure that predict raises a ValueError when test set is not set.
+        Ensures that the model's predict method raises a ValueError
+        if the test set has not been provided.
         """
         ds = load_model_class(self.config)
         with self.assertRaises(ValueError):
@@ -63,7 +70,8 @@ class TestModelClassLoader(unittest.TestCase):
 
     def test_create_report_empty_test_set(self):
         """
-        Ensure that create_report raises a ValueError when test set is not set.
+        Ensures that the model's create_report method raises a ValueError
+        if the test set has not been provided.
         """
         ds = load_model_class(self.config)
         with self.assertRaises(ValueError):
@@ -71,9 +79,10 @@ class TestModelClassLoader(unittest.TestCase):
 
     def test_create_report_empty_predictions(self):
         """
-        Ensure that create_report raises a ValueError when predictions are not set.
+        Ensures that the model's create_report method raises a ValueError
+        if predictions have not been generated or set.
         """
         ds = load_model_class(self.config)
-        ds.test_set = {}
+        ds.test_set = {}  # Set test_set to an empty dict to bypass `test_set not set` check
         with self.assertRaises(ValueError):
             ds.create_report()

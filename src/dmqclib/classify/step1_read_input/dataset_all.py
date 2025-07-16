@@ -33,4 +33,4 @@ class InputDataSetAll(InputDataSetBase):
                        Copernicus CTD data.
         :type config: ConfigBase
         """
-        super().__init__(config)
+        super().__init__(config=config)

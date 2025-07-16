@@ -1,117 +1,134 @@
 Step 3: Training & Evaluation
 =============================
 
-With a properly prepared dataset, you are now ready to train and evaluate a machine learning model. This workflow uses the training, validation, and test sets created in the previous step to build a model, assess its performance using cross-validation, and generate final evaluation metrics.
+With a properly prepared dataset (from :doc:`./preparation`), you are now ready to train and evaluate a machine learning model. This workflow leverages the training, validation, and test sets created in the previous step to build a model, rigorously assess its performance using cross-validation, and generate final evaluation metrics on a held-out test set.
 
-Like all workflows in ``dmqclib``, this process is controlled by a dedicated YAML configuration file.
+Like all workflows in ``dmqclib``, this process is controlled by a dedicated YAML configuration file, which, like the preparation config, utilizes the "building blocks" concept for modularity and reusability.
 
 .. admonition:: Prerequisites
 
-   This tutorial assumes you have successfully completed :doc:`./preparation`. The training process directly uses the output files generated in that step.
+   This tutorial assumes you have successfully completed :doc:`./preparation`. The training process directly uses the output files (the split datasets) generated in that step. Ensure your `~/aiqc_project/data/dataset_0001/training/` directory exists and contains the prepared data.
 
 The Training Workflow
 ---------------------
 
-The workflow mirrors the preparation step: you will generate a new configuration template, customize it to point to your data and model directories, and then run the training script.
+The training workflow follows a similar pattern to the preparation step: you will generate a new configuration template, customize it to define your model and validation strategy, point to your input data, and specify where the trained models should be saved.
 
 Step 3.1: Generate the Configuration Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create a new Python script for this task (e.g., ``run_train.py``). Use ``dmqclib`` to generate a configuration template specifically for training.
+First, use ``dmqclib`` to generate a boilerplate configuration template specifically for the training workflow.
 
 .. code-block:: python
 
    import dmqclib as dm
+   import os
 
-   # This creates 'train_config.yaml' in the current directory
+   # Define the path for the config file
+   config_path = os.path.expanduser("~/aiqc_project/config/training_config.yaml")
+
+   # This creates 'training_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
-       file_name="train_config.yaml",
-       module="train"
+       file_name=config_path,
+       stage="train"
    )
-   print("Configuration template 'train_config.yaml' has been created.")
+   print(f"Configuration template generated at: {config_path}")
+
 
 Step 3.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Open the new ``train_config.yaml`` file. Your goal is to tell ``dmqclib``:
-1. Where to find the prepared dataset.
-2. Where to save the trained model and its artifacts.
+Now, open the newly created ``~/aiqc_project/config/training_config.yaml`` file in your text editor. Your primary goals are to define:
+1.  **Input & Output Paths:** Where to find the prepared dataset and where to save the trained model.
+2.  **Model & Validation Strategy:** Which machine learning model to train and what cross-validation method to use.
 
-You will need to edit the ``path_info_sets`` and ``training_sets`` sections. We will also create a new directory to store our models.
+You will need to edit the `path_info_sets`, `step_class_sets`, `step_param_sets`, and `training_sets` sections.
 
-1. **Create a directory for your models:**
+Before you modify the config, let's create a directory where your trained models will be saved:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      mkdir -p ~/aiqc_project/models
+   mkdir -p ~/aiqc_project/models
 
-2. **Update your ``train_config.yaml`` file:**
-   Modify the file to match the following structure, ensuring the paths align with your project setup.
+**Update your ``training_config.yaml`` file:**
+Modify the file to align with the following structure. Remember to replace placeholder paths with your actual project setup.
 
-   .. code-block:: yaml
+.. code-block:: yaml
 
-      path_info_sets:
-        - name: data_set_1
-          # EDIT: This must match the output path from the preparation step.
-          common:
-            base_path: /home/user/aiqc_project/data
-          # This tells dmqclib to look for input inside the `training` sub-folder.
-          input:
-            step_folder_name: training
-          # EDIT: This is where your final model files will be saved.
-          model:
-            base_path: /home/user/aiqc_project/models
-            step_folder_name: model
+    path_info_sets:
+      - name: data_set_1
+        common:
+          base_path: ~/aiqc_project/data # Root directory of the prepared dataset (from preparation step)
+        input:
+          step_folder_name: training # Subdirectory containing the split training/validation/test data
+        model:
+          base_path: ~/aiqc_project/models # Directory where the final trained models will be saved
 
-  .. code-block:: yaml
+.. code-block:: yaml
 
-      training_sets:
-        - name: NRT_BO_001
-          # This must match the `dataset_folder_name` from the preparation step.
-          dataset_folder_name: nrt_bo_001
+    # Define your model and validation strategy here.
+    # For this tutorial, we'll use a KFoldValidation and XGBoost model.
+    step_class_sets:
+      - name: training_step_set_1
+        steps:
+          input: InputTrainingSetA
+          validate: KFoldValidation # Specify your cross-validation class
+          model: XGBoost # Specify your ML model class (e.g., XGBoost, RandomForest)
+          build: BuildModel
+
+    # Define parameters for your chosen model and validation.
+    # For example, number of folds for CV, or model hyperparameters.
+    step_param_sets:
+      - name: training_param_set_1
+        steps:
+          input: { }
+          validate: { k_fold: 10 } # 10-fold cross-validation
+          model: { model_params: { scale_pos_weight: 200 } } # Example XGBoost hyperparameter
+          build: { }
+
+.. code-block:: yaml
+
+    training_sets:
+      - name: training_0001  # A unique name for this training job
+        dataset_folder_name: dataset_0001  # This MUST match the dataset_folder_name from your preparation config
+        path_info: data_set_1
+        target_set: target_set_1_3 # This needs to match a 'target_set' defined in your prepare_config.yaml
+        step_class_set: training_step_set_1
+        step_param_set: training_param_set_1
 
 .. note::
-   The training configuration file includes many other options for model selection, hyperparameter tuning, and cross-validation strategies. For a complete reference, see the :doc:`../../configuration/training` page.
+   The training configuration file includes many other options for advanced model selection, hyperparameter tuning, and cross-validation strategies. For a complete reference of all available parameters, please consult the dedicated :doc:`../../configuration/training` page.
 
 Step 3.3: Run the Training Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now, update your ``run_train.py`` script to load the training configuration and execute the ``train_and_evaluate`` function.
+Once you have customized your `training_config.yaml` with the correct paths and model/validation configurations, you can execute the training and evaluation workflow.
+
+Load the configuration file and then call the `train_and_evaluate` function:
 
 .. code-block:: python
 
    import dmqclib as dm
+   import os
 
-   # Path to your customized training configuration file
-   config_file = "train_config.yaml"
-   # This name must match the 'name' in the 'training_sets' section of your YAML
-   training_set_name = "NRT_BO_001"
-
-   print(f"Loading configuration for '{training_set_name}' from '{config_file}'...")
-   config = dm.read_config(config_file, module="train")
-   config.select(training_set_name)
-
-   print("Starting model training and evaluation...")
+   config_path = os.path.expanduser("~/aiqc_project/config/training_config.yaml")
+   config = dm.read_config(config_path)
    dm.train_and_evaluate(config)
-   print("Training and evaluation complete!")
-
-Run the script from your terminal:
-
-.. code-block:: bash
-
-   python run_train.py
+   print(f"Model training and evaluation complete! Outputs saved to: {os.path.join(config.path_info_sets[0].common.base_path, config.training_sets[0].dataset_folder_name)}")
+   print(f"Trained models saved to: {config.path_info_sets[0].model.base_path}")
 
 Understanding the Output
 ------------------------
 
-After the script finishes, ``dmqclib`` generates new folders inside your output directory (``~/aiqc_project/data/nrt_bo_001/``). The primary outputs are:
+After the command finishes, ``dmqclib`` will have created new folders within your dataset's output directory (e.g., `~/aiqc_project/data/dataset_0001/`) and within your model's base path (`~/aiqc_project/models/`). The primary outputs include:
 
-- **validate**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds.
-- **build**: Holds the final, trained model object(s) and a comprehensive report of their evaluation performance on the held-out test dataset. The model saved here is ready for classification.
+*   **`validate`**: This subdirectory (within `~/aiqc_project/data/dataset_0001/`) contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds. This includes metrics, predictions, and potentially visualizations.
+*   **`build`**: This subdirectory (also within `~/aiqc_project/data/dataset_0001/`) holds a comprehensive report of the final model's evaluation performance on the held-out test dataset, along with aggregated metrics.
+*   **`models`**: (Within `~/aiqc_project/models/`) This is the directory (named by `path_info_sets.model.base_path`) that holds the final, trained model object(s) ready for classification. These are the artifacts you will use in the next step.
 
 Next Steps
 ----------
 
-You have now successfully trained and evaluated a model! The final step is to use this model to classify new, unseen data.
+You have now successfully trained and evaluated a machine learning model using ``dmqclib``! The final step in the workflow is to use this trained model to classify new, unseen data.
 
 Proceed to the next tutorial: :doc:`./classification`.

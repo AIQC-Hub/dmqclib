@@ -12,7 +12,7 @@ from dmqclib.common.config.classify_config import ClassificationConfig
 
 class TestClassificationConfig(unittest.TestCase):
     """
-    A suite of tests ensuring DataSetConfig can validate configurations,
+    A suite of tests ensuring ClassificationConfig can validate configurations,
     select datasets correctly, and generate file/folder paths as expected.
     """
 
@@ -58,8 +58,8 @@ class TestClassificationConfig(unittest.TestCase):
 
     def test_load_dataset_config(self):
         """
-        Check that the correct sections (path_info, target_set, etc.)
-        are loaded from a valid configuration.
+        Check that the expected configuration sections and their lengths
+        are loaded from a valid configuration file.
         """
         ds = ClassificationConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -73,7 +73,8 @@ class TestClassificationConfig(unittest.TestCase):
 
     def test_load_dataset_config_twice(self):
         """
-        Confirm that calling select() multiple times does not break anything.
+        Confirm that calling `select()` multiple times with the same dataset
+        name does not cause issues or alter the state incorrectly.
         """
         ds = ClassificationConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
@@ -82,7 +83,7 @@ class TestClassificationConfig(unittest.TestCase):
     def test_invalid_dataset_name(self):
         """
         Check that attempting to select an unavailable dataset name
-        raises a ValueError.
+        raises a ValueError as expected.
         """
         ds = ClassificationConfig(str(self.config_file_path))
         with self.assertRaises(ValueError):
@@ -90,32 +91,46 @@ class TestClassificationConfig(unittest.TestCase):
 
     def test_input_folder(self):
         """
-        Verify that input folder paths are generated as expected using template config.
+        Verify that full file paths for input files are generated correctly
+        based on the configuration settings.
         """
         ds = ClassificationConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("classification_0001")
         input_file_name = ds.get_full_file_name(
             "input",
             ds.data["input_file_name"],
             use_dataset_folder=False,
             folder_name_auto=False,
         )
-        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_test.parquet")
+        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_4.parquet")
 
     def test_summary_folder(self):
         """
-        Confirm that files placed in a 'summary' folder are resolved correctly.
+        Confirm that full file paths for 'summary' folder items are resolved correctly.
         """
         ds = ClassificationConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("classification_0001")
         input_file_name = ds.get_full_file_name("summary", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/summary/test.txt")
+        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/summary/test.txt")
 
     def test_classify_folder(self):
         """
-        Confirm that files placed in a 'classify' folder are resolved correctly.
+        Confirm that full file paths for 'classify' folder items are resolved correctly.
         """
         ds = ClassificationConfig(str(self.template_file))
-        ds.select("NRT_BO_001")
+        ds.select("classification_0001")
         input_file_name = ds.get_full_file_name("classify", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/nrt_bo_001/classify/test.txt")
+        self.assertEqual(
+            input_file_name, "/path/to/data/dataset_0001/classify/test.txt"
+        )
+
+    def test_auto_select(self):
+        """
+        Confirm that the `auto_select` option in the constructor correctly
+        determines whether data is automatically loaded or not.
+        """
+        ds = ClassificationConfig(str(self.template_file), False)
+        self.assertIsNone(ds.data)
+
+        ds = ClassificationConfig(str(self.template_file), True)
+        self.assertIsNotNone(ds.data)

@@ -16,9 +16,9 @@ from dmqclib.common.loader.classify_loader import load_classify_step1_input_data
 from dmqclib.common.loader.classify_loader import load_classify_step3_select_dataset
 
 
-class TestLocateDataSetA(unittest.TestCase):
+class TestLocateDataSetAll(unittest.TestCase):
     """
-    A suite of tests for verifying the LocateDataSetA class functionality,
+    A suite of tests for verifying the LocateDataSetAll class functionality,
     including row selection, data assignment, and file output.
     """
 
@@ -72,7 +72,7 @@ class TestLocateDataSetA(unittest.TestCase):
 
     def test_step_name(self):
         """
-        Ensure that the step name within LocateDataSetA is 'locate'.
+        Ensure that the step name within LocateDataSetAll is 'locate'.
         """
         ds = LocateDataSetAll(self.config)
         self.assertEqual(ds.step_name, "locate")
@@ -124,6 +124,7 @@ class TestLocateDataSetA(unittest.TestCase):
     def test_selected_rows_with_empty_input(self):
         """
         Check that a ValueError is raised if input data are absent
+        when processing targets.
         """
         ds = LocateDataSetAll(
             self.config,

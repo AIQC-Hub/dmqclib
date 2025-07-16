@@ -14,7 +14,6 @@ Subpackages
 
    dmqclib.classify
    dmqclib.common
-   dmqclib.estimate
    dmqclib.interface
    dmqclib.prepare
    dmqclib.train

@@ -25,6 +25,22 @@ dmqclib.prepare.features.day\_of\_year module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.prepare.features.flank\_down module
+-------------------------------------------
+
+.. automodule:: dmqclib.prepare.features.flank_down
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.prepare.features.flank\_up module
+-----------------------------------------
+
+.. automodule:: dmqclib.prepare.features.flank_up
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.prepare.features.location module
 ----------------------------------------
 

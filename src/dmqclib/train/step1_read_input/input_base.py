@@ -39,7 +39,7 @@ class InputTrainingSetBase(DataSetBase):
 
         :param config: A training configuration instance that includes
                        file paths and target definitions.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :raises NotImplementedError: If no ``expected_class_name``
                                      is defined by a subclass and this
                                      class is instantiated directly
@@ -48,7 +48,7 @@ class InputTrainingSetBase(DataSetBase):
                             does not match  ``expected_class_name``
                             (also per :class:`DataSetBase`).
         """
-        super().__init__("input", config)
+        super().__init__(step_name="input", config=config)
 
         #: Default file naming patterns for train/test sets. The substring
         #: ``{target_name}`` will be replaced dynamically.
@@ -66,7 +66,7 @@ class InputTrainingSetBase(DataSetBase):
         #:         "test":  {"targetA": "path/to/targetA_test.parquet", ...}
         #:     }
         self.input_file_names: Dict[str, Dict[str, str]] = {
-            k: self.config.get_target_file_names("input", v)
+            k: self.config.get_target_file_names(step_name="input", default_file_name=v)
             for k, v in self.default_file_names.items()
         }
 

@@ -33,16 +33,21 @@ class DataSetConfig(ConfigBase):
     :class:`ConfigBase` to validate consistency with the YAML data.
     """
 
-    def __init__(self, config_file: str) -> None:
+    def __init__(self, config_file: str, auto_select: bool = False) -> None:
         """
         Initialize a new :class:`DataSetConfig` instance.
 
         :param config_file: The path to the YAML configuration file.
         :type config_file: str
+        :param auto_select: If :obj:`True`, automatically selects the first dataset
+                            found in the configuration file. Defaults to :obj:`False`.
+        :type auto_select: bool
         :raises ValueError: If the YAML structure is invalid or the
                             file does not contain `data_sets` section.
         """
-        super().__init__("data_sets", config_file=config_file)
+        super().__init__(
+            section_name="data_sets", config_file=config_file, auto_select=auto_select
+        )
 
     def select(self, dataset_name: str) -> None:
         """

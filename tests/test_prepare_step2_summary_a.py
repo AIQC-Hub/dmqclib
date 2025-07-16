@@ -20,7 +20,7 @@ class TestSelectDataSetA(unittest.TestCase):
     """
 
     def setUp(self):
-        """Set up test environment and load input dataset."""
+        """Set up test environment by loading configuration and input dataset."""
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -48,7 +48,7 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_default_output_file_name(self):
-        """Verify that a default output file name is correctly set."""
+        """Verify that a default output file name is correctly set when `output_file_name` is not specified in the configuration."""
         config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -70,14 +70,14 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.step_name, "summary")
 
     def test_input_data(self):
-        """Confirm that input_data is correctly stored as a Polars DataFrame."""
+        """Confirm that `input_data` is correctly stored as a Polars DataFrame with expected dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 132342)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_global_stats(self):
-        """Check that calculate_global_stats returns correct columns and row count."""
+        """Check that `calculate_global_stats` returns a Polars DataFrame with the correct columns and row count."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         df = ds.calculate_global_stats("temp")
         self.assertIsInstance(df, pl.DataFrame)
@@ -85,7 +85,7 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(df.shape[1], 12)
 
     def test_profile_stats(self):
-        """Check that calculate_profile_stats processes grouped profiles correctly."""
+        """Check that `calculate_profile_stats` correctly processes grouped profiles and returns a DataFrame of expected dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         grouped_df = ds.input_data.group_by(ds.profile_col_names)
         df = ds.calculate_profile_stats(grouped_df, "temp")
@@ -93,14 +93,14 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(df.shape[1], 12)
 
     def test_summary_stats(self):
-        """Check that calculate_stats populates summary_stats with correct dimensions."""
+        """Check that `calculate_stats` correctly populates `summary_stats` with the expected dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
         self.assertEqual(ds.summary_stats.shape[0], 2520)
         self.assertEqual(ds.summary_stats.shape[1], 12)
 
     def test_write_summary_stats(self):
-        """Confirm that summary statistics are written to file and file creation is verified."""
+        """Confirm that `summary_stats` are successfully written to a file and the file's existence is verified."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.output_file_name = str(
             Path(__file__).resolve().parent
@@ -115,14 +115,14 @@ class TestSelectDataSetA(unittest.TestCase):
         os.remove(ds.output_file_name)
 
     def test_write_no_summary_stats(self):
-        """Ensure ValueError is raised if write_summary_stats is called with empty stats."""
+        """Ensure `ValueError` is raised if `write_summary_stats` is called when `summary_stats` is empty."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
 
         with self.assertRaises(ValueError):
             ds.write_summary_stats()
 
     def test_summary_stats_observation(self):
-        """Check that create_summary_stats_observation calculates observation level summary correctly."""
+        """Check that `create_summary_stats_observation` calculates observation-level summary statistics correctly with expected dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
         ds.create_summary_stats_observation()
@@ -130,13 +130,13 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.summary_stats_observation.shape[1], 5)
 
     def test_summary_stats_observation_without_stats_ds(self):
-        """Ensure ValueError is raised if create_summary_stats_observation is called with empty stats."""
+        """Ensure `ValueError` is raised if `create_summary_stats_observation` is called when `summary_stats` is empty."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         with self.assertRaises(ValueError):
             ds.create_summary_stats_observation()
 
     def test_summary_stats_profile(self):
-        """Check that summary_stats_observation calculates profile level summary correctly."""
+        """Check that `create_summary_stats_profile` calculates profile-level summary statistics correctly with expected dimensions."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         ds.calculate_stats()
         ds.create_summary_stats_profile()
@@ -144,7 +144,7 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.summary_stats_profile.shape[1], 6)
 
     def test_summary_stats_profile_without_stats_ds(self):
-        """Ensure ValueError is raised if create_summary_stats_profile is called with empty stats."""
+        """Ensure `ValueError` is raised if `create_summary_stats_profile` is called when `summary_stats` is empty."""
         ds = SummaryDataSetA(self.config, input_data=self.ds.input_data)
         with self.assertRaises(ValueError):
             ds.create_summary_stats_profile()

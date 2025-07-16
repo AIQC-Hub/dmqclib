@@ -48,7 +48,7 @@ class LocateDataSetA(LocatePositionBase):
 
         :param config: A dataset configuration object specifying paths,
                        parameters, and target definitions for locating test data rows.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :param input_data: A Polars DataFrame containing the full data
                            from which positive and negative rows will be derived.
                            Defaults to None.
@@ -59,7 +59,7 @@ class LocateDataSetA(LocatePositionBase):
         :type selected_profiles: polars.DataFrame or None
         """
         super().__init__(
-            config, input_data=input_data, selected_profiles=selected_profiles
+            config=config, input_data=input_data, selected_profiles=selected_profiles
         )
 
         #: Dictionary for holding subsets of positive rows keyed by target name.
@@ -76,7 +76,7 @@ class LocateDataSetA(LocatePositionBase):
         :type target_name: str
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name that indicates a "bad" observation (e.g., flag=4).
-        :type target_value: Dict
+        :type target_value: Dict[str, any]
         """
         pos_flag_values = target_value.get("pos_flag_values", [4])
         self.positive_rows[target_name] = (
@@ -116,7 +116,7 @@ class LocateDataSetA(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for selecting negative observations
                              (e.g., flag=1 or any "good" flag).
-        :type target_value: Dict
+        :type target_value: Dict[str, any]
         """
         self.select_negative_rows_closest_day(target_name, target_value)
         neighbor_n = self.config.get_step_params("locate").get("neighbor_n", 0)
@@ -145,8 +145,9 @@ class LocateDataSetA(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for selecting negative observations
                              (e.g., flag=1 or any "good" flag).
-        :type target_value: Dict
+        :type target_value: Dict[str, any]
         """
+        neg_flag_values = target_value.get("neg_flag_values", [1])
         negative_rows = (
             self.positive_rows[target_name]
             .select(
@@ -168,7 +169,9 @@ class LocateDataSetA(LocatePositionBase):
                 on="pos_profile_id",
             )
             .join(
-                self.input_data.select(
+                self.input_data.filter(
+                    pl.col(target_value["flag"]).is_in(neg_flag_values)
+                ).select(
                     pl.col("platform_code"),
                     pl.col("profile_no"),
                     pl.col("observation_no"),
@@ -216,7 +219,7 @@ class LocateDataSetA(LocatePositionBase):
         The alignment process involves:
 
         1. Selecting positive profiles.
-        2. Generating neighbouring observation numbers
+        2. Generating neighbouring observation numbers.
         3. Joining with the full input data to get observation details.
         4. Selecting the negative observations.
 
@@ -225,7 +228,7 @@ class LocateDataSetA(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for selecting negative observations
                              (e.g., flag=1 or any "good" flag).
-        :type target_value: Dict
+        :type target_value: Dict[str, any]
         """
         neighbor_n = self.config.get_step_params("locate").get("neighbor_n", 0)
         neighbor_no = list(range(1, neighbor_n + 1)) + [
@@ -293,7 +296,7 @@ class LocateDataSetA(LocatePositionBase):
         :type target_name: str
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for both positive and negative selection.
-        :type target_value: Dict
+        :type target_value: Dict[str, any]
         """
         self.select_positive_rows(target_name, target_value)
         self.select_negative_rows(target_name, target_value)

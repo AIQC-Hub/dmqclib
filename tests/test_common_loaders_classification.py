@@ -32,7 +32,7 @@ from dmqclib.common.loader.classify_loader import (
 
 class TestClassifyInputClassLoader(unittest.TestCase):
     """
-    Tests related to loading the InputDataSetA class.
+    Tests related to loading the InputDataSetAll class.
     """
 
     def setUp(self):
@@ -51,8 +51,8 @@ class TestClassifyInputClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step1_input_dataset returns an InputDataSetA instance with
-        the expected step name.
+        Check that load_classify_step1_input_dataset returns an InputDataSetAll instance
+        with the expected step name.
         """
         ds = load_classify_step1_input_dataset(self.config)
         self.assertIsInstance(ds, InputDataSetAll)
@@ -60,8 +60,7 @@ class TestClassifyInputClassLoader(unittest.TestCase):
 
     def test_load_input_class_with_invalid_config(self):
         """
-        Ensure that invalid input class name raises a ValueError.
-
+        Ensure that an invalid input class name configured in the YAML raises a ValueError.
         """
         self.config.data["step_class_set"]["steps"]["input"] = "InvalidClass"
         with self.assertRaises(ValueError):
@@ -70,7 +69,7 @@ class TestClassifyInputClassLoader(unittest.TestCase):
 
 class TestClassifySummaryClassLoader(unittest.TestCase):
     """
-    Tests related to loading the SummaryDataSetA class.
+    Tests related to loading the SummaryDataSetAll class.
     """
 
     def setUp(self):
@@ -95,7 +94,7 @@ class TestClassifySummaryClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step2_summary_dataset returns a SummaryDataSetA instance
+        Check that load_classify_step2_summary_dataset returns a SummaryDataSetAll instance
         with the correct step name.
         """
         ds = load_classify_step2_summary_dataset(self.config)
@@ -104,7 +103,7 @@ class TestClassifySummaryClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step2_summary_dataset properly receives and sets the
+        Check that load_classify_step2_summary_dataset properly receives and sets the
         'input_data' attribute when provided during loading.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
@@ -120,7 +119,7 @@ class TestClassifySummaryClassLoader(unittest.TestCase):
 
 class TestClassifySelectClassLoader(unittest.TestCase):
     """
-    Tests related to loading the SelectDataSetA class.
+    Tests related to loading the SelectDataSetAll class.
     """
 
     def setUp(self):
@@ -145,7 +144,7 @@ class TestClassifySelectClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step3_select_dataset returns a SelectDataSetA instance
+        Check that load_classify_step3_select_dataset returns a SelectDataSetAll instance
         with the correct step name.
         """
         ds = load_classify_step3_select_dataset(self.config)
@@ -154,7 +153,7 @@ class TestClassifySelectClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data(self):
         """
-        Check that load_step3_select_dataset properly receives and sets the
+        Check that load_classify_step3_select_dataset properly receives and sets the
         'input_data' attribute when provided during loading.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
@@ -170,7 +169,7 @@ class TestClassifySelectClassLoader(unittest.TestCase):
 
 class TestClassifyLocateClassLoader(unittest.TestCase):
     """
-    Tests related to loading the LocateDataSetA class.
+    Tests related to loading the LocateDataSetAll class.
     """
 
     def setUp(self):
@@ -195,7 +194,7 @@ class TestClassifyLocateClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step4_locate_dataset returns a LocateDataSetA instance
+        Check that load_classify_step4_locate_dataset returns a LocateDataSetAll instance
         with the correct step name.
         """
         ds = load_classify_step4_locate_dataset(self.config)
@@ -204,7 +203,7 @@ class TestClassifyLocateClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data_and_profiles(self):
         """
-        Check that load_step4_locate_dataset properly receives and sets the
+        Check that load_classify_step4_locate_dataset properly receives and sets the
         'input_data' and 'selected_profiles' attributes when provided.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
@@ -231,7 +230,7 @@ class TestClassifyLocateClassLoader(unittest.TestCase):
 
 class TestClassifyExtractClassLoader(unittest.TestCase):
     """
-    Tests related to loading the ExtractDataSetA class.
+    Tests related to loading the ExtractDataSetAll class.
     """
 
     def setUp(self):
@@ -256,7 +255,7 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
 
     def test_load_dataset_valid_config(self):
         """
-        Check that load_step5_extract_dataset returns an ExtractDataSetA instance
+        Check that load_classify_step5_extract_dataset returns an ExtractDataSetAll instance
         with the correct step name.
         """
         ds = load_classify_step5_extract_dataset(self.config)
@@ -265,7 +264,7 @@ class TestClassifyExtractClassLoader(unittest.TestCase):
 
     def test_load_dataset_input_data_and_profiles(self):
         """
-        Check that load_step5_extract_dataset properly receives and sets
+        Check that load_classify_step5_extract_dataset properly receives and sets
         'input_data', 'selected_profiles', 'selected_rows', and 'summary_stats'
         attributes when provided. Also verifies 'filtered_input' from internal processing.
         """
@@ -358,8 +357,8 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
     def test_load_dataset_input_data(self):
         """
         Check that load_classify_step6_classify_dataset properly receives and sets
-        the 'target_features' attribute when provided, after all prior steps
-        have generated the necessary data.
+        the 'target_features' attribute (which populates 'test_sets' internally)
+        when provided, after all prior steps have generated the necessary data.
         """
         ds_input = load_classify_step1_input_dataset(self.config)
         ds_input.input_file_name = str(self.test_data_file)

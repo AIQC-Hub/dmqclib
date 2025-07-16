@@ -1,6 +1,10 @@
 """
-Module that orchestrates the creation of a training dataset by sequentially
+This module orchestrates the creation of a training dataset by sequentially
 loading and processing data through multiple preparation steps.
+
+It defines the `create_training_dataset` function, which acts as the main
+entry point for initiating the multi-stage data pipeline, from raw input
+to final training and validation datasets.
 """
 
 from dmqclib.common.base.config_base import ConfigBase

@@ -23,7 +23,11 @@ class TestSelectDataSetA(unittest.TestCase):
     """
 
     def setUp(self):
-        """Set up test environment and load input dataset for all tests."""
+        """Set up test environment and load input dataset for all tests.
+
+        This method initializes the configuration and loads the necessary
+        input data for the tests, ensuring a consistent starting state.
+        """
         self.config_file_path = str(
             Path(__file__).resolve().parent
             / "data"
@@ -43,12 +47,20 @@ class TestSelectDataSetA(unittest.TestCase):
         self.ds.read_input_data()
 
     def test_step_name(self):
-        """Ensure the step name is set correctly to 'select'."""
+        """Ensure the step name is set correctly to 'select'.
+
+        Verifies that the 'step_name' attribute of SelectDataSetAll
+        is initialized to the expected value 'select'.
+        """
         ds = SelectDataSetAll(self.config)
         self.assertEqual(ds.step_name, "select")
 
     def test_output_file_name(self):
-        """Verify that the output file name is set based on configuration."""
+        """Verify that the output file name is set based on configuration.
+
+        Checks if the 'output_file_name' attribute correctly reflects
+        the path derived from the provided classification configuration.
+        """
         ds = SelectDataSetAll(self.config)
         self.assertEqual(
             "/path/to/select_1/nrt_bo_001/select_folder_1/selected_profiles_classify.parquet",
@@ -56,14 +68,24 @@ class TestSelectDataSetA(unittest.TestCase):
         )
 
     def test_input_data(self):
-        """Ensure input data is loaded into the class as a Polars DataFrame with expected shape."""
+        """Ensure input data is loaded into the class as a Polars DataFrame with expected shape.
+
+        Confirms that the input data is correctly read and stored as a
+        Polars DataFrame, and that its dimensions match the expected
+        row and column counts.
+        """
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         self.assertIsInstance(ds.input_data, pl.DataFrame)
         self.assertEqual(ds.input_data.shape[0], 19480)
         self.assertEqual(ds.input_data.shape[1], 30)
 
     def test_selected_profiles(self):
-        """Check that all profiles are selected correctly and the resulting DataFrame has the expected shape."""
+        """Check that all profiles are selected correctly and the resulting DataFrame has the expected shape.
+
+        Tests the 'select_all_profiles' method to ensure it populates
+        'selected_profiles' with a Polars DataFrame of the anticipated
+        size and column count after selection.
+        """
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.select_all_profiles()
         self.assertIsInstance(ds.selected_profiles, pl.DataFrame)
@@ -71,14 +93,23 @@ class TestSelectDataSetA(unittest.TestCase):
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_label_profiles(self):
-        """Check that profiles are labeled correctly, resulting in the expected DataFrame shape."""
+        """Check that profiles are labeled correctly, resulting in the expected DataFrame shape.
+
+        Tests the 'label_profiles' method, confirming that 'selected_profiles'
+        is populated with the correct number of rows and columns after labeling.
+        """
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.label_profiles()
         self.assertEqual(ds.selected_profiles.shape[0], 84)
         self.assertEqual(ds.selected_profiles.shape[1], 8)
 
     def test_write_selected_profiles(self):
-        """Confirm that selected profiles are written to a file successfully and the file exists."""
+        """Confirm that selected profiles are written to a file successfully and the file exists.
+
+        Verifies that the 'write_selected_profiles' method correctly
+        persists the DataFrame to the specified output file path and
+        that the file is created. The temporary file is then cleaned up.
+        """
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.output_file_name = str(
             Path(__file__).resolve().parent
@@ -96,7 +127,12 @@ class TestSelectDataSetA(unittest.TestCase):
         os.remove(ds.output_file_name)
 
     def test_write_empty_selected_profiles(self):
-        """Check that writing an unpopulated (empty or None) selected profiles DataFrame raises a ValueError."""
+        """Check that writing an unpopulated (empty or None) selected profiles DataFrame raises a ValueError.
+
+        Ensures that an attempt to write 'selected_profiles' when it has
+        not been populated (or is empty/None) correctly raises a ValueError,
+        preventing write operations on invalid data.
+        """
         ds = SelectDataSetAll(self.config, input_data=self.ds.input_data)
         ds.output_file_name = str(
             Path(__file__).resolve().parent

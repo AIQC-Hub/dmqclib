@@ -173,7 +173,8 @@ class TestKFoldValidation(unittest.TestCase):
 
     def test_write_reports_empty_reports(self):
         """
-        Ensure that empty reports raise a ValueError:.
+        Ensure that calling write_reports with empty reports (i.e., before
+        process_targets has been called) raises a ValueError.
         """
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         with self.assertRaises(ValueError):

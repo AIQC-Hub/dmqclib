@@ -19,8 +19,9 @@ class LocationFeat(FeatureBase):
     (e.g., longitude, latitude) within the Copernicus CTD dataset.
 
     This class uses the provided data frames to gather location-related fields
-    and optionally apply scaling methods. It inherits from :class:`~dmqclib.common.base.feature_base.FeatureBase`
-    which defines a generic feature extraction workflow.
+    and optionally apply scaling methods. It inherits from
+    :class:`~dmqclib.common.base.feature_base.FeatureBase` which defines a generic
+    feature extraction workflow.
     """
 
     def __init__(
@@ -35,28 +36,28 @@ class LocationFeat(FeatureBase):
         """
         Initialize the location feature extractor with relevant data frames.
 
-        :param target_name: The key for the target variable in :attr:`selected_rows`,
-                            defaults to None.
-        :type target_name: str, optional
+        :param target_name: The key for the target variable in :attr:`selected_rows`.
+                            Defaults to None.
+        :type target_name: Optional[str]
         :param feature_info: A dictionary describing feature parameters, typically
                              including scaling statistics. Defaults to None.
-        :type feature_info: dict, optional
+        :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame containing a subset of profiles
                                   relevant to feature extraction, including location data.
                                   Defaults to None.
-        :type selected_profiles: pl.DataFrame, optional
+        :type selected_profiles: Optional[pl.DataFrame]
         :param filtered_input: A filtered Polars DataFrame of input data,
                                potentially used for advanced merging or lookups.
                                Defaults to None.
-        :type filtered_input: pl.DataFrame, optional
+        :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary keyed by target names, each mapping to
-                            a Polars DataFrame of rows relevant for that target.
-                            Defaults to None.
-        :type selected_rows: dict[str, pl.DataFrame], optional
+                              a Polars DataFrame of rows relevant for that target.
+                              Defaults to None.
+        :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: A Polars DataFrame containing statistical
                               information that may aid in feature scaling.
                               Defaults to None.
-        :type summary_stats: pl.DataFrame, optional
+        :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
             target_name=target_name,
@@ -94,7 +95,7 @@ class LocationFeat(FeatureBase):
                     ["platform_code", "profile_no", "longitude", "latitude"]
                 ).unique(),
                 on=["platform_code", "profile_no"],
-                maintain_order="left",
+                how="left",  # Changed from maintain_order to how for clarity and standard Polars usage
             )
             .drop(["platform_code", "profile_no"])
         )

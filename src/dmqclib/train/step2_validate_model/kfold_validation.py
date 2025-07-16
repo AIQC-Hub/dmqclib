@@ -5,6 +5,7 @@ building and testing across defined data folds, accumulating performance reports
 """
 
 from typing import Optional, List, Dict
+import copy
 
 import polars as pl
 
@@ -42,7 +43,7 @@ class KFoldValidation(ValidationBase):
                               assignment for each row. Defaults to None.
         :type training_sets: Optional[Dict[str, pl.DataFrame]]
         """
-        super().__init__(config, training_sets=training_sets)
+        super().__init__(config=config, training_sets=training_sets)
 
         #: The default number of folds if none is specified in the config.
         self.default_k_fold: int = 10
@@ -93,21 +94,23 @@ class KFoldValidation(ValidationBase):
         k_fold: int = self.get_k_fold()
         for k in range(k_fold):
             self.load_base_model()
-            self.base_model.k = k + 1
-            self.base_model.training_set = (
+            current_fold_model = copy.deepcopy(self.base_model)
+
+            current_fold_model.k = k + 1
+            current_fold_model.training_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") != (k + 1))
                 .drop(self.drop_cols)
             )
-            self.base_model.build()
-            self.models[target_name].append(self.base_model)
+            current_fold_model.build()
+            self.models[target_name].append(current_fold_model)
 
-            self.base_model.test_set = (
+            current_fold_model.test_set = (
                 self.training_sets[target_name]
                 .filter(pl.col("k_fold") == (k + 1))
                 .drop(self.drop_cols)
             )
-            self.base_model.test()
-            reports.append(self.base_model.report)
+            current_fold_model.test()
+            reports.append(current_fold_model.report)
 
         self.reports[target_name] = pl.concat(reports)

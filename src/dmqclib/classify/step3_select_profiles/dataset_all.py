@@ -40,14 +40,14 @@ class SelectDataSetAll(ProfileSelectionBase):
                            assigned later using :attr:`input_data`.
         :type input_data: polars.DataFrame, optional
         """
-        super().__init__(config, input_data=input_data)
+        super().__init__(config=config, input_data=input_data)
 
         #: Default file name to which selected profiles are written.
         self.default_file_name: str = "selected_profiles_classify.parquet"
 
         #: Full path for the output file, resolved via the config.
         self.output_file_name: str = self.config.get_full_file_name(
-            "select", self.default_file_name
+            step_name="select", default_file_name=self.default_file_name
         )
 
         #: Columns used as unique identifiers for grouping/merging
@@ -62,14 +62,24 @@ class SelectDataSetAll(ProfileSelectionBase):
 
     def select_all_profiles(self) -> None:
         """
-        Select all profiles from the input data and assign initial
-        identifiers for negative profiles and label columns.
+        Select all profiles from the input data and prepare them with initial
+        labeling and unique identifiers.
 
-        The resulting DataFrame, containing unique profiles with added
-        `neg_profile_id`, `label`, and `profile_id` columns, is assigned
-        to :attr:`selected_profiles`. The `label` column is initialized to 0
-        (indicating a 'negative' or unclassified profile) and `profile_id`
-        is a 1-based row index.
+        This method processes the :attr:`input_data` to create a DataFrame
+        of unique profiles. It adds the following columns:
+
+        - ``neg_profile_id`` (uint32): Initialized to 0. This column can
+          serve as a placeholder for later assignment of specific negative
+          profile identifiers, though it is not a unique ID in this step.
+        - ``label`` (uint32): Initialized to 0, indicating an unclassified
+          or 'negative' profile in the context of subsequent classification.
+        - ``profile_id`` (int): A unique 1-based row index assigned to
+          each selected profile, serving as its primary identifier.
+
+        The resulting DataFrame is assigned to :attr:`selected_profiles`.
+        All profiles are made unique based on their key columns
+        (platform, profile number, timestamp, longitude, latitude)
+        before `profile_id` is assigned.
         """
         self.selected_profiles = (
             self.input_data.with_columns(

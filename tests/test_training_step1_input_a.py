@@ -122,7 +122,8 @@ class TestInputTrainingSetA(unittest.TestCase):
 
     def test_read_training_set_incorrect_file_names(self):
         """
-        Ensure that invalid file names raise a FileNotFoundError.
+        Verify that `process_targets` raises a `FileNotFoundError` if *any* of the
+        configured training or test file paths do not exist when initialized from config.
         """
         ds = InputTrainingSetA(self.config)
         with self.assertRaises(FileNotFoundError):
@@ -130,7 +131,8 @@ class TestInputTrainingSetA(unittest.TestCase):
 
     def test_read_test_set_incorrect_file_names(self):
         """
-        Ensure that invalid file names raise a FileNotFoundError.
+        Verify that `process_targets` raises a `FileNotFoundError` if the *test*
+        set file paths do not exist, even if training set paths are valid.
         """
         ds = InputTrainingSetA(self.config)
         ds.input_file_names["train"] = self.input_file_names["train"]

@@ -44,8 +44,9 @@ class TestCreateTrainingDataSet(unittest.TestCase):
 
     def test_create_training_data_set(self):
         """
-        Check that create_training_dataset generates the expected folder
-        hierarchy and files for summary, select, locate, extract, and split steps.
+        Verify that `create_training_dataset` generates the expected folder
+        hierarchy and all required output files for summary, select, locate,
+        extract, and split steps.
         """
         create_training_dataset(self.config)
 
@@ -105,7 +106,7 @@ class TestCreateTrainingDataSet(unittest.TestCase):
     def tearDown(self):
         """
         Clean up the test environment by removing the generated output directory
-        and its contents.
+        and its contents after each test.
         """
         output_folder = (
             self.test_data_location / self.config.data["dataset_folder_name"]
@@ -117,14 +118,15 @@ class TestCreateTrainingDataSet(unittest.TestCase):
 class TestCreateTrainingDataSetNegX5(unittest.TestCase):
     """
     Tests for verifying that create_training_dataset produces the
-    expected directory structure and output files for training data.
+    expected directory structure and output files for training data when
+    custom step folder names are configured.
     """
 
     def setUp(self):
         """
         Prepare the test environment by creating a DataSetConfig object,
         defining file paths, and updating the configuration with test input
-        and output paths.
+        and output paths, including a custom folder name for the 'split' step.
         """
         self.config_file_path = str(
             Path(__file__).resolve().parent
@@ -146,8 +148,9 @@ class TestCreateTrainingDataSetNegX5(unittest.TestCase):
 
     def test_create_training_data_set(self):
         """
-        Check that create_training_dataset generates the expected folder
-        hierarchy and files for summary, select, locate, extract, and split steps.
+        Verify that `create_training_dataset` generates the expected folder
+        hierarchy and all required output files, specifically checking the
+        custom 'training' folder for split data.
         """
         create_training_dataset(self.config)
 
@@ -185,6 +188,7 @@ class TestCreateTrainingDataSetNegX5(unittest.TestCase):
                 str(output_folder / "extract" / "extracted_features_pres.parquet")
             )
         )
+        # Verify files are in the custom 'training' folder instead of 'split'
         self.assertTrue(
             os.path.exists(str(output_folder / "training" / "train_set_temp.parquet"))
         )
@@ -207,7 +211,7 @@ class TestCreateTrainingDataSetNegX5(unittest.TestCase):
     def tearDown(self):
         """
         Clean up the test environment by removing the generated output directory
-        and its contents.
+        and its contents after each test.
         """
         output_folder = (
             self.test_data_location / self.config.data["dataset_folder_name"]

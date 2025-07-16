@@ -59,17 +59,17 @@ class ProfileSelectionBase(DataSetBase):
         :type config: dmqclib.common.base.config_base.ConfigBase
         :param input_data: Optional Polars DataFrame that serves as the
                            initial data for profile selection, defaults to None.
-        :type input_data: Optional[polars.DataFrame]
+        :type input_data: Optional[pl.DataFrame]
         :raises NotImplementedError: If ``expected_class_name`` is not defined by a subclass
                                       when the base class constructor is called.
         :raises ValueError: If the "base_class" field in the YAML configuration
                             does not match the subclass's ``expected_class_name``.
         """
-        super().__init__("select", config)
+        super().__init__(step_name="select", config=config)
 
         self.default_file_name: str = "selected_profiles.parquet"
         self.output_file_name: str = self.config.get_full_file_name(
-            "select", self.default_file_name
+            step_name="select", default_file_name=self.default_file_name
         )
         self.input_data: Optional[pl.DataFrame] = input_data
         self.selected_profiles: Optional[pl.DataFrame] = None

@@ -29,16 +29,16 @@ class SummaryStatsBase(DataSetBase):
                             derived from the configuration.
     :vartype output_file_name: str
     :ivar input_data: The DataFrame containing the data to be analyzed.
-    :vartype input_data: polars.DataFrame, optional
+    :vartype input_data: polars.DataFrame or None
     :ivar summary_stats: DataFrame holding the combined global and per-profile
                          statistics after calculation.
-    :vartype summary_stats: polars.DataFrame, optional
+    :vartype summary_stats: polars.DataFrame or None
     :ivar summary_stats_observation: DataFrame holding aggregated global statistics
                                      for key variables.
-    :vartype summary_stats_observation: polars.DataFrame, optional
+    :vartype summary_stats_observation: polars.DataFrame or None
     :ivar summary_stats_profile: DataFrame holding aggregated per-profile statistics
                                  for key variables.
-    :vartype summary_stats_profile: polars.DataFrame, optional
+    :vartype summary_stats_profile: polars.DataFrame or None
     :ivar val_col_names: List of numeric columns for which to compute statistics.
     :vartype val_col_names: list[str]
     :ivar stats_col_names: The schema (column names) for the output statistics
@@ -60,17 +60,17 @@ class SummaryStatsBase(DataSetBase):
         :param input_data: A Polars DataFrame containing the data upon which
                            statistics will be computed. If None, it is
                            expected to be loaded by the base class.
-        :type input_data: polars.DataFrame, optional
+        :type input_data: polars.DataFrame or None
         :raises NotImplementedError: If ``expected_class_name`` is not defined by
                                      a subclass upon instantiation.
         :raises ValueError: If the configuration's ``base_class`` does not match
                             the ``expected_class_name``.
         """
-        super().__init__("summary", config)
+        super().__init__(step_name="summary", config=config)
 
         self.default_file_name: str = "summary_stats.tsv"
         self.output_file_name: str = self.config.get_full_file_name(
-            "summary", self.default_file_name
+            step_name="summary", default_file_name=self.default_file_name
         )
         self.input_data: Optional[pl.DataFrame] = input_data
         self.summary_stats: Optional[pl.DataFrame] = None
@@ -103,8 +103,8 @@ class SummaryStatsBase(DataSetBase):
 
         :param val_col_name: The name of the column to analyze.
         :type val_col_name: str
-        :return: A list of Polars expressions for calculating min, max, mean,
-                 median, quantiles, and standard deviation.
+        :returns: A list of Polars expressions for calculating min, max, mean,
+                  median, quantiles, and standard deviation.
         :rtype: list[polars.Expr]
         """
         return [
@@ -127,8 +127,8 @@ class SummaryStatsBase(DataSetBase):
         :param val_col_name: Name of the column for which to calculate global
                              statistics.
         :type val_col_name: str
-        :return: A DataFrame with one row containing the summary statistics,
-                 structured to be compatible with per-profile stats.
+        :returns: A DataFrame with one row containing the summary statistics,
+                  structured to be compatible with per-profile stats.
         :rtype: polars.DataFrame
         """
         return (
@@ -152,7 +152,7 @@ class SummaryStatsBase(DataSetBase):
         :param val_col_name: The name of the column for which to calculate
                              per-profile stats.
         :type val_col_name: str
-        :return: A DataFrame containing statistics for each profile.
+        :returns: A DataFrame containing statistics for each profile.
         :rtype: polars.DataFrame
         """
         return (

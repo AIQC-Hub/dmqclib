@@ -7,8 +7,6 @@ structured access to dataset settings, including targets, step classes,
 and step parameters, by resolving references within the configuration.
 """
 
-from typing import Optional
-
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.utils.config import get_config_item
 
@@ -34,17 +32,24 @@ class TrainingConfig(ConfigBase):
     when instantiating TrainingConfig from YAML.
     """
 
-    def __init__(self, config_file: Optional[str] = None) -> None:
+    def __init__(self, config_file: str, auto_select: bool = False) -> None:
         """
         Initialize the training configuration.
 
-        :param config_file: The path to the YAML configuration file. If None,
-                            the config must be injected by other means.
-        :type config_file: str, optional
+        :param config_file: The path to the YAML configuration file.
+                            This file will be used to load the training sets.
+        :type config_file: str
+        :param auto_select: If True, automatically selects the first dataset
+                            found in the `training_sets` section upon initialization.
+        :type auto_select: bool
         :raises ValueError: If the YAML structure is invalid
                             or `training_sets` cannot be found.
         """
-        super().__init__("training_sets", config_file=config_file)
+        super().__init__(
+            section_name="training_sets",
+            config_file=config_file,
+            auto_select=auto_select,
+        )
 
     def select(self, dataset_name: str) -> None:
         """
@@ -54,7 +59,7 @@ class TrainingConfig(ConfigBase):
 
         After calling :meth:`select`, sub-keys (``target_set``,
         ``step_class_set``, etc.) are populated from their respective
-        config dictionaries.
+        config dictionaries by resolving their references within the full configuration.
 
         :param dataset_name: The key name of the dataset to select
                              within :attr:`data` (which references

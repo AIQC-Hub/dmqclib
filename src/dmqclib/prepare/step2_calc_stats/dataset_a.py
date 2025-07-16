@@ -5,9 +5,7 @@ such as Copernicus CTD data, using the Polars DataFrame library.
 It integrates with a configuration management system to ensure proper data processing.
 """
 
-from typing import (
-    Optional,
-)  # Explicitly import Optional for clearer type hints in code and docstrings
+from typing import Optional
 
 import polars as pl
 
@@ -38,9 +36,9 @@ class SummaryDataSetA(SummaryStatsBase):
 
         :param config: The configuration object containing all necessary parameters
                        and paths for data processing and summary statistics calculation.
-        :type config: ConfigBase
+        :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
         :param input_data: An optional Polars DataFrame to immediately process.
                            If ``None``, data should be set later using other methods.
-        :type input_data: Optional[pl.DataFrame]
+        :type input_data: :class:`polars.DataFrame` or ``None``
         """
-        super().__init__(config, input_data=input_data)
+        super().__init__(config=config, input_data=input_data)

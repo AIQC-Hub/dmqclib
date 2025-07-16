@@ -24,6 +24,11 @@ class ConfigBaseWithExpectedName(ConfigBase):
     expected_class_name: str = "ConfigBaseWithExpectedName"
 
     def __init__(self, section_name: str, config_file: str) -> None:
+        """Initialize a new instance of ConfigBaseWithExpectedName.
+
+        This constructor calls the parent `ConfigBase` constructor with the
+        provided section name and configuration file path.
+        """
         super().__init__(section_name, config_file)
 
 
@@ -112,7 +117,7 @@ class TestConfigTemplates(unittest.TestCase):
         self.assertIsNotNone(conf.full_config)
 
         self.assertIsNone(conf.data)
-        conf.select("NRT_BO_001")
+        conf.select("dataset_0001")
         self.assertIsNotNone(conf.data)
 
     def test_read_training_template(self):
@@ -125,7 +130,7 @@ class TestConfigTemplates(unittest.TestCase):
         self.assertIsNotNone(conf.full_config)
 
         self.assertIsNone(conf.data)
-        conf.select("NRT_BO_001")
+        conf.select("training_0001")
         self.assertIsNotNone(conf.data)
 
     def test_read_classification_template(self):
@@ -138,5 +143,5 @@ class TestConfigTemplates(unittest.TestCase):
         self.assertIsNotNone(conf.full_config)
 
         self.assertIsNone(conf.data)
-        conf.select("NRT_BO_001")
+        conf.select("classification_0001")
         self.assertIsNotNone(conf.data)

@@ -46,12 +46,14 @@ class BuildModel(BuildModelBase):
         :type config: ConfigBase
         :param training_sets: A dictionary of training data keyed by target name,
                               each value being a Polars DataFrame. Defaults to None.
-        :type training_sets: Optional[dict[str, pl.DataFrame]]
+        :type training_sets: Optional[Dict[str, pl.DataFrame]]
         :param test_sets: A dictionary of test data keyed by target name,
                           each value being a Polars DataFrame. Defaults to None.
-        :type test_sets: Optional[dict[str, pl.DataFrame]]
+        :type test_sets: Optional[Dict[str, pl.DataFrame]]
         """
-        super().__init__(config, training_sets=training_sets, test_sets=test_sets)
+        super().__init__(
+            config=config, training_sets=training_sets, test_sets=test_sets
+        )
 
         self.drop_cols = ["row_id", "platform_code", "profile_no", "observation_no"]
 
@@ -78,8 +80,8 @@ class BuildModel(BuildModelBase):
         :param target_name: The target variable name, used to index
                             :attr:`training_sets` and locate the training data.
         :type target_name: str
-        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets` is empty, indicating no tests
-                    have been carried out or no reports stored.
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets` is empty,
+                            indicating no corresponding data is available for model building.
         """
         self.load_base_model()
         if not self.training_sets:
