@@ -1,5 +1,5 @@
-Training & Evaluation
-===================================
+Training & Evaluation (Configuration)
+========================================
 The `train` workflow (`module="train"`) is responsible for orchestrating the machine learning model building process. It takes the prepared dataset (the output from the `prepare` workflow) and handles critical steps such as cross-validation, actual model training, and final evaluation on a held-out test set.
 
 While the `prepare` workflow focuses on complex data transformation and feature engineering, the `train` configuration is generally simpler. Its primary role is to leverage the "building blocks" concept to specify:
@@ -90,7 +90,7 @@ This is the main "assembly" section that defines a complete training and evaluat
 *   **`dataset_folder_name`**: The name of the specific folder (created by the `prepare` workflow) containing the prepared data for this job (e.g., `dataset_0001`).
 *   **`path_info`**: The `name` of the path configuration to use from `path_info_sets`.
 *   **`target_set`**: The `name` of the target variable configuration to use from `target_sets`.
-*   **`step_class_set`** & **`step_param_set`**: The `name`s of the step class and parameter configurations to use, respectively.
+*   **`step_class_set`** & **`step_param_set`**: The `name` of the step class and parameter configurations to use, respectively.
 
 .. code-block:: yaml
 

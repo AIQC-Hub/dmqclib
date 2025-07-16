@@ -1,8 +1,3 @@
-.. dmqclib documentation master file, created by
-   sphinx-quickstart on Thu Jul  3 18:37:37 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to the dmqclib documentation!
 =======================================
 
@@ -29,6 +24,16 @@ These tutorials provide a step-by-step guide to the core workflows of the librar
    tutorial/preparation
    tutorial/training
    tutorial/classification
+
+----------
+
+This section provides practical examples and solutions for common tasks related to using dmqclib.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 💡 How-To Guides
+
+   how-to/data_preprocessing_utilities
 
 ----------
 

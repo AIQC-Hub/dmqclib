@@ -1,5 +1,5 @@
-Dataset Preparation
-=================================
+Dataset Preparation (Configuration)
+====================================
 The `prepare` workflow (`module="prepare"`) is central to setting up your data for machine learning tasks within this library. It provides comprehensive control over the entire data processing pipeline, from ingesting raw files and applying advanced feature engineering to meticulously creating the final training, validation, and test datasets.
 
 Core Concepts: Modular Configuration
