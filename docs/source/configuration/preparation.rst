@@ -184,6 +184,9 @@ This is the main "pipeline assembly" section. Each entry in this list defines a 
        target_set: target_set_1_3
        # ... other set references would follow here
 
+.. note::
+   While you can define multiple data sets in the `data_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
+
 Full Example
 ------------
 

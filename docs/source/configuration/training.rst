@@ -102,6 +102,9 @@ This is the main "assembly" section that defines a complete training and evaluat
        step_class_set: training_step_set_1
        step_param_set: training_param_set_1
 
+.. note::
+   While you can define multiple training sets in the `training_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
+
 Full Example
 ------------
 
