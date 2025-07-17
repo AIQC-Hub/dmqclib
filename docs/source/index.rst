@@ -34,6 +34,7 @@ This section provides practical examples and solutions for common tasks related 
    :caption: 💡 How-To Guides
 
    how-to/data_preprocessing_utilities
+   how-to/selecting_specific_configurations
 
 ----------
 

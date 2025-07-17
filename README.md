@@ -323,10 +323,24 @@ Publishing to the `takayasaito` channel on [Anaconda.org](https://anaconda.org/t
 
 ### conda-forge (Manual)
 
-Submitting or updating the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` repository.
+#### Bump version
+Updating the package on `conda-forge` involves creating a pull request to the `conda-forge/dmqclib-feedstock` repository.
+
+1. **Fork and clone** the `dmqclib-feedstock` repository.
+2. **Sync with upstream** (e.g., add `conda-forge/dmqclib-feedstock` as a remote named `upstream` and `git rebase upstream/main`).
+3. **Create a new branch** (e.g., `git checkout -b update_vX.Y.Z`).
+4. **Generate a strict recipe** (e.g., `grayskull pypi dmqclib --strict-conda-forge`).
+5. **Review `recipes/meta.yaml`** and ensure it meets `conda-forge` standards.
+6. **Rerender the feedstock** (e.g., `conda smithy rerender -c auto`).
+7. **Commit, push, and open a pull request** to the `staged-recipes` repository.
+8. **Merge it** after passing CI.
+
+#### Initial upload
+Submitting the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` repository.
 
 1.  **Fork and clone** the `staged-recipes` repository.
 2.  **Create a new branch** (e.g., `git checkout -b dmqclib-recipe`).
 3.  **Generate a strict recipe:** `grayskull pypi dmqclib --strict-conda-forge`.
-4.  **Review `meta.yaml`** and ensure it meets `conda-forge` standards.
+4.  **Review `recipes/dmqclib/meta.yaml`** and ensure it meets `conda-forge` standards.
 5.  **Commit, push, and open a pull request** to the `staged-recipes` repository.
+
