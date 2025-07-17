@@ -5,6 +5,7 @@
 [![Check Package](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml/badge.svg)](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml)
 [![Codecov](https://codecov.io/gh/AIQC-Hub/dmqclib/graph/badge.svg?token=N6P5V9KBNJ)](https://codecov.io/gh/AIQC-Hub/dmqclib)
 [![CodeFactor](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib/badge)](https://www.codefactor.io/repository/github/aiqc-hub/dmqclib)
+[![DOI](https://zenodo.org/badge/1003136460.svg)](https://doi.org/10.5281/zenodo.16055323)
 
 **dmqclib** is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project that aims to enhance anomaly detection in CTD (Conductivity, Temperature, Depth) data.
 
@@ -328,6 +329,13 @@ Updating the package on `conda-forge` involves creating a pull request to the `c
 
 1. **Fork and clone** the `dmqclib-feedstock` repository.
 2. **Sync with upstream** (e.g., add `conda-forge/dmqclib-feedstock` as a remote named `upstream` and `git rebase upstream/main`).
+3. **Update the forked repo:**
+    ```bash
+    git checkout main                      # Go to your local main branch
+    git fetch upstream                     # Get latest changes from original repo
+    git rebase upstream/main               # Make your local main perfectly linear with original
+    git push origin main --force           # Update your GitHub fork's main (optional but good practice)
+    ```
 3. **Create a new branch** (e.g., `git checkout -b update_vX.Y.Z`).
 4. **Generate a strict recipe** (e.g., `grayskull pypi dmqclib --strict-conda-forge`).
 5. **Review `recipes/meta.yaml`** and ensure it meets `conda-forge` standards.
