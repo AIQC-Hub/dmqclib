@@ -191,6 +191,9 @@ This is the main "assembly" section that defines a complete classification job. 
        step_class_set: data_set_step_set_1
        step_param_set: data_set_param_set_1
 
+.. note::
+   While you can define multiple classification sets in the `classification_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
+
 Full Example
 ------------
 
