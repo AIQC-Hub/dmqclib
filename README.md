@@ -27,7 +27,7 @@ conda install -c conda-forge dmqclib
 
 The library is designed around a three-stage workflow:
 
-1.  **Dataset Preparation:** Ingest raw data and transform it into a feature-rich dataset ready for training.
+1.  **Dataset Preparation:** Prepare feature datasets from raw data and generate training, validation, and test data sets.
 2.  **Training & Evaluation:** Train machine learning models and evaluate their performance using cross-validation.
 3.  **Classification:** Apply a trained model to classify new, unseen data.
 
@@ -209,7 +209,7 @@ We welcome contributions! Please use the following guidelines for development.
 
 ### Environment Setup
 
-We recommend using **uv** for managing the development environment.
+We recommend using **uv** + **mamba** for managing the development environment.
 
 1.  Install `python`, `uv`, and `ruff` (e.g., via conda or mamba):
     ```bash
@@ -298,30 +298,6 @@ Project documentation is hosted on [Read the Docs](https://dmqclib.readthedocs.i
 
 The package is published to [PyPI](https://pypi.org/project/dmqclib/) automatically via a GitHub Action whenever a new release is created on GitHub.
 
-### Anaconda.org (Manual)
-
-Publishing to the `takayasaito` channel on [Anaconda.org](https://anaconda.org/takayasaito/dmqclib) is a manual process.
-
-1.  **Install build tools:**
-    ```bash
-    mamba install -c conda-forge conda-build anaconda-client grayskull
-    ```
-
-2.  **Generate Recipe:**
-    From the project root, run `grayskull pypi dmqclib`. This creates `dmqclib/meta.yaml`.
-
-3.  **Build Package:**
-    `conda build dmqclib`
-
-4.  **Upload Package:**
-    ```bash
-    anaconda login
-    anaconda upload /path/to/your/conda-bld/noarch/dmqclib-*.conda
-    ```
-
-5.  **Cleanup:**
-    Copy `dmqclib/meta.yaml` to `conda/meta.yaml` for version control and remove the temporary `dmqclib` directory.
-
 ### conda-forge (Manual)
 
 #### Bump version
@@ -352,3 +328,26 @@ Submitting the package on `conda-forge` involves creating a pull request to the 
 4.  **Review `recipes/dmqclib/meta.yaml`** and ensure it meets `conda-forge` standards.
 5.  **Commit, push, and open a pull request** to the `staged-recipes` repository.
 
+### Anaconda.org (Manual)
+
+Publishing to the `<username>` channel on [Anaconda.org](https://anaconda.org/takayasaito/dmqclib) is a manual process.
+
+1.  **Install build tools:**
+    ```bash
+    mamba install -c conda-forge conda-build anaconda-client grayskull
+    ```
+
+2.  **Generate Recipe:**
+    From the project root, run `grayskull pypi dmqclib`. This creates `dmqclib/meta.yaml`.
+
+3.  **Build Package:**
+    `conda build dmqclib`
+
+4.  **Upload Package:**
+    ```bash
+    anaconda login
+    anaconda upload /path/to/your/conda-bld/noarch/dmqclib-*.conda
+    ```
+
+5.  **Cleanup:**
+    Copy `dmqclib/meta.yaml` to `conda/meta.yaml` for version control and remove the temporary `dmqclib` directory.

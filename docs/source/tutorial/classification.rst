@@ -63,33 +63,6 @@ Update your `classification_config.yaml` file to match the following. Remember t
 
 .. code-block:: yaml
 
-    # These sections should be copied from your prepare_config.yaml used for model training
-    # For example:
-    # target_sets:
-    #   - name: target_set_1_3
-    #     variables: ...
-    # summary_stats_sets:
-    #   - name: summary_stats_set_1
-    #     stats: ...
-    # feature_sets:
-    #   - name: feature_set_1
-    #     features: ...
-    # feature_param_sets:
-    #   - name: feature_set_1_param_set_3
-    #     params: ...
-
-    # If you have custom step classes, ensure these match your training setup.
-    # step_class_sets:
-    #   - name: data_set_step_set_1
-    #     steps: ...
-
-    # Configure any specific parameters for classification steps (e.g., input filters)
-    # step_param_sets:
-    #   - name: data_set_param_set_1
-    #     steps: ...
-
-.. code-block:: yaml
-
     classification_sets:
       - name: classification_0001  # A unique name for this classification task
         dataset_folder_name: dataset_0001  # This MUST match the dataset_folder_name used during preparation and training

@@ -36,6 +36,7 @@ This section defines all the necessary file system locations for the classificat
          step_folder_name: ""
        model:
          base_path: /path/to/model
+         step_folder_name: "model"
        concat:
          step_folder_name: classify
 
@@ -68,6 +69,7 @@ This section specifies summary statistics, typically for normalization or scalin
 
 `feature_sets` & `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(**Advanced Use**)
 These two sections are critical for ensuring that the new input data is transformed into the exact same feature space that the pre-trained model expects. They should explicitly list the feature engineering methods and their parameters that were applied during the model's training phase.
 
 *   **`feature_sets`**: Lists the names of the feature engineering methods to re-apply to the new input data.
@@ -201,7 +203,7 @@ Here is a complete example of a `classification_config.yaml` file, showing how a
 
 .. code-block:: yaml
    :caption: Full classification_config.yaml example
-   :emphasize-lines: 5, 7, 10, 12, 32, 101, 104, 114, 115, 116
+   :emphasize-lines: 5, 7, 10, 11, 13, 33, 102, 105, 115, 116, 117
 
    ---
    path_info_sets:
@@ -213,6 +215,7 @@ Here is a complete example of a `classification_config.yaml` file, showing how a
          step_folder_name: ""
        model:
          base_path: /path/to/model  # Directory containing trained model files
+         step_folder_name: "model"  # Change it to "" if you like to avoid /path/to/model/model/
        concat:
          step_folder_name: classify # Subdirectory for final classification results
 
