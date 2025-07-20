@@ -68,6 +68,7 @@ This section specifies summary statistics, typically for normalization or scalin
 
 `feature_sets` & `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(**Advanced Use**)
 These two sections are critical for ensuring that the new input data is transformed into the exact same feature space that the pre-trained model expects. They should explicitly list the feature engineering methods and their parameters that were applied during the model's training phase.
 
 *   **`feature_sets`**: Lists the names of the feature engineering methods to re-apply to the new input data.

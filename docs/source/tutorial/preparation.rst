@@ -1,7 +1,7 @@
 Step 2: Dataset Preparation
 ===========================
 
-The dataset preparation workflow is the first crucial step in the ``dmqclib`` pipeline. It's designed to transform your raw data into a clean, feature-engineered, and properly structured dataset, ready for machine learning model training and evaluation. This includes creating balanced training, validation, and test sets.
+The dataset preparation workflow is the first crucial step in the ``dmqclib`` pipeline. It's designed to prepare feature data sets from your raw data. This includes creating training, validation, and test data sets.
 
 This entire process is driven by a YAML configuration file, ensuring your data preparation is repeatable, transparent, and easy to manage across different experiments.
 
