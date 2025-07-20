@@ -93,7 +93,9 @@ The required columns are:
 *   **`observation_no`**: A unique, sequential number identifying each individual observation (row) within a `profile_no`.
 *   **`pres`**: Pressure values for each observation.
 
-If your raw data lacks `profile_no`, `profile_timestamp`, or `observation_no`, you will need to generate them. For detailed examples and helper code on how to perform these common data preprocessing steps (e.g., converting float timestamps, generating unique IDs), please refer to the :doc:`../../how-to/data_preprocessing_utilities` guide.
+.. important::
+
+   If your raw data lacks `profile_no`, `profile_timestamp`, or `observation_no`, you will need to generate them. For detailed examples and helper code on how to perform these common data preprocessing steps (e.g., converting float timestamps, generating unique IDs), please refer to the :doc:`../../how-to/data_preprocessing_utilities` guide.
 
 The Dataset Preparation Workflow
 --------------------------------
