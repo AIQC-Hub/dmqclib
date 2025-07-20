@@ -160,29 +160,23 @@ To correctly normalize features, you need to provide summary statistics (like mi
 
    import dmqclib as dm
    import os
+   import polars as pl
 
    input_file = os.path.expanduser("~/aiqc_project/input/nrt_cora_bo_4.parquet")
 
    print("--- Summary statistics for 'all' features ---")
    stats_all = dm.get_summary_stats(input_file, "all")
+   print(stats_all)
    print(dm.format_summary_stats(stats_all))
 
    print("\n--- Summary statistics for 'profiles' features ---")
    stats_profiles = dm.get_summary_stats(input_file, "profiles")
+   print(stats_profiles.filter(pl.col("variable")=="pres"))
+   print(stats_profiles.filter(pl.col("variable")=="temp"))
+   print(stats_profiles.filter(pl.col("variable")=="psal"))
    print(dm.format_summary_stats(stats_profiles))
 
    # Use the output from the prints above to populate your summary_stats_sets section.
-   # For example, your summary_stats_sets section might look like this (simplified):
-   # summary_stats_sets:
-   #   - name: summary_stats_set_1
-   #     stats:
-   #       - name: location
-   #         min_max: { longitude: { min: 14.5, max: 23.5 }, latitude: { min: 55, max: 66 } }
-   #       - name: profile_summary_stats5
-   #         min_max: { temp: { mean: { min: ..., max: ... }, ... }, ... }
-   #       - name: basic_values3
-   #         min_max: { temp: { min: ..., max: ... }, ... }
-
 
 .. note::
    The `prepare_config.yaml` can be quite detailed. For a complete reference of all available configuration options, including full examples for `target_sets`, `feature_sets`, `feature_param_sets`, `step_class_sets`, and `step_param_sets`, please consult the dedicated :doc:`../../configuration/preparation` page. You will need to populate these sections in your configuration file based on your specific requirements.

@@ -209,7 +209,7 @@ We welcome contributions! Please use the following guidelines for development.
 
 ### Environment Setup
 
-We recommend using **uv** for managing the development environment.
+We recommend using **uv** + **mamba** for managing the development environment.
 
 1.  Install `python`, `uv`, and `ruff` (e.g., via conda or mamba):
     ```bash
