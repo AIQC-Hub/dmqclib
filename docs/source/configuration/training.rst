@@ -17,7 +17,6 @@ This section is crucial for linking the training workflow to the prepared datase
 
 *   **`common.base_path`**: The root directory where the prepared dataset (output from the `prepare` workflow) is located. This typically corresponds to the `common.base_path` defined in your `prepare_config.yaml`.
 *   **`input.step_folder_name`**: The name of the subdirectory within the prepared dataset's folder where the final training/validation/test splits are located (e.g., `training`).
-*   **`model.base_path`**: The directory where the final trained model files and associated artifacts will be saved.
 
 .. code-block:: yaml
 
@@ -27,8 +26,6 @@ This section is crucial for linking the training workflow to the prepared datase
          base_path: /path/to/data
        input:
          step_folder_name: training
-       model:
-         base_path: /path/to/models # Added for completeness
 
 `target_sets`
 ^^^^^^^^^^^^^
@@ -112,7 +109,7 @@ Below is a complete example of a `training_config.yaml` file. The lines you will
 
 .. code-block:: yaml
    :caption: Full training_config.yaml example
-   :emphasize-lines: 5, 9, 40, 44, 45
+   :emphasize-lines: 5, 38, 42, 43
 
    ---
    path_info_sets:
@@ -121,8 +118,6 @@ Below is a complete example of a `training_config.yaml` file. The lines you will
          base_path: /path/to/data # Root directory containing prepared data
        input:
          step_folder_name: training
-       model:
-         base_path: /path/to/models # Directory where trained models will be saved
 
    target_sets:
      - name: target_set_1_3
