@@ -1,6 +1,6 @@
 Dataset Preparation (Configuration)
 ====================================
-The `prepare` workflow (`stage="prepare"`) is central to setting up your data for machine learning tasks within this library. It provides comprehensive control over the entire data processing pipeline, from ingesting raw files and applying advanced feature engineering to meticulously creating the final training, validation, and test datasets.
+The `prepare` workflow (`stage="prepare"`) is central to setting up your data for machine learning tasks within this library. It provides comprehensive control over the entire data processing pipeline, from  preparing feature data sets from your raw data and creating the training, validation, and test data sets.
 
 Core Concepts: Modular Configuration
 ------------------------------------
@@ -11,7 +11,7 @@ The primary configuration sections (building blocks) are:
 *   **`path_info_sets`**: Defines reusable directory structures for input data and processed outputs.
 *   **`target_sets`**: Specifies the prediction target variables, including their quality control (QC) flags.
 *   **`summary_stats_sets`**: Configures summary statistics essential for normalizing feature values.
-*   **`feature_sets`**: Lists the specific feature engineering methods to be applied.
+*   **`feature_sets`**: (**Advanced**) Lists the specific feature engineering methods to be applied.
 *   **`feature_param_sets`**: Provides detailed parameters and settings for each chosen feature engineering method.
 *   **`step_class_sets`**: (**Advanced**) Allows users to define custom Python classes for individual processing steps, enabling deep customization of the pipeline's behavior.
 *   **`step_param_sets`**: Supplies general parameters that control the behavior of the default or custom processing steps.
@@ -83,6 +83,7 @@ The following Python commands, utilizing `dmqclib`, can provide all necessary in
 
 `feature_sets` & `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(**Advanced Use**)
 These two interconnected sections are dedicated to configuring your feature engineering process.
 
 *   **`feature_sets`**: This block lists the *names* of the specific feature engineering methods you want to apply to your data.

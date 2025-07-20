@@ -8,6 +8,7 @@ path_info_sets:
       step_folder_name: ""
     model:
       base_path: /path/to/model  # EDIT: Directory with model files
+      step_folder_name: "model"  # EDIT: Change it to "" if you like to avoid /path/to/model/model/
     concat:
       step_folder_name: classify # EDIT: Directory with classification results
 
