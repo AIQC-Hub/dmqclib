@@ -34,3 +34,9 @@ dev = [
     "sphinx-rtd-theme>=3.0.2",
     "sphinx-tabs>=3.4.7",
 ]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"" = ["CHANGELOG.md"]
