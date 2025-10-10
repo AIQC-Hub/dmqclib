@@ -7,6 +7,7 @@ As this project is still in active development, it does not yet strictly adhere 
 ## [Unreleased]
 ### Added
 - Change logs (this document)
+- Config settings for feature normalization
 
 ## [0.5.7] - 2025-07-20
 ### Fixed
