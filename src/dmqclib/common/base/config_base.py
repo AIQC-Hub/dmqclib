@@ -26,8 +26,10 @@ from dmqclib.common.config.yaml_schema import (
 )
 from dmqclib.common.config.yaml_templates import (
     get_config_data_set_template,
+    get_config_data_set_with_norm_template,
     get_config_train_set_template,
     get_config_classify_set_template,
+    get_config_classify_set_with_norm_template,
 )
 from dmqclib.common.utils.config import get_config_item
 from dmqclib.common.utils.config import read_config
@@ -102,16 +104,20 @@ class ConfigBase(ABC):
 
         yaml_schemas = {
             "data_sets": get_data_set_config_schema,
+            "data_sets_with_norm": get_data_set_config_schema,
             "training_sets": get_training_config_schema,
             "classification_sets": get_classification_config_schema,
+            "classification_sets_with_norm": get_classification_config_schema,
         }
         if section_name not in yaml_schemas:
             raise ValueError(f"Section name {section_name} is not supported.")
 
         yaml_templates = {
             "template:data_sets": get_config_data_set_template,
+            "template:data_sets_with_norm": get_config_data_set_with_norm_template,
             "template:training_sets": get_config_train_set_template,
             "template:classification_sets": get_config_classify_set_template,
+            "template:classification_sets_with_norm": get_config_classify_set_with_norm_template,
         }
         if str(config_file).startswith("template:"):
             if str(config_file) not in yaml_templates:
@@ -500,7 +506,7 @@ class ConfigBase(ABC):
         :rtype: None
         """
         for x in self.data["feature_param_set"]["params"]:
-            if "stats_set" in x:
+            if ("stats_set" in x) and (x["stats_set"]["type"] != "raw"):
                 x["stats"] = self.get_summary_stats(
                     x["stats_set"]["name"], x["stats_set"]["type"]
                 )

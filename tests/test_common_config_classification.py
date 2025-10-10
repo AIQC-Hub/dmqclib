@@ -31,7 +31,7 @@ class TestClassificationConfig(unittest.TestCase):
             Path(__file__).resolve().parent
             / "data"
             / "config"
-            / "config_classify_set_template.yaml"
+            / "config_classify_set_template_with_norm.yaml"
         )
 
     def test_valid_config(self):

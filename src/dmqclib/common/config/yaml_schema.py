@@ -123,8 +123,15 @@ properties:
             properties:
               name:
                 type: string
+              col_names:
+                type: array
+                items:
+                  type: string
               min_max:
                 type: object
+            required:
+              - name
+              - col_names
       required:
         - name
         - stats
@@ -160,8 +167,26 @@ properties:
             properties:
               feature:
                 type: string
+              col_names:
+                type: array
+                items:
+                  type: string
+              stats_set:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+              convert:
+                type: string
+              flank_up:
+                type: integer
+              flank_down:
+                type: integer
             required:
               - feature
+              - col_names
             additionalProperties: true
       required:
         - name
@@ -655,8 +680,15 @@ properties:
             properties:
               name:
                 type: string
+              col_names:
+                type: array
+                items:
+                  type: string
               min_max:
                 type: object
+            required:
+              - name
+              - col_names
       required:
         - name
         - stats
