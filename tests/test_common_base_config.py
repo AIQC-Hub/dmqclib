@@ -6,6 +6,7 @@ correct loading of configuration templates.
 """
 
 import unittest
+import pytest
 from pathlib import Path
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -104,44 +105,25 @@ class TestDatasetBaseMethods(unittest.TestCase):
             ds.get_base_path("invalid_step_name")
 
 
-class TestConfigTemplates(unittest.TestCase):
+class TestConfigTemplates:
     """Tests for loading configuration from built-in YAML templates."""
 
-    def test_read_datasets_template(self):
+    @pytest.mark.parametrize("template", [
+        (DataSetConfig, "template:data_sets", "dataset_0001"),
+        (DataSetConfig, "template:data_sets_full", "dataset_0001"),
+        (TrainingConfig, "template:training_sets", "training_0001"),
+        (ClassificationConfig, "template:classification_sets_full", "classification_0001"),
+        (ClassificationConfig, "template:classification_sets", "classification_0001"),
+    ])
+    def test_read_template(self, template):
         """Verify that DataSetConfig can load and select from the 'data_sets' template.
 
         This test ensures that the configuration is loaded successfully and that
         a specific dataset can be selected from the template.
         """
-        conf = DataSetConfig("template:data_sets")
-        self.assertIsNotNone(conf.full_config)
+        conf = template[0](template[1])
+        assert conf.full_config is not None
 
-        self.assertIsNone(conf.data)
-        conf.select("dataset_0001")
-        self.assertIsNotNone(conf.data)
-
-    def test_read_training_template(self):
-        """Verify that TrainingConfig can load and select from the 'training_sets' template.
-
-        This test ensures that the training configuration template can be loaded
-        and a specific training set can be selected.
-        """
-        conf = TrainingConfig("template:training_sets")
-        self.assertIsNotNone(conf.full_config)
-
-        self.assertIsNone(conf.data)
-        conf.select("training_0001")
-        self.assertIsNotNone(conf.data)
-
-    def test_read_classification_template(self):
-        """Verify that ClassificationConfig can load and select from the 'classification_sets' template.
-
-        This test ensures that the classification configuration template can be
-        loaded and a specific classification set can be selected.
-        """
-        conf = ClassificationConfig("template:classification_sets")
-        self.assertIsNotNone(conf.full_config)
-
-        self.assertIsNone(conf.data)
-        conf.select("classification_0001")
-        self.assertIsNotNone(conf.data)
+        assert conf.data is None
+        conf.select(template[2])
+        assert conf.data is not None

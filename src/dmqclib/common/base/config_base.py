@@ -26,10 +26,10 @@ from dmqclib.common.config.yaml_schema import (
 )
 from dmqclib.common.config.yaml_templates import (
     get_config_data_set_template,
-    get_config_data_set_with_norm_template,
+    get_config_data_set_full_template,
     get_config_train_set_template,
     get_config_classify_set_template,
-    get_config_classify_set_with_norm_template,
+    get_config_classify_set_full_template,
 )
 from dmqclib.common.utils.config import get_config_item
 from dmqclib.common.utils.config import read_config
@@ -114,10 +114,10 @@ class ConfigBase(ABC):
 
         yaml_templates = {
             "template:data_sets": get_config_data_set_template,
-            "template:data_sets_with_norm": get_config_data_set_with_norm_template,
+            "template:data_sets_full": get_config_data_set_full_template,
             "template:training_sets": get_config_train_set_template,
             "template:classification_sets": get_config_classify_set_template,
-            "template:classification_sets_with_norm": get_config_classify_set_with_norm_template,
+            "template:classification_sets_full": get_config_classify_set_full_template,
         }
         if str(config_file).startswith("template:"):
             if str(config_file) not in yaml_templates:

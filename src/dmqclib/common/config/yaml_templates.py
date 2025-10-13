@@ -137,7 +137,7 @@ data_sets:
     return yaml_template
 
 
-def get_config_data_set_with_norm_template() -> str:
+def get_config_data_set_full_template() -> str:
     """
     Retrieve a YAML template string for dataset preparation configurations with normalisation .
 
@@ -496,7 +496,7 @@ classification_sets:
     return yaml_template
 
 
-def get_config_classify_set_with_norm_template() -> str:
+def get_config_classify_set_full_template() -> str:
     """
     Retrieve a YAML template string for classification configurations with normalization.
 
