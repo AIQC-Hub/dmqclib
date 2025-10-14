@@ -71,12 +71,12 @@ class BasicValues(FeatureBase):
 
           1. :meth:`_init_features` - Prepare a base DataFrame with essential columns
              (row_id, platform_code, profile_no).
-          2. For each column in ``feature_info["stats"]``, call:
+          2. For each column in ``feature_info["col_names"]``, call:
              - :meth:`_add_features` to join the pivoted data onto our feature table.
           3. :meth:`_clean_features` - Drop columns no longer needed.
         """
         self._init_features()
-        for col_name in self.feature_info["stats"].keys():
+        for col_name in self.feature_info["col_names"]:
             self._add_features(col_name)
         self._clean_features()
 

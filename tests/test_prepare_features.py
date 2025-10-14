@@ -340,6 +340,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
                 "psal": {"min": 0, "max": 20},
                 "pres": {"min": 0, "max": 200},
             },
+            "col_names": ["temp", "psal", "pres"],
         }
 
     def test_init_arguments(self):

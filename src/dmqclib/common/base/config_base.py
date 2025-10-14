@@ -235,7 +235,7 @@ class ConfigBase(ABC):
     def get_summary_stats(self, stats_name: str, stats_type: str = "min_max") -> Dict:
         """Retrieve specific summary statistics parameters from the configuration.
 
-        This method iterates through the `summary_stats_set` in the loaded
+        This method iterates through the `feature_stats_set` in the loaded
         configuration to find the entry matching `stats_name` and returns
         the dictionary associated with `stats_type` for that entry.
 
@@ -253,9 +253,9 @@ class ConfigBase(ABC):
         :return: A dictionary containing the requested summary statistics parameters.
         :rtype: dict
         """
-        for stats in self.data["summary_stats_set"]["stats"]:
-            if stats["name"] == stats_name:
-                return stats.get(stats_type)
+        for d in self.data["feature_stats_set"].get(stats_type, []):
+            if d["name"] == stats_name:
+                return d["stats"]
 
         raise ValueError(
             f"Summary statistics set '{stats_name}' not found in the config file."

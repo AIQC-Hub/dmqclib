@@ -90,16 +90,16 @@ class TestClassificationConfigTemplate:
     def setup_template(self):
         self.template_files = [
             (
-                    Path(__file__).resolve().parent
-                    / "data"
-                    / "config"
-                    / "config_classify_set_full_template.yaml"
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "config_classify_set_full_template.yaml"
             ),
             (
-                    Path(__file__).resolve().parent
-                    / "data"
-                    / "config"
-                    / "config_classify_set_template.yaml"
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "config_classify_set_template.yaml"
             ),
         ]
 

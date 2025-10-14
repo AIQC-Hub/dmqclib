@@ -127,8 +127,6 @@ properties:
                 type: array
                 items:
                   type: string
-              min_max:
-                type: object
             required:
               - name
               - col_names
@@ -191,6 +189,29 @@ properties:
       required:
         - name
         - params
+      additionalProperties: false
+
+  feature_stats_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        min_max:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              stats:
+                type: object    
+            required:
+              - name  
+              - stats
+      required:
+        - name
       additionalProperties: false
 
   step_class_sets:
@@ -314,6 +335,8 @@ properties:
           type: string
         feature_param_set:
           type: string
+        feature_stats_set:
+          type: string
         step_class_set:
           type: string
         step_param_set:
@@ -327,6 +350,7 @@ properties:
         - summary_stats_set
         - feature_set
         - feature_param_set
+        - feature_stats_set
         - step_class_set
         - step_param_set
       additionalProperties: false
@@ -338,6 +362,7 @@ required:
   - summary_stats_sets
   - feature_sets
   - feature_param_sets
+  - feature_stats_sets
   - step_class_sets
   - step_param_sets
   - data_sets
@@ -684,8 +709,6 @@ properties:
                 type: array
                 items:
                   type: string
-              min_max:
-                type: object
             required:
               - name
               - col_names
@@ -730,6 +753,29 @@ properties:
       required:
         - name
         - params
+      additionalProperties: false
+
+  feature_stats_sets:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        min_max:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              stats:
+                type: object    
+            required:
+              - name  
+              - stats
+      required:
+        - name
       additionalProperties: false
 
   step_class_sets:
@@ -862,6 +908,8 @@ properties:
           type: string
         feature_param_set:
           type: string
+        feature_stats_set:
+          type: string
         step_class_set:
           type: string
         step_param_set:
@@ -875,6 +923,7 @@ properties:
         - summary_stats_set
         - feature_set
         - feature_param_set
+        - feature_stats_set
         - step_class_set
         - step_param_set
       additionalProperties: false
@@ -886,6 +935,7 @@ required:
   - summary_stats_sets
   - feature_sets
   - feature_param_sets
+  - feature_stats_sets
   - step_class_sets
   - step_param_sets
   - classification_sets

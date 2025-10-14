@@ -108,13 +108,24 @@ class TestDatasetBaseMethods(unittest.TestCase):
 class TestConfigTemplates:
     """Tests for loading configuration from built-in YAML templates."""
 
-    @pytest.mark.parametrize("template", [
-        (DataSetConfig, "template:data_sets", "dataset_0001"),
-        (DataSetConfig, "template:data_sets_full", "dataset_0001"),
-        (TrainingConfig, "template:training_sets", "training_0001"),
-        (ClassificationConfig, "template:classification_sets_full", "classification_0001"),
-        (ClassificationConfig, "template:classification_sets", "classification_0001"),
-    ])
+    @pytest.mark.parametrize(
+        "template",
+        [
+            (DataSetConfig, "template:data_sets", "dataset_0001"),
+            (DataSetConfig, "template:data_sets_full", "dataset_0001"),
+            (TrainingConfig, "template:training_sets", "training_0001"),
+            (
+                ClassificationConfig,
+                "template:classification_sets_full",
+                "classification_0001",
+            ),
+            (
+                ClassificationConfig,
+                "template:classification_sets",
+                "classification_0001",
+            ),
+        ],
+    )
     def test_read_template(self, template):
         """Verify that DataSetConfig can load and select from the 'data_sets' template.
 

@@ -13,9 +13,10 @@ def get_config_data_set_template() -> str:
 
     - ``path_info_sets``: specifying common, input, and split paths.
     - ``target_sets``: defining which variables to process and their flags.
-    - ``summary_stats_sets``: defining summary statistics for normalization.
+    - ``summary_stats_sets``: defining summary statistics.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
+    - ``feature_stats_sets``: detailing methods and stats for normalization.
     - ``step_class_sets``: referencing classes for each preparation step
       (e.g., input, summary, select, locate, extract, split).
     - ``step_param_sets``: referencing parameters for the preparation steps.
@@ -42,26 +43,26 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
 
-summary_stats_sets: # EDIT: Summary stats for normalisation
+summary_stats_sets:
   - name: summary_stats_set_1
     stats:
       - name: location
-        col_names: [longitude, latitude]
+        col_names: [ longitude, latitude ]
       - name: profile_summary_stats5
-        col_names: [temp, psal, pres]
+        col_names: [ temp, psal, pres ]
       - name: basic_values3
-        col_names: [temp, psal, pres]
+        col_names: [ temp, psal, pres ]
 
 feature_sets:
   - name: feature_set_1
@@ -77,25 +78,28 @@ feature_param_sets:
   - name: feature_set_1_param_set_3
     params:
       - feature: location
-        stats_set: {type: raw}
-        col_names: [longitude, latitude]
+        stats_set: { type: raw }
+        col_names: [ longitude, latitude ]
       - feature: day_of_year
         convert: sine
-        col_names: [profile_timestamp]
+        col_names: [ profile_timestamp ]
       - feature: profile_summary_stats5
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
       - feature: basic_values
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
       - feature: flank_up
         flank_up: 5
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
       - feature: flank_down
         flank_down: 5
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
+
+feature_stats_sets:
+  - name: feature_set_1_stats_set_1
 
 step_class_sets:
   - name: data_set_step_set_1
@@ -113,8 +117,8 @@ step_param_sets:
       input: { sub_steps: { rename_columns: false,
                             filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [2023],
-                                     keep_years: [] } }
+               filter_method_dict: { remove_years: [ 2023 ],
+                                     keep_years: [ ] } }
       summary: { }
       select: { neg_pos_ratio: 5 }
       locate: { neighbor_n: 5 }
@@ -131,6 +135,7 @@ data_sets:
     summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
     feature_param_set: feature_set_1_param_set_3
+    feature_stats_set: feature_set_1_stats_set_1
     step_class_set: data_set_step_set_1
     step_param_set: data_set_param_set_1
 """
@@ -145,9 +150,10 @@ def get_config_data_set_full_template() -> str:
 
     - ``path_info_sets``: specifying common, input, and split paths.
     - ``target_sets``: defining which variables to process and their flags.
-    - ``summary_stats_sets``: defining summary statistics for normalisation.
+    - ``summary_stats_sets``: defining summary statistics.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
+    - ``feature_stats_sets``: detailing methods and stats for normalization.
     - ``step_class_sets``: referencing classes for each preparation step
       (e.g., input, summary, select, locate, extract, split).
     - ``step_param_sets``: referencing parameters for the preparation steps.
@@ -174,46 +180,26 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
 
-summary_stats_sets: # EDIT: Summary stats for normalisation
+summary_stats_sets:
   - name: summary_stats_set_1
     stats:
       - name: location
-        col_names: [longitude, latitude]
-        min_max: { longitude: { min: 14.5, max: 23.5 },
-                   latitude: { min: 55, max: 66 } }
+        col_names: [ longitude, latitude ]
       - name: profile_summary_stats5
-        col_names: [temp, psal, pres]
-        min_max: { temp: { mean: { min: 0, max: 12.5 },
-                           median: { min: 0, max: 15 },
-                           sd: { min: 0, max: 6.5 },
-                           pct25: { min: 0, max: 12 },
-                           pct75: { min: 1, max: 19 } },
-                   psal: { mean: { min: 2.9, max: 12 },
-                           median: { min: 2.9, max: 12 },
-                           sd: { min: 0, max: 4 },
-                           pct25: { min: 2.5, max: 8.5 },
-                           pct75: { min: 3, max: 16 } },
-                   pres: { mean: { min: 24, max: 105 },
-                           median: { min: 24, max: 105 },
-                           sd: { min: 13, max: 60 },
-                           pct25: { min: 12, max: 53 },
-                           pct75: { min: 35, max: 156 } } }
+        col_names: [ temp, psal, pres ]
       - name: basic_values3
-        col_names: [temp, psal, pres]
-        min_max: { temp: { min: 0, max: 20 },
-                   psal: { min: 0, max: 20 },
-                   pres: { min: 0, max: 200 } }
+        col_names: [ temp, psal, pres ]
 
 feature_sets:
   - name: feature_set_1
@@ -229,25 +215,52 @@ feature_param_sets:
   - name: feature_set_1_param_set_3
     params:
       - feature: location
-        stats_set: {name: location, type: min_max}
-        col_names: [longitude, latitude]
+        stats_set: { type: min_max, name: location }
+        col_names: [ longitude, latitude ]
       - feature: day_of_year
         convert: sine
-        col_names: [profile_timestamp]
+        col_names: [ profile_timestamp ]
       - feature: profile_summary_stats5
-        stats_set: {name: profile_summary_stats5, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max,  name: profile_summary_stats5 }
+        col_names: [ temp, psal, pres ]
       - feature: basic_values
-        stats_set: {name: basic_values3, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max,  name: basic_values3 }
+        col_names: [ temp, psal, pres ]
       - feature: flank_up
         flank_up: 5
-        stats_set: {name: basic_values3, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max, name: basic_values3 }
+        col_names: [ temp, psal, pres ]
       - feature: flank_down
         flank_down: 5
-        stats_set: {name: basic_values3, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max, name: basic_values3 }
+        col_names: [ temp, psal, pres ]
+
+feature_stats_sets:
+  - name: feature_set_1_stats_set_1
+    min_max:
+      - name: location
+        stats: { longitude: { min: 14.5, max: 23.5 },
+                 latitude: { min: 55, max: 66 } }
+      - name: profile_summary_stats5
+        stats: { temp: { mean: { min: 0, max: 12.5 },
+                         median: { min: 0, max: 15 },
+                         sd: { min: 0, max: 6.5 },
+                         pct25: { min: 0, max: 12 },
+                         pct75: { min: 1, max: 19 } },
+                 psal: { mean: { min: 2.9, max: 12 },
+                         median: { min: 2.9, max: 12 },
+                         sd: { min: 0, max: 4 },
+                         pct25: { min: 2.5, max: 8.5 },
+                         pct75: { min: 3, max: 16 } },
+                 pres: { mean: { min: 24, max: 105 },
+                         median: { min: 24, max: 105 },
+                         sd: { min: 13, max: 60 },
+                         pct25: { min: 12, max: 53 },
+                         pct75: { min: 35, max: 156 } } }
+      - name: basic_values3
+        stats: { temp: { min: 0, max: 20 },
+                 psal: { min: 0, max: 20 },
+                 pres: { min: 0, max: 200 } }
 
 step_class_sets:
   - name: data_set_step_set_1
@@ -265,8 +278,8 @@ step_param_sets:
       input: { sub_steps: { rename_columns: false,
                             filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [2023],
-                                     keep_years: [] } }
+               filter_method_dict: { remove_years: [ 2023 ],
+                                     keep_years: [ ] } }
       summary: { }
       select: { neg_pos_ratio: 5 }
       locate: { neighbor_n: 5 }
@@ -283,6 +296,7 @@ data_sets:
     summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
     feature_param_set: feature_set_1_param_set_3
+    feature_stats_set: feature_set_1_stats_set_1
     step_class_set: data_set_step_set_1
     step_param_set: data_set_param_set_1
 """
@@ -366,9 +380,10 @@ def get_config_classify_set_template() -> str:
 
     - ``path_info_sets``: specifying common, input, model, and concatenation paths.
     - ``target_sets``: defining which variables to process and their flags.
-    - ``summary_stats_sets``: defining summary statistics for normalization.
+    - ``summary_stats_sets``: defining summary statistics.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
+    - ``feature_stats_sets``: detailing methods and stats for normalization.
     - ``step_class_sets``: referencing classes for each classification step
       (e.g., input, summary, select, locate, extract, model, classify, concat).
     - ``step_param_sets``: referencing parameters for the classification steps.
@@ -398,26 +413,26 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
 
-summary_stats_sets: # EDIT: Summary stats for normalisation
+summary_stats_sets:
   - name: summary_stats_set_1
     stats:
       - name: location
-        col_names: [longitude, latitude]
+        col_names: [ longitude, latitude ]
       - name: profile_summary_stats5
-        col_names: [temp, psal, pres]
+        col_names: [ temp, psal, pres ]
       - name: basic_values3
-        col_names: [temp, psal, pres]
+        col_names: [ temp, psal, pres ]
 
 feature_sets:
   - name: feature_set_1
@@ -433,25 +448,28 @@ feature_param_sets:
   - name: feature_set_1_param_set_3
     params:
       - feature: location
-        stats_set: {type: raw}
-        col_names: [longitude, latitude]
+        stats_set: { type: raw }
+        col_names: [ longitude, latitude ]
       - feature: day_of_year
         convert: sine
-        col_names: [profile_timestamp]
+        col_names: [ profile_timestamp ]
       - feature: profile_summary_stats5
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
       - feature: basic_values
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
       - feature: flank_up
         flank_up: 5
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
       - feature: flank_down
         flank_down: 5
-        stats_set: {type: raw}
-        col_names: [temp, psal, pres]
+        stats_set: { type: raw }
+        col_names: [ temp, psal, pres ]
+
+feature_stats_sets:
+  - name: feature_set_1_stats_set_1
 
 step_class_sets:
   - name: data_set_step_set_1
@@ -471,8 +489,8 @@ step_param_sets:
       input: { sub_steps: { rename_columns: false,
                             filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [],
-                                     keep_years: [2023] } }
+               filter_method_dict: { remove_years: [ ],
+                                     keep_years: [ 2023 ] } }
       summary: { }
       select: { }
       locate: { }
@@ -490,6 +508,7 @@ classification_sets:
     summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
     feature_param_set: feature_set_1_param_set_3
+    feature_stats_set: feature_set_1_stats_set_1
     step_class_set: data_set_step_set_1
     step_param_set: data_set_param_set_1
 """
@@ -504,9 +523,10 @@ def get_config_classify_set_full_template() -> str:
 
     - ``path_info_sets``: specifying common, input, model, and concatenation paths.
     - ``target_sets``: defining which variables to process and their flags.
-    - ``summary_stats_sets``: defining summary statistics for normalization.
+    - ``summary_stats_sets``: defining summary statistics.
     - ``feature_sets``: listing named sets of feature extraction modules.
     - ``feature_param_sets``: detailing parameters for each feature.
+    - ``feature_stats_sets``: detailing methods and stats for normalization.
     - ``step_class_sets``: referencing classes for each classification step
       (e.g., input, summary, select, locate, extract, model, classify, concat).
     - ``step_param_sets``: referencing parameters for the classification steps.
@@ -536,46 +556,26 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
+        neg_flag_values: [ 1, 2 ]
 
-summary_stats_sets: # EDIT: Summary stats for normalisation
+summary_stats_sets:
   - name: summary_stats_set_1
     stats:
       - name: location
-        col_names: [longitude, latitude]
-        min_max: { longitude: { min: 14.5, max: 23.5 },
-                   latitude: { min: 55, max: 66 } }
+        col_names: [ longitude, latitude ]
       - name: profile_summary_stats5
-        col_names: [temp, psal, pres]
-        min_max: { temp: { mean: { min: 0, max: 12.5 },
-                           median: { min: 0, max: 15 },
-                           sd: { min: 0, max: 6.5 },
-                           pct25: { min: 0, max: 12 },
-                           pct75: { min: 1, max: 19 } },
-                   psal: { mean: { min: 2.9, max: 12 },
-                           median: { min: 2.9, max: 12 },
-                           sd: { min: 0, max: 4 },
-                           pct25: { min: 2.5, max: 8.5 },
-                           pct75: { min: 3, max: 16 } },
-                   pres: { mean: { min: 24, max: 105 },
-                           median: { min: 24, max: 105 },
-                           sd: { min: 13, max: 60 },
-                           pct25: { min: 12, max: 53 },
-                           pct75: { min: 35, max: 156 } } }
+        col_names: [ temp, psal, pres ]
       - name: basic_values3
-        col_names: [temp, psal, pres]
-        min_max: { temp: { min: 0, max: 20 },
-                   psal: { min: 0, max: 20 },
-                   pres: { min: 0, max: 200 } }
+        col_names: [ temp, psal, pres ]
 
 feature_sets:
   - name: feature_set_1
@@ -591,25 +591,52 @@ feature_param_sets:
   - name: feature_set_1_param_set_3
     params:
       - feature: location
-        stats_set: {name: location, type: min_max}
-        col_names: [longitude, latitude]
+        stats_set: { type: min_max, name: location }
+        col_names: [ longitude, latitude ]
       - feature: day_of_year
         convert: sine
-        col_names: [profile_timestamp]
+        col_names: [ profile_timestamp ]
       - feature: profile_summary_stats5
-        stats_set: {name: profile_summary_stats5, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max, name: profile_summary_stats5 }
+        col_names: [ temp, psal, pres ]
       - feature: basic_values
-        stats_set: {name: basic_values3, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max, name: basic_values3 }
+        col_names: [ temp, psal, pres ]
       - feature: flank_up
         flank_up: 5
-        stats_set: {name: basic_values3, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max, name: basic_values3 }
+        col_names: [ temp, psal, pres ]
       - feature: flank_down
         flank_down: 5
-        stats_set: {name: basic_values3, type: min_max}
-        col_names: [temp, psal, pres]
+        stats_set: { type: min_max, name: basic_values3 }
+        col_names: [ temp, psal, pres ]
+
+feature_stats_sets:
+  - name: feature_set_1_stats_set_1
+    min_max:
+      - name: location
+        stats: { longitude: { min: 14.5, max: 23.5 },
+                 latitude: { min: 55, max: 66 } }
+      - name: profile_summary_stats5
+        stats: { temp: { mean: { min: 0, max: 12.5 },
+                         median: { min: 0, max: 15 },
+                         sd: { min: 0, max: 6.5 },
+                         pct25: { min: 0, max: 12 },
+                         pct75: { min: 1, max: 19 } },
+                 psal: { mean: { min: 2.9, max: 12 },
+                         median: { min: 2.9, max: 12 },
+                         sd: { min: 0, max: 4 },
+                         pct25: { min: 2.5, max: 8.5 },
+                         pct75: { min: 3, max: 16 } },
+                 pres: { mean: { min: 24, max: 105 },
+                         median: { min: 24, max: 105 },
+                         sd: { min: 13, max: 60 },
+                         pct25: { min: 12, max: 53 },
+                         pct75: { min: 35, max: 156 } } }
+      - name: basic_values3
+        stats: { temp: { min: 0, max: 20 },
+                 psal: { min: 0, max: 20 },
+                 pres: { min: 0, max: 200 } }
 
 step_class_sets:
   - name: data_set_step_set_1
@@ -629,8 +656,8 @@ step_param_sets:
       input: { sub_steps: { rename_columns: false,
                             filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [],
-                                     keep_years: [2023] } }
+               filter_method_dict: { remove_years: [ ],
+                                     keep_years: [ 2023 ] } }
       summary: { }
       select: { }
       locate: { }
@@ -648,6 +675,7 @@ classification_sets:
     summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
     feature_param_set: feature_set_1_param_set_3
+    feature_stats_set: feature_set_1_stats_set_1
     step_class_set: data_set_step_set_1
     step_param_set: data_set_param_set_1
 """

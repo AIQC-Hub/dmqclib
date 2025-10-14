@@ -76,14 +76,14 @@ class FlankUp(FeatureBase):
            (row_id, platform_code, profile_no).
         2. :meth:`_expand_observations` - Expand observations by adding rows for
            the specified number of "flank" steps (based on ``feature_info["flank_up"]``).
-        3. For each column in ``feature_info["stats"]``, call:
+        3. For each column in ``feature_info["col_names"]``, call:
            - :meth:`_pivot_features` to pivot the data for that column,
            - :meth:`_add_features` to join the pivoted data onto our feature table.
         4. :meth:`_clean_features` - Drop columns no longer needed.
         """
         self._init_features()
         self._expand_observations()
-        for col_name in self.feature_info["stats"].keys():
+        for col_name in self.feature_info["col_names"]:
             self._pivot_features(col_name)
             self._add_features()
         self._clean_features()
