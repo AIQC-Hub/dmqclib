@@ -133,6 +133,8 @@ class TestLocationFeature(_TestFeatureBase):
                 "longitude": {"min": 14.5, "max": 23.5},
                 "latitude": {"min": 55, "max": 66},
             },
+            "col_names": ["longitude", "latitude"],
+            "stats_set": { "type": "min_max", "name": "location"}
         }
 
     def test_init_arguments(self):
@@ -288,6 +290,8 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
                     "pct75": {"min": 35, "max": 156},
                 },
             },
+            "col_names": ["temp", "psal", "pres"],
+            "stats_set": {"type": "min_max", "name": "profile_summary_stats5"}
         }
 
     def test_init_arguments(self):
@@ -341,6 +345,7 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
                 "pres": {"min": 0, "max": 200},
             },
             "col_names": ["temp", "psal", "pres"],
+            "stats_set": {"type": "min_max", "name": "basic_values3_plus_flanks"}
         }
 
     def test_init_arguments(self):

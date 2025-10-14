@@ -163,13 +163,14 @@ class ProfileSummaryStats5(FeatureBase):
         named "temp_mean" or "temp_min" etc. according to specified
         min and max.
         """
-        columns_to_add = [
-            (
-                (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
-                / (scale_info["max"] - scale_info["min"])
-            ).alias(f"{col_name}_{stat_name}")
-            for col_name, variable_stats in self.feature_info["stats"].items()
-            for stat_name, scale_info in variable_stats.items()
-        ]
+        if self.feature_info["stats_set"]["type"] == "min_max":
+            columns_to_add = [
+                (
+                    (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
+                    / (scale_info["max"] - scale_info["min"])
+                ).alias(f"{col_name}_{stat_name}")
+                for col_name, variable_stats in self.feature_info["stats"].items()
+                for stat_name, scale_info in variable_stats.items()
+            ]
 
-        self.features = self.features.with_columns(columns_to_add)
+            self.features = self.features.with_columns(columns_to_add)

@@ -184,10 +184,13 @@ class FlankUp(FeatureBase):
 
         This modifies :attr:`filtered_input` in place for each relevant column.
         """
-        for col_name, v in self.feature_info["stats"].items():
-            self.filtered_input = self.filtered_input.with_columns(
-                ((pl.col(col_name) - v["min"]) / (v["max"] - v["min"])).alias(col_name)
-            )
+        if self.feature_info["stats_set"]["type"] == "min_max":
+            for col_name, v in self.feature_info["stats"].items():
+                self.filtered_input = self.filtered_input.with_columns(
+                    ((pl.col(col_name) - v["min"]) / (v["max"] - v["min"])).alias(
+                        col_name
+                    )
+                )
 
     def scale_second(self) -> None:
         """
