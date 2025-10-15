@@ -14,13 +14,15 @@ from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.config.yaml_templates import (
     get_config_train_set_template,
     get_config_data_set_template,
+    get_config_data_set_full_template,
     get_config_classify_set_template,
+    get_config_classify_set_full_template,
 )
 from dmqclib.common.utils.config import get_config_file
 from dmqclib.common.utils.config import read_config as utils_read_config
 
 
-def write_config_template(file_name: str, stage: str) -> None:
+def write_config_template(file_name: str, stage: str, extension: str="") -> None:
     """
     Write a YAML configuration template for the specified stage
     ("prepare", "train", or "classify") to a file.
@@ -38,18 +40,22 @@ def write_config_template(file_name: str, stage: str) -> None:
     :type file_name: str
     :param stage: Determines which template to write; must be one of "prepare", "train", or "classify".
     :type stage: str
+    :param extension: Determines template extensions; must be one of "", or "full".
+    :type extension: str
     :raises ValueError: If the specified stage is not supported ("prepare", "train", or "classify" only).
     :raises IOError: If the directory of the specified file path does not exist.
     """
     function_registry = {
-        "prepare": get_config_data_set_template,
-        "train": get_config_train_set_template,
-        "classify": get_config_classify_set_template,
+        "prepare_": get_config_data_set_template,
+        "prepare_full": get_config_data_set_full_template,
+        "train_": get_config_train_set_template,
+        "classify_": get_config_classify_set_template,
+        "classify_full": get_config_classify_set_full_template,
     }
-    if stage not in function_registry:
+    if f"{stage}_{extension}" not in function_registry:
         raise ValueError(f"Module {stage} is not supported.")
 
-    yaml_text = function_registry[stage]()
+    yaml_text = function_registry[f"{stage}_{extension}"]()
     dir_path = os.path.dirname(file_name)
     if not os.path.exists(dir_path) and dir_path != "":
         raise IOError(f"Directory '{dir_path}' does not exist.")

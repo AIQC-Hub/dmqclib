@@ -4,7 +4,6 @@ including writing configuration templates and reading existing configuration fil
 """
 
 import os
-import unittest
 import pytest
 from pathlib import Path
 
@@ -15,80 +14,52 @@ from dmqclib.interface.config import read_config
 from dmqclib.interface.config import write_config_template
 
 
-class TestTemplateConfig(unittest.TestCase):
+class TestTemplateConfig:
     """
     Tests for verifying that configuration templates can be correctly
     written to disk for 'prepare' (dataset) and 'train' modules.
     """
 
-    def setUp(self):
+    @pytest.fixture(autouse=True)
+    def setup_clearup(self):
         """
         Set up test environment by defining sample file paths
         for dataset, training, and classification configuration templates.
         """
-        self.ds_config_template_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "temp_dataset_template.yaml"
-        )
+        config_path = Path(__file__).resolve().parent / "data" / "config"
+        self.templates = [
+            ("prepare", "", str(config_path / "temp_dataset_template.yaml")),
+            ("prepare", "full", str(config_path / "temp_dataset_template.yaml")),
+            ("train", "", str(config_path / "temp_training_template.yaml")),
+            ("classify", "", str(config_path / "temp_classification_template.yaml")),
+            ("classify", "full", str(config_path / "temp_classification_template.yaml")),
+        ]
 
-        self.config_train_set_template_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "temp_training_template.yaml"
-        )
-
-        self.config_classify_set_template_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "temp_classification_template.yaml"
-        )
-
-    def test_ds_config_template(self):
+    @pytest.mark.parametrize("idx", range(5))
+    def test_write_config_template(self, idx):
         """
-        Check that a dataset (prepare) configuration template can be written
+        Check that a configuration template can be written
         to the specified path and removed afterward.
         """
-        write_config_template(self.ds_config_template_file, "prepare")
-        self.assertTrue(os.path.exists(self.ds_config_template_file))
-        os.remove(self.ds_config_template_file)
-
-    def test_config_train_set_template(self):
-        """
-        Check that a training configuration template can be written
-        to the specified path and removed afterward.
-        """
-        write_config_template(self.config_train_set_template_file, "train")
-        self.assertTrue(os.path.exists(self.config_train_set_template_file))
-        os.remove(self.config_train_set_template_file)
-
-    def test_config_classification_set_template(self):
-        """
-        Check that a classification configuration template can be written
-        to the specified path and removed afterward.
-        """
-        write_config_template(self.config_classify_set_template_file, "classify")
-        self.assertTrue(os.path.exists(self.config_classify_set_template_file))
-        os.remove(self.config_classify_set_template_file)
+        write_config_template(self.templates[idx][2], self.templates[idx][0], self.templates[idx][1])
+        assert os.path.exists(self.templates[idx][2])
+        os.remove(self.templates[idx][2])
 
     def test_config_template_with_invalid_module(self):
         """
         Ensure that requesting a template for an invalid module name
         raises ValueError.
         """
-        with self.assertRaises(ValueError):
-            write_config_template(self.ds_config_template_file, "prepare2")
+        with pytest.raises(ValueError):
+            write_config_template(self.templates[0][2], "prepare2")
 
     def test_config_template_with_invalid_path(self):
         """
         Ensure that attempting to write a template to an invalid path
         raises IOError.
         """
-        with self.assertRaises(IOError):
-            write_config_template("/abc" + str(self.ds_config_template_file), "prepare")
+        with pytest.raises(IOError):
+            write_config_template("/abc" + str(self.templates[0][2]), "prepare")
 
 
 class TestReadConfig:
