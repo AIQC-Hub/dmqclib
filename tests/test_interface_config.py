@@ -5,6 +5,7 @@ including writing configuration templates and reading existing configuration fil
 
 import os
 import unittest
+import pytest
 from pathlib import Path
 
 from dmqclib.common.config.classify_config import ClassificationConfig
@@ -90,24 +91,34 @@ class TestTemplateConfig(unittest.TestCase):
             write_config_template("/abc" + str(self.ds_config_template_file), "prepare")
 
 
-class TestReadConfig(unittest.TestCase):
+class TestReadConfig:
     """
     Tests for verifying that reading an existing config file returns
     the appropriate DataSetConfig or TrainingConfig object, while
     invalid inputs raise errors.
     """
 
-    def setUp(self):
+    @pytest.fixture(autouse=True)
+    def setup_clearup(self):
         """
         Define sample file paths for dataset, training, and classification
         configuration files used in subsequent tests.
         """
-        self.ds_config_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_dataset_001.yaml"
-        )
+
+        self.ds_config_files = [
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "test_dataset_001.yaml"
+            ),
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "test_dataset_004.yaml"
+            ),
+        ]
 
         self.train_config_file = str(
             Path(__file__).resolve().parent
@@ -116,12 +127,20 @@ class TestReadConfig(unittest.TestCase):
             / "test_training_001.yaml"
         )
 
-        self.classification_config_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_classify_001.yaml"
-        )
+        self.classification_config_files = [
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "test_classify_001.yaml"
+            ),
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "test_classify_002.yaml"
+            ),
+        ]
 
         self.invalid_config_file = str(
             Path(__file__).resolve().parent
@@ -130,13 +149,14 @@ class TestReadConfig(unittest.TestCase):
             / "test_dataset_invalid.yaml"
         )
 
-    def test_ds_config(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_ds_config(self, idx):
         """
         Verify that reading a dataset (prepare) config file returns
         a DataSetConfig instance.
         """
-        config = read_config(self.ds_config_file)
-        self.assertIsInstance(config, DataSetConfig)
+        config = read_config(self.ds_config_files[idx])
+        assert isinstance(config, DataSetConfig)
 
     def test_train_config(self):
         """
@@ -144,27 +164,28 @@ class TestReadConfig(unittest.TestCase):
         a TrainingConfig instance.
         """
         config = read_config(self.train_config_file)
-        self.assertIsInstance(config, TrainingConfig)
+        assert isinstance(config, TrainingConfig)
 
-    def test_classify_config(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_classify_config(self, idx):
         """
         Verify that reading a classification config file returns
         a ClassificationConfig instance.
         """
-        config = read_config(self.classification_config_file)
-        self.assertIsInstance(config, ClassificationConfig)
+        config = read_config(self.classification_config_files[idx])
+        assert isinstance(config, ClassificationConfig)
 
     def test_config_with_invalid_module(self):
         """
         Check that specifying an invalid module name (config_type within file)
         raises ValueError.
         """
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             _ = read_config(self.invalid_config_file)
 
     def test_config_with_invalid_path(self):
         """
         Check that providing an invalid file path raises IOError.
         """
-        with self.assertRaises(IOError):
-            _ = read_config(str(self.ds_config_file) + "abc")
+        with pytest.raises(IOError):
+            _ = read_config(str(self.ds_config_files[0]) + "abc")

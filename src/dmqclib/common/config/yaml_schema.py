@@ -182,10 +182,16 @@ properties:
                 type: integer
               flank_down:
                 type: integer
+              summary_stats_names:
+                type: array
+                items:
+                  type: string
+              stats:
+                type: object
             required:
               - feature
               - col_names
-            additionalProperties: true
+            additionalProperties: false
       required:
         - name
         - params
@@ -747,9 +753,33 @@ properties:
             properties:
               feature:
                 type: string
+              col_names:
+                type: array
+                items:
+                  type: string
+              stats_set:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+              convert:
+                type: string
+              flank_up:
+                type: integer
+              flank_down:
+                type: integer
+              summary_stats_names:
+                type: array
+                items:
+                  type: string
+              stats:
+                type: object
             required:
               - feature
-            additionalProperties: true
+              - col_names
+            additionalProperties: false
       required:
         - name
         - params

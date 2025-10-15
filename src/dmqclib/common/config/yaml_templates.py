@@ -86,6 +86,7 @@ feature_param_sets:
       - feature: profile_summary_stats5
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
+        summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
@@ -221,10 +222,11 @@ feature_param_sets:
         convert: sine
         col_names: [ profile_timestamp ]
       - feature: profile_summary_stats5
-        stats_set: { type: min_max,  name: profile_summary_stats5 }
+        stats_set: { type: min_max, name: profile_summary_stats5 }
         col_names: [ temp, psal, pres ]
+        summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
-        stats_set: { type: min_max,  name: basic_values3 }
+        stats_set: { type: min_max, name: basic_values3 }
         col_names: [ temp, psal, pres ]
       - feature: flank_up
         flank_up: 5
@@ -456,6 +458,7 @@ feature_param_sets:
       - feature: profile_summary_stats5
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
+        summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
@@ -599,6 +602,7 @@ feature_param_sets:
       - feature: profile_summary_stats5
         stats_set: { type: min_max, name: profile_summary_stats5 }
         col_names: [ temp, psal, pres ]
+        summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
         stats_set: { type: min_max, name: basic_values3 }
         col_names: [ temp, psal, pres ]

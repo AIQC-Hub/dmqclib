@@ -57,6 +57,7 @@ feature_param_sets:
       - feature: profile_summary_stats5
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
+        summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]

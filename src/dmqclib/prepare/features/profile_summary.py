@@ -106,9 +106,10 @@ class ProfileSummaryStats5(FeatureBase):
 
         variables_and_metrics = [
             (variable_name, metric_name)
-            for variable_name, variable_stats in self.feature_info["stats"].items()
-            for metric_name in variable_stats.keys()
+            for variable_name in self.feature_info["col_names"]
+            for metric_name in self.feature_info["summary_stats_names"]
         ]
+
         for variable_name, metric_name in variables_and_metrics:
             self._extract_single_summary(variable_name, metric_name)
 

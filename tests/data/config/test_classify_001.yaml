@@ -80,6 +80,7 @@ feature_param_sets:
       - feature: profile_summary_stats5
         stats_set: { name: profile_summary_stats5, type: min_max }
         col_names: [ temp, psal, pres ]
+        summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
         stats_set: { name: basic_values3, type: min_max }
         col_names: [ temp, psal, pres ]
