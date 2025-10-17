@@ -211,11 +211,11 @@ We welcome contributions! Please use the following guidelines for development.
 
 We recommend using **uv** + **mamba** for managing the development environment.
 
-1.  Install `python`, `uv`, and `ruff` (e.g., via conda or mamba):
+1.  Install `python` and `uv` (e.g., via conda or mamba):
     ```bash
     # Using mamba (recommended)
-    mamba create -n dmqclib-dev -c conda-forge python=3.12 uv ruff
-    mamba activate dmqclib-dev
+    mamba create -n uvenv -c conda-forge python=3.12 uv
+    mamba activate uvenv
     ```
 
 2.  Navigate to the project root and create the virtual environment:
@@ -224,9 +224,9 @@ We recommend using **uv** + **mamba** for managing the development environment.
     uv sync
     ```
 
-3.  (Optional) Install the library in editable mode. This is sometimes needed before running tests.
+3.  Activate the virtual environment:
     ```bash
-    uv pip install -e .
+    source .venv/bin/activate
     ```
 
 ### Running Tests
@@ -234,7 +234,7 @@ We recommend using **uv** + **mamba** for managing the development environment.
 Unit tests are run with `pytest`.
 
 ```bash
-uv run pytest -v
+run pytest -v
 ```
 
 ### Code Style (Linting & Formatting)
@@ -244,19 +244,19 @@ We use **Ruff** for linting and formatting.
 **Linting:**
 ```bash
 # Lint the library source code
-uvx ruff check src
+ruff check src
 
 # Lint the test code
-uvx ruff check tests
+ruff check tests
 ```
 
 **Formatting:**
 ```bash
 # Format the library source code
-uvx ruff format src
+ruff format src
 
 # Format the test code
-uvx ruff format tests
+ruff format tests
 ```
 
 ## Documentation (for Maintainers)

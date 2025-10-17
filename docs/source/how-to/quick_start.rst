@@ -3,18 +3,15 @@ Quick start with the minimum configurations
 
 This guide demonstrates how to run the whole machine learning process with the minimum configurations.
 
-.. important::
+Download Raw Input Data
+-----------------------------
 
-    Before starting, ensure you have your raw input data (e.g., ``input_data.parquet``) available at the specified ``/path/to/input``.
+You can get an input data set (``nrt_cora_bo_4.parquet``) from `Kaggle <https://www.kaggle.com/api/v1/datasets/download/takaya88/copernicus-marine-nrt-ctd-data-for-aiqc>`_.
 
 Generate Configuration Files
 -----------------------------
 
-The following Python commands create three configuration files under ``/path/to/data/config`` and show summary statistics from your input data.
-
-.. important::
-
-    Make sure to save or note down the output from ``dm.get_summary_stats()`` as you will need it to update the configuration files in the next step. Specifically, pay attention to the ``min_max`` values for ``longitude``, ``latitude``, ``temp``, ``psal``, and ``pres``.
+The following Python commands create three configuration files under ``/path/to/data/config``.
 
 .. code-block:: python
 
@@ -26,7 +23,7 @@ The following Python commands create three configuration files under ``/path/to/
 
     # --- User-defined paths ---
     # !! IMPORTANT: Update these paths to your actual data and desired output locations !!
-    input_file = "/path/to/input/input_data.parquet"
+    input_file = "/path/to/input/nrt_cora_bo_4.parquet"
     data_path = "/path/to/data" # This will be the base path for generated configs, models, and results
 
     # --- Derived paths (do not change) ---
@@ -43,23 +40,6 @@ The following Python commands create three configuration files under ``/path/to/
     dm.write_config_template(file_name=config_file_train, stage="train")
     dm.write_config_template(file_name=config_file_classify, stage="classify")
     print("Config templates generated.")
-
-    # Get and print summary statistics for configuration
-    print("\n--- Summary Statistics (All Variables) ---")
-    stats_all = dm.get_summary_stats(input_file, "all")
-    print(dm.format_summary_stats(stats_all))
-
-    print("\n--- Summary Statistics (Profiles - key variables) ---")
-    stats_profiles = dm.get_summary_stats(input_file, "profiles")
-    print("Temperature (temp):")
-    print(stats_profiles.filter(pl.col("variable")=="temp"))
-    print("Salinity (psal):")
-    print(stats_profiles.filter(pl.col("variable")=="psal"))
-    print("Pressure (pres):")
-    print(stats_profiles.filter(pl.col("variable")=="pres"))
-    print("\nFormatted Profile Statistics:")
-    print(dm.format_summary_stats(stats_profiles))
-
 
 Update Configuration Files
 -----------------------------
@@ -85,29 +65,7 @@ Configuration for the data preparation stage
              base_path: /path/to/input # <--- Update this to where your input data is located
              step_folder_name: ""
 
-2.  **Fill in Summary Statistics:**
-    Use the summary statistics output from the `Generate Configuration Files`_ step to fill in the ``min_max`` values for ``longitude``, ``latitude``, ``temp``, ``psal``, and ``pres``. Replace all "..." placeholders.
-
-    .. code-block:: yaml
-       :caption: data_preparation_config.yaml: summary_stats_sets
-       :emphasize-lines: 5, 6, 8, 9, 10, 12, 13, 14
-
-       summary_stats_sets:
-         - name: summary_stats_set_1
-           stats:
-             - name: location
-               min_max: { longitude: { ... },  # <--- From stats_all output
-                          latitude: { ... } }   # <--- From stats_all output
-             - name: profile_summary_stats5
-               min_max: { temp: { ... },       # <--- From stats_profiles output
-                          psal: { ... },       # <--- From stats_profiles output
-                          pres: { ... } }       # <--- From stats_profiles output
-             - name: basic_values3
-               min_max: { temp: { ... },       # <--- From stats_all output
-                          psal: { ... },       # <--- From stats_all output
-                          pres: { ... } }       # <--- From stats_all output
-
-3.  **Configure Test Data Year(s):**
+2.  **Configure Test Data Year(s):**
     Specify the year(s) for an independent test dataset (unseen data) by changing the ``remove_years`` or ``keep_years`` list.
 
     .. code-block:: yaml
@@ -120,10 +78,10 @@ Configuration for the data preparation stage
              input: { sub_steps: { rename_columns: false,
                                    filter_rows: true },
                       rename_dict: { },
-                      filter_method_dict: { remove_years: [2023], # <--- Specify years to exclude from training/validation
-                                            keep_years: [] } }
+                      filter_method_dict: { remove_years: [ 2023 ], # <--- Specify years to exclude from training/validation
+                                            keep_years: [ 2021 ] <--- Specify years to *keep* for classification } } # <--- Specify years to *keep* for training/validation
 
-4.  **Specify Input File Name:**
+3.  **Specify Input File Name:**
     Ensure ``input_file_name`` matches the base name of your input data file.
 
     .. code-block:: yaml
@@ -133,7 +91,7 @@ Configuration for the data preparation stage
        data_sets:
          - name: dataset_0001
            dataset_folder_name: dataset_0001
-           input_file_name: input_data.parquet # <--- Your input file's base name
+           input_file_name: nrt_cora_bo_4.parquet # <--- Your input file's base name
 
 
 Configuration for the training and validation stage
@@ -180,30 +138,7 @@ Configuration for the classification stage
              base_path: /path/to/data/dataset_0001 # <--- Update to where your trained model is
              step_folder_name: "model"
 
-2.  **Copy Summary Statistics:**
-    Copy the *entire* ``stats`` block from ``summary_stats_sets`` in your ``data_preparation_config.yaml`` and paste it here, replacing the "..." placeholder. The content should be identical.
-
-    .. code-block:: yaml
-       :caption: classification_config.yaml: summary_stats_sets
-       :emphasize-lines: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-
-       summary_stats_sets:
-         - name: summary_stats_set_1
-           stats:
-             # <--- Paste the full 'stats' block from data_preparation_config.yaml here
-             - name: location
-               min_max: { longitude: { ... },
-                          latitude: { ... } }
-             - name: profile_summary_stats5
-               min_max: { temp: { ... },
-                          psal: { ... },
-                          pres: { ... } }
-             - name: basic_values3
-               min_max: { temp: { ... },
-                          psal: { ... },
-                          pres: { ... } }
-
-3.  **Configure Classification Data Year(s):**
+2.  **Configure Classification Data Year(s):**
     Specify the year(s) for the classification dataset. This is typically the test dataset year(s) you *removed* during data preparation.
 
     .. code-block:: yaml
@@ -217,9 +152,9 @@ Configuration for the classification stage
                                    filter_rows: true },
                       rename_dict: { },
                       filter_method_dict: { remove_years: [],
-                                            keep_years: [2023] } } # <--- Specify years to *keep* for classification
+                                            keep_years: [ 2023 ] } } # <--- Specify years to *keep* for classification
 
-4.  **Specify Input File Name:**
+3.  **Specify Input File Name:**
     Ensure ``input_file_name`` matches the base name of your input data file for classification.
 
     .. code-block:: yaml
@@ -229,7 +164,7 @@ Configuration for the classification stage
        data_sets:
          - name: classification_0001
            dataset_folder_name: dataset_0001
-           input_file_name: input_data.parquet # <--- Your input file's base name
+           input_file_name: nrt_cora_bo_4.parquet # <--- Your input file's base name
 
 
 Run the processes in all stages

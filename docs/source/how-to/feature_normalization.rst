@@ -129,9 +129,8 @@ You will primarily focus on updating the following sections:
 
 *   **`path_info_sets`**: Define your input and output directories.
 *   **`target_sets`**: Specify your prediction targets and their quality control flags.
-*   **`summary_stats_sets`**: Provide settings for summary statistics.
+*   **`summary_stats_sets`**: Provide statistics for feature normalization.
 *   **`feature_sets` & `feature_param_sets`**: List the feature engineering methods and their parameters.
-*   **`feature_stats_sets`**: Provide statistics for feature normalization.
 *   **`data_sets`**: Assemble the full pipeline by linking the named blocks.
 
 **Updating `path_info_sets` and `data_sets`:**
@@ -156,11 +155,35 @@ Update your `prepare_config.yaml` to match the following for the `path_info_sets
         dataset_folder_name: dataset_0001  # The name of the output folder for this job
         input_file_name: nrt_cora_bo_4.parquet # The specific raw input file to process
 
-.. important::
+**Gathering Summary Statistics (for `summary_stats_sets`):**
+To correctly normalize features, you need to provide summary statistics (like min/max values) of your data. The `dmqclib` library offers convenient functions to calculate these. Run the following Python code to print formatted summary statistics that you can then copy directly into the `summary_stats_sets` section of your `prepare_config.yaml`.
 
-   As it is crucial to correctly normalize features for non-tree based machine learning methods, such as SVM and logistic regression, you need to provide summary statistics (like min/max values) of your data. The `dmqclib` library offers convenient functions to calculate these.  Please refer to the :doc:`../../how-to/data_preprocessing_utilities` guide for details.
+.. code-block:: python
 
-Step 2.2: Run the Preparation Process
+   import dmqclib as dm
+   import os
+   import polars as pl
+
+   input_file = os.path.expanduser("~/aiqc_project/input/nrt_cora_bo_4.parquet")
+
+   print("--- Summary statistics for 'all' features ---")
+   stats_all = dm.get_summary_stats(input_file, "all")
+   print(stats_all)
+   print(dm.format_summary_stats(stats_all))
+
+   print("\n--- Summary statistics for 'profiles' features ---")
+   stats_profiles = dm.get_summary_stats(input_file, "profiles")
+   print(stats_profiles.filter(pl.col("variable")=="pres"))
+   print(stats_profiles.filter(pl.col("variable")=="temp"))
+   print(stats_profiles.filter(pl.col("variable")=="psal"))
+   print(dm.format_summary_stats(stats_profiles))
+
+   # Use the output from the prints above to populate your summary_stats_sets section.
+
+.. note::
+   The `prepare_config.yaml` can be quite detailed. For a complete reference of all available configuration options, including full examples for `target_sets`, `feature_sets`, `feature_param_sets`, `step_class_sets`, and `step_param_sets`, please consult the dedicated :doc:`../../configuration/preparation` page. You will need to populate these sections in your configuration file based on your specific requirements.
+
+Step 2.3: Run the Preparation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Once you have customized your `prepare_config.yaml` with the correct paths, input file name, and definitions for targets, features, and summary statistics, you can execute the data preparation workflow.
 
