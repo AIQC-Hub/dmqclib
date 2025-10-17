@@ -22,7 +22,7 @@ from dmqclib.common.utils.config import get_config_file
 from dmqclib.common.utils.config import read_config as utils_read_config
 
 
-def write_config_template(file_name: str, stage: str, extension: str="") -> None:
+def write_config_template(file_name: str, stage: str, extension: str = "") -> None:
     """
     Write a YAML configuration template for the specified stage
     ("prepare", "train", or "classify") to a file.

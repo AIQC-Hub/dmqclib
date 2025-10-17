@@ -12,7 +12,7 @@ This entire process is driven by a YAML configuration file, ensuring your data p
    However, you are encouraged to use the method you are most comfortable with. The code can be run in several ways:
 
    *   **In an Interactive Python Session:** Launch Python (``python``) or IPython (``ipython``) and paste the code line by line. This is great for quick tests and exploration.
-   *   **As Python Scripts:** Copy the code into a ``.py`` file (e.g., `prepare_data.py`) and execute it from your terminal with ``python your_script_name.py``. This is suitable for automation and batch processing.
+   *   **As Python Scripts:** Copy the code into a `.py` file (e.g., `prepare_data.py`) and execute it from your terminal with `python your_script_name.py`. This is suitable for automation and batch processing.
    *   **In a Jupyter Notebook or Lab:** This is a fantastic option for experimentation, as it allows you to run code in cells, add notes, and visualize results interactively.
 
    Feel free to adapt the examples to your preferred environment.
@@ -20,7 +20,7 @@ This entire process is driven by a YAML configuration file, ensuring your data p
 Getting the Example Data
 ------------------------
 
-This tutorial uses the Copernicus Marine NRT CTD dataset, publicly available on Kaggle. Before proceeding, let's set up your project directory structure and download the necessary data.
+This tutorial uses the Copernicus Marine NRT CTD dataset, publicly available on `Kaggle`. Before proceeding, let's set up your project directory structure and download the necessary data.
 
 First, create the directories for your project. This structure will be used consistently throughout the tutorials:
 
@@ -123,7 +123,7 @@ First, use ``dmqclib`` to generate a boilerplate configuration template. This fi
 
 Step 2.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Now, open the newly created ``~/aiqc_project/config/prepare_config.yaml`` in a text editor. You need to tell ``dmqclib`` where to find your input data, where to save the processed output, and define your targets and features.
+Now, open the newly created `~/aiqc_project/config/prepare_config.yaml` in a text editor. You need to tell ``dmqclib`` where to find your input data, where to save the processed output, and define your targets and features.
 
 You will primarily focus on updating the following sections:
 
@@ -158,7 +158,7 @@ Update your `prepare_config.yaml` to match the following for the `path_info_sets
 
 .. important::
 
-   As it is crucial to correctly normalize features for non-tree based machine learning methods, such as SVM and logistic regression, you need to provide summary statistics (like min/max values) of your data. The `dmqclib` library offers convenient functions to calculate these.  Please refer to the :doc:`../../how-to/data_preprocessing_utilities` guide for details.
+   As it is crucial to normalize features for non-tree based machine learning methods, such as SVM and logistic regression, you need to provide summary statistics (like min/max values) of your data in the configuration file. The ``dmqclib`` library offers convenient functions to calculate the summary statistics.  Please refer to the :doc:`../../how-to/feature_normalization` guide for details.
 
 Step 2.2: Run the Preparation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

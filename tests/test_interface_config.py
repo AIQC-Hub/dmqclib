@@ -32,7 +32,11 @@ class TestTemplateConfig:
             ("prepare", "full", str(config_path / "temp_dataset_template.yaml")),
             ("train", "", str(config_path / "temp_training_template.yaml")),
             ("classify", "", str(config_path / "temp_classification_template.yaml")),
-            ("classify", "full", str(config_path / "temp_classification_template.yaml")),
+            (
+                "classify",
+                "full",
+                str(config_path / "temp_classification_template.yaml"),
+            ),
         ]
 
     @pytest.mark.parametrize("idx", range(5))
@@ -41,7 +45,9 @@ class TestTemplateConfig:
         Check that a configuration template can be written
         to the specified path and removed afterward.
         """
-        write_config_template(self.templates[idx][2], self.templates[idx][0], self.templates[idx][1])
+        write_config_template(
+            self.templates[idx][2], self.templates[idx][0], self.templates[idx][1]
+        )
         assert os.path.exists(self.templates[idx][2])
         os.remove(self.templates[idx][2])
 

@@ -18,7 +18,11 @@ For ``dmqclib`` to correctly process your data, your raw input Parquet file shou
 *   **`observation_no`**: A unique, sequential integer number identifying each individual observation (row) within a given `profile_no`. This indicates the order of observations within a profile.
 *   **`pres`**: Pressure values for each observation (float).
 
-If your raw data is missing `profile_no`, `profile_timestamp`, or `observation_no`, the following steps will guide you through creating them.
+.. important::
+   If your raw data is missing **`profile_no`**, **`profile_timestamp`**, or **`observation_no`**, or if these fields have invalid data types, the following steps will guide you through creating them.
+
+.. important::
+   Duplicate entries at the platform or profile level may result in incorrect datasets, even when following the examples on this page.
 
 Example Data: Starting Point
 ----------------------------

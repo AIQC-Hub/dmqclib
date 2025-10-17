@@ -1,5 +1,5 @@
-Classification (Configuration)
-===============================
+Configuration of Classification
+=================================
 The `classify` workflow (`stage="classify"`) is designed to apply a pre-trained machine learning model to new, unseen datasets to generate predictions. It leverages the same modular "building blocks" concept found in the `prepare` and `train` workflows, but its configuration is streamlined.
 
 Unlike preparation or training, classification doesn't involve model learning or complex feature engineering from scratch. Instead, its primary role is to orchestrate the application of an existing model. This involves:
@@ -56,7 +56,7 @@ While the classification workflow is applying a pre-trained model, this section 
 
 `summary_stats_sets`
 ^^^^^^^^^^^^^^^^^^^^
-This section specifies summary statistics, typically for normalization or scaling of features. For classification, these values *must* be identical to those used during the model's training (from your `prepare_config.yaml`). This ensures that the new input data's features are scaled consistently with how the model expects them, preventing incorrect predictions due to mismatched feature ranges.
+This section defines summary statistics that will be used for feature values or feature normalization.
 
 .. code-block:: yaml
 
@@ -64,8 +64,11 @@ This section specifies summary statistics, typically for normalization or scalin
      - name: summary_stats_set_1
        stats:
          - name: location
-           min_max: { longitude: { min: 14.5, max: 23.5 },
-                      latitude: { min: 55, max: 66 } }
+           col_names: [ longitude, latitude ]
+         - name: profile_summary_stats5
+           col_names: [ temp, psal, pres ]
+         - name: basic_values3
+           col_names: [ temp, psal, pres ]
 
 `feature_sets` & `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -93,19 +96,41 @@ These two sections are critical for ensuring that the new input data is transfor
      - name: feature_set_1_param_set_3
        params:
          - feature: location
-           stats_set: {name: location, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ longitude, latitude ]
          - feature: day_of_year
            convert: sine
+           col_names: [ profile_timestamp ]
          - feature: profile_summary_stats5
-           stats_set: { name: profile_summary_stats5, type: min_max }
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+           summary_stats_names: [ mean, median, sd, pct25, pct75 ]
          - feature: basic_values
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_up
            flank_up: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_down
            flank_down: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+
+`feature_stats_sets`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(**Advanced Use**)
+
+This section defines summary statistics that will be used for normalization or scaling of feature values. These statistics are typically derived from your dataset itself to ensure proper scaling.
+
+.. code-block:: yaml
+
+   feature_stats_sets:
+     - name: feature_set_1_stats_set_1
+
+.. important::
+
+   As it is crucial to normalize features for non-tree based machine learning methods, such as SVM and logistic regression, you need to provide summary statistics (like min/max values) of your data in the configuration file. The ``dmqclib`` library offers convenient functions to calculate the summary statistics.  Please refer to the :doc:`../../how-to/feature_normalization` guide for details.
 
 `step_class_sets`
 ^^^^^^^^^^^^^^^^^
@@ -171,11 +196,7 @@ This is the main "assembly" section that defines a complete classification job. 
 *   **`input_file_name`**: The name of the raw data file (e.g., a `.parquet` file) that you want to classify. This file should be located in `input.base_path`.
 *   **`path_info`**: The `name` of the path configuration to use from `path_info_sets`.
 *   **`target_set`**: The `name` of the target variable configuration to use from `target_sets`.
-*   **`summary_stats_set`**: The `name` of the summary statistics configuration for feature normalization.
-*   **`feature_set`**: The `name` of the feature engineering methods to apply.
-*   **`feature_param_set`**: The `name` of the parameters for the feature engineering methods.
-*   **`step_class_set`**: The `name` of the custom pipeline step classes to use.
-*   **`step_param_set`**: The `name` of the general parameters for the pipeline steps.
+*   ...and similarly for all other configuration sets.
 
 .. code-block:: yaml
    :caption: Example classification_sets
@@ -187,11 +208,7 @@ This is the main "assembly" section that defines a complete classification job. 
        input_file_name: nrt_cora_bo_4.parquet
        path_info: data_set_1
        target_set: target_set_1_3
-       summary_stats_set: summary_stats_set_1
-       feature_set: feature_set_1
-       feature_param_set: feature_set_1_param_set_3
-       step_class_set: data_set_step_set_1
-       step_param_set: data_set_param_set_1
+       # ... other set references would follow here
 
 .. note::
    While you can define multiple classification sets in the `classification_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
@@ -203,7 +220,7 @@ Here is a complete example of a `classification_config.yaml` file, showing how a
 
 .. code-block:: yaml
    :caption: Full classification_config.yaml example
-   :emphasize-lines: 5, 7, 10, 11, 13, 33, 102, 105, 115, 116, 117
+   :emphasize-lines: 5, 7, 10, 11, 13, 68, 72, 95, 97, 98
 
    ---
    path_info_sets:
@@ -239,28 +256,11 @@ Here is a complete example of a `classification_config.yaml` file, showing how a
      - name: summary_stats_set_1
        stats:
          - name: location
-           min_max: { longitude: { min: 14.5, max: 23.5 },
-                      latitude: { min: 55, max: 66 } }
+           col_names: [ longitude, latitude ]
          - name: profile_summary_stats5
-           min_max: { temp: { mean: { min: 0, max: 12.5 },
-                              median: { min: 0, max: 15 },
-                              sd: { min: 0, max: 6.5 },
-                              pct25: { min: 0, max: 12 },
-                              pct75: { min: 1, max: 19 } },
-                      psal: { mean: { min: 2.9, max: 12 },
-                              median: { min: 2.9, max: 12 },
-                              sd: { min: 0, max: 4 },
-                              pct25: { min: 2.5, max: 8.5 },
-                              pct75: { min: 3, max: 16 } },
-                      pres: { mean: { min: 24, max: 105 },
-                              median: { min: 24, max: 105 },
-                              sd: { min: 13, max: 60 },
-                              pct25: { min: 12, max: 53 },
-                              pct75: { min: 35, max: 156 } } }
+           col_names: [ temp, psal, pres ]
          - name: basic_values3
-           min_max: { temp: { min: 0, max: 20 },
-                      psal: { min: 0, max: 20 },
-                      pres: { min: 0, max: 200 } }
+           col_names: [ temp, psal, pres ]
 
    feature_sets:
      - name: feature_set_1
@@ -276,19 +276,29 @@ Here is a complete example of a `classification_config.yaml` file, showing how a
      - name: feature_set_1_param_set_3
        params:
          - feature: location
-           stats_set: {name: location, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ longitude, latitude ]
          - feature: day_of_year
            convert: sine
+           col_names: [ profile_timestamp ]
          - feature: profile_summary_stats5
-           stats_set: {name: profile_summary_stats5, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+           summary_stats_names: [ mean, median, sd, pct25, pct75 ]
          - feature: basic_values
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_up
            flank_up: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_down
            flank_down: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+
+   feature_stats_sets:
+     - name: feature_set_1_stats_set_1
 
    step_class_sets:
      - name: data_set_step_set_1
@@ -327,5 +337,6 @@ Here is a complete example of a `classification_config.yaml` file, showing how a
        summary_stats_set: summary_stats_set_1
        feature_set: feature_set_1
        feature_param_set: feature_set_1_param_set_3
+       feature_stats_set: feature_set_1_stats_set_1
        step_class_set: data_set_step_set_1
        step_param_set: data_set_param_set_1

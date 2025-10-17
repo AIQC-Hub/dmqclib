@@ -1,7 +1,7 @@
-Welcome to the dmqclib documentation!
+Welcome to the `dmqclib` documentation!
 =======================================
 
-**dmqclib** is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project.
+``dmqclib`` is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project.
 
 The library is designed around a three-stage workflow:
 
@@ -16,7 +16,7 @@ Each stage is controlled by a YAML configuration file, allowing you to define an
 
 ----------
 
-These tutorials provide a step-by-step guide to the core workflows of the library. If you are new to dmqclib, start here.
+These tutorials provide a step-by-step guide to the core workflows of the library. If you are new to ``dmqclib``, start here.
 
 .. toctree::
    :maxdepth: 2
@@ -30,7 +30,7 @@ These tutorials provide a step-by-step guide to the core workflows of the librar
 
 ----------
 
-This section provides practical examples and solutions for common tasks related to using dmqclib.
+This section provides practical examples and solutions for common tasks related to using ``dmqclib``.
 
 .. toctree::
    :maxdepth: 2
@@ -38,6 +38,7 @@ This section provides practical examples and solutions for common tasks related 
 
    how-to/quick_start
    how-to/data_preprocessing_utilities
+   how-to/feature_normalization
    how-to/selecting_specific_configurations
 
 ----------

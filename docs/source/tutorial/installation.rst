@@ -1,7 +1,7 @@
 Step 1: Installation
 ========================
 
-The ``dmqclib`` library can be installed using several popular Python package managers. We recommend an approach that combines `mamba` and `uv` for the best performance and dependency management, particularly in complex environments. However, standard installation methods using `pip` or `conda` are also fully supported.
+The ``dmqclib`` library can be installed using several popular Python package managers. Standard installation methods using ``pip`` or ``conda`` are fully supported.
 
 Standard Approaches
 ----------------------
@@ -12,7 +12,7 @@ Using pip
 You can install ``dmqclib`` directly from PyPI using ``pip``.
 
 .. note::
-   It is highly recommended to install the package inside a virtual environment (like `venv` or `virtualenv`) to avoid conflicts with other projects or system packages. This is crucial for managing Python dependencies effectively.
+   It is highly recommended to install the package inside a virtual environment (like ``venv`` or ``virtualenv``) to avoid conflicts with other projects or system packages. This is crucial for managing Python dependencies effectively.
 
 .. code-block:: bash
 
@@ -24,22 +24,19 @@ The ``dmqclib`` package is available on the `conda-forge` channel, which is the 
 
 .. code-block:: bash
 
-   # Using conda (creates a new environment if 'dmqclib' does not need to be found globally)
+   # Using conda (creates a new environment if ``dmqclib`` does not need to be found globally)
    conda install -c conda-forge dmqclib
 
    # Or using mamba (for a faster installation and better dependency resolution)
    mamba install -c conda-forge dmqclib
 
-.. tip::
-   While ``dmqclib`` might also be indexed on other Anaconda channels (e.g., `takayasaito`), we strongly recommend using `conda-forge` for consistency, broader dependency availability, and community support.
-
-Using uv (Standalone for virtual environments)
+Using uv
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you prefer to use `uv` for both creating virtual environments and installing packages, follow these steps. This method is an excellent pure-Python alternative for environment and package management.
+If you prefer to use ``uv`` for both creating virtual environments and installing packages, follow these steps. This method is an excellent pure-Python alternative for environment and package management.
 
 **Step 1: Create and activate a virtual environment with uv**
 
-`uv` will create a new virtual environment in a `.venv` directory within your current working directory by default.
+``uv`` will create a new virtual environment in a `.venv` directory within your current working directory by default.
 
 .. code-block:: bash
 
@@ -61,7 +58,7 @@ Once your `uv`-managed virtual environment is activated, proceed with the instal
 
 Recommended Approach for Development: Conda/Mamba + uv
 ---------------------------------------------------------
-This method is highly recommended for all users, especially those managing multiple projects or complex dependencies. `Mamba <https://mamba.readthedocs.io/>`_ is a fast, drop-in replacement for ``conda``, offering superior speed and reliability for environment and package management. `uv <https://docs.astral.sh/uv/>`_ is an extremely fast Python package installer and resolver, ensuring quick and efficient dependency resolution.
+This method is highly recommended for all users, especially those managing multiple projects or complex dependencies. ``mamba`` (`website <https://mamba.readthedocs.io/>`_) is a fast, drop-in replacement for ``conda``, offering superior speed and reliability for environment and package management. ``uv`` (`website <https://docs.astral.sh/uv/>`_) is an extremely fast Python package installer and resolver, ensuring quick and efficient dependency resolution.
 
 **Benefits of this approach:**
 
@@ -74,10 +71,10 @@ This method is highly recommended for all users, especially those managing multi
 
 **Step 1: Create and activate a new environment with Mamba**
 
-This command creates a new, isolated environment named ``uvenv`` and pre-installs Python and `uv` from the `conda-forge` channel.
+This command creates a new, isolated environment named `uvenv` and pre-installs Python and ``uv`` from the `conda-forge` channel.
 
 .. note::
-   You can use any name for the environment, but we use ``uvenv`` in this example.
+   You can use any name for the environment, but we use `uvenv` in this example.
 
 .. code-block:: bash
 
@@ -88,11 +85,11 @@ This command creates a new, isolated environment named ``uvenv`` and pre-install
    mamba activate uvenv
 
 .. important::
-   Remember to activate ``uvenv`` every time you wish to use ``dmqclib`` to ensure you are working within the correct, isolated environment.
+   Remember to activate `uvenv` every time you wish to use ``dmqclib`` to ensure you are working within the correct, isolated environment.
 
 **Step 2: Install dmqclib using uv**
 
-Once you are inside the activated ``uvenv`` environment, use `uv` to install the ``dmqclib`` package and its dependencies from PyPI.
+Once you are inside the activated `uvenv` environment, use ``uv`` to install the ``dmqclib`` package and its dependencies from PyPI.
 
 .. code-block:: bash
 

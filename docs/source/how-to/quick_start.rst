@@ -1,4 +1,4 @@
-Quick start with the minimum configurations
+Quick Start
 =============================================
 
 This guide demonstrates how to run the whole machine learning process with the minimum configurations.
@@ -70,7 +70,7 @@ Configuration for the data preparation stage
 
     .. code-block:: yaml
        :caption: data_preparation_config.yaml: step_param_sets
-       :emphasize-lines: 7
+       :emphasize-lines: 7, 8
 
        step_param_sets:
          - name: data_set_param_set_1
@@ -79,7 +79,7 @@ Configuration for the data preparation stage
                                    filter_rows: true },
                       rename_dict: { },
                       filter_method_dict: { remove_years: [ 2023 ], # <--- Specify years to exclude from training/validation
-                                            keep_years: [ 2021 ] <--- Specify years to *keep* for classification } } # <--- Specify years to *keep* for training/validation
+                                            keep_years: [ 2021 ] } } # <--- Specify years to *keep* for training/validation
 
 3.  **Specify Input File Name:**
     Ensure ``input_file_name`` matches the base name of your input data file.

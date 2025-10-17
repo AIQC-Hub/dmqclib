@@ -1,5 +1,5 @@
-Dataset Preparation (Configuration)
-====================================
+Configuration of Dataset Preparation
+======================================
 The `prepare` workflow (`stage="prepare"`) is central to setting up your data for machine learning tasks within this library. It provides comprehensive control over the entire data processing pipeline, from  preparing feature data sets from your raw data and creating the training, validation, and test data sets.
 
 Core Concepts: Modular Configuration
@@ -10,9 +10,10 @@ The primary configuration sections (building blocks) are:
 
 *   **`path_info_sets`**: Defines reusable directory structures for input data and processed outputs.
 *   **`target_sets`**: Specifies the prediction target variables, including their quality control (QC) flags.
-*   **`summary_stats_sets`**: Configures summary statistics essential for normalizing feature values.
+*   **`summary_stats_sets`**: Configures summary statistics.
 *   **`feature_sets`**: (**Advanced**) Lists the specific feature engineering methods to be applied.
 *   **`feature_param_sets`**: Provides detailed parameters and settings for each chosen feature engineering method.
+*   **`feature_stats_sets`**: (**Advanced**) Provides summary statistics values for normalizing features.
 *   **`step_class_sets`**: (**Advanced**) Allows users to define custom Python classes for individual processing steps, enabling deep customization of the pipeline's behavior.
 *   **`step_param_sets`**: Supplies general parameters that control the behavior of the default or custom processing steps.
 *   **`data_sets`**: The central assembly section, where you combine named blocks from the sections above to define a complete and executable data processing pipeline.
@@ -56,7 +57,7 @@ This section specifies the target variables that your machine learning model wil
 
 `summary_stats_sets`
 ^^^^^^^^^^^^^^^^^^^^
-This section defines summary statistics that will be used for normalization or scaling of feature values. These statistics are typically derived from your dataset itself to ensure proper scaling. The `dmqclib` (Data Management Quality Control Library) provides convenient functions (`get_summary_stats` and `format_summary_stats`) to calculate and format these statistics directly from your input data, making it easy to populate this section.
+This section defines summary statistics that will be used for feature values or feature normalization.
 
 .. code-block:: yaml
 
@@ -64,26 +65,20 @@ This section defines summary statistics that will be used for normalization or s
      - name: summary_stats_set_1
        stats:
          - name: location
-           min_max: { longitude: { min: 14.5, max: 23.5 },
-                      latitude: { min: 55, max: 66 } }
+           col_names: [ longitude, latitude ]
+         - name: profile_summary_stats5
+           col_names: [ temp, psal, pres ]
+         - name: basic_values3
+           col_names: [ temp, psal, pres ]
 
-The following Python commands, utilizing `dmqclib`, can provide all necessary information to update the values in `summary_stats_sets` based on your actual data:
+``dmqclib`` currently provides the following summary statistics.
 
-.. code-block:: python
-
-   import dmqclib as dm
-
-   input_file = "~/aiqc_project/input/nrt_cora_bo_4.parquet"
-
-   stats_all = dm.get_summary_stats(input_file, "all")
-   print(dm.format_summary_stats(stats_all))
-
-   stats_profiles = dm.get_summary_stats(input_file, "profiles")
-   print(dm.format_summary_stats(stats_profiles))
+*   **`location`**: global summary statistics of locations for feature normalization.
+*   **`profile_summary_stats5`**: profile level summary statistics used as features and for feature normalization.
+*   **`basic_values3`**: global summary statistics of specified variables for feature normalization.
 
 `feature_sets` & `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(**Advanced Use**)
 These two interconnected sections are dedicated to configuring your feature engineering process.
 
 *   **`feature_sets`**: This block lists the *names* of the specific feature engineering methods you want to apply to your data.
@@ -107,19 +102,41 @@ These two interconnected sections are dedicated to configuring your feature engi
      - name: feature_set_1_param_set_3
        params:
          - feature: location
-           stats_set: {name: location, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ longitude, latitude ]
          - feature: day_of_year
            convert: sine
+           col_names: [ profile_timestamp ]
          - feature: profile_summary_stats5
-           stats_set: { name: profile_summary_stats5, type: min_max }
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+           summary_stats_names: [ mean, median, sd, pct25, pct75 ]
          - feature: basic_values
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_up
            flank_up: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_down
            flank_down: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+
+`feature_stats_sets`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(**Advanced Use**)
+
+This section defines summary statistics that will be used for normalization or scaling of feature values. These statistics are typically derived from your dataset itself to ensure proper scaling.
+
+.. code-block:: yaml
+
+   feature_stats_sets:
+     - name: feature_set_1_stats_set_1
+
+.. important::
+
+   As it is crucial to normalize features for non-tree based machine learning methods, such as SVM and logistic regression, you need to provide summary statistics (like min/max values) of your data in the configuration file. The ``dmqclib`` library offers convenient functions to calculate the summary statistics.  Please refer to the :doc:`../../how-to/feature_normalization` guide for details.
 
 `step_class_sets`
 ^^^^^^^^^^^^^^^^^
@@ -195,7 +212,7 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
 
 .. code-block:: yaml
    :caption: Full prepare_config.yaml example
-   :emphasize-lines: 5, 7, 30, 97, 99, 109, 110, 111
+   :emphasize-lines: 5, 7, 65, 69, 90, 92, 93, 95, 96, 98, 99, 102, 103, 104
 
    ---
    path_info_sets:
@@ -228,28 +245,11 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
      - name: summary_stats_set_1
        stats:
          - name: location
-           min_max: { longitude: { min: 14.5, max: 23.5 },
-                      latitude: { min: 55, max: 66 } }
+           col_names: [ longitude, latitude ]
          - name: profile_summary_stats5
-           min_max: { temp: { mean: { min: 0, max: 12.5 },
-                              median: { min: 0, max: 15 },
-                              sd: { min: 0, max: 6.5 },
-                              pct25: { min: 0, max: 12 },
-                              pct75: { min: 1, max: 19 } },
-                      psal: { mean: { min: 2.9, max: 12 },
-                              median: { min: 2.9, max: 12 },
-                              sd: { min: 0, max: 4 },
-                              pct25: { min: 2.5, max: 8.5 },
-                              pct75: { min: 3, max: 16 } },
-                      pres: { mean: { min: 24, max: 105 },
-                              median: { min: 24, max: 105 },
-                              sd: { min: 13, max: 60 },
-                              pct25: { min: 12, max: 53 },
-                              pct75: { min: 35, max: 156 } } }
+           col_names: [ temp, psal, pres ]
          - name: basic_values3
-           min_max: { temp: { min: 0, max: 20 },
-                      psal: { min: 0, max: 20 },
-                      pres: { min: 0, max: 200 } }
+           col_names: [ temp, psal, pres ]
 
    feature_sets:
      - name: feature_set_1
@@ -265,19 +265,29 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
      - name: feature_set_1_param_set_3
        params:
          - feature: location
-           stats_set: {name: location, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ longitude, latitude ]
          - feature: day_of_year
            convert: sine
+           col_names: [ profile_timestamp ]
          - feature: profile_summary_stats5
-           stats_set: { name: profile_summary_stats5, type: min_max }
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+           summary_stats_names: [ mean, median, sd, pct25, pct75 ]
          - feature: basic_values
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_up
            flank_up: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
          - feature: flank_down
            flank_down: 5
-           stats_set: {name: basic_values3, type: min_max}
+           stats_set: { type: raw }
+           col_names: [ temp, psal, pres ]
+
+   feature_stats_sets:
+     - name: feature_set_1_stats_set_1
 
    step_class_sets:
      - name: data_set_step_set_1
@@ -313,5 +323,6 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
        summary_stats_set: summary_stats_set_1
        feature_set: feature_set_1
        feature_param_set: feature_set_1_param_set_3
+       feature_stats_set: feature_set_1_stats_set_1
        step_class_set: data_set_step_set_1
        step_param_set: data_set_param_set_1
