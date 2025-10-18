@@ -109,7 +109,6 @@ class ProfileSummaryStats5(FeatureBase):
             for variable_name in self.feature_info["col_names"]
             for metric_name in self.feature_info["summary_stats_names"]
         ]
-
         for variable_name, metric_name in variables_and_metrics:
             self._extract_single_summary(variable_name, metric_name)
 

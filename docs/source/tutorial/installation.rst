@@ -58,7 +58,7 @@ Once your `uv`-managed virtual environment is activated, proceed with the instal
 
 Recommended Approach for Development: Conda/Mamba + uv
 ---------------------------------------------------------
-This method is highly recommended for all users, especially those managing multiple projects or complex dependencies. ``mamba`` (`website <https://mamba.readthedocs.io/>`_) is a fast, drop-in replacement for ``conda``, offering superior speed and reliability for environment and package management. ``uv`` (`website <https://docs.astral.sh/uv/>`_) is an extremely fast Python package installer and resolver, ensuring quick and efficient dependency resolution.
+This method is highly recommended for all users, especially those managing multiple projects or complex dependencies. ``mamba`` (`website <https://mamba.readthedocs.io/>`__) is a fast, drop-in replacement for ``conda``, offering superior speed and reliability for environment and package management. ``uv`` (`website <https://docs.astral.sh/uv/>`__) is an extremely fast Python package installer and resolver, ensuring quick and efficient dependency resolution.
 
 **Benefits of this approach:**
 

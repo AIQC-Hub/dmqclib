@@ -156,9 +156,8 @@ Update your `prepare_config.yaml` to match the following for the `path_info_sets
         dataset_folder_name: dataset_0001  # The name of the output folder for this job
         input_file_name: nrt_cora_bo_4.parquet # The specific raw input file to process
 
-.. important::
-
-   As it is crucial to normalize features for non-tree based machine learning methods, such as SVM and logistic regression, you need to provide summary statistics (like min/max values) of your data in the configuration file. The ``dmqclib`` library offers convenient functions to calculate the summary statistics.  Please refer to the :doc:`../../how-to/feature_normalization` guide for details.
+.. note::
+   The `prepare_config.yaml` can be quite detailed. For a complete reference of all available configuration options, please consult the dedicated :doc:`../../configuration/preparation` page.
 
 Step 2.2: Run the Preparation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

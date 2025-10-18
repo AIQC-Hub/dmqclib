@@ -159,8 +159,9 @@ This section allows you to define and reference custom Python classes that imple
 ^^^^^^^^^^^^^^^^^
 This section provides general parameters that control the behavior of the various data processing steps within the pipeline (whether default or custom `step_class_sets`). Examples of parameters include data filtering rules, sampling ratios, and split configurations.
 
-*   **`steps.input.sub_steps.filter_rows`**: A boolean flag to enable/disable row filtering.
+*   **`steps.input.sub_steps.filter_rows`**: A boolean flag to enable/disable row filtering based on `filter_method_dict`..
 *   **`steps.input.filter_method_dict.remove_years`**: Specifies a list of years to be excluded from the dataset.
+*   **`steps.input.filter_method_dict.keep_years`**: Specifies a list of years to be kept for training.
 *   **`steps.select.neg_pos_ratio`**: Controls the ratio of negative to positive samples (e.g., for imbalanced datasets).
 *   **`steps.split.test_set_fraction`**: Defines the proportion of data to allocate to the test set.
 
