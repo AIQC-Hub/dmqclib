@@ -1,12 +1,12 @@
 Overview
 ========
 
-Welcome to the `dmqclib` tutorial! This library provides a robust and streamlined framework for building and deploying machine learning models, specifically designed for applications that involve quality control of delayed-mode data and similar predictive tasks. It simplifies complex machine learning operations (MLOps) workflows by breaking them down into a clear, configurable three-stage process.
+Welcome to the ``dmqclib`` tutorial! This library provides a robust and streamlined framework for building and deploying machine learning models, specifically designed for applications that involve quality control of delayed-mode data and similar predictive tasks. It simplifies complex machine learning operations (MLOps) workflows by breaking them down into a clear, configurable three-stage process.
 
 Basic Usage: The Three-Stage Workflow
 -------------------------------------
 
-`dmqclib` leverages powerful YAML configuration files to define every aspect of your machine learning pipeline, enabling reproducibility and easy experimentation. Once these configuration files are set up, executing a complete end-to-end workflow is straightforward:
+``dmqclib`` leverages powerful YAML configuration files to define every aspect of your machine learning pipeline, enabling reproducibility and easy experimentation. Once these configuration files are set up, executing a complete end-to-end workflow is straightforward:
 
 1.  **Dataset Preparation:**
     This initial stage transforms your raw input data into a clean, feature-engineered, and properly split dataset (training, validation, test sets) ready for model building.
@@ -43,6 +43,6 @@ Basic Usage: The Three-Stage Workflow
 Next Steps
 ----------
 
-Ready to get started? The next pages will guide you through the initial setup and then dive into the details of configuring each stage of your machine learning workflow with `dmqclib`.
+Ready to get started? The next pages will guide you through the initial setup and then dive into the details of configuring each stage of your machine learning workflow with ``dmqclib``.
 
 Proceed to the next tutorial: :doc:`./installation`.

@@ -1,4 +1,4 @@
-Training & Evaluation (Configuration)
+Configuration of Training & Evaluation
 ========================================
 The `train` workflow (`stage="train"`) is responsible for orchestrating the machine learning model building process. It takes the prepared dataset (the output from the `prepare` workflow) and handles critical steps such as cross-validation, actual model training, and final evaluation on a held-out test set.
 
