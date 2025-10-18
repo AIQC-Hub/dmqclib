@@ -76,14 +76,14 @@ class FlankDown(FeatureBase):
              (row_id, platform_code, profile_no).
           2. :meth:`_expand_observations` - Expand observations by adding rows for
              the specified number of "flank" steps (based on ``feature_info["flank_down"]``).
-          3. For each column in ``feature_info["stats"]``, call:
+          3. For each column in ``feature_info["col_names"]``, call:
              - :meth:`_pivot_features` to pivot the data for that column,
              - :meth:`_add_features` to join the pivoted data onto our feature table.
           4. :meth:`_clean_features` - Drop columns no longer needed.
         """
         self._init_features()
         self._expand_observations()
-        for col_name in self.feature_info["stats"].keys():
+        for col_name in self.feature_info["col_names"]:
             self._pivot_features(col_name)
             self._add_features()
         self._clean_features()
@@ -194,10 +194,13 @@ class FlankDown(FeatureBase):
 
         This modifies :attr:`filtered_input` in place for each relevant column.
         """
-        for col_name, v in self.feature_info["stats"].items():
-            self.filtered_input = self.filtered_input.with_columns(
-                ((pl.col(col_name) - v["min"]) / (v["max"] - v["min"])).alias(col_name)
-            )
+        if self.feature_info["stats_set"]["type"] == "min_max":
+            for col_name, v in self.feature_info["stats"].items():
+                self.filtered_input = self.filtered_input.with_columns(
+                    ((pl.col(col_name) - v["min"]) / (v["max"] - v["min"])).alias(
+                        col_name
+                    )
+                )
 
     def scale_second(self) -> None:
         """

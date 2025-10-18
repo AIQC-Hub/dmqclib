@@ -134,7 +134,8 @@ class LocationFeat(FeatureBase):
         :returns: None. Scaling is applied in-place to the :attr:`features` DataFrame.
         :rtype: None
         """
-        for k, v in self.feature_info["stats"].items():
-            self.features = self.features.with_columns(
-                ((pl.col(k) - v["min"]) / (v["max"] - v["min"])).alias(k)
-            )
+        if self.feature_info["stats_set"]["type"] == "min_max":
+            for k, v in self.feature_info["stats"].items():
+                self.features = self.features.with_columns(
+                    ((pl.col(k) - v["min"]) / (v["max"] - v["min"])).alias(k)
+                )

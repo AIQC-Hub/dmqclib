@@ -38,7 +38,8 @@ First, use ``dmqclib`` to generate a boilerplate configuration template specific
 Step 3.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now, open the newly created ``~/aiqc_project/config/training_config.yaml`` file in your text editor. Your primary goals are to define:
+Now, open the newly created `~/aiqc_project/config/training_config.yaml` file in your text editor. Your primary goals are to define:
+
 1.  **Input & Output Paths:** Where to find the prepared dataset and where to save the trained model.
 2.  **Model & Validation Strategy:** Which machine learning model to train and what cross-validation method to use.
 
