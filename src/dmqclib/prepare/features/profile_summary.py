@@ -106,8 +106,8 @@ class ProfileSummaryStats5(FeatureBase):
 
         variables_and_metrics = [
             (variable_name, metric_name)
-            for variable_name, variable_stats in self.feature_info["stats"].items()
-            for metric_name in variable_stats.keys()
+            for variable_name in self.feature_info["col_names"]
+            for metric_name in self.feature_info["summary_stats_names"]
         ]
         for variable_name, metric_name in variables_and_metrics:
             self._extract_single_summary(variable_name, metric_name)
@@ -163,13 +163,14 @@ class ProfileSummaryStats5(FeatureBase):
         named "temp_mean" or "temp_min" etc. according to specified
         min and max.
         """
-        columns_to_add = [
-            (
-                (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
-                / (scale_info["max"] - scale_info["min"])
-            ).alias(f"{col_name}_{stat_name}")
-            for col_name, variable_stats in self.feature_info["stats"].items()
-            for stat_name, scale_info in variable_stats.items()
-        ]
+        if self.feature_info["stats_set"]["type"] == "min_max":
+            columns_to_add = [
+                (
+                    (pl.col(f"{col_name}_{stat_name}") - scale_info["min"])
+                    / (scale_info["max"] - scale_info["min"])
+                ).alias(f"{col_name}_{stat_name}")
+                for col_name, variable_stats in self.feature_info["stats"].items()
+                for stat_name, scale_info in variable_stats.items()
+            ]
 
-        self.features = self.features.with_columns(columns_to_add)
+            self.features = self.features.with_columns(columns_to_add)

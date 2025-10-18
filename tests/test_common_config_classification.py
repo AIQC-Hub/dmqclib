@@ -5,6 +5,7 @@ for classification tasks, as well as generate correct file paths.
 """
 
 import unittest
+import pytest
 from pathlib import Path
 
 from dmqclib.common.config.classify_config import ClassificationConfig
@@ -26,12 +27,6 @@ class TestClassificationConfig(unittest.TestCase):
             / "data"
             / "config"
             / "test_classify_001.yaml"
-        )
-        self.template_file = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "config_classify_set_template.yaml"
         )
 
     def test_valid_config(self):
@@ -89,12 +84,32 @@ class TestClassificationConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             ds.select("INVALID_NAME")
 
-    def test_input_folder(self):
+
+class TestClassificationConfigTemplate:
+    @pytest.fixture(autouse=True)
+    def setup_template(self):
+        self.template_files = [
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "config_classify_set_full_template.yaml"
+            ),
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "config_classify_set_template.yaml"
+            ),
+        ]
+
+    @pytest.mark.parametrize("idx", range(2))
+    def test_input_folder(self, idx):
         """
         Verify that full file paths for input files are generated correctly
         based on the configuration settings.
         """
-        ds = ClassificationConfig(str(self.template_file))
+        ds = ClassificationConfig(str(self.template_files[idx]))
         ds.select("classification_0001")
         input_file_name = ds.get_full_file_name(
             "input",
@@ -102,35 +117,36 @@ class TestClassificationConfig(unittest.TestCase):
             use_dataset_folder=False,
             folder_name_auto=False,
         )
-        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_4.parquet")
+        assert input_file_name == "/path/to/input/nrt_cora_bo_4.parquet"
 
-    def test_summary_folder(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_summary_folder(self, idx):
         """
         Confirm that full file paths for 'summary' folder items are resolved correctly.
         """
-        ds = ClassificationConfig(str(self.template_file))
+        ds = ClassificationConfig(str(self.template_files[idx]))
         ds.select("classification_0001")
         input_file_name = ds.get_full_file_name("summary", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/summary/test.txt")
+        assert input_file_name == "/path/to/data/dataset_0001/summary/test.txt"
 
-    def test_classify_folder(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_classify_folder(self, idx):
         """
         Confirm that full file paths for 'classify' folder items are resolved correctly.
         """
-        ds = ClassificationConfig(str(self.template_file))
+        ds = ClassificationConfig(str(self.template_files[idx]))
         ds.select("classification_0001")
         input_file_name = ds.get_full_file_name("classify", "test.txt")
-        self.assertEqual(
-            input_file_name, "/path/to/data/dataset_0001/classify/test.txt"
-        )
+        assert input_file_name == "/path/to/data/dataset_0001/classify/test.txt"
 
-    def test_auto_select(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_auto_select(self, idx):
         """
         Confirm that the `auto_select` option in the constructor correctly
         determines whether data is automatically loaded or not.
         """
-        ds = ClassificationConfig(str(self.template_file), False)
-        self.assertIsNone(ds.data)
+        ds = ClassificationConfig(str(self.template_files[idx]), False)
+        assert ds.data is None
 
-        ds = ClassificationConfig(str(self.template_file), True)
-        self.assertIsNotNone(ds.data)
+        ds = ClassificationConfig(str(self.template_files[idx]), True)
+        assert ds.data is not None

@@ -10,7 +10,7 @@ This is the culmination of the ``dmqclib`` pipeline, transforming your machine l
    This tutorial assumes you have successfully completed :doc:`./training`. To proceed with classification, you will need:
 
    *   The trained model file(s) saved in the directory you specified in the training configuration (e.g., `~/aiqc_project/models/`).
-   *   The original raw data file (``nrt_cora_bo_4.parquet``) that you wish to classify. This file should be in your `~/aiqc_project/input/` directory.
+   *   The original raw data file (`nrt_cora_bo_4.parquet`) that you wish to classify. This file should be in your `~/aiqc_project/input/` directory.
 
 The Classification Workflow
 ---------------------------
@@ -41,9 +41,15 @@ First, use ``dmqclib`` to generate the boilerplate configuration template specif
 Step 4.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Open the newly created ``~/aiqc_project/config/classification_config.yaml`` file in your text editor. You need to configure the paths for the raw input data, the location of your trained model, and where the final classified output should be saved.
+Open the newly created `~/aiqc_project/config/classification_config.yaml` file in your text editor. You need to configure the paths for the raw input data, the location of your trained model, and where the final classified output should be saved.
 
-**Crucially, the `target_sets`, `summary_stats_sets`, `feature_sets`, and `feature_param_sets` in this classification configuration MUST EXACTLY MATCH those used in your `prepare_config.yaml` for the model's training.** This ensures that the new input data is preprocessed and features are engineered in precisely the same way the model expects. You can often copy these sections directly from your `prepare_config.yaml`.
+**Crucially, the following sections in this classification configuration MUST EXACTLY MATCH those used in your `prepare_config.yaml` for the model's training.** This ensures that the new input data is preprocessed and features are engineered in precisely the same way the model expects. You can often copy these sections directly from your `prepare_config.yaml`.
+
+1.  `target_sets`
+2.  `summary_stats_sets`
+3.  `feature_sets`
+4.  `feature_param_sets`
+5.  `feature_stats_sets`
 
 Update your `classification_config.yaml` file to match the following. Remember to replace placeholder paths and details with your actual project setup.
 

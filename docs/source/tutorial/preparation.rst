@@ -12,7 +12,7 @@ This entire process is driven by a YAML configuration file, ensuring your data p
    However, you are encouraged to use the method you are most comfortable with. The code can be run in several ways:
 
    *   **In an Interactive Python Session:** Launch Python (``python``) or IPython (``ipython``) and paste the code line by line. This is great for quick tests and exploration.
-   *   **As Python Scripts:** Copy the code into a ``.py`` file (e.g., `prepare_data.py`) and execute it from your terminal with ``python your_script_name.py``. This is suitable for automation and batch processing.
+   *   **As Python Scripts:** Copy the code into a `.py` file (e.g., `prepare_data.py`) and execute it from your terminal with `python your_script_name.py`. This is suitable for automation and batch processing.
    *   **In a Jupyter Notebook or Lab:** This is a fantastic option for experimentation, as it allows you to run code in cells, add notes, and visualize results interactively.
 
    Feel free to adapt the examples to your preferred environment.
@@ -20,7 +20,7 @@ This entire process is driven by a YAML configuration file, ensuring your data p
 Getting the Example Data
 ------------------------
 
-This tutorial uses the Copernicus Marine NRT CTD dataset, publicly available on Kaggle. Before proceeding, let's set up your project directory structure and download the necessary data.
+This tutorial uses the Copernicus Marine NRT CTD dataset, publicly available on `Kaggle`. Before proceeding, let's set up your project directory structure and download the necessary data.
 
 First, create the directories for your project. This structure will be used consistently throughout the tutorials:
 
@@ -123,14 +123,15 @@ First, use ``dmqclib`` to generate a boilerplate configuration template. This fi
 
 Step 2.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Now, open the newly created ``~/aiqc_project/config/prepare_config.yaml`` in a text editor. You need to tell ``dmqclib`` where to find your input data, where to save the processed output, and define your targets and features.
+Now, open the newly created `~/aiqc_project/config/prepare_config.yaml` in a text editor. You need to tell ``dmqclib`` where to find your input data, where to save the processed output, and define your targets and features.
 
 You will primarily focus on updating the following sections:
 
 *   **`path_info_sets`**: Define your input and output directories.
 *   **`target_sets`**: Specify your prediction targets and their quality control flags.
-*   **`summary_stats_sets`**: Provide statistics for feature normalization.
+*   **`summary_stats_sets`**: Provide settings for summary statistics.
 *   **`feature_sets` & `feature_param_sets`**: List the feature engineering methods and their parameters.
+*   **`feature_stats_sets`**: Provide statistics for feature normalization.
 *   **`data_sets`**: Assemble the full pipeline by linking the named blocks.
 
 **Updating `path_info_sets` and `data_sets`:**
@@ -155,35 +156,10 @@ Update your `prepare_config.yaml` to match the following for the `path_info_sets
         dataset_folder_name: dataset_0001  # The name of the output folder for this job
         input_file_name: nrt_cora_bo_4.parquet # The specific raw input file to process
 
-**Gathering Summary Statistics (for `summary_stats_sets`):**
-To correctly normalize features, you need to provide summary statistics (like min/max values) of your data. The `dmqclib` library offers convenient functions to calculate these. Run the following Python code to print formatted summary statistics that you can then copy directly into the `summary_stats_sets` section of your `prepare_config.yaml`.
-
-.. code-block:: python
-
-   import dmqclib as dm
-   import os
-   import polars as pl
-
-   input_file = os.path.expanduser("~/aiqc_project/input/nrt_cora_bo_4.parquet")
-
-   print("--- Summary statistics for 'all' features ---")
-   stats_all = dm.get_summary_stats(input_file, "all")
-   print(stats_all)
-   print(dm.format_summary_stats(stats_all))
-
-   print("\n--- Summary statistics for 'profiles' features ---")
-   stats_profiles = dm.get_summary_stats(input_file, "profiles")
-   print(stats_profiles.filter(pl.col("variable")=="pres"))
-   print(stats_profiles.filter(pl.col("variable")=="temp"))
-   print(stats_profiles.filter(pl.col("variable")=="psal"))
-   print(dm.format_summary_stats(stats_profiles))
-
-   # Use the output from the prints above to populate your summary_stats_sets section.
-
 .. note::
-   The `prepare_config.yaml` can be quite detailed. For a complete reference of all available configuration options, including full examples for `target_sets`, `feature_sets`, `feature_param_sets`, `step_class_sets`, and `step_param_sets`, please consult the dedicated :doc:`../../configuration/preparation` page. You will need to populate these sections in your configuration file based on your specific requirements.
+   The `prepare_config.yaml` can be quite detailed. For a complete reference of all available configuration options, please consult the dedicated :doc:`../../configuration/preparation` page.
 
-Step 2.3: Run the Preparation Process
+Step 2.2: Run the Preparation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Once you have customized your `prepare_config.yaml` with the correct paths, input file name, and definitions for targets, features, and summary statistics, you can execute the data preparation workflow.
 

@@ -2,6 +2,7 @@
 dataset selection, and path generation capabilities."""
 
 import unittest
+import pytest
 from pathlib import Path
 
 from dmqclib.common.config.dataset_config import DataSetConfig
@@ -23,12 +24,6 @@ class TestDataSetConfig(unittest.TestCase):
             / "data"
             / "config"
             / "test_dataset_001.yaml"
-        )
-        self.template_file = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "config_data_set_template.yaml"
         )
 
     def test_valid_config(self):
@@ -85,11 +80,31 @@ class TestDataSetConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             ds.select("INVALID_NAME")
 
-    def test_input_folder(self):
+
+class TestDataSetConfigTemplate:
+    @pytest.fixture(autouse=True)
+    def setup_template(self):
+        self.template_files = [
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "config_data_set_full_template.yaml"
+            ),
+            (
+                Path(__file__).resolve().parent
+                / "data"
+                / "config"
+                / "config_data_set_template.yaml"
+            ),
+        ]
+
+    @pytest.mark.parametrize("idx", range(2))
+    def test_input_folder(self, idx):
         """
         Verify that input folder paths are generated as expected using template config.
         """
-        ds = DataSetConfig(str(self.template_file))
+        ds = DataSetConfig(str(self.template_files[idx]))
         ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name(
             "input",
@@ -97,34 +112,35 @@ class TestDataSetConfig(unittest.TestCase):
             use_dataset_folder=False,
             folder_name_auto=False,
         )
-        self.assertEqual(input_file_name, "/path/to/input/nrt_cora_bo_4.parquet")
+        assert input_file_name == "/path/to/input/nrt_cora_bo_4.parquet"
 
-    def test_summary_folder(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_summary_folder(self, idx):
         """
         Confirm that files placed in a 'summary' folder are resolved correctly.
         """
-        ds = DataSetConfig(str(self.template_file))
+        ds = DataSetConfig(str(self.template_files[idx]))
         ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name("summary", "test.txt")
-        self.assertEqual(input_file_name, "/path/to/data/dataset_0001/summary/test.txt")
+        assert input_file_name == "/path/to/data/dataset_0001/summary/test.txt"
 
-    def test_split_folder(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_split_folder(self, idx):
         """
         Confirm that files placed in a 'split' folder are resolved correctly.
         """
-        ds = DataSetConfig(str(self.template_file))
+        ds = DataSetConfig(str(self.template_files[idx]))
         ds.select("dataset_0001")
         input_file_name = ds.get_full_file_name("split", "test.txt")
-        self.assertEqual(
-            input_file_name, "/path/to/data/dataset_0001/training/test.txt"
-        )
+        assert input_file_name == "/path/to/data/dataset_0001/training/test.txt"
 
-    def test_auto_select(self):
+    @pytest.mark.parametrize("idx", range(2))
+    def test_auto_select(self, idx):
         """
         Confirm that auto select options works.
         """
-        ds = DataSetConfig(str(self.template_file), False)
-        self.assertIsNone(ds.data)
+        ds = DataSetConfig(str(self.template_files[idx]), False)
+        assert ds.data is None
 
-        ds = DataSetConfig(str(self.template_file), True)
-        self.assertIsNotNone(ds.data)
+        ds = DataSetConfig(str(self.template_files[idx]), True)
+        assert ds.data is not None
