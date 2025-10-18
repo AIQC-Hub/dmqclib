@@ -3,6 +3,36 @@ Quick Start
 
 This guide demonstrates how to run the whole machine learning process with the minimum configurations.
 
+Installation
+-----------------------------
+
+Create a ``mamba``/``conda`` environment before installing ``dmqclib``.
+
+.. code-block:: bash
+
+   # conda
+   conda create --name dmqclib -c conda-forge python=3.12 pip uv
+   conda activate dmqclib
+
+   # mamba
+   mamba create -n dmqclib -c conda-forge python=3.12 pip uv
+   mamba activate dmqclib
+
+
+Use ``pip`` or ``conda``/``mamba`` to install ``dmqclib``.
+
+.. code-block:: bash
+
+   # pip
+   pip install dmqclib
+
+   # conda
+   conda install -c conda-forge dmqclib
+
+   # mamba
+   mamba install -c conda-forge dmqclib
+
+
 Download Raw Input Data
 -----------------------------
 
@@ -79,7 +109,7 @@ Configuration for the data preparation stage
                                    filter_rows: true },
                       rename_dict: { },
                       filter_method_dict: { remove_years: [ 2023 ], # <--- Specify years to exclude from training/validation
-                                            keep_years: [ 2021 ] } } # <--- Specify years to *keep* for training/validation
+                                            keep_years: [ ] } }
 
 3.  **Specify Input File Name:**
     Ensure ``input_file_name`` matches the base name of your input data file.

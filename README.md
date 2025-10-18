@@ -214,7 +214,7 @@ We recommend using **uv** + **mamba** for managing the development environment.
 1.  Install `python` and `uv` (e.g., via conda or mamba):
     ```bash
     # Using mamba (recommended)
-    mamba create -n uvenv -c conda-forge python=3.12 uv
+    mamba create -n uvenv -c conda-forge python=3.12 uv pip
     mamba activate uvenv
     ```
 
@@ -227,6 +227,11 @@ We recommend using **uv** + **mamba** for managing the development environment.
 3.  Activate the virtual environment:
     ```bash
     source .venv/bin/activate
+    ```
+
+4. Install the library in editable mode:
+    ```bash
+    uv pip install -e .
     ```
 
 ### Running Tests

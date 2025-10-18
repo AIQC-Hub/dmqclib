@@ -21,17 +21,17 @@ First, use ``dmqclib`` to generate the boilerplate configuration templates speci
    import os
 
    # Define the path for the config file
-   prepare_config_path = os.path.expanduser("~/aiqc_project/config/prepare_config.yaml")
-   classify_config_path = os.path.expanduser("~/aiqc_project/config/classification_config.yaml")
+   config_file_prepare = os.path.expanduser("~/aiqc_project/config/prepare_config.yaml")
+   config_file_classify = os.path.expanduser("~/aiqc_project/config/classification_config.yaml")
 
    # This creates 'prepare_config.yaml' and 'classification_config.yaml'
    dm.write_config_template(
-       file_name=config_path,
+       file_name=config_file_prepare,
        stage="prepare",
        extension="full"
    )
    dm.write_config_template(
-       file_name=config_path,
+       file_name=config_file_classify,
        stage="classify",
        extension="full"
    )

@@ -69,7 +69,7 @@ This method is highly recommended for all users, especially those managing multi
 .. tip::
    You can use `Miniforge <https://github.com/conda-forge/miniforge>`_ to install both conda and mamba together.
 
-**Step 1: Create and activate a new environment with Mamba**
+**Step 1: Create and activate a new environment with mamba**
 
 This command creates a new, isolated environment named `uvenv` and pre-installs Python and ``uv`` from the `conda-forge` channel.
 
@@ -79,7 +79,7 @@ This command creates a new, isolated environment named `uvenv` and pre-installs 
 .. code-block:: bash
 
    # Create a new environment named 'uvenv'
-   mamba create -n uvenv -c conda-forge python=3.12 uv
+   mamba create -n uvenv -c conda-forge python=3.12 uv pip
 
    # Activate the newly created environment
    mamba activate uvenv
@@ -87,13 +87,31 @@ This command creates a new, isolated environment named `uvenv` and pre-installs 
 .. important::
    Remember to activate `uvenv` every time you wish to use ``dmqclib`` to ensure you are working within the correct, isolated environment.
 
-**Step 2: Install dmqclib using uv**
-
-Once you are inside the activated `uvenv` environment, use ``uv`` to install the ``dmqclib`` package and its dependencies from PyPI.
+**Step 2: Obtain the source code from GitHub**
 
 .. code-block:: bash
 
-   uv pip install dmqclib
+   git clone https://github.com/AIQC-Hub/dmqclib.git
+
+**Step 3: Navigate to the project root and create the virtual environment**
+
+.. code-block:: bash
+
+    cd /path/to/dmqclib
+    uv sync
+
+**Step 4: Activate the uv virtual environment**
+
+.. code-block:: bash
+
+    source .venv/bin/activate
+
+
+**Step 5: Install the library in editable mode**
+
+.. code-block:: bash
+
+    uv pip install -e .
 
 Next Steps
 ----------

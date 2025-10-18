@@ -35,7 +35,7 @@ This section defines all the necessary file system locations for the classificat
          base_path: /path/to/input
          step_folder_name: ""
        model:
-         base_path: /path/to/model
+         base_path: /path/to/data/dataset_0001
          step_folder_name: "model"
        concat:
          step_folder_name: classify

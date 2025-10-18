@@ -7,8 +7,8 @@ path_info_sets:
       base_path: /path/to/input # EDIT: Directory with input files
       step_folder_name: ""
     model:
-      base_path: /path/to/model  # EDIT: Directory with model files
-      step_folder_name: "model"  # EDIT: Change it to "" if you like to avoid /path/to/model/model/
+      base_path: /path/to/data/dataset_0001  # EDIT: Directory with model files
+      step_folder_name: "model"
     concat:
       step_folder_name: classify # EDIT: Directory with classification results
 
