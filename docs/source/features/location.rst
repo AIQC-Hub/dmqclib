@@ -1,9 +1,9 @@
 Feature: Location
 ===========================
 
-`Location` is a profile level feature that represents locations of sampling points. All observations belong to the same profile generally have the same `location` feature values. Even though ``dmqclib`` require both ``latitude`` and ``longitude`` values, any other columns in the input dataset can be specified as the `Location` feature.
+The `location` feature is a profile-level feature that represents the locations of sampling points. All observations belonging to the same profile generally have the same `location` feature values. Although `dmqclib` requires both `latitude` and `longitude` values, any other columns in the input dataset can be specified as the `location` feature.
 
-Configuration
+Configuration: Setup
 -------------------------------------
 
 To include the `location` feature in your training and classification datasets, the value `location` needs to be specified in the `feature_sets` section.
@@ -18,19 +18,24 @@ To include the `location` feature in your training and classification datasets, 
 Configuration: Parameters
 -------------------------------------
 
+The `location` feature requires two mandatory parameters: `col_names` and `stats_set`.
+
+*   The `col_names` parameter specifies the column names in the input dataset that will be used as the `location` feature.
+*   The `stats_set` parameter specifies how the feature values are normalized. `dmqclib` currently supports `raw` and `min_max` as normalization methods. The `name` value in `stats_set` requires the same `name` in the `feature_stats_sets` section.
+
 .. code-block:: yaml
 
    feature_param_sets:
      - name: feature_set_1_param_set_3
        params:
          - feature: location
-           stats_set: { type: min_max, name: location }
            col_names: [ longitude, latitude ]
+           stats_set: { type: min_max, name: location }
 
 Configuration: Normalization
----------------------------
+-------------------------------------
 
-You need to update the stats values in the configuration files based on the results from `dm.get_summary_stats` and `dm.format_summary_stats`.
+If the normalization method is not set to `raw` values, the summary statistics specified here will be used for normalization.
 
 .. code-block:: yaml
 
@@ -40,3 +45,7 @@ You need to update the stats values in the configuration files based on the resu
          - name: location
            stats: { longitude: { min: 14.5, max: 23.5 },
                     latitude: { min: 55, max: 66 } }
+
+.. note::
+
+   ``dmqclib`` offers helper functions to calculate the summary statistics (like min/max values). Please refer to the :doc:`../how-to/feature_normalization` guide for details.

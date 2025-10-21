@@ -53,8 +53,7 @@ Understanding the input features is crucial for building effective models. This 
    features/day_of_year
    features/basic_values
    features/profile_summary_stats5
-   features/flank_up
-   features/flank_down
+   features/neigbouring_values
 
 ----------
 
