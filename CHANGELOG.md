@@ -6,7 +6,8 @@ As this project is still in active development, it does not yet strictly adhere 
 
 ## [Unreleased]
 ### Added
-- Input feature pages
+- Input feature pages to RTD
+- Regression with XGBoost
 
 ## [0.6.2] - 2025-10-20
 ### Fixed
