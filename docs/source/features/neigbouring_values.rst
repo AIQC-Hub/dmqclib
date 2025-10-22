@@ -1,4 +1,4 @@
-Feature: Neighboring Values (Up and Down)
+Neighboring Values (Up and Down)
 ==========================================
 
 The `flank_up` and `flank_down` features are observation-level features that represent the neighboring values of an observation, such as temperature and salinity. Although any columns in the input dataset can be specified for these features, they are usually coupled with the variables used in the `basic_values` feature.

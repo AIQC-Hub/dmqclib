@@ -1,4 +1,4 @@
-Feature: Profile Summary Statistics 5
+Profile Summary Statistics 5
 =======================================
 
 The `profile_summary_stats5` feature is a profile-level feature that represents the summary statistics of specified variables. All observations belonging to the same profile generally have the same `profile_summary_stats5` feature values. The `profile_summary_stats5` feature can contain the following nine statistics:

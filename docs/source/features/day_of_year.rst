@@ -1,9 +1,9 @@
-Feature: The Day of the Year
+The Day of the Year
 =================================
 
 The `day_of_year` feature is a profile-level feature that represents the day of the year on which the profile was sampled. All observations belonging to the same profile generally have the same `day_of_year` feature value. In the current version of the library, only the `profile_timestamp` data can be used to produce this feature.
 
-### Configuration: Setup
+Configuration: Setup
 -------------------------------------
 
 To include the `day_of_year` feature in your training and classification datasets, the value `day_of_year` needs to be specified in the `feature_sets` section.
@@ -15,7 +15,7 @@ To include the `day_of_year` feature in your training and classification dataset
        features:
          - day_of_year
 
-### Configuration: Parameters
+Configuration: Parameters
 -------------------------------------
 
 The `day_of_year` feature accepts two parameters: `col_names` and `convert`.
@@ -32,7 +32,7 @@ The `day_of_year` feature accepts two parameters: `col_names` and `convert`.
            col_names: [ profile_timestamp ]
            convert: sine
 
-### Configuration: Normalization
+Configuration: Normalization
 -------------------------------------
 
 Normalization methods are not available for this feature.

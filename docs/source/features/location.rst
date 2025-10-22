@@ -1,4 +1,4 @@
-Feature: Location
+Location
 ===========================
 
 The `location` feature is a profile-level feature that represents the locations of sampling points. All observations belonging to the same profile generally have the same `location` feature values. Although `dmqclib` requires both `latitude` and `longitude` values, any other columns in the input dataset can be specified as the `location` feature.

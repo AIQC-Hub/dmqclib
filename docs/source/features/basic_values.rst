@@ -1,4 +1,4 @@
-Feature: Basic Values
+Basic Values
 ===========================
 
 The `basic_values` feature is an observation-level feature that represents the actual observation values, such as temperature and salinity. Any columns in the input dataset can be specified as the `basic_values` feature.
