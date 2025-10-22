@@ -43,6 +43,20 @@ This section provides practical examples and solutions for common tasks related 
 
 ----------
 
+Understanding the input features is crucial for building effective models. This section provides a detailed explanation of each feature used for model training.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 📊 Features
+
+   features/location
+   features/day_of_year
+   features/basic_values
+   features/profile_summary_stats5
+   features/neigbouring_values
+
+----------
+
 This section provides detailed reference information for all parameters in the YAML configuration files.
 
 .. toctree::

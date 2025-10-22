@@ -209,37 +209,45 @@ We welcome contributions! Please use the following guidelines for development.
 
 ### Environment Setup
 
-We recommend using **uv** + **mamba** for managing the development environment.
+We recommend using **uv** for managing the development environment.
 
-1.  Install `python` and `uv` (e.g., via conda or mamba):
+1.  **Install `uv` into your base conda/mamba environment.**
+    This makes the `uv` command available globally without cluttering your `base` environment.
+
     ```bash
     # Using mamba (recommended)
-    mamba create -n uvenv -c conda-forge python=3.12 uv pip
-    mamba activate uvenv
+    mamba activate base
+    mamba install -n base -c conda-forge uv
+
+    # Or using conda
+    conda activate base
+    conda install -n base -c conda-forge uv
     ```
 
-2.  Navigate to the project root and create the virtual environment:
-    ```bash
-    cd /path/to/dmqclib
-    uv sync
-    ```
+2.  **Create and activate the project's virtual environment.**
+    From the project's root directory, run the following:
 
-3.  Activate the virtual environment:
     ```bash
+    # Create the virtual environment in a .venv folder
+    uv venv
+
+    # Activate the virtual environment
     source .venv/bin/activate
     ```
 
-4. Install the library in editable mode:
+3.  **Install the project and its development dependencies.**
+    This command installs the library in "editable" mode (`-e`) and pulls in all dependencies from the `dev` group defined in `pyproject.toml`.
+
     ```bash
-    uv pip install -e .
+    uv pip install -e ".[dev]"
     ```
 
 ### Running Tests
 
-Unit tests are run with `pytest`.
+With your environment activated, you can run the test suite using `pytest`.
 
 ```bash
-run pytest -v
+pytest -v
 ```
 
 ### Code Style (Linting & Formatting)
@@ -247,6 +255,7 @@ run pytest -v
 We use **Ruff** for linting and formatting.
 
 **Linting:**
+Check the library and test code for style issues.
 ```bash
 # Lint the library source code
 ruff check src
@@ -256,6 +265,7 @@ ruff check tests
 ```
 
 **Formatting:**
+Automatically format the code to match the project's style.
 ```bash
 # Format the library source code
 ruff format src
@@ -308,30 +318,35 @@ The package is published to [PyPI](https://pypi.org/project/dmqclib/) automatica
 #### Bump version
 Updating the package on `conda-forge` involves creating a pull request to the `conda-forge/dmqclib-feedstock` repository.
 
-1. **Fork and clone** the `dmqclib-feedstock` repository.
-2. **Sync with upstream** (e.g., add `conda-forge/dmqclib-feedstock` as a remote named `upstream` and `git rebase upstream/main`).
-3. **Update the forked repo:**
+1.  **Install build tools:**
+    ```bash
+    mamba install -c conda-forge conda-build conda-smithy grayskull
+    ```
+2. **Fork and clone** the `dmqclib-feedstock` repository.
+3. **Sync with upstream** (e.g., add `conda-forge/dmqclib-feedstock` as a remote named `upstream` and `git rebase upstream/main`).
+4. **Update the forked repo:**
     ```bash
     git checkout main                      # Go to your local main branch
     git fetch upstream                     # Get latest changes from original repo
     git rebase upstream/main               # Make your local main perfectly linear with original
     git push origin main --force           # Update your GitHub fork's main (optional but good practice)
     ```
-3. **Create a new branch** (e.g., `git checkout -b update_vX.Y.Z`).
-4. **Generate a strict recipe** (e.g., `grayskull pypi dmqclib --strict-conda-forge`).
-5. **Review `recipes/meta.yaml`** and ensure it meets `conda-forge` standards.
-6. **Rerender the feedstock** (e.g., `conda smithy rerender -c auto`).
-7. **Commit, push, and open a pull request** to the `staged-recipes` repository.
-8. **Merge it** after passing CI.
+5. **Create a new branch** (e.g., `git checkout -b update_vX.Y.Z`).
+6. **Generate a strict recipe** (e.g., `grayskull pypi dmqclib --strict-conda-forge`).
+7. **Review `recipes/meta.yaml`** and ensure it meets `conda-forge` standards.
+8. **Rerender the feedstock** (e.g., `conda smithy rerender -c auto`).
+9. **Commit, push, and open a pull request** to the `staged-recipes` repository.
+10. **Merge it** after passing CI.
 
 #### Initial upload
 Submitting the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` repository.
 
 1.  **Fork and clone** the `staged-recipes` repository.
-2.  **Create a new branch** (e.g., `git checkout -b dmqclib-recipe`).
-3.  **Generate a strict recipe:** `grayskull pypi dmqclib --strict-conda-forge`.
-4.  **Review `recipes/dmqclib/meta.yaml`** and ensure it meets `conda-forge` standards.
-5.  **Commit, push, and open a pull request** to the `staged-recipes` repository.
+2.  **Configure upstream** the `git remote add upstream https://github.com/conda-forge/dmqclib-feedstock.git`
+3.  **Create a new branch** (e.g., `git checkout -b dmqclib-recipe`).
+4.  **Generate a strict recipe:** `grayskull pypi dmqclib --strict-conda-forge`.
+5.  **Review `recipes/dmqclib/meta.yaml`** and ensure it meets `conda-forge` standards.
+6.  **Commit, push, and open a pull request** to the `staged-recipes` repository.
 
 ### Anaconda.org (Manual)
 
@@ -341,7 +356,7 @@ Publishing to the `<username>` channel on [Anaconda.org](https://anaconda.org/ta
     ```bash
     mamba install -c conda-forge conda-build anaconda-client grayskull
     ```
-
+conda-smithy
 2.  **Generate Recipe:**
     From the project root, run `grayskull pypi dmqclib`. This creates `dmqclib/meta.yaml`.
 
