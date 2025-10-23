@@ -7,7 +7,10 @@ As this project is still in active development, it does not yet strictly adhere 
 ## [Unreleased]
 ### Added
 - Input feature pages to RTD
-- Regression with XGBoost
+- Scores from XGBoost
+
+### Changed
+- Summary profile name
 
 ## [0.6.2] - 2025-10-20
 ### Fixed
