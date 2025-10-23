@@ -74,8 +74,8 @@ Entries in the ``feature_param_sets`` and ``feature_stats_sets`` sections in bot
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
-           stats_set: { type: min_max,  name: profile_summary_stats5 }
+         - feature: profile_summary_stats
+           stats_set: { type: min_max,  name: profile_summary_stats }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
          - feature: basic_values
@@ -103,7 +103,7 @@ You need to update the stats values in the configuration files based on the resu
          - name: location
            stats: { longitude: { min: 14.5, max: 23.5 },
                     latitude: { min: 55, max: 66 } }
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            stats: { temp: { mean: { min: 0, max: 12.5 },
                             median: { min: 0, max: 15 },
                             sd: { min: 0, max: 6.5 },

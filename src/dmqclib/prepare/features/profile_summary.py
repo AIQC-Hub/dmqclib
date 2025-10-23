@@ -1,5 +1,5 @@
 """
-This module defines the ProfileSummaryStats5 class, a specialized feature
+This module defines the ProfileSummaryStats class, a specialized feature
 extraction component for combining row references with summary statistics
 from Polars DataFrames. It is designed to extract, transform, and optionally
 scale statistical features based on pre-computed summary data.
@@ -12,7 +12,7 @@ import polars as pl
 from dmqclib.common.base.feature_base import FeatureBase
 
 
-class ProfileSummaryStats5(FeatureBase):
+class ProfileSummaryStats(FeatureBase):
     """
     A feature-extraction class that combines row references from
     :attr:`selected_rows` with summary statistics from :attr:`summary_stats`.

@@ -66,7 +66,7 @@ This section defines summary statistics that will be used for feature values or 
        stats:
          - name: location
            col_names: [ longitude, latitude ]
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            col_names: [ temp, psal, pres ]
          - name: basic_values3
            col_names: [ temp, psal, pres ]
@@ -74,7 +74,7 @@ This section defines summary statistics that will be used for feature values or 
 ``dmqclib`` currently provides the following summary statistics.
 
 *   **location**: global summary statistics of locations for feature normalization.
-*   **profile_summary_stats5**: profile level summary statistics used as features and for feature normalization.
+*   **profile_summary_stats**: profile level summary statistics used as features and for feature normalization.
 *   **basic_values3**: global summary statistics of specified variables for feature normalization.
 
 `feature_sets` & `feature_param_sets`
@@ -92,7 +92,7 @@ These two interconnected sections are dedicated to configuring your feature engi
        features:
          - location
          - day_of_year
-         - profile_summary_stats5
+         - profile_summary_stats
          - basic_values
          - flank_up
          - flank_down
@@ -107,7 +107,7 @@ These two interconnected sections are dedicated to configuring your feature engi
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
+         - feature: profile_summary_stats
            stats_set: { type: raw }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
@@ -247,7 +247,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
        stats:
          - name: location
            col_names: [ longitude, latitude ]
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            col_names: [ temp, psal, pres ]
          - name: basic_values3
            col_names: [ temp, psal, pres ]
@@ -257,7 +257,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
        features:
          - location
          - day_of_year
-         - profile_summary_stats5
+         - profile_summary_stats
          - basic_values
          - flank_up
          - flank_down
@@ -271,7 +271,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
+         - feature: profile_summary_stats
            stats_set: { type: raw }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]

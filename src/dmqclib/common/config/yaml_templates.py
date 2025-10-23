@@ -49,7 +49,7 @@ summary_stats_sets:
     stats:
       - name: location
         col_names: [ longitude, latitude ]
-      - name: profile_summary_stats5
+      - name: profile_summary_stats
         col_names: [ temp, psal, pres ]
       - name: basic_values3
         col_names: [ temp, psal, pres ]
@@ -64,7 +64,7 @@ feature_sets:
     features:
       - location
       - day_of_year
-      - profile_summary_stats5
+      - profile_summary_stats
       - basic_values
       - flank_up
       - flank_down
@@ -83,7 +83,7 @@ feature_param_sets:
       - feature: day_of_year
         convert: sine
         col_names: [ profile_timestamp ]
-      - feature: profile_summary_stats5
+      - feature: profile_summary_stats
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
         summary_stats_names: [ mean, median, sd, pct25, pct75 ]
@@ -113,8 +113,8 @@ feature_param_sets:
       - feature: day_of_year
         convert: sine
         col_names: [ profile_timestamp ]
-      - feature: profile_summary_stats5
-        stats_set: { type: min_max, name: profile_summary_stats5 }
+      - feature: profile_summary_stats
+        stats_set: { type: min_max, name: profile_summary_stats }
         col_names: [ temp, psal, pres ]
         summary_stats_names: [ mean, median, sd, pct25, pct75 ]
       - feature: basic_values
@@ -148,7 +148,7 @@ feature_stats_sets:
       - name: location
         stats: { longitude: { min: 14.5, max: 23.5 },
                  latitude: { min: 55, max: 66 } }
-      - name: profile_summary_stats5
+      - name: profile_summary_stats
         stats: { temp: { mean: { min: 0, max: 12.5 },
                          median: { min: 0, max: 15 },
                          sd: { min: 0, max: 6.5 },

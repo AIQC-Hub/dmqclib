@@ -33,7 +33,7 @@ summary_stats_sets:
     stats:
       - name: location
         col_names: [ longitude, latitude ]
-      - name: profile_summary_stats5
+      - name: profile_summary_stats
         col_names: [ temp, psal, pres ]
       - name: basic_values3
         col_names: [ temp, psal, pres ]
@@ -43,7 +43,7 @@ feature_sets:
     features:
       - location
       - day_of_year
-      - profile_summary_stats5
+      - profile_summary_stats
       - basic_values
       - flank_up
       - flank_down
@@ -57,7 +57,7 @@ feature_param_sets:
       - feature: day_of_year
         convert: sine
         col_names: [ profile_timestamp ]
-      - feature: profile_summary_stats5
+      - feature: profile_summary_stats
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
         summary_stats_names: [ mean, median, sd, pct25, pct75 ]

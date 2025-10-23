@@ -65,7 +65,7 @@ This section defines summary statistics that will be used for feature values or 
        stats:
          - name: location
            col_names: [ longitude, latitude ]
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            col_names: [ temp, psal, pres ]
          - name: basic_values3
            col_names: [ temp, psal, pres ]
@@ -86,7 +86,7 @@ These two sections are critical for ensuring that the new input data is transfor
        features:
          - location
          - day_of_year
-         - profile_summary_stats5
+         - profile_summary_stats
          - basic_values
          - flank_up
          - flank_down
@@ -101,7 +101,7 @@ These two sections are critical for ensuring that the new input data is transfor
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
+         - feature: profile_summary_stats
            stats_set: { type: raw }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
@@ -257,7 +257,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
        stats:
          - name: location
            col_names: [ longitude, latitude ]
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            col_names: [ temp, psal, pres ]
          - name: basic_values3
            col_names: [ temp, psal, pres ]
@@ -267,7 +267,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
        features:
          - location
          - day_of_year
-         - profile_summary_stats5
+         - profile_summary_stats
          - basic_values
          - flank_up
          - flank_down
@@ -281,7 +281,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
+         - feature: profile_summary_stats
            stats_set: { type: raw }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
