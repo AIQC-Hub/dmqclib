@@ -130,15 +130,15 @@ class TestConcatPredictions(unittest.TestCase):
 
         self.assertIsInstance(ds.predictions["temp"], pl.DataFrame)
         self.assertEqual(ds.predictions["temp"].shape[0], 19480)
-        self.assertEqual(ds.predictions["temp"].shape[1], 6)
+        self.assertEqual(ds.predictions["temp"].shape[1], 7)
 
         self.assertIsInstance(ds.predictions["psal"], pl.DataFrame)
         self.assertEqual(ds.predictions["psal"].shape[0], 19480)
-        self.assertEqual(ds.predictions["psal"].shape[1], 6)
+        self.assertEqual(ds.predictions["psal"].shape[1], 7)
 
         self.assertIsInstance(ds.predictions["pres"], pl.DataFrame)
         self.assertEqual(ds.predictions["pres"].shape[0], 19480)
-        self.assertEqual(ds.predictions["pres"].shape[1], 6)
+        self.assertEqual(ds.predictions["pres"].shape[1], 7)
 
     def test_merge_predictions(self):
         """
@@ -154,7 +154,7 @@ class TestConcatPredictions(unittest.TestCase):
 
         self.assertIsInstance(ds.merged_predictions, pl.DataFrame)
         self.assertEqual(ds.merged_predictions.shape[0], 19480)
-        self.assertEqual(ds.merged_predictions.shape[1], 36)
+        self.assertEqual(ds.merged_predictions.shape[1], 39)
 
     def test_merge_predictions_with_empty_input(self):
         """
@@ -199,7 +199,7 @@ class TestConcatPredictions(unittest.TestCase):
 
         self.assertTrue(os.path.exists(ds.output_file_name))
 
-        os.remove(ds.output_file_name)
+        #os.remove(ds.output_file_name)
 
     def test_write_no_results(self):
         """

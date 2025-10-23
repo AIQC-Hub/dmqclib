@@ -1,6 +1,6 @@
 Configuration of Classification
 =================================
-The `classify` workflow (`stage="classify"`) is designed to apply a pre-trained machine learning model to new, unseen datasets to generate predictions. It leverages the same modular "building blocks" concept found in the `prepare` and `train` workflows, but its configuration is streamlined.
+The ``classify`` workflow (``stage="classify"``) is designed to apply a pre-trained machine learning model to new, unseen datasets to generate predictions. It leverages the same modular "building blocks" concept found in the ``prepare`` and ``train`` workflows, but its configuration is streamlined.
 
 Unlike preparation or training, classification doesn't involve model learning or complex feature engineering from scratch. Instead, its primary role is to orchestrate the application of an existing model. This involves:
 
@@ -9,7 +9,7 @@ Unlike preparation or training, classification doesn't involve model learning or
 *   Making predictions on new input data.
 *   Saving the classified output.
 
-You will typically need to configure `path_info_sets` and `classification_sets`, along with ensuring consistency for `target_sets`, `summary_stats_sets`, and `feature_sets` with the model's training context.
+You will typically need to configure ``path_info_sets`` and ``classification_sets``, along with ensuring consistency for ``target_sets``, ``summary_stats_sets``, and ``feature_sets`` with the model's training context.
 
 Key Configuration Sections
 --------------------------
@@ -18,10 +18,10 @@ Key Configuration Sections
 ^^^^^^^^^^^^^^^^
 This section defines all the necessary file system locations for the classification workflow. It tells ``dmqclib`` where to find the raw input data, the trained model, and where to save the final classified output.
 
-*   **`common.base_path`**: The root directory where all outputs (intermediate files, final classified data) for this classification task will be saved.
-*   **`input.base_path`**: The directory where your raw input files (the data you want to classify) are located.
-*   **`model.base_path`**: The path to the directory containing your trained model files from the `train` workflow.
-*   **`concat.step_folder_name`**: The name of the subdirectory within `common.base_path` where the final combined/classified output file will be stored.
+*   **common.base_path**: The root directory where all outputs (intermediate files, final classified data) for this classification task will be saved.
+*   **input.base_path**: The directory where your raw input files (the data you want to classify) are located.
+*   **model.base_path**: The path to the directory containing your trained model files from the ``train`` workflow.
+*   **concat.step_folder_name**: The name of the subdirectory within ``common.base_path`` where the final combined/classified output file will be stored.
 
 .. code-block:: yaml
    :caption: Example path_info_sets
@@ -75,8 +75,8 @@ This section defines summary statistics that will be used for feature values or 
 (**Advanced Use**)
 These two sections are critical for ensuring that the new input data is transformed into the exact same feature space that the pre-trained model expects. They should explicitly list the feature engineering methods and their parameters that were applied during the model's training phase.
 
-*   **`feature_sets`**: Lists the names of the feature engineering methods to re-apply to the new input data.
-*   **`feature_param_sets`**: Provides the specific parameters for each feature method listed in `feature_sets`. These parameters (e.g., `stats_set` references for normalization) are usually copied directly from the `prepare_config.yaml` used for training.
+*   **feature_sets**: Lists the names of the feature engineering methods to re-apply to the new input data.
+*   **feature_param_sets**: Provides the specific parameters for each feature method listed in ``feature_sets``. These parameters (e.g., ``stats_set`` references for normalization) are usually copied directly from the ``prepare_config.yaml`` used for training.
 
 .. code-block:: yaml
 
@@ -137,14 +137,14 @@ This section defines summary statistics that will be used for normalization or s
 (**Advanced Use**)
 This section defines the specific Python classes that implement the logic for each step in the classification pipeline. While ``dmqclib`` provides default implementations, this allows for customization of how data is ingested, features are generated, the model is loaded, predictions are made, and results are output.
 
-*   **`input`**: Class for handling initial data loading.
-*   **`summary`**: Class for processing summary statistics (if applicable).
-*   **`select`**: Class for selecting specific data points.
-*   **`locate`**: Class for spatial or temporal localization (if features depend on neighbors).
-*   **`extract`**: Class for extracting features based on the `feature_sets` configuration.
-*   **`model`**: Class for loading the pre-trained machine learning model.
-*   **`classify`**: Class for performing the actual prediction using the loaded model.
-*   **`concat`**: Class for concatenating or combining the final classified results.
+*   **input**: Class for handling initial data loading.
+*   **summary**: Class for processing summary statistics (if applicable).
+*   **select**: Class for selecting specific data points.
+*   **locate**: Class for spatial or temporal localization (if features depend on neighbors).
+*   **extract**: Class for extracting features based on the ``feature_sets`` configuration.
+*   **model**: Class for loading the pre-trained machine learning model.
+*   **classify**: Class for performing the actual prediction using the loaded model.
+*   **concat**: Class for concatenating or combining the final classified results.
 
 .. code-block:: yaml
 
@@ -162,12 +162,12 @@ This section defines the specific Python classes that implement the logic for ea
 
 `step_param_sets`
 ^^^^^^^^^^^^^^^^^
-This section provides general parameters for the workflow processes defined in `step_class_sets`. These parameters control the behavior of various pipeline steps during classification.
+This section provides general parameters for the workflow processes defined in ``step_class_sets``. These parameters control the behavior of various pipeline steps during classification.
 
-*   **`steps.input.sub_steps.filter_rows`**: A boolean flag to enable or disable row filtering based on `filter_method_dict`.
-*   **`steps.input.filter_method_dict.keep_years`**: Specifies a list of years from which data should be kept for classification. Other years will be excluded.
-*   **`steps.rename_dict`**: Dictionary for renaming columns during input processing.
-*   Parameters for other steps (`summary`, `select`, `locate`, `extract`, `model`, `classify`, `concat`) are also defined here, often left empty if default behavior is sufficient or if parameters are handled by the model itself.
+*   **steps.input.sub_steps.filter_rows**: A boolean flag to enable or disable row filtering based on ``filter_method_dict``.
+*   **steps.input.filter_method_dict.keep_years**: Specifies a list of years from which data should be kept for classification. Other years will be excluded.
+*   **steps.rename_dict**: Dictionary for renaming columns during input processing.
+*   Parameters for other steps (``summary``, ``select``, ``locate``, ``extract``, ``model``, ``classify``, ``concat``) are also defined here, often left empty if default behavior is sufficient or if parameters are handled by the model itself.
 
 .. code-block:: yaml
 
@@ -191,11 +191,11 @@ This section provides general parameters for the workflow processes defined in `
 ^^^^^^^^^^^^^^^^^^^^^
 This is the main "assembly" section that defines a complete classification job. Each entry in this list orchestrates a unique classification run by linking together the input data file with the specific path, target variable, feature engineering, and pipeline step configurations.
 
-*   **`name`**: A unique identifier for this classification task (e.g., "NRT_BO_001").
-*   **`dataset_folder_name`**: The name of the folder within `common.base_path` where intermediate and final classified results specific to this job will be stored. This often matches the name used during preparation and training to maintain consistency.
-*   **`input_file_name`**: The name of the raw data file (e.g., a `.parquet` file) that you want to classify. This file should be located in `input.base_path`.
-*   **`path_info`**: The `name` of the path configuration to use from `path_info_sets`.
-*   **`target_set`**: The `name` of the target variable configuration to use from `target_sets`.
+*   **name**: A unique identifier for this classification task (e.g., "NRT_BO_001").
+*   **dataset_folder_name**: The name of the folder within ``common.base_path`` where intermediate and final classified results specific to this job will be stored. This often matches the name used during preparation and training to maintain consistency.
+*   **input_file_name**: The name of the raw data file (e.g., a ``.parquet`` file) that you want to classify. This file should be located in ``input.base_path``.
+*   **path_info**: The ``name`` of the path configuration to use from ``path_info_sets``.
+*   **target_set**: The ``name`` of the target variable configuration to use from ``target_sets``.
 *   ...and similarly for all other configuration sets.
 
 .. code-block:: yaml
@@ -211,12 +211,12 @@ This is the main "assembly" section that defines a complete classification job. 
        # ... other set references would follow here
 
 .. note::
-   While you can define multiple classification sets in the `classification_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
+   While you can define multiple classification sets in the ``classification_sets`` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
 
 Full Example
 ------------
 
-Here is a complete example of a `classification_config.yaml` file, showing how all the building blocks come together. The lines you will most commonly need to edit or customize are highlighted for quick reference.
+Here is a complete example of a ``classification_config.yaml`` file, showing how all the building blocks come together. The lines you will most commonly need to edit or customize are highlighted for quick reference.
 
 .. code-block:: yaml
    :caption: Full classification_config.yaml example

@@ -85,7 +85,9 @@ class ConcatDatasetsBase(DataSetBase):
             pl.concat(
                 [
                     df.rename(
-                        {"label": f"{key}_label", "predicted": f"{key}_predicted"}
+                        {"label": f"{key}_label",
+                         "class": f"{key}_predicted",
+                         "score": f"{key}_score"}
                     ).select(
                         [
                             "platform_code",
@@ -93,6 +95,7 @@ class ConcatDatasetsBase(DataSetBase):
                             "observation_no",
                             f"{key}_label",
                             f"{key}_predicted",
+                            f"{key}_score",
                         ]
                     )
                     for key, df in self.predictions.items()

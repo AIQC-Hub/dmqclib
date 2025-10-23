@@ -489,8 +489,8 @@ class TestClassifyConcatClassLoader(unittest.TestCase):
 
         self.assertIsInstance(ds.predictions["temp"], pl.DataFrame)
         self.assertEqual(ds.predictions["temp"].shape[0], 19480)
-        self.assertEqual(ds.predictions["temp"].shape[1], 6)
+        self.assertEqual(ds.predictions["temp"].shape[1], 7)
 
         self.assertIsInstance(ds.predictions["psal"], pl.DataFrame)
         self.assertEqual(ds.predictions["psal"].shape[0], 19480)
-        self.assertEqual(ds.predictions["psal"].shape[1], 6)
+        self.assertEqual(ds.predictions["psal"].shape[1], 7)
