@@ -1,12 +1,12 @@
 Basic Values
 ===========================
 
-The `basic_values` feature is an observation-level feature that represents the actual observation values, such as temperature and salinity. Any columns in the input dataset can be specified as the `basic_values` feature.
+The ``basic_values`` feature is an observation-level feature that represents the actual observation values, such as temperature and salinity. Any columns in the input dataset can be specified as the ``basic_values`` feature.
 
 Configuration: Setup
 -------------------------------------
 
-To include the `basic_values` feature in your training and classification datasets, the value `basic_values` needs to be specified in the `feature_sets` section.
+To include the ``basic_values`` feature in your training and classification datasets, the value ``basic_values`` needs to be specified in the ``feature_sets`` section.
 
 .. code-block:: yaml
 
@@ -18,10 +18,10 @@ To include the `basic_values` feature in your training and classification datase
 Configuration: Parameters
 -------------------------------------
 
-The `basic_values` feature requires two mandatory parameters: `col_names` and `stats_set`.
+The ``basic_values`` feature requires two mandatory parameters: ``col_names`` and ``stats_set``.
 
-*   The `col_names` parameter specifies the column names in the input dataset that will be used as the `basic_values` feature.
-*   The `stats_set` parameter specifies how the feature values are normalized. `dmqclib` currently supports `raw` and `min_max` as normalization methods. The `name` value in `stats_set` must correspond to a `name` in the `feature_stats_sets` section.
+*   The ``col_names`` parameter specifies the column names in the input dataset that will be used as the ``basic_values`` feature.
+*   The ``stats_set`` parameter specifies how the feature values are normalized. ``dmqclib`` currently supports ``raw`` and ``min_max`` as normalization methods. The ``name`` value in ``stats_set`` must correspond to a ``name`` in the ``feature_stats_sets`` section.
 
 .. code-block:: yaml
 
@@ -35,7 +35,7 @@ The `basic_values` feature requires two mandatory parameters: `col_names` and `s
 Configuration: Normalization
 -------------------------------------
 
-If the normalization method is not set to `raw`, the summary statistics specified here will be used for normalization.
+If the normalization method is not set to ``raw``, the summary statistics specified here will be used for normalization.
 
 .. code-block:: yaml
 
@@ -49,4 +49,4 @@ If the normalization method is not set to `raw`, the summary statistics specifie
 
 .. note::
 
-   `dmqclib` offers helper functions to calculate summary statistics (like min/max values). Please refer to the :doc:`../how-to/feature_normalization` guide for details.
+   ``dmqclib`` offers helper functions to calculate summary statistics (like min/max values). Please refer to the :doc:`../how-to/feature_normalization` guide for details.

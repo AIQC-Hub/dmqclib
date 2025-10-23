@@ -7,7 +7,7 @@ Like all workflows in ``dmqclib``, this process is controlled by a dedicated YAM
 
 .. admonition:: Prerequisites
 
-   This tutorial assumes you have successfully completed :doc:`./preparation`. The training process directly uses the output files (the split datasets) generated in that step. Ensure your `~/aiqc_project/data/dataset_0001/training/` directory exists and contains the prepared data.
+   This tutorial assumes you have successfully completed :doc:`./preparation`. The training process directly uses the output files (the split datasets) generated in that step. Ensure your ``~/aiqc_project/data/dataset_0001/training/`` directory exists and contains the prepared data.
 
 The Training Workflow
 ---------------------
@@ -38,12 +38,12 @@ First, use ``dmqclib`` to generate a boilerplate configuration template specific
 Step 3.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now, open the newly created `~/aiqc_project/config/training_config.yaml` file in your text editor. Your primary goals are to define:
+Now, open the newly created ``~/aiqc_project/config/training_config.yaml`` file in your text editor. Your primary goals are to define:
 
 1.  **Input & Output Paths:** Where to find the prepared dataset and where to save the trained model.
 2.  **Model & Validation Strategy:** Which machine learning model to train and what cross-validation method to use.
 
-You will need to edit the `path_info_sets`, `step_class_sets`, `step_param_sets`, and `training_sets` sections.
+You will need to edit the ``path_info_sets``, ``step_class_sets``, ``step_param_sets``, and ``training_sets`` sections.
 
 Before you modify the config, let's create a directory where your trained models will be saved:
 
@@ -51,7 +51,7 @@ Before you modify the config, let's create a directory where your trained models
 
    mkdir -p ~/aiqc_project/models
 
-**Update your ``training_config.yaml`` file:**
+**Update your training_config.yaml file:**
 Modify the file to align with the following structure. Remember to replace placeholder paths with your actual project setup.
 
 .. code-block:: yaml
@@ -103,9 +103,9 @@ Modify the file to align with the following structure. Remember to replace place
 Step 3.3: Run the Training Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once you have customized your `training_config.yaml` with the correct paths and model/validation configurations, you can execute the training and evaluation workflow.
+Once you have customized your ``training_config.yaml`` with the correct paths and model/validation configurations, you can execute the training and evaluation workflow.
 
-Load the configuration file and then call the `train_and_evaluate` function:
+Load the configuration file and then call the ``train_and_evaluate`` function:
 
 .. code-block:: python
 
@@ -121,11 +121,11 @@ Load the configuration file and then call the `train_and_evaluate` function:
 Understanding the Output
 ------------------------
 
-After the command finishes, ``dmqclib`` will have created new folders within your dataset's output directory (e.g., `~/aiqc_project/data/dataset_0001/`) and within your model's base path (`~/aiqc_project/models/`). The primary outputs include:
+After the command finishes, ``dmqclib`` will have created new folders within your dataset's output directory (e.g., ``~/aiqc_project/data/dataset_0001/``) and within your model's base path (``~/aiqc_project/models/``). The primary outputs include:
 
-*   **`validate`**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds. This includes metrics, predictions, and potentially visualizations.
-*   **`build`**: Holds a comprehensive report of the final model's evaluation performance on the held-out test dataset, along with aggregated metrics.
-*   **`models`**: Holds the final, trained model object(s) ready for classification. These are the artifacts you will use in the next step.
+*   **validate**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds. This includes metrics, predictions, and potentially visualizations.
+*   **build**: Holds a comprehensive report of the final model's evaluation performance on the held-out test dataset, along with aggregated metrics.
+*   **models**: Holds the final, trained model object(s) ready for classification. These are the artifacts you will use in the next step.
 
 Next Steps
 ----------

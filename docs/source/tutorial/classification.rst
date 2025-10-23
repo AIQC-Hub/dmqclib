@@ -7,10 +7,10 @@ This is the culmination of the ``dmqclib`` pipeline, transforming your machine l
 
 .. admonition:: Prerequisites
 
-   This tutorial assumes you have successfully completed :doc:`./training`. To proceed with classification, you will need:
+   This tutorial assumes you have successfully completed :doc:``./training``. To proceed with classification, you will need:
 
-   *   The trained model file(s) saved in the directory you specified in the training configuration (e.g., `~/aiqc_project/models/`).
-   *   The original raw data file (`nrt_cora_bo_4.parquet`) that you wish to classify. This file should be in your `~/aiqc_project/input/` directory.
+   *   The trained model file(s) saved in the directory you specified in the training configuration (e.g., ``~/aiqc_project/models/``).
+   *   The original raw data file (``nrt_cora_bo_4.parquet``) that you wish to classify. This file should be in your ``~/aiqc_project/input/`` directory.
 
 The Classification Workflow
 ---------------------------
@@ -20,7 +20,7 @@ The classification process follows the familiar ``dmqclib`` pattern: you will ge
 Step 4.1: Generate the Configuration Template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, use ``dmqclib`` to generate the boilerplate configuration template specifically for the `classify` workflow.
+First, use ``dmqclib`` to generate the boilerplate configuration template specifically for the ``classify`` workflow.
 
 .. code-block:: python
 
@@ -41,17 +41,17 @@ First, use ``dmqclib`` to generate the boilerplate configuration template specif
 Step 4.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Open the newly created `~/aiqc_project/config/classification_config.yaml` file in your text editor. You need to configure the paths for the raw input data, the location of your trained model, and where the final classified output should be saved.
+Open the newly created ``~/aiqc_project/config/classification_config.yaml`` file in your text editor. You need to configure the paths for the raw input data, the location of your trained model, and where the final classified output should be saved.
 
-**Crucially, the following sections in this classification configuration MUST EXACTLY MATCH those used in your `prepare_config.yaml` for the model's training.** This ensures that the new input data is preprocessed and features are engineered in precisely the same way the model expects. You can often copy these sections directly from your `prepare_config.yaml`.
+**Crucially, the following sections in this classification configuration MUST EXACTLY MATCH those used in your ``prepare_config.yaml`` for the model's training.** This ensures that the new input data is preprocessed and features are engineered in precisely the same way the model expects. You can often copy these sections directly from your ``prepare_config.yaml``.
 
-1.  `target_sets`
-2.  `summary_stats_sets`
-3.  `feature_sets`
-4.  `feature_param_sets`
-5.  `feature_stats_sets`
+1.  ``target_sets``
+2.  ``summary_stats_sets``
+3.  ``feature_sets``
+4.  ``feature_param_sets``
+5.  ``feature_stats_sets``
 
-Update your `classification_config.yaml` file to match the following. Remember to replace placeholder paths and details with your actual project setup.
+Update your ``classification_config.yaml`` file to match the following. Remember to replace placeholder paths and details with your actual project setup.
 
 .. code-block:: yaml
 
@@ -87,9 +87,9 @@ Update your `classification_config.yaml` file to match the following. Remember t
 Step 4.3: Run the Classification Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once you have customized your `classification_config.yaml` with the correct paths, input file, and inherited configuration references, you can execute the classification workflow.
+Once you have customized your ``classification_config.yaml`` with the correct paths, input file, and inherited configuration references, you can execute the classification workflow.
 
-Load the configuration file and then call the `classify_dataset` function:
+Load the configuration file and then call the ``classify_dataset`` function:
 
 .. code-block:: python
 
@@ -104,15 +104,15 @@ Load the configuration file and then call the `classify_dataset` function:
 Understanding the Output
 ------------------------
 
-After the command finishes, your output root directory (e.g., `~/aiqc_project/data`) will contain a new folder named `dataset_0001` (from `classification_sets.dataset_folder_name`). Inside `dataset_0001`, you will find several subdirectories, reflecting the processing steps:
+After the command finishes, your output root directory (e.g., ``~/aiqc_project/data``) will contain a new folder named ``dataset_0001`` (from ``classification_sets.dataset_folder_name``). Inside ``dataset_0001``, you will find several subdirectories, reflecting the processing steps:
 
-*   **`summary`**: Contains intermediate files with summary statistics if re-calculated or referenced.
-*   **`select`**: Stores the input profiles after any initial filtering. In classification, this typically includes all profiles you want to classify.
-*   **`locate`**: Contains all observation records that proceeded through the pipeline, often after proximity-based selection for feature generation.
-*   **`extract`**: Holds the features extracted from the observation records, transformed consistently with how the model was trained.
-*   **`classify`**: This is the final output directory. It contains:
+*   **summary**: Contains intermediate files with summary statistics if re-calculated or referenced.
+*   **select**: Stores the input profiles after any initial filtering. In classification, this typically includes all profiles you want to classify.
+*   **locate**: Contains all observation records that proceeded through the pipeline, often after proximity-based selection for feature generation.
+*   **extract**: Holds the features extracted from the observation records, transformed consistently with how the model was trained.
+*   **classify**: This is the final output directory. It contains:
 
-    *   A `.parquet` file with the original input data, augmented with new columns for the model's predictions (e.g., `temp_prediction`) and prediction probabilities (e.g., `temp_probability`).
+    *   A ``.parquet`` file with the original input data, augmented with new columns for the model's predictions (e.g., ``temp_prediction``) and prediction probabilities (e.g., ``temp_probability``).
     *   A summary report detailing the classification results.
 
 Conclusion

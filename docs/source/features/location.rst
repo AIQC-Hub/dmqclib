@@ -1,12 +1,12 @@
 Location
 ===========================
 
-The `location` feature is a profile-level feature that represents the locations of sampling points. All observations belonging to the same profile generally have the same `location` feature values. Although `dmqclib` requires both `latitude` and `longitude` values, any other columns in the input dataset can be specified as the `location` feature.
+The ``location`` feature is a profile-level feature that represents the locations of sampling points. All observations belonging to the same profile generally have the same ``location`` feature values. Although ``dmqclib`` requires both ``latitude`` and ``longitude`` values, any other columns in the input dataset can be specified as the ``location`` feature.
 
 Configuration: Setup
 -------------------------------------
 
-To include the `location` feature in your training and classification datasets, the value `location` needs to be specified in the `feature_sets` section.
+To include the ``location`` feature in your training and classification datasets, the value ``location`` needs to be specified in the ``feature_sets`` section.
 
 .. code-block:: yaml
 
@@ -18,10 +18,10 @@ To include the `location` feature in your training and classification datasets, 
 Configuration: Parameters
 -------------------------------------
 
-The `location` feature requires two mandatory parameters: `col_names` and `stats_set`.
+The ``location`` feature requires two mandatory parameters: ``col_names`` and ``stats_set``.
 
-*   The `col_names` parameter specifies the column names in the input dataset that will be used as the `location` feature.
-*   The `stats_set` parameter specifies how the feature values are normalized. `dmqclib` currently supports `raw` and `min_max` as normalization methods. The `name` value in `stats_set` requires the same `name` in the `feature_stats_sets` section.
+*   The ``col_names`` parameter specifies the column names in the input dataset that will be used as the ``location`` feature.
+*   The ``stats_set`` parameter specifies how the feature values are normalized. ``dmqclib`` currently supports ``raw`` and ``min_max`` as normalization methods. The ``name`` value in ``stats_set`` requires the same ``name`` in the ``feature_stats_sets`` section.
 
 .. code-block:: yaml
 
@@ -35,7 +35,7 @@ The `location` feature requires two mandatory parameters: `col_names` and `stats
 Configuration: Normalization
 -------------------------------------
 
-If the normalization method is not set to `raw` values, the summary statistics specified here will be used for normalization.
+If the normalization method is not set to ``raw`` values, the summary statistics specified here will be used for normalization.
 
 .. code-block:: yaml
 

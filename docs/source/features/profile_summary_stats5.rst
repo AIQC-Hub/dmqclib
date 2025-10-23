@@ -1,7 +1,7 @@
 Profile Summary Statistics 5
 =======================================
 
-The `profile_summary_stats5` feature is a profile-level feature that represents the summary statistics of specified variables. All observations belonging to the same profile generally have the same `profile_summary_stats5` feature values. The `profile_summary_stats5` feature can contain the following nine statistics:
+The ``profile_summary_stats5`` feature is a profile-level feature that represents the summary statistics of specified variables. All observations belonging to the same profile generally have the same ``profile_summary_stats5`` feature values. The ``profile_summary_stats5`` feature can contain the following nine statistics:
 
 1.  **min**: minimum
 2.  **max**: maximum
@@ -16,7 +16,7 @@ The `profile_summary_stats5` feature is a profile-level feature that represents 
 Configuration: Summary Statistics
 -------------------------------------
 
-The `profile_summary_stats5` feature requires the calculation of summary statistics prior to feature extraction. This can be specified in the `summary_stats_sets` section of a configuration file. The variables used for the feature should be specified in `col_names`.
+The ``profile_summary_stats5`` feature requires the calculation of summary statistics prior to feature extraction. This can be specified in the ``summary_stats_sets`` section of a configuration file. The variables used for the feature should be specified in ``col_names``.
 
 .. code-block:: yaml
 
@@ -29,7 +29,7 @@ The `profile_summary_stats5` feature requires the calculation of summary statist
 Configuration: Setup
 -------------------------------------
 
-To include the `profile_summary_stats5` feature in your training and classification datasets, the value `profile_summary_stats5` needs to be specified in the `feature_sets` section.
+To include the ``profile_summary_stats5`` feature in your training and classification datasets, the value ``profile_summary_stats5`` needs to be specified in the ``feature_sets`` section.
 
 .. code-block:: yaml
 
@@ -41,11 +41,11 @@ To include the `profile_summary_stats5` feature in your training and classificat
 Configuration: Parameters
 -------------------------------------
 
-The `profile_summary_stats5` feature requires three mandatory parameters: `col_names`, `summary_stats_names`, and `stats_set`.
+The ``profile_summary_stats5`` feature requires three mandatory parameters: ``col_names``, ``summary_stats_names``, and ``stats_set``.
 
-*   The `col_names` parameter specifies the column names in the input dataset that will be used for the `profile_summary_stats5` feature.
-*   The `summary_stats_names` parameter specifies the names of the summary statistics to be used as features.
-*   The `stats_set` parameter specifies how the feature values are normalized. `dmqclib` currently supports `raw` and `min_max` as normalization methods. The `name` value in `stats_set` must correspond to a `name` in the `feature_stats_sets` section.
+*   The ``col_names`` parameter specifies the column names in the input dataset that will be used for the ``profile_summary_stats5`` feature.
+*   The ``summary_stats_names`` parameter specifies the names of the summary statistics to be used as features.
+*   The ``stats_set`` parameter specifies how the feature values are normalized. ``dmqclib`` currently supports ``raw`` and ``min_max`` as normalization methods. The ``name`` value in ``stats_set`` must correspond to a ``name`` in the ``feature_stats_sets`` section.
 
 .. code-block:: yaml
 
@@ -60,7 +60,7 @@ The `profile_summary_stats5` feature requires three mandatory parameters: `col_n
 Configuration: Normalization
 -------------------------------------
 
-If the normalization method is not set to `raw`, the summary statistics specified here will be used for normalization.
+If the normalization method is not set to ``raw``, the summary statistics specified here will be used for normalization.
 
 .. code-block:: yaml
 
@@ -86,4 +86,4 @@ If the normalization method is not set to `raw`, the summary statistics specifie
 
 .. note::
 
-   `dmqclib` offers helper functions to calculate summary statistics (like min/max values). Please refer to the :doc:`../how-to/feature_normalization` guide for details.
+   ``dmqclib`` offers helper functions to calculate summary statistics (like min/max values). Please refer to the :doc:`../how-to/feature_normalization` guide for details.

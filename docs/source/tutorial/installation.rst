@@ -36,7 +36,7 @@ If you prefer to use ``uv`` for both creating virtual environments and installin
 
 **Step 1: Create and activate a virtual environment with uv**
 
-``uv`` will create a new virtual environment in a `.venv` directory within your current working directory by default.
+``uv`` will create a new virtual environment in a ``.venv`` directory within your current working directory by default.
 
 .. code-block:: bash
 
@@ -50,7 +50,7 @@ If you prefer to use ``uv`` for both creating virtual environments and installin
 
 **Step 2: Install dmqclib**
 
-Once your `uv`-managed virtual environment is activated, proceed with the installation:
+Once your ``uv``-managed virtual environment is activated, proceed with the installation:
 
 .. code-block:: bash
 
@@ -65,7 +65,7 @@ This method is highly recommended for all users, especially those managing multi
 
 **Step 1: Install `uv` into your base mamba environment**
 
-This makes the `uv` command available globally without cluttering your `base` environment.
+This makes the ``uv`` command available globally without cluttering your ``base`` environment.
 
 .. code-block:: bash
 
@@ -94,7 +94,7 @@ This makes the `uv` command available globally without cluttering your `base` en
 
 **Step 5: Install the project and its development dependencies**
 
-This command installs the library in "editable" mode (`-e`) and pulls in all dependencies from the `dev` group defined in `pyproject.toml`.
+This command installs the library in "editable" mode (``-e``) and pulls in all dependencies from the ``dev`` group defined in ``pyproject.toml``.
 
 .. code-block:: bash
 

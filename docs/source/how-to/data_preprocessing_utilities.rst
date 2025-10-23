@@ -10,16 +10,16 @@ Required Input Data Columns
 
 For ``dmqclib`` to correctly process your data, your raw input Parquet file should contain the following columns:
 
-*   **`platform_code`**: A unique string identifier for the measurement platform (e.g., a buoy ID, ship name).
-*   **`profile_no`**: A unique, sequential integer number identifying each distinct "profile" within a `platform_code`. A profile represents a single measurement event (e.g., all sensor readings at a specific time and location).
-*   **`profile_timestamp`**: The exact datetime of the profile. This must be a proper datetime type (e.g., Polars `Datetime` with appropriate precision).
-*   **`longitude`**: The longitude coordinate of the measurement profile (float).
-*   **`latitude`**: The latitude coordinate of the measurement profile (float).
-*   **`observation_no`**: A unique, sequential integer number identifying each individual observation (row) within a given `profile_no`. This indicates the order of observations within a profile.
-*   **`pres`**: Pressure values for each observation (float).
+*   **platform_code**: A unique string identifier for the measurement platform (e.g., a buoy ID, ship name).
+*   **profile_no**: A unique, sequential integer number identifying each distinct "profile" within a ``platform_code``. A profile represents a single measurement event (e.g., all sensor readings at a specific time and location).
+*   **profile_timestamp**: The exact datetime of the profile. This must be a proper datetime type (e.g., Polars ``Datetime`` with appropriate precision).
+*   **longitude**: The longitude coordinate of the measurement profile (float).
+*   **latitude**: The latitude coordinate of the measurement profile (float).
+*   **observation_no**: A unique, sequential integer number identifying each individual observation (row) within a given ``profile_no``. This indicates the order of observations within a profile.
+*   **pres**: Pressure values for each observation (float).
 
 .. important::
-   If your raw data is missing **`profile_no`**, **`profile_timestamp`**, or **`observation_no`**, or if these fields have invalid data types, the following steps will guide you through creating them.
+   If your raw data is missing **profile_no**, **profile_timestamp**, or **observation_no**, or if these fields have invalid data types, the following steps will guide you through creating them.
 
 .. important::
    Duplicate entries at the platform or profile level may result in incorrect datasets, even when following the examples on this page.
@@ -27,7 +27,7 @@ For ``dmqclib`` to correctly process your data, your raw input Parquet file shou
 Example Data: Starting Point
 ----------------------------
 
-Let's begin with an example Polars DataFrame that mimics raw data, notably missing the `profile_no`, `profile_timestamp` (instead having a `profile_time` as a float), and `observation_no` columns.
+Let's begin with an example Polars DataFrame that mimics raw data, notably missing the ``profile_no``, ``profile_timestamp`` (instead having a ``profile_time`` as a float), and ``observation_no`` columns.
 
 .. code-block:: python
 
@@ -90,7 +90,7 @@ If your timestamp is a float representing days (e.g., days since a specific epoc
 
 2. Sort Rows
 ~~~~~~~~~~~~
-Sorting the DataFrame is crucial before generating sequential `profile_no` and `observation_no`. This ensures that observations belonging to the same profile are grouped together and are ordered correctly (e.g., by pressure).
+Sorting the DataFrame is crucial before generating sequential ``profile_no`` and ``observation_no``. This ensures that observations belonging to the same profile are grouped together and are ordered correctly (e.g., by pressure).
 
 .. code-block:: python
 
@@ -102,7 +102,7 @@ Sorting the DataFrame is crucial before generating sequential `profile_no` and `
 
 3. Create `profile_key` (Helper Column)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A `profile_key` is a temporary helper column that uniquely identifies each distinct profile within a platform. This is a common pattern when `profile_no` is not directly available but can be inferred from a combination of other columns (e.g., `platform_code`, `profile_timestamp`, `longitude`, `latitude`).
+A ``profile_key`` is a temporary helper column that uniquely identifies each distinct profile within a platform. This is a common pattern when ``profile_no`` is not directly available but can be inferred from a combination of other columns (e.g., ``platform_code``, ``profile_timestamp``, ``longitude``, ``latitude``).
 
 .. code-block:: python
 
@@ -121,7 +121,7 @@ A `profile_key` is a temporary helper column that uniquely identifies each disti
 
 4. Create `profile_no`
 ~~~~~~~~~~~~~~~~~~~~~~
-Now, create the sequential `profile_no` within each `platform_code` by computing a dense rank of `profile_key`. The `rank("dense")` ensures that the first distinct `profile_key` in a platform gets rank 1, the second gets rank 2, and so on.
+Now, create the sequential ``profile_no`` within each ``platform_code`` by computing a dense rank of ``profile_key``. The ``rank("dense")`` ensures that the first distinct ``profile_key`` in a platform gets rank 1, the second gets rank 2, and so on.
 
 .. code-block:: python
 
@@ -138,7 +138,7 @@ Now, create the sequential `profile_no` within each `platform_code` by computing
 
 5. Create `observation_no`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-The `observation_no` assigns a unique, sequential number to each observation *within* a given `profile_no`. This is typically based on the order of records after sorting (e.g., by pressure depth). `cum_count().over("profile_key")` is used to count observations within each unique `profile_key`. We add `+1` to make it 1-indexed.
+The ``observation_no`` assigns a unique, sequential number to each observation *within* a given ``profile_no``. This is typically based on the order of records after sorting (e.g., by pressure depth). ``cum_count().over("profile_key")`` is used to count observations within each unique ``profile_key``. We add ``+1`` to make it 1-indexed.
 
 .. code-block:: python
 
@@ -152,7 +152,7 @@ The `observation_no` assigns a unique, sequential number to each observation *wi
 
 6. Drop `profile_key` (Optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-You can optionally drop the helper `profile_key` column once `profile_no` and `observation_no` have been created, as it's no longer needed.
+You can optionally drop the helper ``profile_key`` column once ``profile_no`` and ``observation_no`` have been created, as it's no longer needed.
 
 .. code-block:: python
 
@@ -164,7 +164,7 @@ You can optionally drop the helper `profile_key` column once `profile_no` and `o
 
 Save the Preprocessed Data
 --------------------------
-Finally, save your preprocessed DataFrame as a Parquet file. This file will then be used as the `input_file_name` in your `dmqclib` `prepare_config.yaml`.
+Finally, save your preprocessed DataFrame as a Parquet file. This file will then be used as the ``input_file_name`` in your ``dmqclib`` ``prepare_config.yaml``.
 
 .. code-block:: python
 

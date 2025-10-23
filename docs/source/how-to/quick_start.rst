@@ -4,12 +4,12 @@ Quick Start
 This guide demonstrates how to run the entire machine learning process with minimal configuration.
 
 .. note::
-   This is the digest version of the tutorial provided in the "Tutorical" section. See the Tutorial :doc:`../tutorial/quick_start` for more comprehensive explanations of the processes and usage.
+   This is a condensed version of the tutorial provided in the "Tutorial" section. See the :doc:`../tutorial/overview` for more comprehensive explanations.
 
 Objectives
 -----------------------------
 
-You will learn how to run all the three stages of ``dmqclib`` by creating stage-specific configuration files. This guide lets you create three classifiers: temp (temperature),  psal (salinity), and pres (pressure), to predict QC labels for the corresponding variables.
+You will learn how to run all three stages of ``dmqclib`` by creating stage-specific configuration files. This guide lets you create three classifiers for ``temp`` (temperature), ``psal`` (salinity), and ``pres`` (pressure) to predict QC labels for the corresponding variables.
 
 Installation
 -----------------------------
@@ -141,13 +141,13 @@ Once the configuration file is updated, run the following command to generate th
 
 Understanding the Output
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-After the commands finishes, your main output directory (as defined by `path_info_sets.common.base_path`, e.g., `/path/to/your/data`) will contain a new folder named `dataset_0001` (derived from `data_sets.dataset_folder_name`). Inside this folder, you will find several subdirectories, each representing a stage of the data preparation pipeline:
+After the command finishes, your main output directory (e.g., ``/path/to/your/data``) will contain a new folder named ``dataset_0001``. Inside this folder, you will find several subdirectories, each representing a stage of the data preparation pipeline:
 
-*   **`summary`**: Contains intermediate files with summary statistics of the input data, often used for normalization or feature scaling.
-*   **`select`**: Stores data points identified as "good" (negative samples) and "bad" (positive samples) based on your target and QC flag definitions.
-*   **`locate`**: Contains specific observation records for both positive and negative profiles, often after a proximity-based selection.
-*   **`extract`**: Holds the features extracted from the observation records, ready for model consumption.
-*   **`training`**: The final output directory. This contains the split training, validation, and test datasets in Parquet format, ready for model training and evaluation.
+*   **summary**: Contains intermediate files with summary statistics.
+*   **select**: Stores data points identified as "good" (negative samples) and "bad" (positive samples).
+*   **locate**: Contains specific observation records for positive and negative profiles.
+*   **extract**: Holds the features extracted from the observation records.
+*   **training**: The final output directory for this stage. It contains the split training, validation, and test datasets in Parquet format.
 
 Stage 2: Training & Evaluation
 --------------------------------
@@ -194,11 +194,11 @@ With the configuration file updated, the following command will run the training
 Understanding the Output
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After the command finishes, ``dmqclib`` will have created new folders within your dataset's output directory (e.g., `~/aiqc_project/data/dataset_0001/`) and within your model's base path (`/path/to/your/data`). The primary outputs include:
+After the command finishes, new folders will be created within your dataset's output directory (e.g., ``/path/to/your/data/dataset_0001/``). The primary outputs include:
 
-*   **`validate`**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds. This includes metrics, predictions, and potentially visualizations.
-*   **`build`**: Holds a comprehensive report of the final model's evaluation performance on the held-out test dataset, along with aggregated metrics.
-*   **`models`**: Holds the final, trained model objects ready for classification. These are the artifacts you will use in the next step.
+*   **validate**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds.
+*   **build**: Holds a comprehensive report of the final model's evaluation on the held-out test dataset.
+*   **model**: Contains the final, trained model objects. These are the artifacts you will use in the next stage.
 
 Stage 3: Classification
 -----------------------------
@@ -282,21 +282,18 @@ Once the configuration is complete, the following commands will apply the model 
 Understanding the Output
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After the command finishes, your output root directory (e.g., `/path/to/your/data`) will contain a new folder named `dataset_0001`. Inside `dataset_0001`, you will find several subdirectories, reflecting the processing steps:
+After this command finishes, the output directories will be generated within ``/path/to/your/data/dataset_0001/``. The most important output is in the ``classify`` directory:
 
-*   **`summary`**: Contains intermediate files with summary statistics if re-calculated or referenced.
-*   **`select`**: Stores the input profiles after any initial filtering. In classification, this typically includes all profiles you want to classify.
-*   **`locate`**: Contains all observation records that proceeded through the pipeline, often after proximity-based selection for feature generation.
-*   **`extract`**: Holds the features extracted from the observation records, transformed consistently with how the model was trained.
-*   **`classify`**: This is the final output directory. It contains:
+*   **classify**: This is the final output directory for the workflow. It contains:
 
-    *   A `.parquet` file with the original input data, augmented with new columns for the model's predictions (e.g., `temp_prediction`) and prediction probabilities (e.g., `temp_probability`).
+    *   A ``.parquet`` file with the original input data augmented with new columns for the model's predictions (e.g., ``temp_prediction``) and prediction probabilities (e.g., ``temp_probability``).
     *   A summary report detailing the classification results.
 
+Other intermediate folders (``summary``, ``select``, ``locate``, ``extract``) are also created, mirroring the process used during data preparation to ensure consistency.
+
 Conclusion
-----------
+--------------
 
-Congratulations! You have successfully completed the entire ``dmqclib`` workflow, from raw data preparation to training a machine learning model and then using it to generate predictions on new data.
+Congratulations! You have successfully completed the entire ``dmqclib`` workflow, from raw data preparation to training a machine learning model and using it to generate predictions on new data.
 
-You now have a powerful, repeatable, and configurable pipeline for your machine learning tasks. You can easily adapt the configuration files to process new datasets, experiment with different models and features, or integrate this into larger automated workflows.
-
+You now have a powerful, repeatable, and configurable pipeline for your machine learning tasks. You can easily adapt the configuration files to process new datasets, experiment with different models, or integrate this pipeline into larger automated workflows.
