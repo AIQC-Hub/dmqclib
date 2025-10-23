@@ -1,7 +1,7 @@
 Feature Normalization
 ===========================
 
-This guide provides practical examples of how to normalize feature values by specifying the required entries in configuration files. Although ``dmqclib`` uses `XGBoost` by default, which does not require normalized feature values, other non–tree-based machine learning methods, such as `SVM`, do require feature normalization for their input data.
+This guide provides practical examples of how to normalize feature values by specifying the required entries in configuration files. Although ``dmqclib`` uses ``XGBoost`` by default, which does not require normalized feature values, other non–tree-based machine learning methods, such as ``SVM``, do require feature normalization for their input data.
 
 Required Steps
 ---------------------------
@@ -13,7 +13,7 @@ Required Steps
 Generate the Configuration Template
 -------------------------------------
 
-First, use ``dmqclib`` to generate the boilerplate configuration templates specifically for the `prepare` and `classify` workflows.
+First, use ``dmqclib`` to generate the boilerplate configuration templates specifically for the ``prepare`` and ``classify`` workflows.
 
 .. code-block:: python
 
@@ -38,7 +38,7 @@ First, use ``dmqclib`` to generate the boilerplate configuration templates speci
 
 Calculate Summary Statistics
 -------------------------------------
-The following Python commands, utilizing ``dmqclib``, can provide all necessary information to update the values in `summary_stats_sets` based on your actual data:
+The following Python commands, utilizing ``dmqclib``, can provide all necessary information to update the values in ``summary_stats_sets`` based on your actual data:
 
 .. code-block:: python
 
@@ -54,19 +54,19 @@ The following Python commands, utilizing ``dmqclib``, can provide all necessary 
 
 Set Entries in the Configuration Files
 ---------------------------------------
-Entries in the `feature_param_sets` and `feature_stats_sets` sections in both `prepare_config.yaml` and `classification_config.yaml` need to be updated.
+Entries in the ``feature_param_sets`` and ``feature_stats_sets`` sections in both ``prepare_config.yaml`` and ``classification_config.yaml`` need to be updated.
 
 `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-*   **`params.stats_set.type`**: ``dmqclib`` currently provides only the `min_max` normalization.
-*   **`params.stats_set.name`**: The name of the normalization values that should be matched with the entry in `feature_param_sets`.
+*   **params.stats_set.type**: ``dmqclib`` currently provides only the ``min_max`` normalization.
+*   **params.stats_set.name**: The name of the normalization values that should be matched with the entry in ``feature_param_sets``.
 
 .. code-block:: yaml
    :emphasize-lines: 5, 11, 15, 19, 23
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: min_max, name: location }
@@ -74,8 +74,8 @@ Entries in the `feature_param_sets` and `feature_stats_sets` sections in both `p
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
-           stats_set: { type: min_max,  name: profile_summary_stats5 }
+         - feature: profile_summary_stats
+           stats_set: { type: min_max,  name: profile_summary_stats }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
          - feature: basic_values
@@ -93,7 +93,7 @@ Entries in the `feature_param_sets` and `feature_stats_sets` sections in both `p
 `feature_stats_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You need to update the stats values in the configuration files based on the results from `dm.get_summary_stats` and `dm.format_summary_stats`.
+You need to update the stats values in the configuration files based on the results from ``dm.get_summary_stats`` and ``dm.format_summary_stats``.
 
 .. code-block:: yaml
 
@@ -103,7 +103,7 @@ You need to update the stats values in the configuration files based on the resu
          - name: location
            stats: { longitude: { min: 14.5, max: 23.5 },
                     latitude: { min: 55, max: 66 } }
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            stats: { temp: { mean: { min: 0, max: 12.5 },
                             median: { min: 0, max: 15 },
                             sd: { min: 0, max: 6.5 },

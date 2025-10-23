@@ -1,8 +1,8 @@
 Configuration of Training & Evaluation
 ========================================
-The `train` workflow (`stage="train"`) is responsible for orchestrating the machine learning model building process. It takes the prepared dataset (the output from the `prepare` workflow) and handles critical steps such as cross-validation, actual model training, and final evaluation on a held-out test set.
+The ``train`` workflow (``stage="train"``) is responsible for orchestrating the machine learning model building process. It takes the prepared dataset (the output from the ``prepare`` workflow) and handles critical steps such as cross-validation, actual model training, and final evaluation on a held-out test set.
 
-While the `prepare` workflow focuses on complex data transformation and feature engineering, the `train` configuration is generally simpler. Its primary role is to leverage the "building blocks" concept to specify:
+While the ``prepare`` workflow focuses on complex data transformation and feature engineering, the ``train`` configuration is generally simpler. Its primary role is to leverage the "building blocks" concept to specify:
 
 *   The machine learning model to be used.
 *   The chosen validation strategy (e.g., k-fold cross-validation).
@@ -13,10 +13,10 @@ Detailed Configuration Sections
 
 `path_info_sets`
 ^^^^^^^^^^^^^^^^
-This section is crucial for linking the training workflow to the prepared datasets from the previous `prepare` stage and defining where to save the resulting trained models.
+This section is crucial for linking the training workflow to the prepared datasets from the previous ``prepare`` stage and defining where to save the resulting trained models.
 
-*   **`common.base_path`**: The root directory where the prepared dataset (output from the `prepare` workflow) is located. This typically corresponds to the `common.base_path` defined in your `prepare_config.yaml`.
-*   **`input.step_folder_name`**: The name of the subdirectory within the prepared dataset's folder where the final training/validation/test splits are located (e.g., `training`).
+*   **common.base_path**: The root directory where the prepared dataset (output from the ``prepare`` workflow) is located. This typically corresponds to the ``common.base_path`` defined in your ``prepare_config.yaml``.
+*   **input.step_folder_name**: The name of the subdirectory within the prepared dataset's folder where the final training/validation/test splits are located (e.g., ``training``).
 
 .. code-block:: yaml
 
@@ -29,12 +29,12 @@ This section is crucial for linking the training workflow to the prepared datase
 
 `target_sets`
 ^^^^^^^^^^^^^
-Similar to the `prepare` workflow, this section specifies the target variables for your machine learning model. It ensures that the training process correctly identifies which column represents the prediction target and understands its associated quality control (QC) flags, which are often used to filter or weight data during training.
+Similar to the ``prepare`` workflow, this section specifies the target variables for your machine learning model. It ensures that the training process correctly identifies which column represents the prediction target and understands its associated quality control (QC) flags, which are often used to filter or weight data during training.
 
 .. code-block:: yaml
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -45,10 +45,10 @@ Similar to the `prepare` workflow, this section specifies the target variables f
 ^^^^^^^^^^^^^^^^^
 This powerful section allows you to define the core components of your training pipeline by specifying the Python classes to use for each major step. This is where you choose your machine learning model, the cross-validation method, and other pipeline components.
 
-*   **`input`**: The class responsible for ingesting the prepared training, validation, and test datasets.
-*   **`validate`**: The class defining the cross-validation strategy (e.g., `KFoldValidation`, `TimeSeriesValidation`).
-*   **`model`**: The class for the machine learning algorithm to be trained (e.g., `XGBoost`, `RandomForest`).
-*   **`build`**: The class that handles the final model training on the full training set and saving the model artifacts.
+*   **input**: The class responsible for ingesting the prepared training, validation, and test datasets.
+*   **validate**: The class defining the cross-validation strategy (e.g., ``KFoldValidation``, ``TimeSeriesValidation``).
+*   **model**: The class for the machine learning algorithm to be trained (e.g., ``XGBoost``, ``RandomForest``).
+*   **build**: The class that handles the final model training on the full training set and saving the model artifacts.
 
 .. code-block:: yaml
 
@@ -62,12 +62,12 @@ This powerful section allows you to define the core components of your training 
 
 `step_param_sets`
 ^^^^^^^^^^^^^^^^^
-This section provides detailed parameters for the classes defined in your chosen `step_class_sets`. This allows you to fine-tune the behavior of each step, such as specifying the number of folds for cross-validation or providing hyperparameters for your machine learning model.
+This section provides detailed parameters for the classes defined in your chosen ``step_class_sets``. This allows you to fine-tune the behavior of each step, such as specifying the number of folds for cross-validation or providing hyperparameters for your machine learning model.
 
-*   **`input`**: Parameters for the input data loading step (often empty or simple flags).
-*   **`validate.k_fold`**: For `KFoldValidation`, specifies the number of folds for cross-validation.
-*   **`model.model_params.scale_pos_weight`**: An example parameter for an XGBoost model. This is used to address imbalanced datasets by weighting the positive class. For example, `200` indicates a ratio of negative to positive records of 200:1.
-*   **`build`**: Parameters for the final model building step (often empty or simple flags for saving).
+*   **input**: Parameters for the input data loading step (often empty or simple flags).
+*   **validate.k_fold**: For ``KFoldValidation``, specifies the number of folds for cross-validation.
+*   **model.model_params.scale_pos_weight**: An example parameter for an XGBoost model. This is used to address imbalanced datasets by weighting the positive class. For example, ``200`` indicates a ratio of negative to positive records of 200:1.
+*   **build**: Parameters for the final model building step (often empty or simple flags for saving).
 
 .. code-block:: yaml
 
@@ -83,11 +83,11 @@ This section provides detailed parameters for the classes defined in your chosen
 ^^^^^^^^^^^^^^^^^
 This is the main "assembly" section that defines a complete training and evaluation job. Each entry in this list orchestrates a unique training run by linking together the prepared dataset with the specific path, target variable, and step configurations (classes and parameters).
 
-*   **`name`**: A unique identifier for this particular training job.
-*   **`dataset_folder_name`**: The name of the specific folder (created by the `prepare` workflow) containing the prepared data for this job (e.g., `dataset_0001`).
-*   **`path_info`**: The `name` of the path configuration to use from `path_info_sets`.
-*   **`target_set`**: The `name` of the target variable configuration to use from `target_sets`.
-*   **`step_class_set`** & **`step_param_set`**: The `name` of the step class and parameter configurations to use, respectively.
+*   **name**: A unique identifier for this particular training job.
+*   **dataset_folder_name**: The name of the specific folder (created by the ``prepare`` workflow) containing the prepared data for this job (e.g., ``dataset_0001``).
+*   **path_info**: The ``name`` of the path configuration to use from ``path_info_sets``.
+*   **target_set**: The ``name`` of the target variable configuration to use from ``target_sets``.
+*   **step_class_set** & **step_param_set**: The ``name`` of the step class and parameter configurations to use, respectively.
 
 .. code-block:: yaml
 
@@ -95,17 +95,17 @@ This is the main "assembly" section that defines a complete training and evaluat
      - name: training_0001
        dataset_folder_name: dataset_0001
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        step_class_set: training_step_set_1
        step_param_set: training_param_set_1
 
 .. note::
-   While you can define multiple training sets in the `training_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
+   While you can define multiple training sets in the ``training_sets`` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
 
 Full Example
 ------------
 
-Below is a complete example of a `training_config.yaml` file. The lines you will most commonly need to edit or customize are highlighted for quick reference.
+Below is a complete example of a ``training_config.yaml`` file. The lines you will most commonly need to edit or customize are highlighted for quick reference.
 
 .. code-block:: yaml
    :caption: Full training_config.yaml example
@@ -120,7 +120,7 @@ Below is a complete example of a `training_config.yaml` file. The lines you will
          step_folder_name: training
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -155,6 +155,6 @@ Below is a complete example of a `training_config.yaml` file. The lines you will
      - name: training_0001  # A unique name for this training job
        dataset_folder_name: dataset_0001  # The folder name containing the prepared data for this job
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        step_class_set: training_step_set_1
        step_param_set: training_param_set_1

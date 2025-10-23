@@ -1,6 +1,6 @@
 Configuration of Dataset Preparation
 ======================================
-The `prepare` workflow (`stage="prepare"`) is central to setting up your data for machine learning tasks within this library. It provides comprehensive control over the entire data processing pipeline, from  preparing feature data sets from your raw data and creating the training, validation, and test data sets.
+The ``prepare`` workflow (``stage="prepare"``) is central to setting up your data for machine learning tasks within this library. It provides comprehensive control over the entire data processing pipeline, from  preparing feature data sets from your raw data and creating the training, validation, and test data sets.
 
 Core Concepts: Modular Configuration
 ------------------------------------
@@ -8,15 +8,15 @@ The configuration for dataset preparation is designed around a powerful "buildin
 
 The primary configuration sections (building blocks) are:
 
-*   **`path_info_sets`**: Defines reusable directory structures for input data and processed outputs.
-*   **`target_sets`**: Specifies the prediction target variables, including their quality control (QC) flags.
-*   **`summary_stats_sets`**: Configures summary statistics.
-*   **`feature_sets`**: (**Advanced**) Lists the specific feature engineering methods to be applied.
-*   **`feature_param_sets`**: Provides detailed parameters and settings for each chosen feature engineering method.
-*   **`feature_stats_sets`**: (**Advanced**) Provides summary statistics values for normalizing features.
-*   **`step_class_sets`**: (**Advanced**) Allows users to define custom Python classes for individual processing steps, enabling deep customization of the pipeline's behavior.
-*   **`step_param_sets`**: Supplies general parameters that control the behavior of the default or custom processing steps.
-*   **`data_sets`**: The central assembly section, where you combine named blocks from the sections above to define a complete and executable data processing pipeline.
+*   **path_info_sets**: Defines reusable directory structures for input data and processed outputs.
+*   **target_sets**: Specifies the prediction target variables, including their quality control (QC) flags.
+*   **summary_stats_sets**: Configures summary statistics.
+*   **feature_sets**: (**Advanced**) Lists the specific feature engineering methods to be applied.
+*   **feature_param_sets**: Provides detailed parameters and settings for each chosen feature engineering method.
+*   **feature_stats_sets**: (**Advanced**) Provides summary statistics values for normalizing features.
+*   **step_class_sets**: (**Advanced**) Allows users to define custom Python classes for individual processing steps, enabling deep customization of the pipeline's behavior.
+*   **step_param_sets**: Supplies general parameters that control the behavior of the default or custom processing steps.
+*   **data_sets**: The central assembly section, where you combine named blocks from the sections above to define a complete and executable data processing pipeline.
 
 Detailed Configuration Sections
 -------------------------------
@@ -25,9 +25,9 @@ Detailed Configuration Sections
 ^^^^^^^^^^^^^^^^
 This section defines the critical file system locations for both your raw input data and the various processed output artifacts. You can define multiple named path configurations to easily switch between different storage environments or project setups.
 
-*   **`common.base_path`**: The root directory where all processed data and intermediate artifacts will be saved by this workflow.
-*   **`input.base_path`**: The directory containing your raw input data files.
-*   **`split.step_folder_name`**: The name of the subdirectory where the final training, validation, and test datasets will be stored (e.g., `training`).
+*   **common.base_path**: The root directory where all processed data and intermediate artifacts will be saved by this workflow.
+*   **input.base_path**: The directory containing your raw input data files.
+*   **split.step_folder_name**: The name of the subdirectory where the final training, validation, and test datasets will be stored (e.g., `training`).
 
 .. code-block:: yaml
 
@@ -48,7 +48,7 @@ This section specifies the target variables that your machine learning model wil
 .. code-block:: yaml
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -66,23 +66,23 @@ This section defines summary statistics that will be used for feature values or 
        stats:
          - name: location
            col_names: [ longitude, latitude ]
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            col_names: [ temp, psal, pres ]
          - name: basic_values3
            col_names: [ temp, psal, pres ]
 
 ``dmqclib`` currently provides the following summary statistics.
 
-*   **`location`**: global summary statistics of locations for feature normalization.
-*   **`profile_summary_stats5`**: profile level summary statistics used as features and for feature normalization.
-*   **`basic_values3`**: global summary statistics of specified variables for feature normalization.
+*   **location**: global summary statistics of locations for feature normalization.
+*   **profile_summary_stats**: profile level summary statistics used as features and for feature normalization.
+*   **basic_values3**: global summary statistics of specified variables for feature normalization.
 
 `feature_sets` & `feature_param_sets`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 These two interconnected sections are dedicated to configuring your feature engineering process.
 
-*   **`feature_sets`**: This block lists the *names* of the specific feature engineering methods you want to apply to your data.
-*   **`feature_param_sets`**: This block provides the detailed parameters and configurations for each of the feature methods listed in your chosen `feature_sets` block. This allows for fine-grained control over how each feature is generated.
+*   **feature_sets**: This block lists the *names* of the specific feature engineering methods you want to apply to your data.
+*   **feature_param_sets**: This block provides the detailed parameters and configurations for each of the feature methods listed in your chosen ``feature_sets`` block. This allows for fine-grained control over how each feature is generated.
 
 .. code-block:: yaml
 
@@ -92,14 +92,14 @@ These two interconnected sections are dedicated to configuring your feature engi
        features:
          - location
          - day_of_year
-         - profile_summary_stats5
+         - profile_summary_stats
          - basic_values
          - flank_up
          - flank_down
 
    # Parameters for the features listed above
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: raw }
@@ -107,7 +107,7 @@ These two interconnected sections are dedicated to configuring your feature engi
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
+         - feature: profile_summary_stats
            stats_set: { type: raw }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
@@ -141,7 +141,7 @@ This section defines summary statistics that will be used for normalization or s
 `step_class_sets`
 ^^^^^^^^^^^^^^^^^
 (**Advanced Use**)
-This section allows you to define and reference custom Python classes that implement the logic for specific processing steps within the data preparation pipeline. While the library provides default implementations for all steps, this block gives advanced users the flexibility to replace or extend pipeline behaviors with their own code. Each entry maps a step name (e.g., `input`, `summary`) to the name of a Python class.
+This section allows you to define and reference custom Python classes that implement the logic for specific processing steps within the data preparation pipeline. While the library provides default implementations for all steps, this block gives advanced users the flexibility to replace or extend pipeline behaviors with their own code. Each entry maps a step name (e.g., ``input``, ``summary``) to the name of a Python class.
 
 .. code-block:: yaml
 
@@ -157,13 +157,13 @@ This section allows you to define and reference custom Python classes that imple
 
 `step_param_sets`
 ^^^^^^^^^^^^^^^^^
-This section provides general parameters that control the behavior of the various data processing steps within the pipeline (whether default or custom `step_class_sets`). Examples of parameters include data filtering rules, sampling ratios, and split configurations.
+This section provides general parameters that control the behavior of the various data processing steps within the pipeline (whether default or custom ``step_class_sets``). Examples of parameters include data filtering rules, sampling ratios, and split configurations.
 
-*   **`steps.input.sub_steps.filter_rows`**: A boolean flag to enable/disable row filtering based on `filter_method_dict`..
-*   **`steps.input.filter_method_dict.remove_years`**: Specifies a list of years to be excluded from the dataset.
-*   **`steps.input.filter_method_dict.keep_years`**: Specifies a list of years to be kept for training.
-*   **`steps.select.neg_pos_ratio`**: Controls the ratio of negative to positive samples (e.g., for imbalanced datasets).
-*   **`steps.split.test_set_fraction`**: Defines the proportion of data to allocate to the test set.
+*   **steps.input.sub_steps.filter_rows**: A boolean flag to enable/disable row filtering based on ``filter_method_dict``.
+*   **steps.input.filter_method_dict.remove_years**: Specifies a list of years to be excluded from the dataset.
+*   **steps.input.filter_method_dict.keep_years**: Specifies a list of years to be kept for training.
+*   **steps.select.neg_pos_ratio**: Controls the ratio of negative to positive samples (e.g., for imbalanced datasets).
+*   **steps.split.test_set_fraction**: Defines the proportion of data to allocate to the test set.
 
 .. code-block:: yaml
 
@@ -186,11 +186,11 @@ This section provides general parameters that control the behavior of the variou
 ^^^^^^^^^^^
 This is the main "pipeline assembly" section. Each entry in this list defines a complete data preparation job by linking together the named building blocks defined in the other sections. This section essentially orchestrates which specific configuration sets are used for a given dataset processing run.
 
-*   **`name`**: A unique identifier for this particular dataset preparation job (e.g., `dataset_0001`).
-*   **`dataset_folder_name`**: The name of the specific folder that will be created within the `common.base_path` to store outputs for this job (e.g., `dataset_0001`).
-*   **`input_file_name`**: The specific raw data file (located in `input.base_path`) to be processed for this job.
-*   **`path_info`**: The `name` of the path configuration to use from `path_info_sets`.
-*   **`target_set`**: The `name` of the target configuration to use from `target_sets`.
+*   **name**: A unique identifier for this particular dataset preparation job (e.g., ``dataset_0001``).
+*   **dataset_folder_name**: The name of the specific folder that will be created within the ``common.base_path`` to store outputs for this job (e.g., ``dataset_0001``).
+*   **input_file_name**: The specific raw data file (located in ``input.base_path``) to be processed for this job.
+*   **path_info**: The ``name`` of the path configuration to use from ``path_info_sets``.
+*   **target_set**: The ``name`` of the target configuration to use from ``target_sets``.
 *   ...and similarly for all other configuration sets.
 
 .. code-block:: yaml
@@ -200,16 +200,16 @@ This is the main "pipeline assembly" section. Each entry in this list defines a 
        dataset_folder_name: dataset_0001
        input_file_name: nrt_cora_bo_4.parquet
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        # ... other set references would follow here
 
 .. note::
-   While you can define multiple data sets in the `data_sets` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
+   While you can define multiple data sets in the ``data_sets`` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
 
 Full Example
 ------------
 
-Below is a complete example of a `prepare_config.yaml` file, demonstrating how all the building blocks are combined. The lines you will most commonly need to edit or customize are highlighted for quick reference.
+Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how all the building blocks are combined. The lines you will most commonly need to edit or customize are highlighted for quick reference.
 
 .. code-block:: yaml
    :caption: Full prepare_config.yaml example
@@ -227,7 +227,7 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
          step_folder_name: training
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -247,7 +247,7 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
        stats:
          - name: location
            col_names: [ longitude, latitude ]
-         - name: profile_summary_stats5
+         - name: profile_summary_stats
            col_names: [ temp, psal, pres ]
          - name: basic_values3
            col_names: [ temp, psal, pres ]
@@ -257,13 +257,13 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
        features:
          - location
          - day_of_year
-         - profile_summary_stats5
+         - profile_summary_stats
          - basic_values
          - flank_up
          - flank_down
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: raw }
@@ -271,7 +271,7 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
          - feature: day_of_year
            convert: sine
            col_names: [ profile_timestamp ]
-         - feature: profile_summary_stats5
+         - feature: profile_summary_stats
            stats_set: { type: raw }
            col_names: [ temp, psal, pres ]
            summary_stats_names: [ mean, median, sd, pct25, pct75 ]
@@ -320,10 +320,10 @@ Below is a complete example of a `prepare_config.yaml` file, demonstrating how a
        dataset_folder_name: dataset_0001  # The folder name for output files
        input_file_name: nrt_cora_bo_4.parquet # The specific raw input file to process
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        summary_stats_set: summary_stats_set_1
        feature_set: feature_set_1
-       feature_param_set: feature_set_1_param_set_3
+       feature_param_set: feature_set_1_param_set_1
        feature_stats_set: feature_set_1_stats_set_1
        step_class_set: data_set_step_set_1
        step_param_set: data_set_param_set_1

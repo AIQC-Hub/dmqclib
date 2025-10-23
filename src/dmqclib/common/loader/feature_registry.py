@@ -17,7 +17,7 @@ from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.flank_down import FlankDown
 from dmqclib.prepare.features.flank_up import FlankUp
 from dmqclib.prepare.features.location import LocationFeat
-from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
+from dmqclib.prepare.features.profile_summary import ProfileSummaryStats
 
 #: A dictionary mapping feature identifiers (str) to classes that inherit
 #: from :class:`FeatureBase`. These classes are dynamically loaded based
@@ -25,7 +25,7 @@ from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
 FEATURE_REGISTRY: Dict[str, Type[FeatureBase]] = {
     "location": LocationFeat,
     "day_of_year": DayOfYearFeat,
-    "profile_summary_stats5": ProfileSummaryStats5,
+    "profile_summary_stats": ProfileSummaryStats,
     "basic_values": BasicValues,
     "flank_up": FlankUp,
     "flank_down": FlankDown,

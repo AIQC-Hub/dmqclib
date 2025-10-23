@@ -38,7 +38,12 @@ Basic Usage: The Three-Stage Workflow
        # Load the classification (inference) configuration
        classification_config = dm.read_config("/path/to/classification_config.yaml")
        # Classify the new dataset using the trained model
-       dm.classify_dataset(classification_config) # Corrected variable name from `classify_config`
+       dm.classify_dataset(classification_config)
+
+Objectives
+-----------------------------
+
+You will learn how to run all three stages of ``dmqclib`` by creating stage-specific configuration files. This tutorial lets you create three classifiers for ``temp`` (temperature), ``psal`` (salinity), and ``pres`` (pressure) to predict QC labels for the corresponding variables.
 
 Next Steps
 ----------

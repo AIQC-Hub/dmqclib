@@ -177,7 +177,7 @@ class TestClassifyDataSetNegX5(unittest.TestCase):
             "concat": {"step_folder_name": "classify"},
         }
 
-    def __tearDown(self):
+    def tearDown(self):
         """
         Clean up the test environment by removing any generated output folders
         and files after each test method has completed.

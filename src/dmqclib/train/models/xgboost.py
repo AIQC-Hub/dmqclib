@@ -126,7 +126,9 @@ class XGBoost(ModelBase):
             raise ValueError("Member variable 'test_set' must not be empty.")
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
-        self.predictions = pl.DataFrame({"predicted": self.model.predict(x_test)})
+
+        self.predictions = pl.DataFrame({"class": self.model.predict(x_test),
+                                         "score": self.model.predict_proba(x_test)[:, 1]})
 
     def create_report(self) -> None:
         """
@@ -151,7 +153,7 @@ class XGBoost(ModelBase):
             raise ValueError("Member variable 'predictions' must not be empty.")
 
         y_test = self.test_set["label"].to_pandas()
-        y_pred = self.predictions["predicted"].to_pandas()
+        y_pred = self.predictions["class"].to_pandas()
 
         # A single call to classification_report gets us almost everything we need.
         classification_dict = classification_report(
