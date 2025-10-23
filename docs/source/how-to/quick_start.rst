@@ -4,7 +4,7 @@ Quick Start
 This guide demonstrates how to run the entire machine learning process with minimal configuration.
 
 .. note::
-   This is a condensed version of the tutorial provided in the "Tutorial" section. See the :doc:`../tutorial/overview` for more comprehensive explanations.
+   This is a condensed version of the tutorial provided in the "Getting Started" section. See the :doc:`../tutorial/overview` in the "Getting Started" section for more comprehensive explanations.
 
 Objectives
 -----------------------------
