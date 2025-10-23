@@ -33,7 +33,7 @@ target_sets:
         flag: psal_qc
         pos_flag_values: [ 4, ]
         neg_flag_values: [ 1, ]
-  - name: target_set_1_3
+  - name: target_set_1
     variables:
       - name: temp
         flag: temp_qc
@@ -53,7 +53,7 @@ summary_stats_sets:
     stats:
       - name: location
         col_names: [ longitude, latitude ]
-      - name: profile_summary_stats5
+      - name: profile_summary_stats
         col_names: [ temp, psal, pres ]
       - name: basic_values3
         col_names: [ temp, psal, pres ]
@@ -63,13 +63,13 @@ feature_sets:
     features:
       - location
       - day_of_year
-      - profile_summary_stats5
+      - profile_summary_stats
       - basic_values
       - flank_up
       - flank_down
 
 feature_param_sets:
-  - name: feature_set_1_param_set_3
+  - name: feature_set_1_param_set_1
     params:
       - feature: location
         stats_set: { type: raw }
@@ -77,7 +77,7 @@ feature_param_sets:
       - feature: day_of_year
         convert: sine
         col_names: [ profile_timestamp ]
-      - feature: profile_summary_stats5
+      - feature: profile_summary_stats
         stats_set: { type: raw }
         col_names: [ temp, psal, pres ]
         summary_stats_names: [ mean, median, sd, pct25, pct75 ]
@@ -139,10 +139,10 @@ classification_sets:
     dataset_folder_name: nrt_bo_001
     input_file_name: nrt_cora_bo_test.parquet
     path_info: data_set_1
-    target_set: target_set_1_3
+    target_set: target_set_1
     summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
-    feature_param_set: feature_set_1_param_set_3
+    feature_param_set: feature_set_1_param_set_1
     feature_stats_set: feature_set_1_stats_set_1
     step_class_set: data_set_step_set_1
     step_param_set: data_set_param_set_1

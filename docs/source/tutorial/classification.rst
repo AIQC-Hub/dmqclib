@@ -74,10 +74,10 @@ Update your ``classification_config.yaml`` file to match the following. Remember
         dataset_folder_name: dataset_0001  # This MUST match the dataset_folder_name used during preparation and training
         input_file_name: nrt_cora_bo_4.parquet   # The specific raw input filename to classify
         path_info: data_set_1
-        target_set: target_set_1_3
+        target_set: target_set_1
         summary_stats_set: summary_stats_set_1
         feature_set: feature_set_1
-        feature_param_set: feature_set_1_param_set_3
+        feature_param_set: feature_set_1_param_set_1
         step_class_set: data_set_step_set_1
         step_param_set: data_set_param_set_1
 

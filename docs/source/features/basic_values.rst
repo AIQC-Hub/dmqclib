@@ -26,7 +26,7 @@ The ``basic_values`` feature requires two mandatory parameters: ``col_names`` an
 .. code-block:: yaml
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: basic_values
            col_names: [ temp, psal, pres ]

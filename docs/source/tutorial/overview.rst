@@ -38,7 +38,7 @@ Basic Usage: The Three-Stage Workflow
        # Load the classification (inference) configuration
        classification_config = dm.read_config("/path/to/classification_config.yaml")
        # Classify the new dataset using the trained model
-       dm.classify_dataset(classification_config) # Corrected variable name from `classify_config`
+       dm.classify_dataset(classification_config)
 
 Objectives
 -----------------------------

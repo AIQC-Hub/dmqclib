@@ -7,7 +7,7 @@ path_info_sets:
       step_folder_name: training
 
 target_sets:
-  - name: target_set_1_3
+  - name: target_set_1
     variables:
       - name: temp
         flag: temp_qc
@@ -42,6 +42,6 @@ training_sets:
   - name: training_0001  # EDIT: Your training name
     dataset_folder_name: dataset_0001  # EDIT: Your output folder
     path_info: data_set_1
-    target_set: target_set_1_3
+    target_set: target_set_1
     step_class_set: training_step_set_1
     step_param_set: training_param_set_1

@@ -1,4 +1,4 @@
-The Day of the Year
+Day of the Year
 =================================
 
 The ``day_of_year`` feature is a profile-level feature that represents the day of the year on which the profile was sampled. All observations belonging to the same profile generally have the same ``day_of_year`` feature value. In the current version of the library, only the ``profile_timestamp`` data can be used to produce this feature.
@@ -26,7 +26,7 @@ The ``day_of_year`` feature accepts two parameters: ``col_names`` and ``convert`
 .. code-block:: yaml
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: day_of_year
            col_names: [ profile_timestamp ]
