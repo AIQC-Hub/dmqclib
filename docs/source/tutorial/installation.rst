@@ -91,14 +91,19 @@ This makes the ``uv`` command available globally without cluttering your ``base`
 
     source .venv/bin/activate
 
-
-**Step 5: Install the project and its development dependencies**
-
-This command installs the library in "editable" mode (``-e``) and pulls in all dependencies from the ``dev`` group defined in ``pyproject.toml``.
+**Step 5: Install the dependencies**
 
 .. code-block:: bash
 
-    uv pip install -e ".[dev]"
+    uv sync
+
+**Step 6: Install the project**
+
+This command installs the library in "editable" mode (``-e``).
+
+.. code-block:: bash
+
+    uv pip install -e .
 
 Next Steps
 ----------

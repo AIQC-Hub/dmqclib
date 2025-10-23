@@ -1,4 +1,4 @@
-The Day of the Year
+Day of the Year
 =================================
 
 The ``day_of_year`` feature is a profile-level feature that represents the day of the year on which the profile was sampled. All observations belonging to the same profile generally have the same ``day_of_year`` feature value. In the current version of the library, only the ``profile_timestamp`` data can be used to produce this feature.

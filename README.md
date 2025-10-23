@@ -235,11 +235,12 @@ We recommend using **uv** for managing the development environment.
     source .venv/bin/activate
     ```
 
-3.  **Install the project and its development dependencies.**
-    This command installs the library in "editable" mode (`-e`) and pulls in all dependencies from the `dev` group defined in `pyproject.toml`.
+3.  **Install the project and its dependencies.**
+    This command installs the library in "editable" mode (`-e`) and pulls in all dependencies from `pyproject.toml`.
 
     ```bash
-    uv pip install -e ".[dev]"
+    uv sync
+    uv pip install -e .
     ```
 
 ### Running Tests
