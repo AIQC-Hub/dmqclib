@@ -50,7 +50,7 @@ The ``profile_summary_stats`` feature requires three mandatory parameters: ``col
 .. code-block:: yaml
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: profile_summary_stats
            col_names: [ temp, psal, pres ]

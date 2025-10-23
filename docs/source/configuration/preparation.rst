@@ -48,7 +48,7 @@ This section specifies the target variables that your machine learning model wil
 .. code-block:: yaml
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -99,7 +99,7 @@ These two interconnected sections are dedicated to configuring your feature engi
 
    # Parameters for the features listed above
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: raw }
@@ -200,7 +200,7 @@ This is the main "pipeline assembly" section. Each entry in this list defines a 
        dataset_folder_name: dataset_0001
        input_file_name: nrt_cora_bo_4.parquet
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        # ... other set references would follow here
 
 .. note::
@@ -227,7 +227,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
          step_folder_name: training
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -263,7 +263,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
          - flank_down
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: raw }
@@ -320,10 +320,10 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
        dataset_folder_name: dataset_0001  # The folder name for output files
        input_file_name: nrt_cora_bo_4.parquet # The specific raw input file to process
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        summary_stats_set: summary_stats_set_1
        feature_set: feature_set_1
-       feature_param_set: feature_set_1_param_set_3
+       feature_param_set: feature_set_1_param_set_1
        feature_stats_set: feature_set_1_stats_set_1
        step_class_set: data_set_step_set_1
        step_param_set: data_set_param_set_1

@@ -47,7 +47,7 @@ While the classification workflow is applying a pre-trained model, this section 
 .. code-block:: yaml
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -93,7 +93,7 @@ These two sections are critical for ensuring that the new input data is transfor
 
    # Parameters for the features listed above
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: raw }
@@ -207,7 +207,7 @@ This is the main "assembly" section that defines a complete classification job. 
        dataset_folder_name: dataset_0001
        input_file_name: nrt_cora_bo_4.parquet
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        # ... other set references would follow here
 
 .. note::
@@ -237,7 +237,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
          step_folder_name: classify # Subdirectory for final classification results
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -273,7 +273,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
          - flank_down
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: raw }
@@ -333,10 +333,10 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
        dataset_folder_name: dataset_0001  # Folder name for intermediate/output files for this job
        input_file_name: nrt_cora_bo_4.parquet   # The raw input filename to classify
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        summary_stats_set: summary_stats_set_1
        feature_set: feature_set_1
-       feature_param_set: feature_set_1_param_set_3
+       feature_param_set: feature_set_1_param_set_1
        feature_stats_set: feature_set_1_stats_set_1
        step_class_set: data_set_step_set_1
        step_param_set: data_set_param_set_1

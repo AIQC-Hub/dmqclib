@@ -26,7 +26,7 @@ The ``location`` feature requires two mandatory parameters: ``col_names`` and ``
 .. code-block:: yaml
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            col_names: [ longitude, latitude ]

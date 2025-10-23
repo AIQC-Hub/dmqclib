@@ -93,7 +93,7 @@ Modify the file to align with the following structure. Remember to replace place
       - name: training_0001  # A unique name for this training job
         dataset_folder_name: dataset_0001  # This MUST match the dataset_folder_name from your preparation config
         path_info: data_set_1
-        target_set: target_set_1_3 # This needs to match a 'target_set' defined in your prepare_config.yaml
+        target_set: target_set_1 # This needs to match a 'target_set' defined in your prepare_config.yaml
         step_class_set: training_step_set_1
         step_param_set: training_param_set_1
 

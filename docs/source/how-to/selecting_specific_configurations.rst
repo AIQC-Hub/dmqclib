@@ -15,13 +15,13 @@ Consider a ``prepare_config.yaml`` file that defines multiple ``data_sets``, suc
        dataset_folder_name: dataset_0001
        input_file_name: nrt_cora_bo_4.parquet
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        # ... other set references would follow here
      - name: dataset_0002
        dataset_folder_name: dataset_0002
        input_file_name: nrt_cora_bo_5.parquet
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        # ... other set references would follow here
 
 To use a specific data set from these defined options for your data preparation stage, pass its ``name`` to the ``set_name`` parameter of the ``dm.read_config`` function.

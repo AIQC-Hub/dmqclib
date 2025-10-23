@@ -66,7 +66,7 @@ Entries in the ``feature_param_sets`` and ``feature_stats_sets`` sections in bot
    :emphasize-lines: 5, 11, 15, 19, 23
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: location
            stats_set: { type: min_max, name: location }

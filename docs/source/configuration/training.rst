@@ -34,7 +34,7 @@ Similar to the ``prepare`` workflow, this section specifies the target variables
 .. code-block:: yaml
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -95,7 +95,7 @@ This is the main "assembly" section that defines a complete training and evaluat
      - name: training_0001
        dataset_folder_name: dataset_0001
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        step_class_set: training_step_set_1
        step_param_set: training_param_set_1
 
@@ -120,7 +120,7 @@ Below is a complete example of a ``training_config.yaml`` file. The lines you wi
          step_folder_name: training
 
    target_sets:
-     - name: target_set_1_3
+     - name: target_set_1
        variables:
          - name: temp
            flag: temp_qc
@@ -155,6 +155,6 @@ Below is a complete example of a ``training_config.yaml`` file. The lines you wi
      - name: training_0001  # A unique name for this training job
        dataset_folder_name: dataset_0001  # The folder name containing the prepared data for this job
        path_info: data_set_1
-       target_set: target_set_1_3
+       target_set: target_set_1
        step_class_set: training_step_set_1
        step_param_set: training_param_set_1

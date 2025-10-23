@@ -26,7 +26,7 @@ The ``day_of_year`` feature accepts two parameters: ``col_names`` and ``convert`
 .. code-block:: yaml
 
    feature_param_sets:
-     - name: feature_set_1_param_set_3
+     - name: feature_set_1_param_set_1
        params:
          - feature: day_of_year
            col_names: [ profile_timestamp ]

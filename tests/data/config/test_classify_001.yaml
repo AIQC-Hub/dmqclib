@@ -33,7 +33,7 @@ target_sets:
         flag: psal_qc
         pos_flag_values: [ 4, ]
         neg_flag_values: [ 1, ]
-  - name: target_set_1_3
+  - name: target_set_1
     variables:
       - name: temp
         flag: temp_qc
@@ -69,7 +69,7 @@ feature_sets:
       - flank_down
 
 feature_param_sets:
-  - name: feature_set_1_param_set_3
+  - name: feature_set_1_param_set_1
     params:
       - feature: location
         stats_set: { name: location, type: min_max }
@@ -163,10 +163,10 @@ classification_sets:
     dataset_folder_name: nrt_bo_001
     input_file_name: nrt_cora_bo_test.parquet
     path_info: data_set_1
-    target_set: target_set_1_3
+    target_set: target_set_1
     summary_stats_set: summary_stats_set_1
     feature_set: feature_set_1
-    feature_param_set: feature_set_1_param_set_3
+    feature_param_set: feature_set_1_param_set_1
     feature_stats_set: feature_set_1_stats_set_1
     step_class_set: data_set_step_set_1
     step_param_set: data_set_param_set_1
