@@ -110,9 +110,10 @@ After the command finishes, your output root directory (e.g., `~/aiqc_project/da
 *   **`select`**: Stores the input profiles after any initial filtering. In classification, this typically includes all profiles you want to classify.
 *   **`locate`**: Contains all observation records that proceeded through the pipeline, often after proximity-based selection for feature generation.
 *   **`extract`**: Holds the features extracted from the observation records, transformed consistently with how the model was trained.
-*   **`classify`**: (Defined by `path_info_sets.concat.step_folder_name`) This is the final output directory. It contains:
+*   **`classify`**: This is the final output directory. It contains:
+
     *   A `.parquet` file with the original input data, augmented with new columns for the model's predictions (e.g., `temp_prediction`) and prediction probabilities (e.g., `temp_probability`).
-    *   Potentially, a summary report detailing the classification results.
+    *   A summary report detailing the classification results.
 
 Conclusion
 ----------

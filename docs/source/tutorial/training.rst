@@ -123,9 +123,9 @@ Understanding the Output
 
 After the command finishes, ``dmqclib`` will have created new folders within your dataset's output directory (e.g., `~/aiqc_project/data/dataset_0001/`) and within your model's base path (`~/aiqc_project/models/`). The primary outputs include:
 
-*   **`validate`**: This subdirectory (within `~/aiqc_project/data/dataset_0001/`) contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds. This includes metrics, predictions, and potentially visualizations.
-*   **`build`**: This subdirectory (also within `~/aiqc_project/data/dataset_0001/`) holds a comprehensive report of the final model's evaluation performance on the held-out test dataset, along with aggregated metrics.
-*   **`models`**: (Within `~/aiqc_project/models/`) This is the directory (named by `path_info_sets.model.base_path`) that holds the final, trained model object(s) ready for classification. These are the artifacts you will use in the next step.
+*   **`validate`**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds. This includes metrics, predictions, and potentially visualizations.
+*   **`build`**: Holds a comprehensive report of the final model's evaluation performance on the held-out test dataset, along with aggregated metrics.
+*   **`models`**: Holds the final, trained model object(s) ready for classification. These are the artifacts you will use in the next step.
 
 Next Steps
 ----------
