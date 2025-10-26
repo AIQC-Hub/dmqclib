@@ -127,8 +127,12 @@ class XGBoost(ModelBase):
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
 
-        self.predictions = pl.DataFrame({"class": self.model.predict(x_test),
-                                         "score": self.model.predict_proba(x_test)[:, 1]})
+        self.predictions = pl.DataFrame(
+            {
+                "class": self.model.predict(x_test),
+                "score": self.model.predict_proba(x_test)[:, 1],
+            }
+        )
 
     def create_report(self) -> None:
         """
