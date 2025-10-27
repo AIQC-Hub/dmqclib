@@ -53,19 +53,10 @@ class TestClassifyDataSet:
         and output paths. This method ensures that each test starts with a
         clean and predictable configuration.
         """
+        config_path = Path(__file__).resolve().parent / "data" / "config"
         self.config_file_paths = [
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_classify_001.yaml"
-            ),
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_classify_002.yaml"
-            ),
+            config_path / "test_classify_001.yaml",
+            config_path / "test_classify_002.yaml",
         ]
         self.test_data_location = Path(__file__).resolve().parent / "data" / "test"
         self.data_path = Path(__file__).resolve().parent / "data"
@@ -93,51 +84,33 @@ class TestClassifyDataSet:
         output_folder = (
             self.test_data_location / self.configs[idx].data["dataset_folder_name"]
         )
+        dir_summary = output_folder / "summary"
+        dir_select = output_folder / "select"
+        dir_locate = output_folder / "locate"
+        dir_extract = output_folder / "extract"
+        dir_classify = output_folder / "classify"
 
+        assert os.path.exists(str(dir_summary / "summary_stats_classify.tsv"))
+        assert os.path.exists(str(dir_select / "selected_profiles_classify.parquet"))
+        assert os.path.exists(str(dir_locate / "selected_rows_classify_temp.parquet"))
+        assert os.path.exists(str(dir_locate / "selected_rows_classify_psal.parquet"))
+        assert os.path.exists(str(dir_locate / "selected_rows_classify_pres.parquet"))
         assert os.path.exists(
-            str(output_folder / "summary" / "summary_stats_classify.tsv")
+            str(dir_extract / "extracted_features_classify_temp.parquet")
         )
         assert os.path.exists(
-            str(output_folder / "select" / "selected_profiles_classify.parquet")
+            str(dir_extract / "extracted_features_classify_psal.parquet")
         )
         assert os.path.exists(
-            str(output_folder / "locate" / "selected_rows_classify_temp.parquet")
+            str(dir_extract / "extracted_features_classify_pres.parquet")
         )
-        assert os.path.exists(
-            str(output_folder / "locate" / "selected_rows_classify_psal.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "locate" / "selected_rows_classify_pres.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "extract" / "extracted_features_classify_temp.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "extract" / "extracted_features_classify_psal.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "extract" / "extracted_features_classify_pres.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "classify" / "classify_prediction_temp.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "classify" / "classify_prediction_psal.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "classify" / "classify_prediction_pres.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "classify" / "classify_report_temp.tsv")
-        )
-        assert os.path.exists(
-            str(output_folder / "classify" / "classify_report_psal.tsv")
-        )
-        assert os.path.exists(
-            str(output_folder / "classify" / "classify_report_pres.tsv")
-        )
-
-        assert os.path.exists(str(output_folder / "classify" / "predictions.parquet"))
+        assert os.path.exists(str(dir_classify / "classify_prediction_temp.parquet"))
+        assert os.path.exists(str(dir_classify / "classify_prediction_psal.parquet"))
+        assert os.path.exists(str(dir_classify / "classify_prediction_pres.parquet"))
+        assert os.path.exists(str(dir_classify / "classify_report_temp.tsv"))
+        assert os.path.exists(str(dir_classify / "classify_report_psal.tsv"))
+        assert os.path.exists(str(dir_classify / "classify_report_pres.tsv"))
+        assert os.path.exists(str(dir_classify / "predictions.parquet"))
 
 
 class TestClassifyDataSetNegX5(unittest.TestCase):
@@ -201,84 +174,51 @@ class TestClassifyDataSetNegX5(unittest.TestCase):
         output_folder = (
             self.test_data_location / self.config.data["dataset_folder_name"]
         )
+        dir_summary = output_folder / "summary"
+        dir_select = output_folder / "select"
+        dir_locate = output_folder / "locate"
+        dir_extract = output_folder / "extract"
+        dir_classify = output_folder / "classify"
 
+        self.assertTrue(os.path.exists(str(dir_summary / "summary_stats_classify.tsv")))
+        self.assertTrue(
+            os.path.exists(str(dir_select / "selected_profiles_classify.parquet"))
+        )
+        self.assertTrue(
+            os.path.exists(str(dir_locate / "selected_rows_classify_temp.parquet"))
+        )
+        self.assertTrue(
+            os.path.exists(str(dir_locate / "selected_rows_classify_psal.parquet"))
+        )
+        self.assertTrue(
+            os.path.exists(str(dir_locate / "selected_rows_classify_pres.parquet"))
+        )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "summary" / "summary_stats_classify.tsv")
+                str(dir_extract / "extracted_features_classify_temp.parquet")
             )
         )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "select" / "selected_profiles_classify.parquet")
+                str(dir_extract / "extracted_features_classify_psal.parquet")
             )
         )
         self.assertTrue(
             os.path.exists(
-                str(output_folder / "locate" / "selected_rows_classify_temp.parquet")
+                str(dir_extract / "extracted_features_classify_pres.parquet")
             )
         )
         self.assertTrue(
-            os.path.exists(
-                str(output_folder / "locate" / "selected_rows_classify_psal.parquet")
-            )
+            os.path.exists(str(dir_classify / "classify_prediction_temp.parquet"))
         )
         self.assertTrue(
-            os.path.exists(
-                str(output_folder / "locate" / "selected_rows_classify_pres.parquet")
-            )
+            os.path.exists(str(dir_classify / "classify_prediction_psal.parquet"))
         )
         self.assertTrue(
-            os.path.exists(
-                str(
-                    output_folder
-                    / "extract"
-                    / "extracted_features_classify_temp.parquet"
-                )
-            )
+            os.path.exists(str(dir_classify / "classify_prediction_pres.parquet"))
         )
-        self.assertTrue(
-            os.path.exists(
-                str(
-                    output_folder
-                    / "extract"
-                    / "extracted_features_classify_psal.parquet"
-                )
-            )
-        )
-        self.assertTrue(
-            os.path.exists(
-                str(
-                    output_folder
-                    / "extract"
-                    / "extracted_features_classify_pres.parquet"
-                )
-            )
-        )
-        self.assertTrue(
-            os.path.exists(
-                str(output_folder / "classify" / "classify_prediction_temp.parquet")
-            )
-        )
-        self.assertTrue(
-            os.path.exists(
-                str(output_folder / "classify" / "classify_prediction_psal.parquet")
-            )
-        )
-        self.assertTrue(
-            os.path.exists(
-                str(output_folder / "classify" / "classify_prediction_pres.parquet")
-            )
-        )
-        self.assertTrue(
-            os.path.exists(str(output_folder / "classify" / "classify_report_temp.tsv"))
-        )
-        self.assertTrue(
-            os.path.exists(str(output_folder / "classify" / "classify_report_psal.tsv"))
-        )
-        self.assertTrue(
-            os.path.exists(str(output_folder / "classify" / "classify_report_pres.tsv"))
-        )
+        self.assertTrue(os.path.exists(str(dir_classify / "classify_report_temp.tsv")))
+        self.assertTrue(os.path.exists(str(dir_classify / "classify_report_psal.tsv")))
+        self.assertTrue(os.path.exists(str(dir_classify / "classify_report_pres.tsv")))
 
-        self.assertTrue(
-            os.path.exists(str(output_folder / "classify" / "predictions.parquet"))
-        )
+        self.assertTrue(os.path.exists(str(dir_classify / "predictions.parquet")))

@@ -76,10 +76,10 @@ step_class_sets:
     steps:
       input: InputDataSetA
       summary: SummaryDataSetA
-      select: SelectDataSetA
-      locate: LocateDataSetA
+      select: SelectDataSetAll
+      locate: LocateDataSetAll
       extract: ExtractDataSetA
-      split: SplitDataSetA
+      split: SplitDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1

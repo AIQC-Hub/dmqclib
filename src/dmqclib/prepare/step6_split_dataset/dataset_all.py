@@ -149,16 +149,11 @@ class SplitDataSetAll(SplitDataSetBase):
 
         np.random.shuffle(pos_k_values)
         np.random.shuffle(neg_k_values)
-        pos_training_set = pos_training_set.with_columns(pl.Series("k_fold", pos_k_values))
-        neg_training_set = neg_training_set.with_columns(pl.Series("k_fold", neg_k_values))
-
-        neg_training_set = (
-            self.training_sets[target_name]
-            .filter(pl.col("label") == 0)
-            .join(
-                pos_training_set.select([pl.col("pair_id"), pl.col("k_fold")]),
-                on="pair_id",
-            )
+        pos_training_set = pos_training_set.with_columns(
+            pl.Series("k_fold", pos_k_values)
+        )
+        neg_training_set = neg_training_set.with_columns(
+            pl.Series("k_fold", neg_k_values)
         )
 
         training_set = pos_training_set.vstack(neg_training_set)

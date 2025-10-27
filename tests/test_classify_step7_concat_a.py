@@ -199,7 +199,7 @@ class TestConcatPredictions(unittest.TestCase):
 
         self.assertTrue(os.path.exists(ds.output_file_name))
 
-        #os.remove(ds.output_file_name)
+        os.remove(ds.output_file_name)
 
     def test_write_no_results(self):
         """

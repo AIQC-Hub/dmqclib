@@ -43,19 +43,11 @@ class TestCreateTrainingDataSet:
         defining file paths, and updating the configuration with test input
         and output paths.
         """
+        dir_config = Path(__file__).resolve().parent / "data" / "config"
         self.config_file_paths = [
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_dataset_001.yaml"
-            ),
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_dataset_004.yaml"
-            ),
+            (dir_config / "test_dataset_001.yaml"),
+            (dir_config / "test_dataset_004.yaml"),
+            (dir_config / "test_dataset_005.yaml"),
         ]
         self.test_data_location = Path(__file__).resolve().parent / "data" / "test"
         self.input_data_path = Path(__file__).resolve().parent / "data" / "input"
@@ -68,7 +60,7 @@ class TestCreateTrainingDataSet:
             if os.path.exists(output_folder):
                 shutil.rmtree(output_folder)
 
-    @pytest.mark.parametrize("idx", range(2))
+    @pytest.mark.parametrize("idx", range(3))
     def test_create_training_data_set(self, idx):
         """
         Verify that `create_training_dataset` generates the expected folder
@@ -80,35 +72,25 @@ class TestCreateTrainingDataSet:
         output_folder = (
             self.test_data_location / self.configs[idx].data["dataset_folder_name"]
         )
-
-        assert os.path.exists(str(output_folder / "summary" / "summary_stats.tsv"))
-        assert os.path.exists(
-            str(output_folder / "select" / "selected_profiles.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "locate" / "selected_rows_temp.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "locate" / "selected_rows_psal.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "locate" / "selected_rows_pres.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "extract" / "extracted_features_temp.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "extract" / "extracted_features_psal.parquet")
-        )
-        assert os.path.exists(
-            str(output_folder / "extract" / "extracted_features_pres.parquet")
-        )
-        assert os.path.exists(str(output_folder / "split" / "train_set_temp.parquet"))
-        assert os.path.exists(str(output_folder / "split" / "train_set_psal.parquet"))
-        assert os.path.exists(str(output_folder / "split" / "train_set_pres.parquet"))
-        assert os.path.exists(str(output_folder / "split" / "test_set_temp.parquet"))
-        assert os.path.exists(str(output_folder / "split" / "test_set_psal.parquet"))
-        assert os.path.exists(str(output_folder / "split" / "test_set_pres.parquet"))
+        dir_summary = output_folder / "summary"
+        dir_select = output_folder / "select"
+        dir_locate = output_folder / "locate"
+        dir_extract = output_folder / "extract"
+        dir_split = output_folder / "split"
+        assert os.path.exists(str(dir_summary / "summary_stats.tsv"))
+        assert os.path.exists(str(dir_select / "selected_profiles.parquet"))
+        assert os.path.exists(str(dir_locate / "selected_rows_temp.parquet"))
+        assert os.path.exists(str(dir_locate / "selected_rows_psal.parquet"))
+        assert os.path.exists(str(dir_locate / "selected_rows_pres.parquet"))
+        assert os.path.exists(str(dir_extract / "extracted_features_temp.parquet"))
+        assert os.path.exists(str(dir_extract / "extracted_features_psal.parquet"))
+        assert os.path.exists(str(dir_extract / "extracted_features_pres.parquet"))
+        assert os.path.exists(str(dir_split / "train_set_temp.parquet"))
+        assert os.path.exists(str(dir_split / "train_set_psal.parquet"))
+        assert os.path.exists(str(dir_split / "train_set_pres.parquet"))
+        assert os.path.exists(str(dir_split / "test_set_temp.parquet"))
+        assert os.path.exists(str(dir_split / "test_set_psal.parquet"))
+        assert os.path.exists(str(dir_split / "test_set_pres.parquet"))
 
 
 class TestCreateTrainingDataSetNegX5(unittest.TestCase):

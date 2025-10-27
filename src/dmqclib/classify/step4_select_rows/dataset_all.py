@@ -87,9 +87,7 @@ class LocateDataSetAll(LocatePositionBase):
         flag_var_name = target_value["flag"]
         self.selected_rows[target_name] = (
             self.input_data.with_row_index("row_id", offset=1)
-            .filter(
-                pl.col(flag_var_name).is_in(pos_flag_values + neg_flag_values)
-            )
+            .filter(pl.col(flag_var_name).is_in(pos_flag_values + neg_flag_values))
             .with_columns(
                 pl.lit(0, dtype=pl.UInt32).alias("profile_id"),
                 pl.lit("").alias("pair_id"),
