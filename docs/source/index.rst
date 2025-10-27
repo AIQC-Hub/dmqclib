@@ -38,6 +38,7 @@ This section provides practical examples and solutions for common tasks related 
 
    how-to/quick_start
    how-to/data_preprocessing_utilities
+   how-to/negative_dataset
    how-to/feature_normalization
    how-to/selecting_specific_configurations
 
@@ -72,7 +73,7 @@ Understanding the input features is crucial for building effective models. This 
 For in-depth information on specific functions, classes, and methods, consult the API documentation.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: 🧩 API Reference
 
    api/modules
