@@ -15,7 +15,7 @@ from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase
 
 
-class SplitDataSetA(SplitDataSetBase):
+class SplitDataSetAll(SplitDataSetBase):
     """
     A subclass of :class:`SplitDataSetBase` that splits feature data into
     training and test sets for Copernicus CTD data.
@@ -31,12 +31,12 @@ class SplitDataSetA(SplitDataSetBase):
 
     .. note::
 
-       This class, :class:`SplitDataSetA`, is specifically designed to split
+       This class, :class:`SplitDataSetAll`, is specifically designed to split
        feature data into training and test sets with particular handling for
        Copernicus CTD data.
     """
 
-    expected_class_name: str = "SplitDataSetA"
+    expected_class_name: str = "SplitDataSetAll"
 
     def __init__(
         self,
@@ -89,7 +89,7 @@ class SplitDataSetA(SplitDataSetBase):
         neg_test_set = (
             self.target_features[target_name]
             .filter(pl.col("label") == 0)
-            .join(pos_test_set.select([pl.col("pair_id")]), on="pair_id")
+            .sample(fraction=test_set_fraction, shuffle=True)
         )
 
         test_set = pos_test_set.vstack(neg_test_set)
@@ -102,10 +102,8 @@ class SplitDataSetA(SplitDataSetBase):
         ).join(pos_test_set, on="row_id", how="anti")
 
         neg_training_set = (
-            self.target_features[target_name]
-            .filter(pl.col("label") == 0)
-            .join(pos_training_set.select([pl.col("pair_id")]), on="pair_id")
-        )
+            self.target_features[target_name].filter(pl.col("label") == 0)
+        ).join(neg_test_set, on="row_id", how="anti")
 
         training_set = pos_training_set.vstack(neg_training_set)
         self.training_sets[target_name] = training_set.select(
@@ -127,26 +125,35 @@ class SplitDataSetA(SplitDataSetBase):
         """
         k_fold = self.get_k_fold()
         pos_training_set = self.training_sets[target_name].filter(pl.col("label") == 1)
-        df_size = pos_training_set.shape[0]
+        neg_training_set = self.training_sets[target_name].filter(pl.col("label") == 0)
+        df_pos_size = pos_training_set.shape[0]
+        df_neg_size = neg_training_set.shape[0]
 
-        n_per_value = df_size // k_fold
-        k_values = np.array(
-            [i for i in range(1, k_fold + 1) for _ in range(n_per_value)]
+        pos_n_per_value = df_pos_size // k_fold
+        neg_n_per_value = df_neg_size // k_fold
+        pos_k_values = np.array(
+            [i for i in range(1, k_fold + 1) for _ in range(pos_n_per_value)]
         )
-        remaining = df_size % k_fold
-        k_values = np.concatenate(
-            [k_values, np.random.choice(range(1, k_fold + 1), remaining)]
+        neg_k_values = np.array(
+            [i for i in range(1, k_fold + 1) for _ in range(neg_n_per_value)]
         )
-        np.random.shuffle(k_values)
 
-        pos_training_set = pos_training_set.with_columns(pl.Series("k_fold", k_values))
-        neg_training_set = (
-            self.training_sets[target_name]
-            .filter(pl.col("label") == 0)
-            .join(
-                pos_training_set.select([pl.col("pair_id"), pl.col("k_fold")]),
-                on="pair_id",
-            )
+        pos_remaining = df_pos_size % k_fold
+        neg_remaining = df_neg_size % k_fold
+        pos_k_values = np.concatenate(
+            [pos_k_values, np.random.choice(range(1, k_fold + 1), pos_remaining)]
+        )
+        neg_k_values = np.concatenate(
+            [neg_k_values, np.random.choice(range(1, k_fold + 1), neg_remaining)]
+        )
+
+        np.random.shuffle(pos_k_values)
+        np.random.shuffle(neg_k_values)
+        pos_training_set = pos_training_set.with_columns(
+            pl.Series("k_fold", pos_k_values)
+        )
+        neg_training_set = neg_training_set.with_columns(
+            pl.Series("k_fold", neg_k_values)
         )
 
         training_set = pos_training_set.vstack(neg_training_set)

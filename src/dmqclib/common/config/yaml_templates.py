@@ -187,6 +187,21 @@ step_class_sets:
 """
 
 
+def _get_dataset_step_class_sets_all() -> str:
+    return """
+step_class_sets:
+  - name: data_set_step_set_1
+    steps:
+      input: InputDataSetA
+      summary: SummaryDataSetA
+      select: SelectDataSetAll
+      locate: LocateDataSetAll
+      extract: ExtractDataSetA
+      split: SplitDataSetAll
+
+"""
+
+
 def _get_dataset_step_param_sets() -> str:
     return """
 step_param_sets:
@@ -200,6 +215,26 @@ step_param_sets:
       summary: { }
       select: { neg_pos_ratio: 5 }
       locate: { neighbor_n: 5 }
+      extract: { }
+      split: { test_set_fraction: 0.1,
+               k_fold: 10 }
+
+"""
+
+
+def _get_dataset_step_param_sets_all() -> str:
+    return """
+step_param_sets:
+  - name: data_set_param_set_1
+    steps:
+      input: { sub_steps: { rename_columns: false,
+                            filter_rows: true },
+               rename_dict: { },
+               filter_method_dict: { remove_years: [ 2023 ],
+                                     keep_years: [ ] } }
+      summary: { }
+      select: { }
+      locate: { }
       extract: { }
       split: { test_set_fraction: 0.1,
                k_fold: 10 }
@@ -289,6 +324,40 @@ def get_config_data_set_full_template() -> str:
         + _get_dataset_feature_stats_sets_full()
         + _get_dataset_step_class_sets()
         + _get_dataset_step_param_sets()
+        + _get_dataset_data_sets()
+    )
+
+
+def get_config_data_set_all_template() -> str:
+    """
+    Retrieve a YAML template string for dataset preparation configurations with normalisation .
+
+    This template includes:
+
+    - ``path_info_sets``: specifying common, input, and split paths.
+    - ``target_sets``: defining which variables to process and their flags.
+    - ``summary_stats_sets``: defining summary statistics.
+    - ``feature_sets``: listing named sets of feature extraction modules.
+    - ``feature_param_sets``: detailing parameters for each feature.
+    - ``feature_stats_sets``: detailing methods and stats for normalization.
+    - ``step_class_sets``: referencing classes for each preparation step
+      (e.g., input, summary, select, locate, extract, split).
+    - ``step_param_sets``: referencing parameters for the preparation steps.
+    - ``data_sets``: referencing specific dataset folders, files, and
+      associated configuration sets (e.g., ``step_class_set``, ``step_param_set``).
+
+    :returns: A string containing the YAML template.
+    :rtype: str
+    """
+    return (
+        _get_dataset_path_info_sets()
+        + _get_dataset_target_sets()
+        + _get_dataset_summary_stats_sets()
+        + _get_dataset_feature_sets()
+        + _get_dataset_feature_param_sets_full()
+        + _get_dataset_feature_stats_sets_full()
+        + _get_dataset_step_class_sets_all()
+        + _get_dataset_step_param_sets_all()
         + _get_dataset_data_sets()
     )
 

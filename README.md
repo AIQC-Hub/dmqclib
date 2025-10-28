@@ -50,7 +50,6 @@ This workflow processes your input data and creates training, validation, and te
 ```python
 import dmqclib as dm
 
-# This creates 'prepare_config.yaml' with predefined sections
 dm.write_config_template(file_name="/path/to/prepare_config.yaml", stage="prepare")
 ```
 

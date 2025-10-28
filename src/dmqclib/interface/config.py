@@ -15,6 +15,7 @@ from dmqclib.common.config.yaml_templates import (
     get_config_train_set_template,
     get_config_data_set_template,
     get_config_data_set_full_template,
+    get_config_data_set_all_template,
     get_config_classify_set_template,
     get_config_classify_set_full_template,
 )
@@ -40,14 +41,15 @@ def write_config_template(file_name: str, stage: str, extension: str = "") -> No
     :type file_name: str
     :param stage: Determines which template to write; must be one of "prepare", "train", or "classify".
     :type stage: str
-    :param extension: Determines template extensions; must be one of "", or "full".
+    :param extension: Determines template extensions; must be one of "", "full", or "reduced".
     :type extension: str
     :raises ValueError: If the specified stage is not supported ("prepare", "train", or "classify" only).
     :raises IOError: If the directory of the specified file path does not exist.
     """
     function_registry = {
-        "prepare_": get_config_data_set_template,
+        "prepare_": get_config_data_set_all_template,
         "prepare_full": get_config_data_set_full_template,
+        "prepare_reduced": get_config_data_set_template,
         "train_": get_config_train_set_template,
         "classify_": get_config_classify_set_template,
         "classify_full": get_config_classify_set_full_template,

@@ -15,9 +15,7 @@ Basic Usage: The Three-Stage Workflow
 
        import dmqclib as dm
 
-       # Load the dataset preparation configuration
        prepare_config = dm.read_config("/path/to/prepare_config.yaml")
-       # Execute the data preparation pipeline
        dm.create_training_dataset(prepare_config)
 
 2.  **Training & Evaluation:**
@@ -25,9 +23,7 @@ Basic Usage: The Three-Stage Workflow
 
     .. code-block:: python
 
-       # Load the training and evaluation configuration
        training_config = dm.read_config("/path/to/training_config.yaml")
-       # Train and evaluate the model
        dm.train_and_evaluate(training_config)
 
 3.  **Classification (Inference):**
@@ -35,9 +31,7 @@ Basic Usage: The Three-Stage Workflow
 
     .. code-block:: python
 
-       # Load the classification (inference) configuration
        classification_config = dm.read_config("/path/to/classification_config.yaml")
-       # Classify the new dataset using the trained model
        dm.classify_dataset(classification_config)
 
 Objectives

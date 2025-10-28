@@ -53,9 +53,6 @@ Let's begin with an example Polars DataFrame that mimics raw data, notably missi
         "temp_qc": [3, 3, 1, 3, 3, 3] # Example QC flag for temp
     })
 
-    print("Initial DataFrame:")
-    print(df)
-
 Step-by-Step Transformations
 ----------------------------
 
@@ -84,10 +81,6 @@ If your timestamp is a float representing days (e.g., days since a specific epoc
         .cast(pl.Datetime("ms"))     # Store as a Polars datetime with millisecond precision
     )
 
-    print("\nDataFrame after creating 'profile_timestamp':")
-    print(df)
-
-
 2. Sort Rows
 ~~~~~~~~~~~~
 Sorting the DataFrame is crucial before generating sequential ``profile_no`` and ``observation_no``. This ensures that observations belonging to the same profile are grouped together and are ordered correctly (e.g., by pressure).
@@ -95,10 +88,6 @@ Sorting the DataFrame is crucial before generating sequential ``profile_no`` and
 .. code-block:: python
 
     df = df.sort(["platform_code", "profile_timestamp", "longitude", "latitude", "pres"])
-
-    print("\nDataFrame after sorting:")
-    print(df)
-
 
 3. Create `profile_key` (Helper Column)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,10 +104,6 @@ A ``profile_key`` is a temporary helper column that uniquely identifies each dis
         ).alias("profile_key")
     )
 
-    print("\nDataFrame after creating 'profile_key':")
-    print(df)
-
-
 4. Create `profile_no`
 ~~~~~~~~~~~~~~~~~~~~~~
 Now, create the sequential ``profile_no`` within each ``platform_code`` by computing a dense rank of ``profile_key``. The ``rank("dense")`` ensures that the first distinct ``profile_key`` in a platform gets rank 1, the second gets rank 2, and so on.
@@ -132,10 +117,6 @@ Now, create the sequential ``profile_no`` within each ``platform_code`` by compu
           .alias("profile_no")
     )
 
-    print("\nDataFrame after creating 'profile_no':")
-    print(df)
-
-
 5. Create `observation_no`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 The ``observation_no`` assigns a unique, sequential number to each observation *within* a given ``profile_no``. This is typically based on the order of records after sorting (e.g., by pressure depth). ``cum_count().over("profile_key")`` is used to count observations within each unique ``profile_key``. We add ``+1`` to make it 1-indexed.
@@ -146,10 +127,6 @@ The ``observation_no`` assigns a unique, sequential number to each observation *
         (pl.col("profile_key").cum_count().over("profile_key") + 1).alias("observation_no")
     )
 
-    print("\nDataFrame after creating 'observation_no':")
-    print(df)
-
-
 6. Drop `profile_key` (Optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You can optionally drop the helper ``profile_key`` column once ``profile_no`` and ``observation_no`` have been created, as it's no longer needed.
@@ -157,10 +134,6 @@ You can optionally drop the helper ``profile_key`` column once ``profile_no`` an
 .. code-block:: python
 
     df = df.drop("profile_key")
-
-    print("\nFinal DataFrame structure:")
-    print(df)
-
 
 Save the Preprocessed Data
 --------------------------
@@ -173,9 +146,6 @@ Finally, save your preprocessed DataFrame as a Parquet file. This file will then
 
     # Write the DataFrame to a Parquet file
     df.write_parquet(output_file)
-
-    print(f"\nPreprocessed data saved to: {output_file}")
-    print("You can now use this file as 'input_file_name' in your prepare_config.yaml.")
 
 Next Steps
 ----------

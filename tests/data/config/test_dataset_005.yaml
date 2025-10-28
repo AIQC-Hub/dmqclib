@@ -2,28 +2,26 @@
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # EDIT: Root output directory
+      base_path: /path/to/data_1
     input:
-      base_path: /path/to/input # EDIT: Directory with input files
-      step_folder_name: ""
-    split:
-      step_folder_name: training
+      base_path: /path/to/input_1
+      step_folder_name: input_folder_1
 
 target_sets:
   - name: target_set_1
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
 
 summary_stats_sets:
   - name: summary_stats_set_1
@@ -87,21 +85,21 @@ step_param_sets:
   - name: data_set_param_set_1
     steps:
       input: { sub_steps: { rename_columns: false,
-                            filter_rows: true },
+                            filter_rows: false },
                rename_dict: { },
-               filter_method_dict: { remove_years: [ 2023 ],
+               filter_method_dict: { remove_years: [ ],
                                      keep_years: [ ] } }
       summary: { }
       select: { }
       locate: { }
       extract: { }
       split: { test_set_fraction: 0.1,
-               k_fold: 10 }
+               k_fold: 3 }
 
 data_sets:
-  - name: dataset_0001  # EDIT: Your data set name
-    dataset_folder_name: dataset_0001  # EDIT: Your output folder
-    input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+    input_file_name: nrt_cora_bo_test.parquet
     path_info: data_set_1
     target_set: target_set_1
     summary_stats_set: summary_stats_set_1

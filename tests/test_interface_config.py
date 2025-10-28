@@ -28,18 +28,23 @@ class TestTemplateConfig:
         """
         config_path = Path(__file__).resolve().parent / "data" / "config"
         self.templates = [
-            ("prepare", "", str(config_path / "temp_dataset_template.yaml")),
-            ("prepare", "full", str(config_path / "temp_dataset_template.yaml")),
-            ("train", "", str(config_path / "temp_training_template.yaml")),
-            ("classify", "", str(config_path / "temp_classification_template.yaml")),
+            ("prepare", "", config_path / "temp_dataset_template.yaml"),
+            ("prepare", "full", config_path / "temp_dataset_full_template.yaml"),
+            (
+                "prepare",
+                "reduced",
+                config_path / "temp_dataset_reduced_template.yaml",
+            ),
+            ("train", "", config_path / "temp_training_template.yaml"),
+            ("classify", "", config_path / "temp_classification_template.yaml"),
             (
                 "classify",
                 "full",
-                str(config_path / "temp_classification_template.yaml"),
+                config_path / "temp_classification_template.yaml",
             ),
         ]
 
-    @pytest.mark.parametrize("idx", range(5))
+    @pytest.mark.parametrize("idx", range(6))
     def test_write_config_template(self, idx):
         """
         Check that a configuration template can be written
@@ -82,49 +87,20 @@ class TestReadConfig:
         configuration files used in subsequent tests.
         """
 
+        dir_config = Path(__file__).resolve().parent / "data" / "config"
         self.ds_config_files = [
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_dataset_001.yaml"
-            ),
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_dataset_004.yaml"
-            ),
+            dir_config / "test_dataset_001.yaml",
+            dir_config / "test_dataset_004.yaml",
         ]
 
-        self.train_config_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
-        )
+        self.train_config_file = dir_config / "test_training_001.yaml"
 
         self.classification_config_files = [
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_classify_001.yaml"
-            ),
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_classify_002.yaml"
-            ),
+            dir_config / "test_classify_001.yaml",
+            dir_config / "test_classify_002.yaml",
         ]
 
-        self.invalid_config_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_dataset_invalid.yaml"
-        )
+        self.invalid_config_file = dir_config / "test_dataset_invalid.yaml"
 
     @pytest.mark.parametrize("idx", range(2))
     def test_ds_config(self, idx):
