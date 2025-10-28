@@ -6,7 +6,8 @@ As this project is still in active development, it does not yet strictly adhere 
 
 ## [Unreleased]
 ### Added
-- Down sampling page to RTD
+- Classes to generate all observations in prepare stage
+- Option to set the number of threads used with XGBoost
 
 ## [0.6.3] - 2025-10-23
 ### Added
