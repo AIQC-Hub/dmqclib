@@ -64,6 +64,7 @@ class XGBoost(ModelBase):
             "max_depth": 6,
             "learning_rate": 0.1,
             "eval_metric": "logloss",
+            "n_jobs": -1,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_step_params("model").get("model_params", {})

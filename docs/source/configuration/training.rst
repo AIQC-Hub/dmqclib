@@ -66,7 +66,8 @@ This section provides detailed parameters for the classes defined in your chosen
 
 *   **input**: Parameters for the input data loading step (often empty or simple flags).
 *   **validate.k_fold**: For ``KFoldValidation``, specifies the number of folds for cross-validation.
-*   **model.model_params.scale_pos_weight**: An example parameter for an XGBoost model. This is used to address imbalanced datasets by weighting the positive class. For example, ``200`` indicates a ratio of negative to positive records of 200:1.
+*   **model.model_params.scale_pos_weight**: This is used to address imbalanced datasets by weighting the positive class. For example, ``200`` indicates a ratio of negative to positive records of 200:1.
+*   **model.model_params.n_jobs**: The number of threads used by XGBoost. It tries to use all available CPU cores if it is set to `-1`.
 *   **build**: Parameters for the final model building step (often empty or simple flags for saving).
 
 .. code-block:: yaml
@@ -76,7 +77,8 @@ This section provides detailed parameters for the classes defined in your chosen
        steps:
          input: { }
          validate: { k_fold: 10 }
-         model: { model_params: { scale_pos_weight: 200 } }
+         model: { model_params: { scale_pos_weight: 200,
+                                  n_jobs: -1 } }
          build: { }
 
 `training_sets`
@@ -109,7 +111,7 @@ Below is a complete example of a ``training_config.yaml`` file. The lines you wi
 
 .. code-block:: yaml
    :caption: Full training_config.yaml example
-   :emphasize-lines: 5, 38, 42, 43
+   :emphasize-lines: 5, 38, 39, 43, 44
 
    ---
    path_info_sets:
@@ -148,7 +150,8 @@ Below is a complete example of a ``training_config.yaml`` file. The lines you wi
        steps:
          input: { }
          validate: { k_fold: 10 }
-         model: { model_params: { scale_pos_weight: 200 } }
+         model: { model_params: { scale_pos_weight: 200,
+                                  n_jobs: -1 } }
          build: { }
 
    training_sets:

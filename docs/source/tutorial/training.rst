@@ -79,7 +79,8 @@ Modify the file to align with the following structure. Remember to replace place
         steps:
           input: { }
           validate: { k_fold: 10 } # 10-fold cross-validation
-          model: { model_params: { scale_pos_weight: 200 } } # Example XGBoost hyperparameter
+          model: { model_params: { scale_pos_weight: 200,   # Specify pos:neg ratio
+                                   n_jobs: -1 } }           # Number of threads used by XGBoost
           build: { }
 
 .. code-block:: yaml

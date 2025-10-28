@@ -417,7 +417,8 @@ step_param_sets:
     steps:
       input: { }
       validate: { k_fold: 10 }
-      model: { model_params: { scale_pos_weight: 200 } }
+      model: { model_params: { scale_pos_weight: 200,
+                               n_jobs: -1 } }
       build: { }
 
 training_sets:
