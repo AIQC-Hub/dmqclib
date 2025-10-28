@@ -38,7 +38,7 @@ This section provides practical examples and solutions for common tasks related 
 
    how-to/quick_start
    how-to/data_preprocessing_utilities
-   how-to/negative_dataset
+   how-to/down_sampling_negative
    how-to/feature_normalization
    how-to/selecting_specific_configurations
 

@@ -110,16 +110,11 @@ First, use ``dmqclib`` to generate a boilerplate configuration template. This fi
    import dmqclib as dm
    import os
 
-   # Define the path for the config file
    config_path = os.path.expanduser("~/aiqc_project/config/prepare_config.yaml")
-
-   # This creates 'prepare_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
        file_name=config_path,
        stage="prepare"
    )
-   print(f"Configuration template generated at: {config_path}")
-
 
 Step 2.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -159,6 +154,10 @@ Update your ``prepare_config.yaml`` to match the following for the ``path_info_s
 .. note::
    The ``prepare_config.yaml`` can be quite detailed. For a complete reference of all available configuration options, please consult the dedicated :doc:`../../configuration/preparation` page.
 
+.. note::
+
+   ``dmaclib`` provides methods to down-sample the negative data set. Please refer to the :doc:`../../how-to/down_sampling_negative` guide for details.
+
 Step 2.2: Run the Preparation Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Once you have customized your ``prepare_config.yaml`` with the correct paths, input file name, and definitions for targets, features, and summary statistics, you can execute the data preparation workflow.
@@ -173,7 +172,6 @@ Load the configuration file and then call the ``create_training_dataset`` functi
    config_path = os.path.expanduser("~/aiqc_project/config/prepare_config.yaml")
    config = dm.read_config(config_path)
    dm.create_training_dataset(config)
-   print(f"Data preparation complete! Outputs saved to: {os.path.join(config.path_info_sets[0].common.base_path, config.data_sets[0].dataset_folder_name)}")
 
 Understanding the Output
 ------------------------
