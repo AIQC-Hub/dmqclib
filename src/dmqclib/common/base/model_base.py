@@ -9,7 +9,7 @@ concrete model implementations should inherit and extend.
 
 import os
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Optional, Any, Self
 
 from joblib import dump, load
 
@@ -92,6 +92,18 @@ class ModelBase(ABC):
         and how accuracy or performance measures are computed.
         """
         pass  # pragma: no cover
+
+    @abstractmethod
+    def update_nthreads(self, model: Self) -> Self:
+        """
+        Update the number of threads set in the model.
+
+        Subclasses must implement logic to update the number of threads.
+
+        :param model: The model needs to be updated.
+        :type model: Self
+        """
+        pass
 
     def load_model(self, file_name: str) -> None:
         """

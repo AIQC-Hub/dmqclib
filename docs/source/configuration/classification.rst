@@ -137,14 +137,14 @@ This section defines summary statistics that will be used for normalization or s
 (**Advanced Use**)
 This section defines the specific Python classes that implement the logic for each step in the classification pipeline. While ``dmqclib`` provides default implementations, this allows for customization of how data is ingested, features are generated, the model is loaded, predictions are made, and results are output.
 
-*   **input**: Class for handling initial data loading.
-*   **summary**: Class for processing summary statistics (if applicable).
-*   **select**: Class for selecting specific data points.
-*   **locate**: Class for spatial or temporal localization (if features depend on neighbors).
-*   **extract**: Class for extracting features based on the ``feature_sets`` configuration.
-*   **model**: Class for loading the pre-trained machine learning model.
-*   **classify**: Class for performing the actual prediction using the loaded model.
-*   **concat**: Class for concatenating or combining the final classified results.
+*   **steps.input**: Class for handling initial data loading.
+*   **steps.summary**: Class for processing summary statistics (if applicable).
+*   **steps.select**: Class for selecting specific data points.
+*   **steps.locate**: Class for spatial or temporal localization (if features depend on neighbors).
+*   **steps.extract**: Class for extracting features based on the ``feature_sets`` configuration.
+*   **steps.model**: Class for loading the pre-trained machine learning model.
+*   **steps.classify**: Class for performing the actual prediction using the loaded model.
+*   **steps.concat**: Class for concatenating or combining the final classified results.
 
 .. code-block:: yaml
 
@@ -166,8 +166,9 @@ This section provides general parameters for the workflow processes defined in `
 
 *   **steps.input.sub_steps.filter_rows**: A boolean flag to enable or disable row filtering based on ``filter_method_dict``.
 *   **steps.input.filter_method_dict.keep_years**: Specifies a list of years from which data should be kept for classification. Other years will be excluded.
-*   **steps.rename_dict**: Dictionary for renaming columns during input processing.
-*   Parameters for other steps (``summary``, ``select``, ``locate``, ``extract``, ``model``, ``classify``, ``concat``) are also defined here, often left empty if default behavior is sufficient or if parameters are handled by the model itself.
+*   **steps.input.rename_dict**: Dictionary for renaming columns during input processing.
+*   **steps.model.model_params.n_jobs**: The number of threads used by XGBoost. It tries to use all available CPU cores if it is set to `-1`.
+*   Parameters for other steps (``summary``, ``select``, ``locate``, ``extract``, ``classify``, ``concat``) are also defined here, often left empty if default behavior is sufficient or if parameters are handled by the model itself.
 
 .. code-block:: yaml
 
@@ -183,7 +184,7 @@ This section provides general parameters for the workflow processes defined in `
          select: { }
          locate: { }
          extract: { }
-         model: { }
+         model: { model_params: { n_jobs: -1 } }
          classify: { }
          concat: { }
 
@@ -220,7 +221,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
 
 .. code-block:: yaml
    :caption: Full classification_config.yaml example
-   :emphasize-lines: 5, 7, 10, 11, 13, 68, 72, 95, 97, 98
+   :emphasize-lines: 5, 7, 10, 11, 13, 68, 72, 95, 97, 98, 103
 
    ---
    path_info_sets:
@@ -324,7 +325,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
          select: { }
          locate: { }
          extract: { }
-         model: { }
+         model: { model_params: { n_jobs: -1 } }
          classify: { }
          concat: { }
 

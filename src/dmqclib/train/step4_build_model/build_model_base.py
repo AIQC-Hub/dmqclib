@@ -213,6 +213,7 @@ class BuildModelBase(DataSetBase):
 
             new_model_instance = load_model_class(self.config)
             new_model_instance.load_model(path)
+            new_model_instance = self.base_model.update_nthreads(new_model_instance)
             self.models[target_name] = new_model_instance
 
     def write_predictions(self) -> None:

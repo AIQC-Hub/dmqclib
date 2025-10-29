@@ -2,31 +2,51 @@
 path_info_sets:
   - name: data_set_1
     common:
-      base_path: /path/to/data # EDIT: Root output directory
+      base_path: /path/to/data_1
     input:
-      base_path: /path/to/input # EDIT: Directory with input files
-      step_folder_name: ""
+      base_path: /path/to/input_1
+      step_folder_name: input_folder_1
+    select:
+      base_path: /path/to/select_1
+      step_folder_name: select_folder_1
+    locate:
+      base_path: /path/to/locate_1
+      step_folder_name: locate_folder_1
     model:
-      base_path: /path/to/data/dataset_0001  # EDIT: Directory with model files
-      step_folder_name: "model"
+      base_path: /path/to/model_1
+      step_folder_name: model_folder_1
+    classify:
+      base_path: /path/to/classify_1
+      step_folder_name: classify_folder_1
     concat:
-      step_folder_name: classify # EDIT: Directory with classification results
+      base_path: /path/to/concat_1
+      step_folder_name: concat_folder_1
 
 target_sets:
+  - name: target_set_1_2
+    variables:
+      - name: temp
+        flag: temp_qc
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
+      - name: psal
+        flag: psal_qc
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
   - name: target_set_1
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, ]
+        neg_flag_values: [ 1, ]
 
 summary_stats_sets:
   - name: summary_stats_set_1
@@ -87,6 +107,16 @@ step_class_sets:
       model: XGBoost
       classify: ClassifyAll
       concat: ConcatDataSetAll
+  - name: data_set_step_set_invalid
+    steps:
+      input: InvalidClass
+      summary: InvalidClass
+      select: InvalidClass
+      locate: InvalidClass
+      extract: InvalidClass
+      model: InvalidClass
+      classify: InvalidClass
+      concat: InvalidClass
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -100,14 +130,14 @@ step_param_sets:
       select: { }
       locate: { }
       extract: { }
-      model: { model_params: { n_jobs: -1 } }
+      model: { model_params: { n_jobs: 2 } }
       classify: { }
       concat: { }
 
 classification_sets:
-  - name: classification_0001  # EDIT: Your classification name
-    dataset_folder_name: dataset_0001  # EDIT: Your output folder
-    input_file_name: nrt_cora_bo_4.parquet   # EDIT: Your input filename
+  - name: NRT_BO_001
+    dataset_folder_name: nrt_bo_001
+    input_file_name: nrt_cora_bo_test.parquet
     path_info: data_set_1
     target_set: target_set_1
     summary_stats_set: summary_stats_set_1

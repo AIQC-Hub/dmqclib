@@ -63,6 +63,23 @@ Update your ``classification_config.yaml`` file to match the following. Remember
           step_folder_name: classify # Subdirectory within common.base_path for the final classified output
 
 .. code-block:: yaml
+   step_param_sets:
+     - name: data_set_param_set_1
+       steps:
+         input: { sub_steps: { rename_columns: false,
+                               filter_rows: true },
+                  rename_dict: { },
+                  filter_method_dict: { remove_years: [],
+                                        keep_years: [2023] } }
+         summary: { }
+         select: { }
+         locate: { }
+         extract: { }
+         model: { model_params: { n_jobs: -1 } } # The number of threads used by XGBoost  (-1: all available cores)
+         classify: { }
+         concat: { }
+
+.. code-block:: yaml
 
     classification_sets:
       - name: classification_0001  # A unique name for this classification task
