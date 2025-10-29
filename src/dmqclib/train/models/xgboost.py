@@ -122,7 +122,7 @@ class XGBoost(ModelBase):
         """
 
         if "n_jobs" in self.model_params:
-            model.model.n_jobs  = self.model_params["n_jobs"]
+            model.model.n_jobs = self.model_params["n_jobs"]
 
         return model
 
