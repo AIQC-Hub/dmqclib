@@ -50,14 +50,22 @@ class TestClassifyAllClass:
         ds = ClassifyAll(self.config)
 
         file_model = "/path/to/model_1/model_folder_1/model_{}.joblib"
-        file_classify = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
+        file_classify = (
+            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
+        )
         assert file_model.format("temp") == str(ds.model_file_names["temp"])
         assert file_model.format("psal") == str(ds.model_file_names["psal"])
         assert file_model.format("pres") == str(ds.model_file_names["pres"])
 
-        assert file_classify.format("temp") == str(ds.output_file_names["report"]["temp"])
-        assert file_classify.format("psal") == str(ds.output_file_names["report"]["psal"])
-        assert file_classify.format("pres") == str(ds.output_file_names["report"]["pres"])
+        assert file_classify.format("temp") == str(
+            ds.output_file_names["report"]["temp"]
+        )
+        assert file_classify.format("psal") == str(
+            ds.output_file_names["report"]["psal"]
+        )
+        assert file_classify.format("pres") == str(
+            ds.output_file_names["report"]["pres"]
+        )
 
     def test_base_model(self):
         """Ensure that the configured base model is an XGBoost instance."""
@@ -70,6 +78,7 @@ class TestClassifyAllClass:
 
         ds_3 = ClassifyAll(self.config_3)
         assert ds_3.base_model.model_params["n_jobs"] == 2
+
 
 class TestClassifyAll:
     """
@@ -189,20 +198,6 @@ class TestClassifyAll:
         assert isinstance(ds.models["pres"], XGBoost)
 
     @pytest.mark.parametrize("idx", range(3))
-    def test_read_models(self, idx):
-        """Confirm that reading models populates the 'models' dictionary with XGBoost instances."""
-        ds = ClassifyAll(
-            self.configs[idx],
-            test_sets=self.extracts[idx].target_features,
-        )
-        ds.model_file_names = self.model_file_names
-        ds.read_models()
-
-        assert isinstance(ds.models["temp"], XGBoost)
-        assert isinstance(ds.models["psal"], XGBoost)
-        assert isinstance(ds.models["pres"], XGBoost)
-
-    @pytest.mark.parametrize("idx", range(3))
     def test_with_xgboost(self, idx):
         """Check that testing targets after model loading populates the result columns."""
         ds = ClassifyAll(
@@ -282,7 +277,7 @@ class TestClassifyAll:
             ds.read_models()
 
     @pytest.mark.parametrize("idx", range(3))
-    def test_read_models(self, idx):
+    def test_n_jobs(self, idx):
         """Confirm that reading models populates the 'models' dictionary with XGBoost instances."""
         ds = ClassifyAll(
             self.configs[idx],

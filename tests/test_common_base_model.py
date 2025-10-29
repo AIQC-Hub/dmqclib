@@ -25,6 +25,9 @@ class ModelBaseWithEmptyName(ModelBase):
     def test(self) -> None:
         pass
 
+    def update_nthreads(self) -> None:
+        pass
+
 
 class ModelBaseWithExpectedName(ModelBase):
     """
@@ -42,6 +45,9 @@ class ModelBaseWithExpectedName(ModelBase):
     def test(self) -> None:
         pass
 
+    def update_nthreads(self) -> None:
+        pass
+
 
 class ModelBaseWithWrongName(ModelBase):
     """
@@ -57,6 +63,9 @@ class ModelBaseWithWrongName(ModelBase):
         pass
 
     def test(self) -> None:
+        pass
+
+    def update_nthreads(self) -> None:
         pass
 
 
