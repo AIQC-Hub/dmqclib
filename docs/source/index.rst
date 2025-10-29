@@ -14,6 +14,11 @@ Each stage is controlled by a YAML configuration file, allowing you to define an
 .. note::
    To unlock the full potential of your model building processes, comprehensive configuration is key. For a streamlined initial test or to explore the library with base settings, see the :doc:`how-to/quick_start` guide.
 
+**Project Links**
+  - `GitHub Repository <https://github.com/AIQC-Hub/dmqclib>`_
+  - `Issue Tracker <https://github.com/AIQC-Hub/dmqclib/issues>`_
+  - `Pull Requests <https://github.com/AIQC-Hub/dmqclib/pulls>`_
+
 ----------
 
 These tutorials provide a step-by-step guide to the core workflows of the library. If you are new to ``dmqclib``, start here.
