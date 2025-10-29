@@ -124,7 +124,7 @@ step_param_sets:
       select: { }
       locate: { }
       extract: { }
-      model: { }
+      model: { model_params: { n_jobs: -1 } }
       classify: { }
       concat: { }
 

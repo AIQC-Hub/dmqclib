@@ -45,10 +45,10 @@ Similar to the ``prepare`` workflow, this section specifies the target variables
 ^^^^^^^^^^^^^^^^^
 This powerful section allows you to define the core components of your training pipeline by specifying the Python classes to use for each major step. This is where you choose your machine learning model, the cross-validation method, and other pipeline components.
 
-*   **input**: The class responsible for ingesting the prepared training, validation, and test datasets.
-*   **validate**: The class defining the cross-validation strategy (e.g., ``KFoldValidation``, ``TimeSeriesValidation``).
-*   **model**: The class for the machine learning algorithm to be trained (e.g., ``XGBoost``, ``RandomForest``).
-*   **build**: The class that handles the final model training on the full training set and saving the model artifacts.
+*   **steps.input**: The class responsible for ingesting the prepared training, validation, and test datasets.
+*   **steps.validate**: The class defining the cross-validation strategy (e.g., ``KFoldValidation``, ``TimeSeriesValidation``).
+*   **steps.model**: The class for the machine learning algorithm to be trained (e.g., ``XGBoost``, ``RandomForest``).
+*   **steps.build**: The class that handles the final model training on the full training set and saving the model artifacts.
 
 .. code-block:: yaml
 
@@ -64,11 +64,11 @@ This powerful section allows you to define the core components of your training 
 ^^^^^^^^^^^^^^^^^
 This section provides detailed parameters for the classes defined in your chosen ``step_class_sets``. This allows you to fine-tune the behavior of each step, such as specifying the number of folds for cross-validation or providing hyperparameters for your machine learning model.
 
-*   **input**: Parameters for the input data loading step (often empty or simple flags).
-*   **validate.k_fold**: For ``KFoldValidation``, specifies the number of folds for cross-validation.
-*   **model.model_params.scale_pos_weight**: This is used to address imbalanced datasets by weighting the positive class. For example, ``200`` indicates a ratio of negative to positive records of 200:1.
-*   **model.model_params.n_jobs**: The number of threads used by XGBoost. It tries to use all available CPU cores if it is set to `-1`.
-*   **build**: Parameters for the final model building step (often empty or simple flags for saving).
+*   **steps.input**: Parameters for the input data loading step (often empty or simple flags).
+*   **steps.validate.k_fold**: For ``KFoldValidation``, specifies the number of folds for cross-validation.
+*   **steps.model.model_params.scale_pos_weight**: This is used to address imbalanced datasets by weighting the positive class. For example, ``200`` indicates a ratio of negative to positive records of 200:1.
+*   **steps.model.model_params.n_jobs**: The number of threads used by XGBoost. It tries to use all available CPU cores if it is set to `-1`.
+*   **steps.build**: Parameters for the final model building step (often empty or simple flags for saving).
 
 .. code-block:: yaml
 

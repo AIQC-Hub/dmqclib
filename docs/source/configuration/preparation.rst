@@ -167,6 +167,7 @@ This section provides general parameters that control the behavior of the variou
 *   **steps.input.filter_method_dict.remove_years**: Specifies a list of years to be excluded from the dataset.
 *   **steps.input.filter_method_dict.keep_years**: Specifies a list of years to be kept for training.
 *   **steps.split.test_set_fraction**: Defines the proportion of data to allocate to the test set.
+*   **steps.split.k_fold**: Defines the `k` of k-fold cross validation
 
 .. code-block:: yaml
 
