@@ -63,6 +63,7 @@ Update your ``classification_config.yaml`` file to match the following. Remember
           step_folder_name: classify # Subdirectory within common.base_path for the final classified output
 
 .. code-block:: yaml
+
    step_param_sets:
      - name: data_set_param_set_1
        steps:

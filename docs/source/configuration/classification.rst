@@ -99,7 +99,7 @@ These two sections are critical for ensuring that the new input data is transfor
            stats_set: { type: raw }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: raw }
@@ -280,7 +280,7 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
            stats_set: { type: raw }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: raw }

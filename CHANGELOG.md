@@ -8,6 +8,7 @@ As this project is still in active development, it does not yet strictly adhere 
 ### Added
 - Classes to generate all observations in prepare stage
 - Parameter to set the number of threads used by XGBoost
+- Cosine conversion for days of the year feature
 
 ## [0.6.3] - 2025-10-23
 ### Added

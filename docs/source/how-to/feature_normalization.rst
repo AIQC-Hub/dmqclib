@@ -72,7 +72,7 @@ Entries in the ``feature_param_sets`` and ``feature_stats_sets`` sections in bot
            stats_set: { type: min_max, name: location }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: min_max,  name: profile_summary_stats }

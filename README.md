@@ -23,6 +23,10 @@ pip install dmqclib
 conda install -c conda-forge dmqclib
 ```
 
+## Documentation
+
+Project documentation is hosted on [Read the Docs](https://dmqclib.readthedocs.io/en/latest/index.html).
+
 ## Core Concepts
 
 The library is designed around a three-stage workflow:
@@ -275,8 +279,6 @@ ruff format tests
 ```
 
 ## Documentation (for Maintainers)
-
-Project documentation is hosted on [Read the Docs](https://dmqclib.readthedocs.io/en/latest/index.html).
 
 ### Building Docs Locally
 

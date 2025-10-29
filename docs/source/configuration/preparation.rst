@@ -109,7 +109,7 @@ These two interconnected sections are dedicated to configuring your feature engi
            stats_set: { type: raw }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine                         # or sine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: raw }
@@ -273,7 +273,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
            stats_set: { type: raw }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine                         # or sine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: raw }
