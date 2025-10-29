@@ -27,16 +27,11 @@ First, use ``dmqclib`` to generate the boilerplate configuration template specif
    import dmqclib as dm
    import os
 
-   # Define the path for the config file
    config_path = os.path.expanduser("~/aiqc_project/config/classification_config.yaml")
-
-   # This creates 'classification_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
        file_name=config_path,
        stage="classify"
    )
-   print(f"Configuration template generated at: {config_path}")
-
 
 Step 4.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,6 +61,24 @@ Update your ``classification_config.yaml`` file to match the following. Remember
           base_path: ~/aiqc_project/models # Directory containing your trained model file(s) from the training step
         concat:
           step_folder_name: classify # Subdirectory within common.base_path for the final classified output
+
+.. code-block:: yaml
+
+   step_param_sets:
+     - name: data_set_param_set_1
+       steps:
+         input: { sub_steps: { rename_columns: false,
+                               filter_rows: true },
+                  rename_dict: { },
+                  filter_method_dict: { remove_years: [],
+                                        keep_years: [2023] } }
+         summary: { }
+         select: { }
+         locate: { }
+         extract: { }
+         model: { model_params: { n_jobs: -1 } } # The number of threads used by XGBoost  (-1: all available cores)
+         classify: { }
+         concat: { }
 
 .. code-block:: yaml
 
@@ -99,7 +112,6 @@ Load the configuration file and then call the ``classify_dataset`` function:
    config_path = os.path.expanduser("~/aiqc_project/config/classification_config.yaml")
    config = dm.read_config(config_path)
    dm.classify_dataset(config)
-   print(f"Classification complete! Outputs saved to: {os.path.join(config.path_info_sets[0].common.base_path, config.classification_sets[0].dataset_folder_name, config.path_info_sets[0].concat.step_folder_name)}")
 
 Understanding the Output
 ------------------------

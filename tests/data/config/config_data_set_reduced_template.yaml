@@ -6,11 +6,8 @@ path_info_sets:
     input:
       base_path: /path/to/input # EDIT: Directory with input files
       step_folder_name: ""
-    model:
-      base_path: /path/to/data/dataset_0001  # EDIT: Directory with model files
-      step_folder_name: "model"
-    concat:
-      step_folder_name: classify # EDIT: Directory with classification results
+    split:
+      step_folder_name: training
 
 target_sets:
   - name: target_set_1
@@ -79,14 +76,12 @@ feature_stats_sets:
 step_class_sets:
   - name: data_set_step_set_1
     steps:
-      input: InputDataSetAll
-      summary: SummaryDataSetAll
-      select: SelectDataSetAll
-      locate: LocateDataSetAll
-      extract: ExtractDataSetAll
-      model: XGBoost
-      classify: ClassifyAll
-      concat: ConcatDataSetAll
+      input: InputDataSetA
+      summary: SummaryDataSetA
+      select: SelectDataSetA
+      locate: LocateDataSetA
+      extract: ExtractDataSetA
+      split: SplitDataSetA
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -94,20 +89,19 @@ step_param_sets:
       input: { sub_steps: { rename_columns: false,
                             filter_rows: true },
                rename_dict: { },
-               filter_method_dict: { remove_years: [ ],
-                                     keep_years: [ 2023 ] } }
+               filter_method_dict: { remove_years: [ 2023 ],
+                                     keep_years: [ ] } }
       summary: { }
-      select: { }
-      locate: { }
+      select: { neg_pos_ratio: 5 }
+      locate: { neighbor_n: 5 }
       extract: { }
-      model: { model_params: { n_jobs: -1 } }
-      classify: { }
-      concat: { }
+      split: { test_set_fraction: 0.1,
+               k_fold: 10 }
 
-classification_sets:
-  - name: classification_0001  # EDIT: Your classification name
+data_sets:
+  - name: dataset_0001  # EDIT: Your data set name
     dataset_folder_name: dataset_0001  # EDIT: Your output folder
-    input_file_name: nrt_cora_bo_4.parquet   # EDIT: Your input filename
+    input_file_name: nrt_cora_bo_4.parquet # EDIT: Your input filename
     path_info: data_set_1
     target_set: target_set_1
     summary_stats_set: summary_stats_set_1

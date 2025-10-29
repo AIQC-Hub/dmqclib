@@ -21,7 +21,7 @@ Configuration: Parameters
 The ``day_of_year`` feature accepts two parameters: ``col_names`` and ``convert``.
 
 *   The ``col_names`` parameter should be ``[ profile_timestamp ]`` in the current version.
-*   The ``convert`` parameter can be set to ``sine`` or a non-``sine`` value. If ``sine`` is specified, a sine conversion is performed; otherwise, the raw values are used.
+*   The ``convert`` parameter can be set to ``sine``, ``cosine``, or a non-``sine`` value. If ``sine`` or ``cosine`` is specified, a sine or cosine conversion is performed; otherwise, the raw values are used.
 
 .. code-block:: yaml
 
@@ -30,7 +30,7 @@ The ``day_of_year`` feature accepts two parameters: ``col_names`` and ``convert`
        params:
          - feature: day_of_year
            col_names: [ profile_timestamp ]
-           convert: sine
+           convert: cosine
 
 Configuration: Normalization
 -------------------------------------

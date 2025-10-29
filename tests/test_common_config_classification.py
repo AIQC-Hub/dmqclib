@@ -88,19 +88,10 @@ class TestClassificationConfig(unittest.TestCase):
 class TestClassificationConfigTemplate:
     @pytest.fixture(autouse=True)
     def setup_template(self):
+        dir_config = Path(__file__).resolve().parent / "data" / "config"
         self.template_files = [
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "config_classify_set_full_template.yaml"
-            ),
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "config_classify_set_template.yaml"
-            ),
+            dir_config / "config_classify_set_full_template.yaml",
+            dir_config / "config_classify_set_template.yaml",
         ]
 
     @pytest.mark.parametrize("idx", range(2))

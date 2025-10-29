@@ -18,6 +18,10 @@ The primary configuration sections (building blocks) are:
 *   **step_param_sets**: Supplies general parameters that control the behavior of the default or custom processing steps.
 *   **data_sets**: The central assembly section, where you combine named blocks from the sections above to define a complete and executable data processing pipeline.
 
+.. note::
+
+   ``dmaclib`` provides methods to down-sample the negative data set. Please refer to the :doc:`../../how-to/down_sampling_negative` guide for details.
+
 Detailed Configuration Sections
 -------------------------------
 
@@ -105,7 +109,7 @@ These two interconnected sections are dedicated to configuring your feature engi
            stats_set: { type: raw }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine                         # or sine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: raw }
@@ -150,10 +154,10 @@ This section allows you to define and reference custom Python classes that imple
        steps:
          input: InputDataSetA
          summary: SummaryDataSetA
-         select: SelectDataSetA
-         locate: LocateDataSetA
+         select: SelectDataSetAll
+         locate: LocateDataSetAll
          extract: ExtractDataSetA
-         split: SplitDataSetA
+         split: SplitDataSetAll
 
 `step_param_sets`
 ^^^^^^^^^^^^^^^^^
@@ -162,8 +166,8 @@ This section provides general parameters that control the behavior of the variou
 *   **steps.input.sub_steps.filter_rows**: A boolean flag to enable/disable row filtering based on ``filter_method_dict``.
 *   **steps.input.filter_method_dict.remove_years**: Specifies a list of years to be excluded from the dataset.
 *   **steps.input.filter_method_dict.keep_years**: Specifies a list of years to be kept for training.
-*   **steps.select.neg_pos_ratio**: Controls the ratio of negative to positive samples (e.g., for imbalanced datasets).
 *   **steps.split.test_set_fraction**: Defines the proportion of data to allocate to the test set.
+*   **steps.split.k_fold**: Defines the `k` of k-fold cross validation
 
 .. code-block:: yaml
 
@@ -176,8 +180,8 @@ This section provides general parameters that control the behavior of the variou
                   filter_method_dict: { remove_years: [2023],
                                         keep_years: [] } }
          summary: { }
-         select: { neg_pos_ratio: 5 }
-         locate: { neighbor_n: 5 }
+         select: { }
+         locate: { }
          extract: { }
          split: { test_set_fraction: 0.1,
                   k_fold: 10 }
@@ -213,7 +217,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
 
 .. code-block:: yaml
    :caption: Full prepare_config.yaml example
-   :emphasize-lines: 5, 7, 65, 69, 90, 92, 93, 95, 96, 98, 99, 102, 103, 104
+   :emphasize-lines: 5, 7, 65, 69, 90, 92, 93, 98, 99, 102, 103, 104
 
    ---
    path_info_sets:
@@ -269,7 +273,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
            stats_set: { type: raw }
            col_names: [ longitude, latitude ]
          - feature: day_of_year
-           convert: sine
+           convert: cosine                         # or sine
            col_names: [ profile_timestamp ]
          - feature: profile_summary_stats
            stats_set: { type: raw }
@@ -295,10 +299,10 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
        steps:
          input: InputDataSetA
          summary: SummaryDataSetA
-         select: SelectDataSetA
-         locate: LocateDataSetA
+         select: SelectDataSetAll
+         locate: LocateDataSetAll
          extract: ExtractDataSetA
-         split: SplitDataSetA
+         split: SplitDataSetAll
 
    step_param_sets:
      - name: data_set_param_set_1
@@ -309,8 +313,8 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
                   filter_method_dict: { remove_years: [2023],
                                         keep_years: [] } }
          summary: { }
-         select: { neg_pos_ratio: 5 }
-         locate: { neighbor_n: 5 }
+         select: { }
+         locate: { }
          extract: { }
          split: { test_set_fraction: 0.1,
                   k_fold: 10 }

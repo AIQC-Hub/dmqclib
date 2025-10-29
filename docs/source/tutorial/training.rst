@@ -24,16 +24,11 @@ First, use ``dmqclib`` to generate a boilerplate configuration template specific
    import dmqclib as dm
    import os
 
-   # Define the path for the config file
    config_path = os.path.expanduser("~/aiqc_project/config/training_config.yaml")
-
-   # This creates 'training_config.yaml' in '~/aiqc_project/config'
    dm.write_config_template(
        file_name=config_path,
        stage="train"
    )
-   print(f"Configuration template generated at: {config_path}")
-
 
 Step 3.2: Customize the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,7 +79,8 @@ Modify the file to align with the following structure. Remember to replace place
         steps:
           input: { }
           validate: { k_fold: 10 } # 10-fold cross-validation
-          model: { model_params: { scale_pos_weight: 200 } } # Example XGBoost hyperparameter
+          model: { model_params: { scale_pos_weight: 200,   # Specify pos:neg ratio
+                                   n_jobs: -1 } }           # Number of threads used by XGBoost
           build: { }
 
 .. code-block:: yaml
@@ -115,8 +111,6 @@ Load the configuration file and then call the ``train_and_evaluate`` function:
    config_path = os.path.expanduser("~/aiqc_project/config/training_config.yaml")
    config = dm.read_config(config_path)
    dm.train_and_evaluate(config)
-   print(f"Model training and evaluation complete! Outputs saved to: {os.path.join(config.path_info_sets[0].common.base_path, config.training_sets[0].dataset_folder_name)}")
-   print(f"Trained models saved to: {config.path_info_sets[0].model.base_path}")
 
 Understanding the Output
 ------------------------

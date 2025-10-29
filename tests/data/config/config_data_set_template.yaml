@@ -78,10 +78,10 @@ step_class_sets:
     steps:
       input: InputDataSetA
       summary: SummaryDataSetA
-      select: SelectDataSetA
-      locate: LocateDataSetA
+      select: SelectDataSetAll
+      locate: LocateDataSetAll
       extract: ExtractDataSetA
-      split: SplitDataSetA
+      split: SplitDataSetAll
 
 step_param_sets:
   - name: data_set_param_set_1
@@ -92,8 +92,8 @@ step_param_sets:
                filter_method_dict: { remove_years: [ 2023 ],
                                      keep_years: [ ] } }
       summary: { }
-      select: { neg_pos_ratio: 5 }
-      locate: { neighbor_n: 5 }
+      select: { }
+      locate: { }
       extract: { }
       split: { test_set_fraction: 0.1,
                k_fold: 10 }

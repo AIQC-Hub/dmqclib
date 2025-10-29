@@ -7,7 +7,7 @@ methods for building the model, making predictions, and generating a comprehensi
 report using `sklearn.metrics`.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Self
 
 import polars as pl
 import xgboost as xgb
@@ -64,6 +64,7 @@ class XGBoost(ModelBase):
             "max_depth": 6,
             "learning_rate": 0.1,
             "eval_metric": "logloss",
+            "n_jobs": -1,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_step_params("model").get("model_params", {})
@@ -112,6 +113,19 @@ class XGBoost(ModelBase):
         self.predict()
         self.create_report()
 
+    def update_nthreads(self, model: Self) -> Self:
+        """
+        Update the number of threads set in the model.
+
+        :param model: The model needs to be updated.
+        :type model: Self
+        """
+
+        if "n_jobs" in self.model_params:
+            model.model.n_jobs = self.model_params["n_jobs"]
+
+        return model
+
     def predict(self) -> None:
         """
         Generates predictions for the test set using the trained model.
@@ -127,8 +141,12 @@ class XGBoost(ModelBase):
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
 
-        self.predictions = pl.DataFrame({"class": self.model.predict(x_test),
-                                         "score": self.model.predict_proba(x_test)[:, 1]})
+        self.predictions = pl.DataFrame(
+            {
+                "class": self.model.predict(x_test),
+                "score": self.model.predict_proba(x_test)[:, 1],
+            }
+        )
 
     def create_report(self) -> None:
         """

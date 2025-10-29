@@ -17,6 +17,14 @@ dmqclib.prepare.step6\_split\_dataset.dataset\_a module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.prepare.step6\_split\_dataset.dataset\_all module
+---------------------------------------------------------
+
+.. automodule:: dmqclib.prepare.step6_split_dataset.dataset_all
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.prepare.step6\_split\_dataset.split\_base module
 --------------------------------------------------------
 

@@ -6,27 +6,8 @@ path_info_sets:
     input:
       base_path: /path/to/input_1
       step_folder_name: input_folder_1
-    select:
-      base_path: /path/to/select_1
-      step_folder_name: select_folder_1
-    locate:
-      base_path: /path/to/locate_1
-      step_folder_name: locate_folder_1
-    split:
-      base_path: /path/to/split_1
-      step_folder_name: split_folder_1
 
 target_sets:
-  - name: target_set_1_2
-    variables:
-      - name: temp
-        flag: temp_qc
-        pos_flag_values: [ 4, ]
-        neg_flag_values: [ 1, ]
-      - name: psal
-        flag: psal_qc
-        pos_flag_values: [ 4, ]
-        neg_flag_values: [ 1, ]
   - name: target_set_1
     variables:
       - name: temp
@@ -99,14 +80,6 @@ step_class_sets:
       locate: LocateDataSetA
       extract: ExtractDataSetA
       split: SplitDataSetA
-  - name: data_set_step_set_invalid
-    steps:
-      input: InvalidClass
-      summary: InvalidClass
-      select: InvalidClass
-      locate: InvalidClass
-      extract: InvalidClass
-      split: InvalidClass
 
 step_param_sets:
   - name: data_set_param_set_1

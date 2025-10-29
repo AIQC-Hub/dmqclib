@@ -1,10 +1,13 @@
 """
-This module defines the LocateDataSetAll class, a specialized implementation
-of LocatePositionBase for selecting all relevant data rows from combined
-Copernicus CTD data.
+This module provides a specialized class, LocateDataSetA, for identifying and
+extracting positive and negative data rows from oceanographic profiles. It is
+designed to prepare paired datasets for machine learning training or evaluation
+by aligning "bad" quality-controlled observations (positive examples) with
+"good" quality-controlled observations (negative examples) based on profile
+and pressure proximity.
 
-It is designed to prepare data for machine learning tasks by identifying
-and labeling data points based on configured QC flags.
+It extends :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
+and utilizes Polars DataFrames for efficient data manipulation.
 """
 
 from typing import Dict, Optional
@@ -17,12 +20,16 @@ from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 
 class LocateDataSetAll(LocatePositionBase):
     """
-    A subclass of :class:`LocatePositionBase` that locates all rows
-    from Copernicus CTD data for training or evaluation purposes.
+    A subclass of :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
+    that locates both positive and negative rows from BO NRT+Cora test data for
+    training or evaluation purposes.
 
-    This class assigns a default file naming scheme for target rows
-    and uses configuration details (e.g., QC flags) to identify
-    relevant data rows for each target.
+    The workflow involves:
+
+      - Selecting rows that have "bad" QC flags (positive examples).
+      - Selecting rows that have "good" QC flags (negative examples).
+      - Concatenating and labeling them for subsequent steps in a machine
+        learning pipeline.
     """
 
     expected_class_name: str = "LocateDataSetAll"
@@ -34,33 +41,23 @@ class LocateDataSetAll(LocatePositionBase):
         selected_profiles: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the dataset with configuration, an optional input DataFrame,
-        and an optional DataFrame of selected profiles.
+        Initialize the dataset with configuration, an input DataFrame,
+        and a DataFrame of selected profiles.
 
-        :param config: A configuration object specifying paths, parameters,
-                       and target definitions for locating test data rows.
+        :param config: A dataset configuration object specifying paths,
+                       parameters, and target definitions for locating test data rows.
         :type config: dmqclib.common.base.config_base.ConfigBase
-        :param input_data: An optional Polars DataFrame containing the full data
+        :param input_data: A Polars DataFrame containing the full data
                            from which positive and negative rows will be derived.
-                           If not provided, it should be set later using
-                           :meth:`set_input_data`.
+                           Defaults to None.
         :type input_data: polars.DataFrame or None
-        :param selected_profiles: An optional Polars DataFrame containing profiles
-                                  labeled as positive or negative. If not provided,
-                                  it should be set later using
-                                  :meth:`set_selected_profiles`.
+        :param selected_profiles: A Polars DataFrame containing profiles
+                                  that have already been labeled as positive or negative.
+                                  Defaults to None.
         :type selected_profiles: polars.DataFrame or None
         """
         super().__init__(
             config=config, input_data=input_data, selected_profiles=selected_profiles
-        )
-
-        #: Default file name template for writing target rows (one file per target).
-        self.default_file_name: str = "selected_rows_classify_{target_name}.parquet"
-
-        #: Dictionary mapping each target name to the corresponding output Parquet file path.
-        self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
-            step_name="locate", default_file_name=self.default_file_name
         )
 
     def select_all_rows(self, target_name: str, target_value: Dict) -> None:

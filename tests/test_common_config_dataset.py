@@ -84,19 +84,11 @@ class TestDataSetConfig(unittest.TestCase):
 class TestDataSetConfigTemplate:
     @pytest.fixture(autouse=True)
     def setup_template(self):
+        dir_config = Path(__file__).resolve().parent / "data" / "config"
         self.template_files = [
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "config_data_set_full_template.yaml"
-            ),
-            (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "config_data_set_template.yaml"
-            ),
+            dir_config / "config_data_set_full_template.yaml",
+            dir_config / "config_data_set_reduced_template.yaml",
+            dir_config / "config_data_set_template.yaml",
         ]
 
     @pytest.mark.parametrize("idx", range(2))
@@ -114,7 +106,7 @@ class TestDataSetConfigTemplate:
         )
         assert input_file_name == "/path/to/input/nrt_cora_bo_4.parquet"
 
-    @pytest.mark.parametrize("idx", range(2))
+    @pytest.mark.parametrize("idx", range(3))
     def test_summary_folder(self, idx):
         """
         Confirm that files placed in a 'summary' folder are resolved correctly.
@@ -124,7 +116,7 @@ class TestDataSetConfigTemplate:
         input_file_name = ds.get_full_file_name("summary", "test.txt")
         assert input_file_name == "/path/to/data/dataset_0001/summary/test.txt"
 
-    @pytest.mark.parametrize("idx", range(2))
+    @pytest.mark.parametrize("idx", range(3))
     def test_split_folder(self, idx):
         """
         Confirm that files placed in a 'split' folder are resolved correctly.
@@ -134,7 +126,7 @@ class TestDataSetConfigTemplate:
         input_file_name = ds.get_full_file_name("split", "test.txt")
         assert input_file_name == "/path/to/data/dataset_0001/training/test.txt"
 
-    @pytest.mark.parametrize("idx", range(2))
+    @pytest.mark.parametrize("idx", range(3))
     def test_auto_select(self, idx):
         """
         Confirm that auto select options works.
