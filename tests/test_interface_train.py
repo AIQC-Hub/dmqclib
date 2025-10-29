@@ -42,11 +42,7 @@ class TestCreateTrainingDataSet:
         Prepare the test environment by loading a specified training configuration,
         and defining input/output paths for subsequent training/evaluation tests.
         """
-        dir_config = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-        )
+        dir_config = Path(__file__).resolve().parent / "data" / "config"
         self.config_file_paths = [
             dir_config / "test_training_001.yaml",
             dir_config / "test_training_002.yaml",
@@ -59,10 +55,8 @@ class TestCreateTrainingDataSet:
 
         yield
 
-        for x  in self.configs:
-            output_folder = (
-                self.test_data_location / x.data["dataset_folder_name"]
-            )
+        for x in self.configs:
+            output_folder = self.test_data_location / x.data["dataset_folder_name"]
             if output_folder.exists() and output_folder.is_dir():
                 shutil.rmtree(output_folder)
 

@@ -7,7 +7,7 @@ As this project is still in active development, it does not yet strictly adhere 
 ## [Unreleased]
 ### Added
 - Classes to generate all observations in prepare stage
-- Option to set the number of threads used with XGBoost
+- Parameter to set the number of threads used by XGBoost
 
 ## [0.6.3] - 2025-10-23
 ### Added
@@ -90,7 +90,7 @@ As this project is still in active development, it does not yet strictly adhere 
 - `Classify` module to classify unseen data
 
 ### Changed
-- Reorganise the whole project structure
+- Re-organise the whole project structure
 
 ## [0.3.5] - 2025-07-05
 ### Changed
@@ -144,7 +144,7 @@ As this project is still in active development, it does not yet strictly adhere 
 
 ## [0.2.0] - 2025-06-25
 ### Changed
-- Reorganise the whole project structure
+- Re-organise the whole project structure
 
 ### Added
 - `CV` module to perform cross validation
