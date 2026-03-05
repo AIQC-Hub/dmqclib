@@ -73,6 +73,7 @@ class BuildModelBase(DataSetBase):
         self.default_file_names: Dict[str, str] = {
             "report": "test_report_{target_name}.tsv",
             "prediction": "test_prediction_{target_name}.parquet",
+            "contingency_table": "test_contingency_tables_{target_name}.tsv",
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
 
@@ -101,6 +102,8 @@ class BuildModelBase(DataSetBase):
         self.models: Dict[str, Optional[ModelBase]] = {}
         #: A dictionary to store test results keyed by target name.
         self.reports: Dict[str, pl.DataFrame] = {}
+        #: A dictionary to store contingency tables keyed by target name.
+        self.contingency_tables: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store predictions results keyed by target name.
         self.predictions: Dict[str, pl.DataFrame] = {}
 
@@ -180,6 +183,21 @@ class BuildModelBase(DataSetBase):
 
         for target_name, df in self.reports.items():
             output_path = self.output_file_names["report"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_csv(output_path, separator="\t")
+
+    def write_contingency_tables(self) -> None:
+        """
+        Write each target's contingency table to a TSV file.
+
+        :raises ValueError: If :attr:`contingency_tables` is empty, indicating no tests
+                            have been carried out or no tables stored.
+        """
+        if not self.contingency_tables:
+            raise ValueError("Member variable 'contingency_tables' must not be empty.")
+
+        for target_name, df in self.contingency_tables.items():
+            output_path = self.output_file_names["contingency_table"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.write_csv(output_path, separator="\t")
 

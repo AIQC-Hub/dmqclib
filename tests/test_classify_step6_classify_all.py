@@ -46,17 +46,23 @@ class TestClassifyAllClass:
         assert ds.step_name == "classify"
 
     def test_output_file_names(self):
-        """Verify that default output file names (model and results) are as expected."""
+        """Verify that default output file names (model, results, contingency tables) are as expected."""
         ds = ClassifyAll(self.config)
 
         file_model = "/path/to/model_1/model_folder_1/model_{}.joblib"
         file_classify = (
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
         )
+        file_contingency = (
+            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
+        )
+
+        # Check model file names
         assert file_model.format("temp") == str(ds.model_file_names["temp"])
         assert file_model.format("psal") == str(ds.model_file_names["psal"])
         assert file_model.format("pres") == str(ds.model_file_names["pres"])
 
+        # Check report file names
         assert file_classify.format("temp") == str(
             ds.output_file_names["report"]["temp"]
         )
@@ -65,6 +71,17 @@ class TestClassifyAllClass:
         )
         assert file_classify.format("pres") == str(
             ds.output_file_names["report"]["pres"]
+        )
+
+        # Check contingency table file names
+        assert file_contingency.format("temp") == str(
+            ds.output_file_names["contingency_table"]["temp"]
+        )
+        assert file_contingency.format("psal") == str(
+            ds.output_file_names["contingency_table"]["psal"]
+        )
+        assert file_contingency.format("pres") == str(
+            ds.output_file_names["contingency_table"]["pres"]
         )
 
     def test_base_model(self):
@@ -161,6 +178,11 @@ class TestClassifyAll:
             "psal": str(data_path / "temp_classify_prediction_psal.parquet"),
             "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
         }
+        self.contingency_table_file_names = {
+            "temp": str(data_path / "temp_classify_contingency_tables_temp.tsv"),
+            "psal": str(data_path / "temp_classify_contingency_tables_psal.tsv"),
+            "pres": str(data_path / "temp_classify_contingency_tables_pres.tsv"),
+        }
         self.n_jobs = [-1, -1, 2]
 
     @pytest.mark.parametrize("idx", range(3))
@@ -199,7 +221,7 @@ class TestClassifyAll:
 
     @pytest.mark.parametrize("idx", range(3))
     def test_with_xgboost(self, idx):
-        """Check that testing targets after model loading populates the result columns."""
+        """Check that testing targets after model loading populates the result columns and contingency tables."""
         ds = ClassifyAll(
             self.configs[idx],
             test_sets=self.extracts[idx].target_features,
@@ -208,6 +230,7 @@ class TestClassifyAll:
         ds.read_models()
         ds.test_targets()
 
+        # Check Test Sets
         assert isinstance(ds.test_sets["temp"], pl.DataFrame)
         assert ds.test_sets["temp"].shape[0] == 19480
         assert ds.test_sets["temp"].shape[1] == 56
@@ -219,6 +242,17 @@ class TestClassifyAll:
         assert isinstance(ds.test_sets["pres"], pl.DataFrame)
         assert ds.test_sets["pres"].shape[0] == 19480
         assert ds.test_sets["pres"].shape[1] == 56
+
+        # Check Contingency Tables
+        assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
+        assert ds.contingency_tables["temp"].height == 19480
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+
+        assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
+        assert ds.contingency_tables["psal"].height == 19480
+
+        assert isinstance(ds.contingency_tables["pres"], pl.DataFrame)
+        assert ds.contingency_tables["pres"].height == 19480
 
     @pytest.mark.parametrize("idx", range(3))
     def test_without_model(self, idx):
@@ -252,6 +286,29 @@ class TestClassifyAll:
         os.remove(ds.output_file_names["report"]["pres"])
 
     @pytest.mark.parametrize("idx", range(3))
+    def test_write_contingency_tables(self, idx):
+        """Verify that contingency tables are correctly written to file."""
+        ds = ClassifyAll(
+            self.configs[idx],
+            test_sets=self.extracts[idx].target_features,
+        )
+        ds.model_file_names = self.model_file_names
+        # Override output file path for testing
+        ds.output_file_names["contingency_table"] = self.contingency_table_file_names
+
+        ds.read_models()
+        ds.test_targets()
+        ds.write_contingency_tables()
+
+        assert os.path.exists(ds.output_file_names["contingency_table"]["temp"])
+        assert os.path.exists(ds.output_file_names["contingency_table"]["psal"])
+        assert os.path.exists(ds.output_file_names["contingency_table"]["pres"])
+
+        os.remove(ds.output_file_names["contingency_table"]["temp"])
+        os.remove(ds.output_file_names["contingency_table"]["psal"])
+        os.remove(ds.output_file_names["contingency_table"]["pres"])
+
+    @pytest.mark.parametrize("idx", range(3))
     def test_write_no_results(self, idx):
         """Ensure ValueError is raised if write_reports is called without test results."""
         ds = ClassifyAll(
@@ -260,6 +317,16 @@ class TestClassifyAll:
         )
         with pytest.raises(ValueError):
             ds.write_reports()
+
+    @pytest.mark.parametrize("idx", range(3))
+    def test_write_no_contingency_tables(self, idx):
+        """Ensure ValueError is raised if write_contingency_tables is called without results."""
+        ds = ClassifyAll(
+            self.configs[idx],
+            test_sets=self.extracts[idx].target_features,
+        )
+        with pytest.raises(ValueError):
+            ds.write_contingency_tables()
 
     @pytest.mark.parametrize("idx", range(3))
     def test_read_models_no_file(self, idx):
