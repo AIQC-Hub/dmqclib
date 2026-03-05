@@ -101,6 +101,7 @@ class XGBoost(ModelBase):
           1. Call :meth:`predict` to generate predictions on the test set.
           2. Call :meth:`create_report` to compute and store various evaluation metrics
              in :attr:`report`.
+          3. Call :meth:`update_contingency_table` to store prediction scores for ROC/PR analysis.
 
         The :attr:`k` attribute (provided by parent class or
         cross-validation context) is used to identify the fold number:
@@ -112,6 +113,7 @@ class XGBoost(ModelBase):
         """
         self.predict()
         self.create_report()
+        self.update_contingency_table()
 
     def update_nthreads(self, model: Self) -> Self:
         """
