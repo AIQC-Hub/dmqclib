@@ -1,7 +1,7 @@
-Welcome to the dmqclib documentation!
+Welcome to the `dmqclib` documentation!
 =======================================
 
-**dmqclib** is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project.
+``dmqclib`` is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project.
 
 The library is designed around a three-stage workflow:
 
@@ -14,9 +14,14 @@ Each stage is controlled by a YAML configuration file, allowing you to define an
 .. note::
    To unlock the full potential of your model building processes, comprehensive configuration is key. For a streamlined initial test or to explore the library with base settings, see the :doc:`how-to/quick_start` guide.
 
+**Project Links**
+  - `GitHub Repository <https://github.com/AIQC-Hub/dmqclib>`_
+  - `Issue Tracker <https://github.com/AIQC-Hub/dmqclib/issues>`_
+  - `Pull Requests <https://github.com/AIQC-Hub/dmqclib/pulls>`_
+
 ----------
 
-These tutorials provide a step-by-step guide to the core workflows of the library. If you are new to dmqclib, start here.
+These tutorials provide a step-by-step guide to the core workflows of the library. If you are new to ``dmqclib``, start here.
 
 .. toctree::
    :maxdepth: 2
@@ -30,7 +35,7 @@ These tutorials provide a step-by-step guide to the core workflows of the librar
 
 ----------
 
-This section provides practical examples and solutions for common tasks related to using dmqclib.
+This section provides practical examples and solutions for common tasks related to using ``dmqclib``.
 
 .. toctree::
    :maxdepth: 2
@@ -38,6 +43,8 @@ This section provides practical examples and solutions for common tasks related 
 
    how-to/quick_start
    how-to/data_preprocessing_utilities
+   how-to/down_sampling_negative
+   how-to/feature_normalization
    how-to/selecting_specific_configurations
 
 ----------
@@ -54,10 +61,24 @@ This section provides detailed reference information for all parameters in the Y
 
 ----------
 
-For in-depth information on specific functions, classes, and methods, consult the API documentation.
+Understanding the input features is crucial for building effective models. This section provides a detailed explanation of each feature used for model training.
 
 .. toctree::
    :maxdepth: 2
+   :caption: 📊 Features
+
+   features/location
+   features/day_of_year
+   features/basic_values
+   features/profile_summary_stats
+   features/neigbouring_values
+
+----------
+
+For in-depth information on specific functions, classes, and methods, consult the API documentation.
+
+.. toctree::
+   :maxdepth: 4
    :caption: 🧩 API Reference
 
    api/modules

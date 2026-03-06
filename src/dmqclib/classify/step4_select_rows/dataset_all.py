@@ -82,15 +82,20 @@ class LocateDataSetAll(LocatePositionBase):
         if self.input_data is None:
             raise ValueError("Member variable 'input_data' must not be empty.")
 
+        pos_flag_values = target_value.get("pos_flag_values", [4])
+        neg_flag_values = target_value.get("neg_flag_values", [1])
         flag_var_name = target_value["flag"]
         self.selected_rows[target_name] = (
             self.input_data.with_row_index("row_id", offset=1)
+            .filter(pl.col(flag_var_name).is_in(pos_flag_values + neg_flag_values))
             .with_columns(
                 pl.lit(0, dtype=pl.UInt32).alias("profile_id"),
                 pl.lit("").alias("pair_id"),
-                pl.when(pl.col(flag_var_name).is_in([4]))
+                pl.when(pl.col(flag_var_name).is_in(pos_flag_values))
                 .then(1)
-                .otherwise(0)
+                .when(pl.col(flag_var_name).is_in(neg_flag_values))
+                .then(0)
+                .otherwise(None)
                 .alias("label"),
             )
             .select(

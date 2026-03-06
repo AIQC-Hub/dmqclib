@@ -106,8 +106,8 @@ class SplitDataSetA(SplitDataSetBase):
             .filter(pl.col("label") == 0)
             .join(pos_training_set.select([pl.col("pair_id")]), on="pair_id")
         )
-        training_set = pos_training_set.vstack(neg_training_set)
 
+        training_set = pos_training_set.vstack(neg_training_set)
         self.training_sets[target_name] = training_set.select(
             ["row_id", pl.all().exclude("row_id")]
         )

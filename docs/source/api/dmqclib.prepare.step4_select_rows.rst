@@ -17,6 +17,14 @@ dmqclib.prepare.step4\_select\_rows.dataset\_a module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.prepare.step4\_select\_rows.dataset\_all module
+-------------------------------------------------------
+
+.. automodule:: dmqclib.prepare.step4_select_rows.dataset_all
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.prepare.step4\_select\_rows.locate\_base module
 -------------------------------------------------------
 

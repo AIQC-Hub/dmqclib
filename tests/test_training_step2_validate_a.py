@@ -69,6 +69,7 @@ class TestKFoldValidation(unittest.TestCase):
         based on the configuration.
         """
         ds = KFoldValidation(self.config)
+        # Check report file names
         self.assertEqual(
             "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_temp.tsv",
             str(ds.output_file_names["report"]["temp"]),
@@ -77,9 +78,25 @@ class TestKFoldValidation(unittest.TestCase):
             "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_psal.tsv",
             str(ds.output_file_names["report"]["psal"]),
         )
+
+        # Check contingency table file names
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/validation_report_pres.tsv",
-            str(ds.output_file_names["report"]["pres"]),
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_temp.tsv",
+            str(ds.output_file_names["contingency_table"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_psal.tsv",
+            str(ds.output_file_names["contingency_table"]["psal"]),
+        )
+
+        # Check metric plot file names
+        self.assertEqual(
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/metric_plots_temp.svg",
+            str(ds.output_file_names["metric_plot"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/metric_plots_psal.svg",
+            str(ds.output_file_names["metric_plot"]["psal"]),
         )
 
     def test_base_model(self):
@@ -124,22 +141,33 @@ class TestKFoldValidation(unittest.TestCase):
     def test_fold_validation(self):
         """
         Check that the KFoldValidation process, utilizing the XGBoost model,
-        successfully processes the training sets and populates the reports.
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
         """
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.process_targets()
 
+        # Check Reports
         self.assertIsInstance(ds.reports["temp"], pl.DataFrame)
         self.assertEqual(ds.reports["temp"].shape[0], 18)
         self.assertEqual(ds.reports["temp"].shape[1], 8)
 
-        self.assertIsInstance(ds.reports["psal"], pl.DataFrame)
-        self.assertEqual(ds.reports["psal"].shape[0], 18)
-        self.assertEqual(ds.reports["psal"].shape[1], 8)
+        # Check Contingency Tables
+        # "temp" has 116 rows in training set; K-fold should result in 116 predictions total.
+        self.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["temp"].height, 116)
+        # Expected columns: k, label, score
+        self.assertListEqual(
+            ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        )
 
-        self.assertIsInstance(ds.reports["pres"], pl.DataFrame)
-        self.assertEqual(ds.reports["pres"].shape[0], 18)
-        self.assertEqual(ds.reports["pres"].shape[1], 8)
+        # "psal" has 126 rows
+        self.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["psal"].height, 126)
+
+        # "pres" has 110 rows
+        self.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["pres"].height, 110)
 
     def test_write_results(self):
         """
@@ -171,6 +199,80 @@ class TestKFoldValidation(unittest.TestCase):
         os.remove(ds.output_file_names["report"]["psal"])
         os.remove(ds.output_file_names["report"]["pres"])
 
+    def test_write_contingency_tables(self):
+        """
+        Ensure contingency tables are written to the specified output files
+        and that these files are created on the file system.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output paths for testing
+        ds.output_file_names["contingency_table"]["temp"] = str(
+            data_path / "temp_contingency_temp.tsv"
+        )
+        ds.output_file_names["contingency_table"]["psal"] = str(
+            data_path / "temp_contingency_psal.tsv"
+        )
+        ds.output_file_names["contingency_table"]["pres"] = str(
+            data_path / "temp_contingency_pres.tsv"
+        )
+
+        ds.process_targets()
+        ds.write_contingency_tables()
+
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["pres"])
+        )
+
+        # Cleanup
+        os.remove(ds.output_file_names["contingency_table"]["temp"])
+        os.remove(ds.output_file_names["contingency_table"]["psal"])
+        os.remove(ds.output_file_names["contingency_table"]["pres"])
+
+    def test_create_metric_plots(self):
+        """
+        Ensure ROC and Precision-Recall plots written to the specified output files
+        and that these files are created on the file system.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output paths for testing
+        ds.output_file_names["metric_plot"]["temp"] = str(
+            data_path / "temp_metric_plots_temp.svg"
+        )
+        ds.output_file_names["metric_plot"]["psal"] = str(
+            data_path / "temp_metric_plots_psal.svg"
+        )
+        ds.output_file_names["metric_plot"]["pres"] = str(
+            data_path / "temp_metric_plots_pres.svg"
+        )
+
+        ds.process_targets()
+        ds.create_metric_plots()
+
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["metric_plot"]["temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["metric_plot"]["psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["metric_plot"]["pres"])
+        )
+
+        # Cleanup
+        os.remove(ds.output_file_names["metric_plot"]["temp"])
+        os.remove(ds.output_file_names["metric_plot"]["psal"])
+        os.remove(ds.output_file_names["metric_plot"]["pres"])
+
     def test_write_reports_empty_reports(self):
         """
         Ensure that calling write_reports with empty reports (i.e., before
@@ -179,3 +281,21 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         with self.assertRaises(ValueError):
             ds.write_reports()
+
+    def test_write_contingency_tables_empty(self):
+        """
+        Ensure that calling write_contingency_tables with empty tables (i.e., before
+        process_targets has been called) raises a ValueError.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        with self.assertRaises(ValueError):
+            ds.write_contingency_tables()
+
+    def test_create_metric_plots_empty(self):
+        """
+        Ensure that calling create_metric_plots with empty tables (i.e., before
+        process_targets has been called) raises a ValueError.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        with self.assertRaises(ValueError):
+            ds.create_metric_plots()

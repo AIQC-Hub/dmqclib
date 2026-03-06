@@ -42,7 +42,7 @@ class DayOfYearFeat(FeatureBase):
                             :attr:`selected_rows`. Defaults to None.
         :type target_name: Optional[str]
         :param feature_info: A dictionary describing feature parameters,
-                             which may include a "convert" key (e.g., "sine")
+                             which may include a "convert" key (e.g., "cosine")
                              for sinusoidal transformations. Defaults to None.
         :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame containing a subset
@@ -113,18 +113,39 @@ class DayOfYearFeat(FeatureBase):
 
     def scale_second(self) -> None:
         """
-        Optionally apply a sinusoidal transformation to the day-of-year values.
+        Optionally apply a sinusoidal or cosinusoidal transformation to the day-of-year values.
 
-        If ``"convert"`` is specified as ``"sine"`` in :attr:`feature_info`,
-        transforms each day-of-year value into a sine-based cyclical feature
-        in the range [0, 1].
+        If ``"convert"`` is specified as either ``"sine"`` or ``"cosine"`` in :attr:`feature_info`,
+        transforms each day-of-year value into a cyclical feature in the range [0, 1].
+        """
+
+        dispatcher = {"sine": self.convert_sine, "cosine": self.convert_cosine}
+        if (self.feature_info is not None) and ("convert" in self.feature_info):
+            dispatcher[self.feature_info.get("convert")]()
+
+    def convert_sine(self):
+        """
+        Optionally apply a sinusoidal transformation to the day-of-year values.
 
         The transformation formula used is:
 
         .. math::
-            day\\_of\\_year_{transformed} = \\frac{{\\sin(day\\_of\\_year \\cdot 2\\pi / 365) + 1}}{2}
+            day\\_of\\_year_{transformed} = \\frac{{\\sin(day\\_of\\_year \\cdot \\pi / 365) + 1}}{2}
         """
-        if self.feature_info is not None and self.feature_info.get("convert") == "sine":
-            self.features = self.features.with_columns(
-                ((pl.col("day_of_year") * 2 * np.pi / 365).sin() + 1) / 2
-            )
+
+        self.features = self.features.with_columns(
+            ((pl.col("day_of_year") * np.pi / 365).sin() + 1) / 2
+        )
+
+    def convert_cosine(self):
+        """
+        Optionally apply a sinusoidal transformation to the day-of-year values.
+
+        The transformation formula used is:
+
+        .. math::
+            day\\_of\\_year_{transformed} = \\frac{{\\cos(day\\_of\\_year \\cdot \\pi / 365) + 1}}{2}
+        """
+        self.features = self.features.with_columns(
+            ((pl.col("day_of_year") * np.pi / 365).cos() + 1) / 2
+        )

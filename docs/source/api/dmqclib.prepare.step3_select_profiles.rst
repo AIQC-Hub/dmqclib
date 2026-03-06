@@ -17,6 +17,14 @@ dmqclib.prepare.step3\_select\_profiles.dataset\_a module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.prepare.step3\_select\_profiles.dataset\_all module
+-----------------------------------------------------------
+
+.. automodule:: dmqclib.prepare.step3_select_profiles.dataset_all
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.prepare.step3\_select\_profiles.select\_base module
 -----------------------------------------------------------
 

@@ -7,7 +7,7 @@ methods for building the model, making predictions, and generating a comprehensi
 report using `sklearn.metrics`.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Self
 
 import polars as pl
 import xgboost as xgb
@@ -64,6 +64,7 @@ class XGBoost(ModelBase):
             "max_depth": 6,
             "learning_rate": 0.1,
             "eval_metric": "logloss",
+            "n_jobs": -1,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_step_params("model").get("model_params", {})
@@ -100,6 +101,7 @@ class XGBoost(ModelBase):
           1. Call :meth:`predict` to generate predictions on the test set.
           2. Call :meth:`create_report` to compute and store various evaluation metrics
              in :attr:`report`.
+          3. Call :meth:`update_contingency_table` to store prediction scores for ROC/PR analysis.
 
         The :attr:`k` attribute (provided by parent class or
         cross-validation context) is used to identify the fold number:
@@ -111,6 +113,20 @@ class XGBoost(ModelBase):
         """
         self.predict()
         self.create_report()
+        self.update_contingency_table()
+
+    def update_nthreads(self, model: Self) -> Self:
+        """
+        Update the number of threads set in the model.
+
+        :param model: The model needs to be updated.
+        :type model: Self
+        """
+
+        if "n_jobs" in self.model_params:
+            model.model.n_jobs = self.model_params["n_jobs"]
+
+        return model
 
     def predict(self) -> None:
         """
@@ -126,7 +142,13 @@ class XGBoost(ModelBase):
             raise ValueError("Member variable 'test_set' must not be empty.")
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
-        self.predictions = pl.DataFrame({"predicted": self.model.predict(x_test)})
+
+        self.predictions = pl.DataFrame(
+            {
+                "class": self.model.predict(x_test),
+                "score": self.model.predict_proba(x_test)[:, 1],
+            }
+        )
 
     def create_report(self) -> None:
         """
@@ -151,7 +173,7 @@ class XGBoost(ModelBase):
             raise ValueError("Member variable 'predictions' must not be empty.")
 
         y_test = self.test_set["label"].to_pandas()
-        y_pred = self.predictions["predicted"].to_pandas()
+        y_pred = self.predictions["class"].to_pandas()
 
         # A single call to classification_report gets us almost everything we need.
         classification_dict = classification_report(

@@ -67,3 +67,18 @@ class TestXGBoost(unittest.TestCase):
 
         self.assertIn("max_depth", ds.model_params)
         self.assertEqual(ds.model_params["max_depth"], 10)
+
+    def test_model_params_n_jobs(self):
+        """Verify that the `n_jobs` parameter can be set via configuration.
+
+        This test modifies the configuration to include a custom
+        `scale_pos_weight` and asserts that the XGBoost model
+        correctly picks up this value.
+        """
+        self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
+            "n_jobs": 4
+        }
+        ds = XGBoost(self.config)
+
+        self.assertIn("n_jobs", ds.model_params)
+        self.assertEqual(ds.model_params["n_jobs"], 4)
