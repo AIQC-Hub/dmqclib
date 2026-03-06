@@ -60,7 +60,6 @@ The following Python commands create the necessary directory structure for your 
     print(f"dmqclib version: {dm.__version__}")
 
     # !! IMPORTANT: Update these placeholder paths to your actual file locations !!
-    input_file = "/path/to/your/input/nrt_cora_bo_4.parquet"
     data_path = "/path/to/your/data"  # This will be the root for outputs
 
     config_path = os.path.join(data_path, "config")

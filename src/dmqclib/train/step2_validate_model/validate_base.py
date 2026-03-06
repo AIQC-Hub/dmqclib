@@ -17,6 +17,7 @@ import polars as pl
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
+from dmqclib.common.utils.metric_plots import create_metric_plots
 
 
 class ValidationBase(DataSetBase):
@@ -63,6 +64,7 @@ class ValidationBase(DataSetBase):
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{target_name}.tsv",
             "contingency_table": "contingency_tables_{target_name}.tsv",
+            "metric_plot": "metric_plots_{target_name}.svg",
         }
 
         #: A dictionary mapping "result" to a dictionary of target-specific file paths.
@@ -161,3 +163,11 @@ class ValidationBase(DataSetBase):
             output_path = self.output_file_names["contingency_table"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.write_csv(output_path, separator="\t")
+
+    def create_metric_plots(self) -> None:
+        """
+        Create and save ROC and Precision-Recall plots as an SVG file.
+
+        Call the common function create_metric_plots
+        """
+        create_metric_plots(self)

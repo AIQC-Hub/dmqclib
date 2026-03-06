@@ -89,6 +89,16 @@ class TestKFoldValidation(unittest.TestCase):
             str(ds.output_file_names["contingency_table"]["psal"]),
         )
 
+        # Check metric plot file names
+        self.assertEqual(
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/metric_plots_temp.svg",
+            str(ds.output_file_names["metric_plot"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/metric_plots_psal.svg",
+            str(ds.output_file_names["metric_plot"]["psal"]),
+        )
+
     def test_base_model(self):
         """
         Ensure the base model attribute of KFoldValidation is an XGBoost
@@ -226,6 +236,43 @@ class TestKFoldValidation(unittest.TestCase):
         os.remove(ds.output_file_names["contingency_table"]["psal"])
         os.remove(ds.output_file_names["contingency_table"]["pres"])
 
+    def test_create_metric_plots(self):
+        """
+        Ensure ROC and Precision-Recall plots written to the specified output files
+        and that these files are created on the file system.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output paths for testing
+        ds.output_file_names["metric_plot"]["temp"] = str(
+            data_path / "temp_metric_plots_temp.svg"
+        )
+        ds.output_file_names["metric_plot"]["psal"] = str(
+            data_path / "temp_metric_plots_psal.svg"
+        )
+        ds.output_file_names["metric_plot"]["pres"] = str(
+            data_path / "temp_metric_plots_pres.svg"
+        )
+
+        ds.process_targets()
+        ds.create_metric_plots()
+
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["metric_plot"]["temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["metric_plot"]["psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["metric_plot"]["pres"])
+        )
+
+        # Cleanup
+        os.remove(ds.output_file_names["metric_plot"]["temp"])
+        os.remove(ds.output_file_names["metric_plot"]["psal"])
+        os.remove(ds.output_file_names["metric_plot"]["pres"])
+
     def test_write_reports_empty_reports(self):
         """
         Ensure that calling write_reports with empty reports (i.e., before
@@ -243,3 +290,12 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         with self.assertRaises(ValueError):
             ds.write_contingency_tables()
+
+    def test_create_metric_plots_empty(self):
+        """
+        Ensure that calling create_metric_plots with empty tables (i.e., before
+        process_targets has been called) raises a ValueError.
+        """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        with self.assertRaises(ValueError):
+            ds.create_metric_plots()

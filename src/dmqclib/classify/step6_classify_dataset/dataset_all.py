@@ -61,6 +61,7 @@ class ClassifyAll(BuildModelBase):
             "report": "classify_report_{target_name}.tsv",
             "prediction": "classify_prediction_{target_name}.parquet",
             "contingency_table": "classify_contingency_tables_{target_name}.tsv",
+            "metric_plot": "classify_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
 

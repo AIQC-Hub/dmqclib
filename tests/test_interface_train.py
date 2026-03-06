@@ -82,10 +82,30 @@ class TestCreateTrainingDataSet:
         assert os.path.exists(dir_validate / "validation_report_psal.tsv")
         assert os.path.exists(dir_validate / "validation_report_pres.tsv")
 
+        # Assert that expected contingency table files are created
+        assert os.path.exists(dir_validate / "contingency_tables_temp.tsv")
+        assert os.path.exists(dir_validate / "contingency_tables_psal.tsv")
+        assert os.path.exists(dir_validate / "contingency_tables_pres.tsv")
+
+        # Assert that expected metric plot files are created
+        assert os.path.exists(dir_validate / "metric_plots_temp.svg")
+        assert os.path.exists(dir_validate / "metric_plots_psal.svg")
+        assert os.path.exists(dir_validate / "metric_plots_pres.svg")
+
         # Assert that expected build report files are created
         assert os.path.exists(dir_build / "test_report_temp.tsv")
         assert os.path.exists(dir_build / "test_report_psal.tsv")
         assert os.path.exists(dir_build / "test_report_pres.tsv")
+
+        # Assert that expected contingency table files are created
+        assert os.path.exists(dir_build / "test_contingency_tables_temp.tsv")
+        assert os.path.exists(dir_build / "test_contingency_tables_psal.tsv")
+        assert os.path.exists(dir_build / "test_contingency_tables_pres.tsv")
+
+        # Assert that expected metric plot files are created
+        assert os.path.exists(dir_build / "test_metric_plots_temp.svg")
+        assert os.path.exists(dir_build / "test_metric_plots_psal.svg")
+        assert os.path.exists(dir_build / "test_metric_plots_pres.svg")
 
         # Assert that expected trained model files are created
         assert os.path.exists(dir_model / "model_temp.joblib")
@@ -159,10 +179,30 @@ class TestCreateTrainingDataSetNegX5(unittest.TestCase):
         self.assertTrue(os.path.exists(dir_validate / "validation_report_psal.tsv"))
         self.assertTrue(os.path.exists(dir_validate / "validation_report_pres.tsv"))
 
+        # Assert that expected contingency table files are created
+        self.assertTrue(os.path.exists(dir_validate / "contingency_tables_temp.tsv"))
+        self.assertTrue(os.path.exists(dir_validate / "contingency_tables_psal.tsv"))
+        self.assertTrue(os.path.exists(dir_validate / "contingency_tables_pres.tsv"))
+
+        # Assert that expected metric plot files are created
+        self.assertTrue(os.path.exists(dir_validate / "metric_plots_temp.svg"))
+        self.assertTrue(os.path.exists(dir_validate / "metric_plots_psal.svg"))
+        self.assertTrue(os.path.exists(dir_validate / "metric_plots_pres.svg"))
+
         # Assert that expected build report files are created
         self.assertTrue(os.path.exists(dir_build / "test_report_temp.tsv"))
         self.assertTrue(os.path.exists(dir_build / "test_report_psal.tsv"))
         self.assertTrue(os.path.exists(dir_build / "test_report_pres.tsv"))
+
+        # Assert that expected contingency table files are created
+        self.assertTrue(os.path.exists(dir_build / "test_contingency_tables_temp.tsv"))
+        self.assertTrue(os.path.exists(dir_build / "test_contingency_tables_psal.tsv"))
+        self.assertTrue(os.path.exists(dir_build / "test_contingency_tables_pres.tsv"))
+
+        # Assert that expected metric plot files are created
+        self.assertTrue(os.path.exists(dir_build / "test_metric_plots_temp.svg"))
+        self.assertTrue(os.path.exists(dir_build / "test_metric_plots_psal.svg"))
+        self.assertTrue(os.path.exists(dir_build / "test_metric_plots_pres.svg"))
 
         # Assert that expected trained model files are created
         self.assertTrue(os.path.exists(dir_model / "model_temp.joblib"))

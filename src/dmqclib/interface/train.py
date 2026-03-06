@@ -48,6 +48,8 @@ def train_and_evaluate(config: ConfigBase) -> None:
     ds_valid = load_step2_model_validation_class(config, ds_input.training_sets)
     ds_valid.process_targets()
     ds_valid.write_reports()
+    ds_valid.write_contingency_tables()
+    ds_valid.create_metric_plots()
 
     ds_build = load_step4_build_model_class(
         config, ds_input.training_sets, ds_input.test_sets
@@ -55,4 +57,6 @@ def train_and_evaluate(config: ConfigBase) -> None:
     ds_build.build_targets()
     ds_build.test_targets()
     ds_build.write_reports()
+    ds_build.write_contingency_tables()
+    ds_build.create_metric_plots()
     ds_build.write_models()

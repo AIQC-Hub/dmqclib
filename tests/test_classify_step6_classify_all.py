@@ -56,6 +56,9 @@ class TestClassifyAllClass:
         file_contingency = (
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
         )
+        file_metric_plots = (
+            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
+        )
 
         # Check model file names
         assert file_model.format("temp") == str(ds.model_file_names["temp"])
@@ -82,6 +85,17 @@ class TestClassifyAllClass:
         )
         assert file_contingency.format("pres") == str(
             ds.output_file_names["contingency_table"]["pres"]
+        )
+
+        # # Check metric plot file names
+        assert file_metric_plots.format("temp") == str(
+            ds.output_file_names["metric_plot"]["temp"]
+        )
+        assert file_metric_plots.format("psal") == str(
+            ds.output_file_names["metric_plot"]["psal"]
+        )
+        assert file_metric_plots.format("pres") == str(
+            ds.output_file_names["metric_plot"]["pres"]
         )
 
     def test_base_model(self):
@@ -182,6 +196,11 @@ class TestClassifyAll:
             "temp": str(data_path / "temp_classify_contingency_tables_temp.tsv"),
             "psal": str(data_path / "temp_classify_contingency_tables_psal.tsv"),
             "pres": str(data_path / "temp_classify_contingency_tables_pres.tsv"),
+        }
+        self.metric_plots_file_names = {
+            "temp": str(data_path / "temp_classify_metric_plots_temp.svg"),
+            "psal": str(data_path / "temp_classify_metric_plots_psal.svg"),
+            "pres": str(data_path / "temp_classify_metric_plots_pres.svg"),
         }
         self.n_jobs = [-1, -1, 2]
 
@@ -309,6 +328,29 @@ class TestClassifyAll:
         os.remove(ds.output_file_names["contingency_table"]["pres"])
 
     @pytest.mark.parametrize("idx", range(3))
+    def test_create_metric_plot(self, idx):
+        """Verify that roc and prc plots are correctly written to file."""
+        ds = ClassifyAll(
+            self.configs[idx],
+            test_sets=self.extracts[idx].target_features,
+        )
+        ds.model_file_names = self.model_file_names
+        # Override output file path for testing
+        ds.output_file_names["metric_plot"] = self.metric_plots_file_names
+
+        ds.read_models()
+        ds.test_targets()
+        ds.create_metric_plots()
+
+        assert os.path.exists(ds.output_file_names["metric_plot"]["temp"])
+        assert os.path.exists(ds.output_file_names["metric_plot"]["psal"])
+        assert os.path.exists(ds.output_file_names["metric_plot"]["pres"])
+
+        os.remove(ds.output_file_names["metric_plot"]["temp"])
+        os.remove(ds.output_file_names["metric_plot"]["psal"])
+        os.remove(ds.output_file_names["metric_plot"]["pres"])
+
+    @pytest.mark.parametrize("idx", range(3))
     def test_write_no_results(self, idx):
         """Ensure ValueError is raised if write_reports is called without test results."""
         ds = ClassifyAll(
@@ -327,6 +369,16 @@ class TestClassifyAll:
         )
         with pytest.raises(ValueError):
             ds.write_contingency_tables()
+
+    @pytest.mark.parametrize("idx", range(3))
+    def test_create_no_metric_plots(self, idx):
+        """Ensure ValueError is raised if create_metric_plots is called without results."""
+        ds = ClassifyAll(
+            self.configs[idx],
+            test_sets=self.extracts[idx].target_features,
+        )
+        with pytest.raises(ValueError):
+            ds.create_metric_plots()
 
     @pytest.mark.parametrize("idx", range(3))
     def test_read_models_no_file(self, idx):
