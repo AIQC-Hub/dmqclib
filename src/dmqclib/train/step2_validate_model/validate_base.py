@@ -10,13 +10,14 @@ the specific validation logic tailored to their model and data.
 
 import os
 from abc import abstractmethod
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 
 import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.dataset_base import DataSetBase
 from dmqclib.common.loader.model_loader import load_model_class
+from dmqclib.common.utils.metric_plots import create_metric_plots
 
 
 class ValidationBase(DataSetBase):
@@ -59,9 +60,11 @@ class ValidationBase(DataSetBase):
         """
         super().__init__(step_name="validate", config=config)
 
-        #: Default file naming pattern for validation reports.
+        #: Default file naming pattern for validation reports and contingency tables.
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{target_name}.tsv",
+            "contingency_table": "contingency_tables_{target_name}.tsv",
+            "metric_plot": "metric_plots_{target_name}.svg",
         }
 
         #: A dictionary mapping "result" to a dictionary of target-specific file paths.
@@ -86,6 +89,10 @@ class ValidationBase(DataSetBase):
         #: A dictionary mapping each target name to a Polars DataFrame
         #: of validation reports (e.g., predictions, metrics).
         self.reports: Dict[str, pl.DataFrame] = {}
+
+        #: A dictionary mapping each target name to a Polars DataFrame
+        #: of contingency tables (e.g., fold index, label, prediction score).
+        self.contingency_tables: Dict[str, pl.DataFrame] = {}
 
         #: A dictionary for storing any summarised metrics derived from :attr:`reports`.
         self.summarised_reports: Dict[str, pl.DataFrame] = {}
@@ -114,7 +121,8 @@ class ValidationBase(DataSetBase):
 
         Subclasses must implement the logic to use :attr:`training_sets`
         (and possibly :attr:`base_model` or :attr:`models`)
-        to evaluate performance, store metrics in :attr:`reports`, etc.
+        to evaluate performance, store metrics in :attr:`reports` and
+        :attr:`contingency_tables`, etc.
 
         :param target_name: The key identifying which target to validate.
         :type target_name: str
@@ -138,3 +146,28 @@ class ValidationBase(DataSetBase):
             output_path = self.output_file_names["report"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.write_csv(output_path, separator="\t")
+
+    def write_contingency_tables(self) -> None:
+        """
+        Write the contingency tables stored in :attr:`contingency_tables` to TSV files.
+
+        Each target's contingency DataFrame is written to a file specified by
+        :attr:`output_file_names`. Directories are created if they do not exist.
+
+        :raises ValueError: If :attr:`contingency_tables` is empty.
+        """
+        if not self.contingency_tables:
+            raise ValueError("Member variable 'contingency_tables' must not be empty.")
+
+        for target_name, df in self.contingency_tables.items():
+            output_path = self.output_file_names["contingency_table"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_csv(output_path, separator="\t")
+
+    def create_metric_plots(self) -> None:
+        """
+        Create and save ROC and Precision-Recall plots as an SVG file.
+
+        Call the common function create_metric_plots
+        """
+        create_metric_plots(self)

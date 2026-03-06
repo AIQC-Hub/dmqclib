@@ -9,8 +9,9 @@ concrete model implementations should inherit and extend.
 
 import os
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Optional, Any, Self
 
+import polars as pl
 from joblib import dump, load
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -71,6 +72,7 @@ class ModelBase(ABC):
         self.model: Optional[Any] = None
         self.predictions: Optional[Any] = None
         self.report: Optional[Any] = None
+        self.contingency_table: Optional[pl.DataFrame] = None
         self.k: int = 0
 
     @abstractmethod
@@ -92,6 +94,18 @@ class ModelBase(ABC):
         and how accuracy or performance measures are computed.
         """
         pass  # pragma: no cover
+
+    @abstractmethod
+    def update_nthreads(self, model: Self) -> Self:
+        """
+        Update the number of threads set in the model.
+
+        Subclasses must implement logic to update the number of threads.
+
+        :param model: The model needs to be updated.
+        :type model: Self
+        """
+        pass
 
     def load_model(self, file_name: str) -> None:
         """
@@ -115,6 +129,40 @@ class ModelBase(ABC):
         """
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         dump(self.model, file_name)
+
+    def update_contingency_table(self) -> None:
+        """
+        Updates the internal contingency table with the current test set predictions.
+
+        This method extracts the fold index (`k`), ground truth (`label`), and
+        predicted probability (`score`) from the current test set and predictions.
+        The data is stored in the :attr:`contingency_table` attribute as a Polars DataFrame.
+
+        If :attr:`contingency_table` is already populated (e.g., during cross-validation),
+        the new results are appended (vstacked) to the existing DataFrame.
+
+        :raises ValueError: If :attr:`test_set` or :attr:`predictions` are ``None``.
+        """
+        if self.test_set is None:
+            raise ValueError("Member variable 'test_set' must not be empty.")
+
+        if self.predictions is None:
+            raise ValueError("Member variable 'predictions' must not be empty.")
+
+        # Create a DataFrame for the current fold/batch
+        current_data = pl.DataFrame(
+            {
+                "k": self.k,
+                "label": self.test_set["label"],
+                "score": self.predictions["score"],
+            }
+        )
+
+        # Append to the existing table if it exists, otherwise initialize it
+        if self.contingency_table is None:
+            self.contingency_table = current_data
+        else:
+            self.contingency_table = self.contingency_table.vstack(current_data)
 
     def __repr__(self) -> str:
         """

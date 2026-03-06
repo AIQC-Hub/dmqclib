@@ -335,7 +335,7 @@ class TestBaseConfigSummaryStats(unittest.TestCase):
         """Confirm that profile summary statistics for a specific set are retrieved correctly."""
         ds = DataSetConfig(str(self.config_file_path))
         ds.select("NRT_BO_001")
-        stats = ds.get_summary_stats("profile_summary_stats5")
+        stats = ds.get_summary_stats("profile_summary_stats")
 
         self.assertIn("pres", stats)
         self.assertIn("mean", stats["pres"])

@@ -1,20 +1,55 @@
-Quick start with the minimum configurations
+Quick Start
 =============================================
 
-This guide demonstrates how to run the whole machine learning process with the minimum configurations.
+This guide demonstrates how to run the entire machine learning process with minimal configuration.
 
-.. important::
+.. note::
+   This is a condensed version of the tutorial provided in the "Getting Started" section. See the :doc:`../tutorial/overview` in the "Getting Started" section for more comprehensive explanations.
 
-    Before starting, ensure you have your raw input data (e.g., ``input_data.parquet``) available at the specified ``/path/to/input``.
-
-Generate Configuration Files
+Objectives
 -----------------------------
 
-The following Python commands create three configuration files under ``/path/to/data/config`` and show summary statistics from your input data.
+You will learn how to run all three stages of ``dmqclib`` by creating stage-specific configuration files. This guide lets you create three classifiers for ``temp`` (temperature), ``psal`` (salinity), and ``pres`` (pressure) to predict QC labels for the corresponding variables.
 
-.. important::
+Installation
+-----------------------------
 
-    Make sure to save or note down the output from ``dm.get_summary_stats()`` as you will need it to update the configuration files in the next step. Specifically, pay attention to the ``min_max`` values for ``longitude``, ``latitude``, ``temp``, ``psal``, and ``pres``.
+(Optional) We recommend creating a ``mamba``/``conda`` environment before installing ``dmqclib``.
+
+.. code-block:: bash
+
+   # conda
+   conda create --name dmqclib -c conda-forge python=3.12 pip uv
+   conda activate dmqclib
+
+   # mamba
+   mamba create -n dmqclib -c conda-forge python=3.12 pip uv
+   mamba activate dmqclib
+
+
+Use ``pip``, ``conda``, or ``mamba`` to install ``dmqclib``.
+
+.. code-block:: bash
+
+   # pip
+   pip install dmqclib
+
+   # conda
+   conda install -c conda-forge dmqclib
+
+   # mamba
+   mamba install -c conda-forge dmqclib
+
+
+Download Raw Input Data
+-----------------------------
+
+You can get the sample input data set (``nrt_cora_bo_4.parquet``) from `Kaggle <https://www.kaggle.com/api/v1/datasets/download/takaya88/copernicus-marine-nrt-ctd-data-for-aiqc>`_.
+
+Prepare Directory Structure
+-----------------------------
+
+The following Python commands create the necessary directory structure for your input and output files.
 
 .. code-block:: python
 
@@ -24,51 +59,31 @@ The following Python commands create three configuration files under ``/path/to/
 
     print(f"dmqclib version: {dm.__version__}")
 
-    # --- User-defined paths ---
-    # !! IMPORTANT: Update these paths to your actual data and desired output locations !!
-    input_file = "/path/to/input/input_data.parquet"
-    data_path = "/path/to/data" # This will be the base path for generated configs, models, and results
+    # !! IMPORTANT: Update these placeholder paths to your actual file locations !!
+    data_path = "/path/to/your/data"  # This will be the root for outputs
 
-    # --- Derived paths (do not change) ---
     config_path = os.path.join(data_path, "config")
-    os.makedirs(config_path, exist_ok=True) # Ensure config directory exists
+    os.makedirs(config_path, exist_ok=True)
+
+Stage 1: Data Preparation Stage
+---------------------------------------------
+
+The `prepare` workflow (`stage="prepare"`) is the first step in the machine learning pipeline. It processes your raw data into feature sets and then splits them into training, validation, and test sets.
+
+Template Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following command creates a configuration template for this stage.
+
+.. code-block:: python
 
     config_file_prepare = os.path.join(config_path, "data_preparation_config.yaml")
-    config_file_train = os.path.join(config_path, "training_config.yaml")
-    config_file_classify = os.path.join(config_path, "classification_config.yaml")
-
-    # Generate template configuration files
-    print(f"Generating config templates in: {config_path}")
     dm.write_config_template(file_name=config_file_prepare, stage="prepare")
-    dm.write_config_template(file_name=config_file_train, stage="train")
-    dm.write_config_template(file_name=config_file_classify, stage="classify")
-    print("Config templates generated.")
 
-    # Get and print summary statistics for configuration
-    print("\n--- Summary Statistics (All Variables) ---")
-    stats_all = dm.get_summary_stats(input_file, "all")
-    print(dm.format_summary_stats(stats_all))
+Update the Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    print("\n--- Summary Statistics (Profiles - key variables) ---")
-    stats_profiles = dm.get_summary_stats(input_file, "profiles")
-    print("Temperature (temp):")
-    print(stats_profiles.filter(pl.col("variable")=="temp"))
-    print("Salinity (psal):")
-    print(stats_profiles.filter(pl.col("variable")=="psal"))
-    print("Pressure (pres):")
-    print(stats_profiles.filter(pl.col("variable")=="pres"))
-    print("\nFormatted Profile Statistics:")
-    print(dm.format_summary_stats(stats_profiles))
-
-
-Update Configuration Files
------------------------------
-You need to update the three configuration files created by the commands above before running the main processes.
-
-Configuration for the data preparation stage
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**File:** ``/path/to/data/config/data_preparation_config.yaml``
+**File:** ``/path/to/your/data/config/data_preparation_config.yaml``
 
 1.  **Update Data and Input Paths:**
     Adjust the ``base_path`` values in the ``path_info_sets`` section.
@@ -80,35 +95,13 @@ Configuration for the data preparation stage
        path_info_sets:
          - name: data_set_1
            common:
-             base_path: /path/to/data  # <--- Update this to your common data root
+             base_path: /path/to/your/data  # <--- Root directory for generated datasets and models
            input:
-             base_path: /path/to/input # <--- Update this to where your input data is located
+             base_path: /path/to/your/input # <--- Directory where the raw input data is located
              step_folder_name: ""
 
-2.  **Fill in Summary Statistics:**
-    Use the summary statistics output from the `Generate Configuration Files`_ step to fill in the ``min_max`` values for ``longitude``, ``latitude``, ``temp``, ``psal``, and ``pres``. Replace all "..." placeholders.
-
-    .. code-block:: yaml
-       :caption: data_preparation_config.yaml: summary_stats_sets
-       :emphasize-lines: 5, 6, 8, 9, 10, 12, 13, 14
-
-       summary_stats_sets:
-         - name: summary_stats_set_1
-           stats:
-             - name: location
-               min_max: { longitude: { ... },  # <--- From stats_all output
-                          latitude: { ... } }   # <--- From stats_all output
-             - name: profile_summary_stats5
-               min_max: { temp: { ... },       # <--- From stats_profiles output
-                          psal: { ... },       # <--- From stats_profiles output
-                          pres: { ... } }       # <--- From stats_profiles output
-             - name: basic_values3
-               min_max: { temp: { ... },       # <--- From stats_all output
-                          psal: { ... },       # <--- From stats_all output
-                          pres: { ... } }       # <--- From stats_all output
-
-3.  **Configure Test Data Year(s):**
-    Specify the year(s) for an independent test dataset (unseen data) by changing the ``remove_years`` or ``keep_years`` list.
+2.  **Configure the Test Data Year(s):**
+    Specify the year(s) to be held out as an independent test set. The ``remove_years`` parameter excludes these years from the training and validation sets.
 
     .. code-block:: yaml
        :caption: data_preparation_config.yaml: step_param_sets
@@ -120,11 +113,11 @@ Configuration for the data preparation stage
              input: { sub_steps: { rename_columns: false,
                                    filter_rows: true },
                       rename_dict: { },
-                      filter_method_dict: { remove_years: [2023], # <--- Specify years to exclude from training/validation
-                                            keep_years: [] } }
+                      filter_method_dict: { remove_years: [ 2023 ], # <--- Year(s) to set aside for the test set
+                                            keep_years: [ ] } }
 
-4.  **Specify Input File Name:**
-    Ensure ``input_file_name`` matches the base name of your input data file.
+3.  **Specify Input File Name:**
+    Ensure ``input_file_name`` matches the name of your raw data file.
 
     .. code-block:: yaml
        :caption: data_preparation_config.yaml: data_sets
@@ -133,16 +126,50 @@ Configuration for the data preparation stage
        data_sets:
          - name: dataset_0001
            dataset_folder_name: dataset_0001
-           input_file_name: input_data.parquet # <--- Your input file's base name
+           input_file_name: nrt_cora_bo_4.parquet # <--- Your input file's name
 
+Run the Data Preparation Stage
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configuration for the training and validation stage
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Once the configuration file is updated, run the following command to generate the training and validation datasets.
 
-**File:** ``/path/to/data/config/training_config.yaml``
+.. code-block:: python
+
+    config_prepare = dm.read_config(os.path.join(config_path, "data_preparation_config.yaml"))
+    dm.create_training_dataset(config_prepare)
+
+Understanding the Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+After the command finishes, your main output directory (e.g., ``/path/to/your/data``) will contain a new folder named ``dataset_0001``. Inside this folder, you will find several subdirectories, each representing a stage of the data preparation pipeline:
+
+*   **summary**: Contains intermediate files with summary statistics.
+*   **select**: Stores data points identified as "good" (negative samples) and "bad" (positive samples).
+*   **locate**: Contains specific observation records for positive and negative profiles.
+*   **extract**: Holds the features extracted from the observation records.
+*   **training**: The final output directory for this stage. It contains the split training, validation, and test datasets in Parquet format.
+
+Stage 2: Training & Evaluation
+--------------------------------
+
+The `train` workflow (`stage="train"`) orchestrates the model building process. It uses the datasets from the `prepare` stage to perform cross-validation, train the model, and evaluate it.
+
+Template Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following command creates a configuration template for this stage.
+
+.. code-block:: python
+
+    config_file_train = os.path.join(config_path, "training_config.yaml")
+    dm.write_config_template(file_name=config_file_train, stage="train")
+
+Update the Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**File:** ``/path/to/your/data/config/training_config.yaml``
 
 1.  **Update Data Path:**
-    Adjust the ``base_path`` in the ``path_info_sets`` section. This should be the same as the ``common.base_path`` you set in ``data_preparation_config.yaml``.
+    Adjust the ``base_path`` in the ``path_info_sets`` section. This path must point to the same output directory (``common.base_path``) you defined in ``data_preparation_config.yaml``.
 
     .. code-block:: yaml
        :caption: training_config.yaml: path_info_sets
@@ -151,19 +178,52 @@ Configuration for the training and validation stage
        path_info_sets:
          - name: data_set_1
            common:
-             base_path: /path/to/data # <--- Update this to your common data root
+             base_path: /path/to/your/data # <--- Must match the common.base_path from the previous stage
 
+Run the Training & Evaluation Stage
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configuration for the classification stage
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+With the configuration file updated, the following command will run the training and validation processes.
 
-**File:** ``/path/to/data/config/classification_config.yaml``
+.. code-block:: python
+
+    config_train = dm.read_config(os.path.join(config_path, "training_config.yaml"))
+    dm.train_and_evaluate(config_train)
+
+Understanding the Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After the command finishes, new folders will be created within your dataset's output directory (e.g., ``/path/to/your/data/dataset_0001/``). The primary outputs include:
+
+*   **validate**: Contains detailed results from the cross-validation process, allowing you to inspect model performance across different data folds.
+*   **build**: Holds a comprehensive report of the final model's evaluation on the held-out test dataset.
+*   **model**: Contains the final, trained model objects. These are the artifacts you will use in the next stage.
+
+Stage 3: Classification
+-----------------------------
+
+The `classify` workflow (`stage="classify"`) applies a trained model to make predictions on a new, unseen dataset (e.g., the test set you held out in Stage 1).
+
+Template Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following command creates a configuration template for this final stage.
+
+.. code-block:: python
+
+    config_file_classify = os.path.join(config_path, "classification_config.yaml")
+    dm.write_config_template(file_name=config_file_classify, stage="classify")
+
+Update the Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**File:** ``/path/to/your/data/config/classification_config.yaml``
 
 1.  **Update Paths:**
     Adjust the ``base_path`` values for ``common``, ``input``, and ``model``.
-    *   ``common.base_path``: Your common data root.
-    *   ``input.base_path``: Where your input data for classification is located.
-    *   ``model.base_path``: Where the trained model will be located (usually within your ``data_path``).
+    *   ``common.base_path``: The root directory for your data outputs.
+    *   ``input.base_path``: The location of the raw input data file.
+    *   ``model.base_path``: The location of the trained model from Stage 2.
 
     .. code-block:: yaml
        :caption: classification_config.yaml: path_info_sets
@@ -172,39 +232,16 @@ Configuration for the classification stage
        path_info_sets:
          - name: data_set_1
            common:
-             base_path: /path/to/data  # <--- Update to your common data root
+             base_path: /path/to/your/data  # <--- Your common data root
            input:
-             base_path: /path/to/input # <--- Update to your classification input data location
+             base_path: /path/to/your/input # <--- Location of the raw data for classification
              step_folder_name: ""
            model:
-             base_path: /path/to/data/dataset_0001 # <--- Update to where your trained model is
+             base_path: /path/to/your/data/dataset_0001 # <--- Path to the trained model folder
              step_folder_name: "model"
 
-2.  **Copy Summary Statistics:**
-    Copy the *entire* ``stats`` block from ``summary_stats_sets`` in your ``data_preparation_config.yaml`` and paste it here, replacing the "..." placeholder. The content should be identical.
-
-    .. code-block:: yaml
-       :caption: classification_config.yaml: summary_stats_sets
-       :emphasize-lines: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-
-       summary_stats_sets:
-         - name: summary_stats_set_1
-           stats:
-             # <--- Paste the full 'stats' block from data_preparation_config.yaml here
-             - name: location
-               min_max: { longitude: { ... },
-                          latitude: { ... } }
-             - name: profile_summary_stats5
-               min_max: { temp: { ... },
-                          psal: { ... },
-                          pres: { ... } }
-             - name: basic_values3
-               min_max: { temp: { ... },
-                          psal: { ... },
-                          pres: { ... } }
-
-3.  **Configure Classification Data Year(s):**
-    Specify the year(s) for the classification dataset. This is typically the test dataset year(s) you *removed* during data preparation.
+2.  **Configure Classification Data Year(s):**
+    Specify the year(s) for the classification dataset using ``keep_years``. This should correspond to the test data year(s) you excluded (``remove_years``) during data preparation.
 
     .. code-block:: yaml
        :caption: classification_config.yaml: step_param_sets
@@ -217,10 +254,10 @@ Configuration for the classification stage
                                    filter_rows: true },
                       rename_dict: { },
                       filter_method_dict: { remove_years: [],
-                                            keep_years: [2023] } } # <--- Specify years to *keep* for classification
+                                            keep_years: [ 2023 ] } } # <--- Specify year(s) to *keep* for classification
 
-4.  **Specify Input File Name:**
-    Ensure ``input_file_name`` matches the base name of your input data file for classification.
+3.  **Specify Input File Name:**
+    Ensure ``input_file_name`` matches the name of the data file you want to classify.
 
     .. code-block:: yaml
        :caption: classification_config.yaml: data_sets
@@ -229,33 +266,33 @@ Configuration for the classification stage
        data_sets:
          - name: classification_0001
            dataset_folder_name: dataset_0001
-           input_file_name: input_data.parquet # <--- Your input file's base name
+           input_file_name: nrt_cora_bo_4.parquet # <--- Your input file's name
 
+Run the Classification Stage
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Run the processes in all stages
-----------------------------------
-
-Once all configuration files are updated, the following Python commands will run the full machine learning process to generate the training, validation, and classification results.
-
-The final classification results will be found under ``/path/to/data/classify``.
+Once the configuration is complete, the following commands will apply the model to the specified data and generate classification results.
 
 .. code-block:: python
 
-    # Ensure config_path is defined from the "Generate Configuration Files" step
-    # Example (if running this script separately):
-    # import os
-    # import dmqclib as dm
-    # data_path = "/path/to/data"
-    # config_path = os.path.join(data_path, "config")
-
-    config_prepare = dm.read_config(os.path.join(config_path, "data_preparation_config.yaml"))
-    dm.create_training_dataset(config_prepare)
-    print("\nData preparation complete.")
-
-    config_train = dm.read_config(os.path.join(config_path, "training_config.yaml"))
-    dm.train_and_evaluate(config_train)
-    print("\nTraining and evaluation complete.")
-
     config_classify = dm.read_config(os.path.join(config_path, "classification_config.yaml"))
     dm.classify_dataset(config_classify)
-    print("\nClassification complete. Check results in /path/to/data/classify")
+
+Understanding the Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After this command finishes, the output directories will be generated within ``/path/to/your/data/dataset_0001/``. The most important output is in the ``classify`` directory:
+
+*   **classify**: This is the final output directory for the workflow. It contains:
+
+    *   A ``.parquet`` file with the original input data augmented with new columns for the model's predictions (e.g., ``temp_prediction``) and prediction probabilities (e.g., ``temp_probability``).
+    *   A summary report detailing the classification results.
+
+Other intermediate folders (``summary``, ``select``, ``locate``, ``extract``) are also created, mirroring the process used during data preparation to ensure consistency.
+
+Conclusion
+--------------
+
+Congratulations! You have successfully completed the entire ``dmqclib`` workflow, from raw data preparation to training a machine learning model and using it to generate predictions on new data.
+
+You now have a powerful, repeatable, and configurable pipeline for your machine learning tasks. You can easily adapt the configuration files to process new datasets, experiment with different models, or integrate this pipeline into larger automated workflows.

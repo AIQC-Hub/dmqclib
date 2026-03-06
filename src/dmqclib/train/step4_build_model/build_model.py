@@ -104,11 +104,14 @@ class BuildModel(BuildModelBase):
         This method:
 
           1. Retrieves the previously built model from :attr:`models[target_name]`.
-          2. Attaches the appropriate test set from :attr:`test_sets[target_name]`,
+          2. **Resets the model's contingency table** to ensure no data duplication
+             from previous runs.
+          3. Attaches the appropriate test set from :attr:`test_sets[target_name]`,
              dropping common identifying columns.
-          3. Calls :meth:`base_model.test`.
-          4. Stores the test report in :attr:`reports[target_name]`.
-          5. Stores the test predictions, augmented with identifying information
+          4. Calls :meth:`base_model.test`.
+          5. Stores the test report in :attr:`reports[target_name]`.
+          6. Stores the contingency table in :attr:`contingency_tables[target_name]`.
+          7. Stores the test predictions, augmented with identifying information
              and the true label, in :attr:`predictions[target_name]`.
 
         :param target_name: The target variable name, used to index
@@ -116,9 +119,17 @@ class BuildModel(BuildModelBase):
         :type target_name: str
         """
         self.base_model = self.models[target_name]
+
+        # Reset contingency table to avoid duplication if test is run multiple times
+        self.base_model.contingency_table = None
+
         self.base_model.test_set = self.test_sets[target_name].drop(self.drop_cols)
         self.base_model.test()
         self.reports[target_name] = self.base_model.report
+
+        if self.base_model.contingency_table is not None:
+            self.contingency_tables[target_name] = self.base_model.contingency_table
+
         predictions = self.base_model.predictions
         self.predictions[target_name] = pl.concat(
             [

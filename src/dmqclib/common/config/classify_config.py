@@ -87,6 +87,9 @@ class ClassificationConfig(ConfigBase):
         self.data["feature_param_set"] = get_config_item(
             self.full_config, "feature_param_sets", self.data["feature_param_set"]
         )
+        self.data["feature_stats_set"] = get_config_item(
+            self.full_config, "feature_stats_sets", self.data["feature_stats_set"]
+        )
         self.data["step_class_set"] = get_config_item(
             self.full_config, "step_class_sets", self.data["step_class_set"]
         )

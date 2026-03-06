@@ -5,6 +5,9 @@ This module verifies the correct functionality of DataSetBase's methods.
 
 import unittest
 from pathlib import Path
+from typing import Self
+
+import polars as pl
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
@@ -25,6 +28,9 @@ class ModelBaseWithEmptyName(ModelBase):
     def test(self) -> None:
         pass
 
+    def update_nthreads(self, model: Self) -> Self:
+        return model
+
 
 class ModelBaseWithExpectedName(ModelBase):
     """
@@ -42,6 +48,9 @@ class ModelBaseWithExpectedName(ModelBase):
     def test(self) -> None:
         pass
 
+    def update_nthreads(self, model: Self) -> Self:
+        return model
+
 
 class ModelBaseWithWrongName(ModelBase):
     """
@@ -58,6 +67,9 @@ class ModelBaseWithWrongName(ModelBase):
 
     def test(self) -> None:
         pass
+
+    def update_nthreads(self, model: Self) -> Self:
+        return model
 
 
 class TestModelBaseMethods(unittest.TestCase):
@@ -108,3 +120,64 @@ class TestModelBaseMethods(unittest.TestCase):
         ds = ModelBaseWithExpectedName(self.config)
         with self.assertRaises(FileNotFoundError):
             ds.load_model("invalid_file_path")
+
+    def test_update_contingency_table_validation(self):
+        """
+        Ensure that update_contingency_table raises ValueError when required
+        member variables are missing.
+        """
+        model = ModelBaseWithExpectedName(self.config)
+
+        # Case 1: test_set is None
+        model.test_set = None
+        model.predictions = pl.DataFrame({"score": [0.5]})
+        with self.assertRaisesRegex(ValueError, "Member variable 'test_set'"):
+            model.update_contingency_table()
+
+        # Case 2: predictions is None
+        model.test_set = pl.DataFrame({"label": [1]})
+        model.predictions = None
+        with self.assertRaisesRegex(ValueError, "Member variable 'predictions'"):
+            model.update_contingency_table()
+
+    def test_update_contingency_table_flow(self):
+        """
+        Ensure that the contingency table is correctly initialized and
+        appended to when calling update_contingency_table multiple times.
+        """
+        model = ModelBaseWithExpectedName(self.config)
+
+        # --- Batch 1 (e.g., Fold k=0) ---
+        model.k = 0
+        model.test_set = pl.DataFrame({"label": [0, 1, 0]})
+        model.predictions = pl.DataFrame(
+            {"class": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
+        )
+
+        model.update_contingency_table()
+
+        # Check initialization
+        self.assertIsNotNone(model.contingency_table)
+        self.assertEqual(model.contingency_table.shape, (3, 3))
+        self.assertListEqual(model.contingency_table.columns, ["k", "label", "score"])
+
+        # Verify content of Batch 1
+        expected_batch_1 = pl.DataFrame(
+            {"k": [0, 0, 0], "label": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
+        )
+        self.assertTrue(model.contingency_table.equals(expected_batch_1))
+
+        # --- Batch 2 (e.g., Fold k=1) ---
+        model.k = 1
+        model.test_set = pl.DataFrame({"label": [1, 1]})
+        model.predictions = pl.DataFrame({"class": [1, 0], "score": [0.8, 0.3]})
+
+        model.update_contingency_table()
+
+        # Check appending behavior
+        self.assertEqual(model.contingency_table.shape, (5, 3))
+
+        # Verify that k=1 rows were added
+        k1_rows = model.contingency_table.filter(pl.col("k") == 1)
+        self.assertEqual(k1_rows.shape, (2, 3))
+        self.assertEqual(k1_rows["score"].to_list(), [0.8, 0.3])

@@ -81,6 +81,8 @@ def classify_dataset(config: ConfigBase) -> None:
     ds_classify.test_targets()
     ds_classify.write_predictions()
     ds_classify.write_reports()
+    ds_classify.write_contingency_tables()
+    ds_classify.create_metric_plots()
 
     ds_concat = load_classify_step7_concat_dataset(
         config, ds_input.input_data, ds_classify.predictions

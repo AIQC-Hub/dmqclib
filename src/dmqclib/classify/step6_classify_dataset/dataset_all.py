@@ -60,6 +60,8 @@ class ClassifyAll(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "classify_report_{target_name}.tsv",
             "prediction": "classify_prediction_{target_name}.parquet",
+            "contingency_table": "classify_contingency_tables_{target_name}.tsv",
+            "metric_plot": "classify_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
 
@@ -110,21 +112,32 @@ class ClassifyAll(BuildModelBase):
         This method performs the following steps:
 
           1. Retrieves the trained model from :attr:`models[target_name]`.
-          2. Prepares the appropriate test set by dropping specified columns
+          2. **Resets the model's contingency table** to ensure no data duplication
+             from previous runs.
+          3. Prepares the appropriate test set by dropping specified columns
              from :attr:`test_sets[target_name]` and attaches it to the
              :attr:`base_model`.
-          3. Calls the :meth:`base_model.test` method to generate predictions and reports.
-          4. Concatenates relevant original test set columns with the
+          4. Calls the :meth:`base_model.test` method to generate predictions and reports.
+          5. Stores the contingency table in :attr:`contingency_tables[target_name]`.
+          6. Concatenates relevant original test set columns with the
              generated predictions and stores them in :attr:`predictions[target_name]`.
-          5. Stores the test report from the base model in :attr:`reports[target_name]`.
+          7. Stores the test report from the base model in :attr:`reports[target_name]`.
 
         :param target_name: The target variable name, used to index
                             both :attr:`models` and :attr:`test_sets`.
         :type target_name: str
         """
         self.base_model = self.models[target_name]
+
+        # Reset contingency table to avoid duplication if test is run multiple times
+        self.base_model.contingency_table = None
+
         self.base_model.test_set = self.test_sets[target_name].drop(self.drop_cols)
         self.base_model.test()
+
+        if self.base_model.contingency_table is not None:
+            self.contingency_tables[target_name] = self.base_model.contingency_table
+
         predictions = self.base_model.predictions
         self.predictions[target_name] = pl.concat(
             [

@@ -21,7 +21,7 @@ from dmqclib.common.loader.dataset_loader import (
 from dmqclib.prepare.features.basic_values import BasicValues
 from dmqclib.prepare.features.day_of_year import DayOfYearFeat
 from dmqclib.prepare.features.location import LocationFeat
-from dmqclib.prepare.features.profile_summary import ProfileSummaryStats5
+from dmqclib.prepare.features.profile_summary import ProfileSummaryStats
 
 
 class _TestFeatureBase(unittest.TestCase):
@@ -133,6 +133,8 @@ class TestLocationFeature(_TestFeatureBase):
                 "longitude": {"min": 14.5, "max": 23.5},
                 "latitude": {"min": 55, "max": 66},
             },
+            "col_names": ["longitude", "latitude"],
+            "stats_set": {"type": "min_max", "name": "location"},
         }
 
     def test_init_arguments(self):
@@ -249,22 +251,47 @@ class TestDayOfYearFeature(_TestFeatureBase):
         ds.scale_second()
         self.assertTrue(ds.features.equals(features))
 
+    def test_convert_cosine(self):
+        """
+        Verifies that day-of-year features are correctly extracted and scaled,
+        specifically testing with sine conversion, and checking the resulting
+        DataFrame type and dimensions.
+        """
+        ds = DayOfYearFeat(
+            "temp",
+            self.feature_info,
+            self.ds_select.selected_profiles,
+            self.ds_extract.filtered_input,
+            self.ds_locate.selected_rows,
+            self.ds_summary.summary_stats,
+        )
+        ds.feature_info = {
+            "class": "day_of_year",
+            "convert": "cosine",
+        }
+        ds.extract_features()
+        ds.scale_second()
 
-class TestProfileSummaryStats5Feature(_TestFeatureBase):
+        self.assertIsInstance(ds.features, pl.DataFrame)
+        self.assertEqual(ds.features.shape[0], 128)
+        self.assertEqual(ds.features.shape[1], 2)
+
+
+class TestProfileSummaryStatsFeature(_TestFeatureBase):
     """
-    Tests for verifying the ProfileSummaryStats5 class, which computes advanced
+    Tests for verifying the ProfileSummaryStats class, which computes advanced
     summary statistics for multiple variables (temp, psal, pres).
     """
 
     def setUp(self):
         """
-        Initializes the test environment for ProfileSummaryStats5, loading necessary
+        Initializes the test environment for ProfileSummaryStats, loading necessary
         data and configuring the specific feature information with detailed stats
         for multiple variables.
         """
-        super()._setup(ProfileSummaryStats5)
+        super()._setup(ProfileSummaryStats)
         self.feature_info = {
-            "class": "profile_summary_stats5",
+            "class": "profile_summary_stats",
             "stats": {
                 "temp": {
                     "mean": {"min": 0, "max": 12.5},
@@ -288,22 +315,25 @@ class TestProfileSummaryStats5Feature(_TestFeatureBase):
                     "pct75": {"min": 35, "max": 156},
                 },
             },
+            "col_names": ["temp", "psal", "pres"],
+            "stats_set": {"type": "min_max", "name": "profile_summary_stats"},
+            "summary_stats_names": ["mean", "median", "sd", "pct25", "pct75"],
         }
 
     def test_init_arguments(self):
         """
-        Checks the initialization of required data for the ProfileSummaryStats5 class
+        Checks the initialization of required data for the ProfileSummaryStats class
         by calling the shared validation method from the base class.
         """
         super()._test_init_arguments(self.feature_info)
 
-    def test_profile_summary_stats5_features(self):
+    def test_profile_summary_stats_features(self):
         """
         Verifies the correct extraction and scaling of extended summary statistics
         (mean, median, standard deviation, 25th percentile, 75th percentile)
         for multiple variables, checking the resulting DataFrame type and dimensions.
         """
-        ds = ProfileSummaryStats5(
+        ds = ProfileSummaryStats(
             "temp",
             self.feature_info,
             self.ds_select.selected_profiles,
@@ -340,6 +370,8 @@ class TestBasicValues3PlusFlanksFeature(_TestFeatureBase):
                 "psal": {"min": 0, "max": 20},
                 "pres": {"min": 0, "max": 200},
             },
+            "col_names": ["temp", "psal", "pres"],
+            "stats_set": {"type": "min_max", "name": "basic_values3_plus_flanks"},
         }
 
     def test_init_arguments(self):

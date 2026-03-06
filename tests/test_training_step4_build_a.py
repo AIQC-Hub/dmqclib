@@ -78,6 +78,7 @@ class TestBuildModel(unittest.TestCase):
             str(ds.model_file_names["pres"]),
         )
 
+        # Check Report paths
         self.assertEqual(
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_temp.tsv",
             str(ds.output_file_names["report"]["temp"]),
@@ -89,6 +90,35 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_report_pres.tsv",
             str(ds.output_file_names["report"]["pres"]),
+        )
+
+        # Check Contingency Table paths
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_temp.tsv",
+            str(ds.output_file_names["contingency_table"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.tsv",
+            str(ds.output_file_names["contingency_table"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_pres.tsv",
+            str(ds.output_file_names["contingency_table"]["pres"]),
+        )
+
+
+        # Check metric plot file names
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_metric_plots_temp.svg",
+            str(ds.output_file_names["metric_plot"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_metric_plots_psal.svg",
+            str(ds.output_file_names["metric_plot"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_metric_plots_pres.svg",
+            str(ds.output_file_names["metric_plot"]["pres"]),
         )
 
     def test_base_model(self):
@@ -188,8 +218,8 @@ class TestBuildModel(unittest.TestCase):
 
     def test_test_with_xgboost(self):
         """
-        Check that testing sets after model building populates the result columns,
-        verifying data types and dimensions remain consistent.
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
         """
         ds = BuildModel(
             self.config,
@@ -199,6 +229,7 @@ class TestBuildModel(unittest.TestCase):
         ds.build_targets()
         ds.test_targets()
 
+        # Check test sets / predictions
         self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
         self.assertEqual(ds.test_sets["temp"].shape[0], 12)
         self.assertEqual(ds.test_sets["temp"].shape[1], 56)
@@ -210,6 +241,20 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.test_sets["pres"].shape[0], 12)
         self.assertEqual(ds.test_sets["pres"].shape[1], 56)
+
+        # Check contingency tables
+        self.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
+        # Height should match number of test rows
+        self.assertEqual(ds.contingency_tables["temp"].height, 12)
+        self.assertListEqual(
+            ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        )
+
+        self.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["psal"].height, 14)
+
+        self.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["pres"].height, 12)
 
     def test_test_without_model(self):
         """Ensure that calling test_targets() without first building models raises a ValueError."""
@@ -254,6 +299,76 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["report"]["psal"])
         os.remove(ds.output_file_names["report"]["pres"])
 
+    def test_write_contingency_tables(self):
+        """
+        Check that contingency tables are correctly written to file,
+        and then remove the temporary files created.
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output file names for testing
+        ds.output_file_names["contingency_table"]["temp"] = str(
+            data_path / "temp_test_contingency_tables_temp.tsv"
+        )
+        ds.output_file_names["contingency_table"]["psal"] = str(
+            data_path / "temp_test_contingency_tables_psal.tsv"
+        )
+        ds.output_file_names["contingency_table"]["pres"] = str(
+            data_path / "temp_test_contingency_tables_pres.tsv"
+        )
+
+        ds.build_targets()
+        ds.test_targets()
+        ds.write_contingency_tables()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["pres"]))
+
+        os.remove(ds.output_file_names["contingency_table"]["temp"])
+        os.remove(ds.output_file_names["contingency_table"]["psal"])
+        os.remove(ds.output_file_names["contingency_table"]["pres"])
+
+    def test_create_metric_plots(self):
+        """
+        Ensure ROC and Precision-Recall plots written to the specified output files
+        and that these files are created on the file system.
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output file names for testing
+        ds.output_file_names["metric_plot"]["temp"] = str(
+            data_path / "temp_test_metric_plots_temp.svg"
+        )
+        ds.output_file_names["metric_plot"]["psal"] = str(
+            data_path / "temp_test_metric_plots_psal.svg"
+        )
+        ds.output_file_names["metric_plot"]["pres"] = str(
+            data_path / "temp_test_metric_plots_pres.svg"
+        )
+
+        ds.build_targets()
+        ds.test_targets()
+        ds.create_metric_plots()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["pres"]))
+
+        os.remove(ds.output_file_names["metric_plot"]["temp"])
+        os.remove(ds.output_file_names["metric_plot"]["psal"])
+        os.remove(ds.output_file_names["metric_plot"]["pres"])
+
     def test_write_no_results(self):
         """
         Ensure that ValueError is raised if write_reports is called
@@ -266,6 +381,32 @@ class TestBuildModel(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             ds.write_reports()
+
+    def test_write_empty_contingency_tables(self):
+        """
+        Ensure that ValueError is raised if write_contingency_tables is called
+        before any tables are generated (e.g. before test_targets).
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        with self.assertRaises(ValueError):
+            ds.write_contingency_tables()
+
+    def test_create_empty_metric_plots(self):
+        """
+        Ensure that ValueError is raised if create_metric_plots is called
+        before any tables are generated (e.g. before test_targets).
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        with self.assertRaises(ValueError):
+            ds.create_metric_plots()
 
     def test_write_no_models(self):
         """
