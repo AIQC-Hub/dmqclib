@@ -20,6 +20,7 @@ from dmqclib.common.loader.classify_loader import (
     load_classify_step5_extract_dataset,
 )
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.logistic_regression import LogisticRegression
 
 
 class TestClassifyAllClass:
@@ -102,6 +103,12 @@ class TestClassifyAllClass:
         """Ensure that the configured base model is an XGBoost instance."""
         ds = ClassifyAll(self.config)
         assert isinstance(ds.base_model, XGBoost)
+
+    def test_logistic_regression_model(self):
+        """Ensure that the configured base model is a LogisticRegression instance."""
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+        ds = ClassifyAll(self.config)
+        assert isinstance(ds.base_model, LogisticRegression)
 
     def test_nthreads(self):
         ds = ClassifyAll(self.config)

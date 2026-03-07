@@ -12,6 +12,7 @@ from pathlib import Path
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.logistic_regression import LogisticRegression
 
 
 class TestModelClassLoader(unittest.TestCase):
@@ -40,6 +41,15 @@ class TestModelClassLoader(unittest.TestCase):
         """
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, XGBoost)
+
+    def test_load_logic_regression_model(self):
+        """
+        Tests that load_model_class successfully returns an LogisticRegression instance
+        when provided with a valid configuration.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, LogisticRegression)
 
     def test_load_model_invalid_config(self):
         """

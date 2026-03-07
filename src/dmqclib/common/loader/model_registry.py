@@ -9,6 +9,7 @@ from typing import Dict, Type
 
 from dmqclib.common.base.model_base import ModelBase
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.logistic_regression import LogisticRegression
 
 #: A dictionary mapping model names to their corresponding Python classes.
 #:
@@ -18,4 +19,5 @@ from dmqclib.train.models.xgboost import XGBoost
 #: :type: Dict[str, Type[ModelBase]]
 MODEL_REGISTRY: Dict[str, Type[ModelBase]] = {
     "XGBoost": XGBoost,
+    "LogisticRegression": LogisticRegression,
 }

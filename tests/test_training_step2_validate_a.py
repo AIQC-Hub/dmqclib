@@ -14,6 +14,7 @@ import polars as pl
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
@@ -107,6 +108,15 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config)
         self.assertIsInstance(ds.base_model, XGBoost)
 
+    def test_logistic_regression_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a LogisticRegression
+        instance, as defined by the configuration.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, LogisticRegression)
+
     def test_training_sets(self):
         """
         Check that training data is properly loaded and accessible
@@ -144,6 +154,38 @@ class TestKFoldValidation(unittest.TestCase):
         successfully processes the training sets and populates both the reports
         and the contingency tables via the validate method.
         """
+        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
+        ds.process_targets()
+
+        # Check Reports
+        self.assertIsInstance(ds.reports["temp"], pl.DataFrame)
+        self.assertEqual(ds.reports["temp"].shape[0], 18)
+        self.assertEqual(ds.reports["temp"].shape[1], 8)
+
+        # Check Contingency Tables
+        # "temp" has 116 rows in training set; K-fold should result in 116 predictions total.
+        self.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["temp"].height, 116)
+        # Expected columns: k, label, score
+        self.assertListEqual(
+            ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        )
+
+        # "psal" has 126 rows
+        self.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["psal"].height, 126)
+
+        # "pres" has 110 rows
+        self.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["pres"].height, 110)
+
+    def test_fold_validation_with_logistic_regression(self):
+        """
+        Check that the KFoldValidation process, utilizing the LogisticRegression model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         ds.process_targets()
 

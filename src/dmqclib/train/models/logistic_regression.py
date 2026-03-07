@@ -44,8 +44,7 @@ class LogisticRegression(SklearnModelBase):
             "penalty": "l2",
             "C": 1.0,
             "solver": "lbfgs",
-            "max_iter": 1000,
-            "n_jobs": -1,
+            "max_iter": 1000
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_step_params("model").get("model_params", {})

@@ -13,6 +13,7 @@ import polars as pl
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.step4_build_model.build_model import BuildModel
 
 
@@ -126,6 +127,12 @@ class TestBuildModel(unittest.TestCase):
         ds = BuildModel(self.config)
         self.assertIsInstance(ds.base_model, XGBoost)
 
+    def test_logistic_regression_model(self):
+        """Ensure that the configured base model is an XGBoost instance."""
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+        ds = BuildModel(self.config)
+        self.assertIsInstance(ds.base_model, LogisticRegression)
+
     def test_training_sets(self):
         """
         Check that training and test sets are loaded into BuildModel correctly,
@@ -221,6 +228,47 @@ class TestBuildModel(unittest.TestCase):
         Check that testing sets after model building populates the result columns
         and contingency tables, verifying data types and dimensions remain consistent.
         """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+        ds.test_targets()
+
+        # Check test sets / predictions
+        self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["temp"].shape[0], 12)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
+
+        self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["psal"].shape[0], 14)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
+
+        # Check contingency tables
+        self.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
+        # Height should match number of test rows
+        self.assertEqual(ds.contingency_tables["temp"].height, 12)
+        self.assertListEqual(
+            ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        )
+
+        self.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["psal"].height, 14)
+
+        self.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
+        self.assertEqual(ds.contingency_tables["pres"].height, 12)
+
+    def test_test_with_logistic_regression(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
         ds = BuildModel(
             self.config,
             training_sets=self.ds_input.training_sets,
