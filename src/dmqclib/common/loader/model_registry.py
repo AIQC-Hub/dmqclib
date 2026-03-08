@@ -8,8 +8,15 @@ constructor for that model.
 from typing import Dict, Type
 
 from dmqclib.common.base.model_base import ModelBase
+from dmqclib.train.models.decision_tree import DecisionTree
+from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.logistic_regression import LogisticRegression
+from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
+from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
+from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
+from dmqclib.train.models.mlp import MLP
 
 #: A dictionary mapping model names to their corresponding Python classes.
 #:
@@ -18,6 +25,13 @@ from dmqclib.train.models.logistic_regression import LogisticRegression
 #:
 #: :type: Dict[str, Type[ModelBase]]
 MODEL_REGISTRY: Dict[str, Type[ModelBase]] = {
+    "DecisionTree": DecisionTree,
+    "RandomForest": RandomForest,
     "XGBoost": XGBoost,
     "LogisticRegression": LogisticRegression,
+    "LinearDiscriminantAnalysis": LinearDiscriminantAnalysis,
+    "SVM": SVM,
+    "KNearestNeighbors": KNearestNeighbors,
+    "GaussianNaiveBayes": GaussianNaiveBayes,
+    "MLP": MLP,
 }

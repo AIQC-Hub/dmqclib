@@ -19,8 +19,16 @@ from dmqclib.common.loader.classify_loader import (
     load_classify_step4_locate_dataset,
     load_classify_step5_extract_dataset,
 )
-from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.logistic_regression import LogisticRegression
+from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
+from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.decision_tree import DecisionTree
+from dmqclib.train.models.random_forest import RandomForest
+from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
+from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
+from dmqclib.train.models.mlp import MLP
+from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
 class TestClassifyAllClass:
@@ -118,98 +126,103 @@ class TestClassifyAllClass:
         assert ds_3.base_model.model_params["n_jobs"] == 2
 
 
+def _setup_datasets(test_obj):
+    test_obj.configs = []
+    test_obj.extracts = []
+    for x in test_obj.config_file_paths:
+        config = ClassificationConfig(x)
+        config.select("NRT_BO_001")
+
+        ds_input = load_classify_step1_input_dataset(config)
+        ds_input.input_file_name = str(test_obj.test_data_file)
+        ds_input.read_input_data()
+
+        ds_summary = load_classify_step2_summary_dataset(
+            config, input_data=ds_input.input_data
+        )
+        ds_summary.calculate_stats()
+
+        ds_select = load_classify_step3_select_dataset(
+            config, input_data=ds_input.input_data
+        )
+        ds_select.label_profiles()
+
+        ds_locate = load_classify_step4_locate_dataset(
+            config,
+            input_data=ds_input.input_data,
+            selected_profiles=ds_select.selected_profiles,
+        )
+        ds_locate.process_targets()
+
+        ds_extract = load_classify_step5_extract_dataset(
+            config,
+            input_data=ds_input.input_data,
+            selected_profiles=ds_select.selected_profiles,
+            selected_rows=ds_locate.selected_rows,
+            summary_stats=ds_summary.summary_stats,
+        )
+        ds_extract.process_targets()
+
+        test_obj.configs.append(config)
+        test_obj.extracts.append(ds_extract)
+
+
+def _setup_classify_all(test_obj):
+    """Set up test environment and load input, summary, select, and locate data."""
+    config_path = Path(__file__).resolve().parent / "data" / "config"
+    test_obj.config_file_paths = [
+        config_path / "test_classify_001.yaml",
+        config_path / "test_classify_002.yaml",
+        config_path / "test_classify_003.yaml",
+    ]
+    test_obj.test_data_file = str(
+        Path(__file__).resolve().parent
+        / "data"
+        / "input"
+        / "nrt_cora_bo_test.parquet"
+    )
+    _setup_datasets(test_obj)
+
+    data_path = Path(__file__).resolve().parent / "data" / "classify"
+    test_obj.report_file_names = {
+        "temp": str(data_path / "temp_classify_report_temp.tsv"),
+        "psal": str(data_path / "temp_classify_report_psal.tsv"),
+        "pres": str(data_path / "temp_classify_report_pres.tsv"),
+    }
+    test_obj.prediction_file_names = {
+        "temp": str(data_path / "temp_classify_prediction_temp.parquet"),
+        "psal": str(data_path / "temp_classify_prediction_psal.parquet"),
+        "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
+    }
+    test_obj.contingency_table_file_names = {
+        "temp": str(data_path / "temp_classify_contingency_tables_temp.tsv"),
+        "psal": str(data_path / "temp_classify_contingency_tables_psal.tsv"),
+        "pres": str(data_path / "temp_classify_contingency_tables_pres.tsv"),
+    }
+    test_obj.metric_plots_file_names = {
+        "temp": str(data_path / "temp_classify_metric_plots_temp.svg"),
+        "psal": str(data_path / "temp_classify_metric_plots_psal.svg"),
+        "pres": str(data_path / "temp_classify_metric_plots_pres.svg"),
+    }
+    test_obj.n_jobs = [-1, -1, 2]
+
+
 class TestClassifyAll:
     """
     A suite of tests ensuring that the `ClassifyAll` step correctly loads models,
     tests them against input data, and saves classification reports and predictions.
     """
 
-    def _setup_datasets(self):
-        self.configs = []
-        self.extracts = []
-        for x in self.config_file_paths:
-            config = ClassificationConfig(x)
-            config.select("NRT_BO_001")
-
-            ds_input = load_classify_step1_input_dataset(config)
-            ds_input.input_file_name = str(self.test_data_file)
-            ds_input.read_input_data()
-
-            ds_summary = load_classify_step2_summary_dataset(
-                config, input_data=ds_input.input_data
-            )
-            ds_summary.calculate_stats()
-
-            ds_select = load_classify_step3_select_dataset(
-                config, input_data=ds_input.input_data
-            )
-            ds_select.label_profiles()
-
-            ds_locate = load_classify_step4_locate_dataset(
-                config,
-                input_data=ds_input.input_data,
-                selected_profiles=ds_select.selected_profiles,
-            )
-            ds_locate.process_targets()
-
-            ds_extract = load_classify_step5_extract_dataset(
-                config,
-                input_data=ds_input.input_data,
-                selected_profiles=ds_select.selected_profiles,
-                selected_rows=ds_locate.selected_rows,
-                summary_stats=ds_summary.summary_stats,
-            )
-            ds_extract.process_targets()
-
-            self.configs.append(config)
-            self.extracts.append(ds_extract)
-
     @pytest.fixture(autouse=True)
     def setup(self):
         """Set up test environment and load input, summary, select, and locate data."""
-        config_path = Path(__file__).resolve().parent / "data" / "config"
-        self.config_file_paths = [
-            config_path / "test_classify_001.yaml",
-            config_path / "test_classify_002.yaml",
-            config_path / "test_classify_003.yaml",
-        ]
-        self.test_data_file = str(
-            Path(__file__).resolve().parent
-            / "data"
-            / "input"
-            / "nrt_cora_bo_test.parquet"
-        )
-        self._setup_datasets()
-
+        _setup_classify_all(self)
         model_path = Path(__file__).resolve().parent / "data" / "training"
         self.model_file_names = {
             "temp": str(model_path / "model_temp.joblib"),
             "psal": str(model_path / "model_psal.joblib"),
             "pres": str(model_path / "model_pres.joblib"),
         }
-
-        data_path = Path(__file__).resolve().parent / "data" / "classify"
-        self.report_file_names = {
-            "temp": str(data_path / "temp_classify_report_temp.tsv"),
-            "psal": str(data_path / "temp_classify_report_psal.tsv"),
-            "pres": str(data_path / "temp_classify_report_pres.tsv"),
-        }
-        self.prediction_file_names = {
-            "temp": str(data_path / "temp_classify_prediction_temp.parquet"),
-            "psal": str(data_path / "temp_classify_prediction_psal.parquet"),
-            "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
-        }
-        self.contingency_table_file_names = {
-            "temp": str(data_path / "temp_classify_contingency_tables_temp.tsv"),
-            "psal": str(data_path / "temp_classify_contingency_tables_psal.tsv"),
-            "pres": str(data_path / "temp_classify_contingency_tables_pres.tsv"),
-        }
-        self.metric_plots_file_names = {
-            "temp": str(data_path / "temp_classify_metric_plots_temp.svg"),
-            "psal": str(data_path / "temp_classify_metric_plots_psal.svg"),
-            "pres": str(data_path / "temp_classify_metric_plots_pres.svg"),
-        }
-        self.n_jobs = [-1, -1, 2]
 
     @pytest.mark.parametrize("idx", range(3))
     def test_test_sets(self, idx):
