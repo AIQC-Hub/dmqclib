@@ -56,7 +56,7 @@ class SVM(SklearnModelBase):
             "random_state": None,
         }
         # Update model parameters with config step parameters
-        model_params = self.config.get_model_params(self.short_name)
+        model_params = self.config.get_model_params(self.expected_class_name, self.short_name)
         self.model_params.update(model_params)
 
     def _get_model_class(self) -> Any:

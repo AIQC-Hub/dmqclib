@@ -35,6 +35,7 @@ class ModelBase(ABC):
 
     expected_class_name: Optional[str] = None  # Must be overridden by child classes
     short_name: Optional[str] = None  # Must be overridden by child classes
+    multi = False # Must be set to True for model suite class
 
     def __init__(self, config: ConfigBase) -> None:
         """
@@ -106,7 +107,7 @@ class ModelBase(ABC):
         :param model: The model needs to be updated.
         :type model: Self
         """
-        pass
+        pass   # pragma: no cover
 
     def load_model(self, file_name: str) -> None:
         """

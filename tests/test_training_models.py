@@ -50,6 +50,10 @@ class TestXGBoost(unittest.TestCase):
         self.assertEqual(ds.expected_class_name, "XGBoost")
         self.assertEqual(ds._get_model_class(), xgb.XGBClassifier)
 
+    def test_multi_flag(self):
+        ds = XGBoost(self.config)
+        self.assertFalse(ds.multi)
+
     def test_default_params(self):
         ds = XGBoost(self.config)
         self.assertEqual(ds.model_params.get("n_estimators"), 100)
@@ -84,6 +88,10 @@ class TestLogisticRegression(unittest.TestCase):
         self.assertEqual(ds.expected_class_name, "LogisticRegression")
         self.assertEqual(ds._get_model_class(), SklearnLR)
 
+    def test_multi_flag(self):
+        ds = LogisticRegression(self.config)
+        self.assertFalse(ds.multi)
+
     def test_default_params(self):
         ds = LogisticRegression(self.config)
         self.assertEqual(ds.model_params.get("penalty"), "l2")
@@ -117,6 +125,10 @@ class TestLDA(unittest.TestCase):
         self.assertEqual(ds.expected_class_name, "LinearDiscriminantAnalysis")
         self.assertEqual(ds._get_model_class(), SklearnLDA)
 
+    def test_multi_flag(self):
+        ds = LinearDiscriminantAnalysis(self.config)
+        self.assertFalse(ds.multi)
+
     def test_default_params(self):
         ds = LinearDiscriminantAnalysis(self.config)
         self.assertEqual(ds.model_params.get("solver"), "svd")
@@ -147,8 +159,12 @@ class TestSVM(unittest.TestCase):
 
     def test_init_class(self):
         ds = SVM(self.config)
-        self.assertEqual(ds.expected_class_name, "SVM")
+        self.assertEqual(ds.expected_class_name, "SupportVectorMachine")
         self.assertEqual(ds._get_model_class(), SklearnSVC)
+
+    def test_multi_flag(self):
+        ds = SVM(self.config)
+        self.assertFalse(ds.multi)
 
     def test_default_params(self):
         ds = SVM(self.config)
@@ -185,6 +201,10 @@ class TestDecisionTree(unittest.TestCase):
         self.assertEqual(ds.expected_class_name, "DecisionTree")
         self.assertEqual(ds._get_model_class(), SklearnDT)
 
+    def test_multi_flag(self):
+        ds = DecisionTree(self.config)
+        self.assertFalse(ds.multi)
+
     def test_default_params(self):
         ds = DecisionTree(self.config)
         self.assertEqual(ds.model_params.get("criterion"), "gini")
@@ -218,6 +238,10 @@ class TestRandomForest(unittest.TestCase):
         ds = RandomForest(self.config)
         self.assertEqual(ds.expected_class_name, "RandomForest")
         self.assertEqual(ds._get_model_class(), SklearnRF)
+
+    def test_multi_flag(self):
+        ds = RandomForest(self.config)
+        self.assertFalse(ds.multi)
 
     def test_default_params(self):
         ds = RandomForest(self.config)
@@ -253,6 +277,10 @@ class TestKNN(unittest.TestCase):
         self.assertEqual(ds.expected_class_name, "KNearestNeighbors")
         self.assertEqual(ds._get_model_class(), SklearnKNN)
 
+    def test_multi_flag(self):
+        ds = KNearestNeighbors(self.config)
+        self.assertFalse(ds.multi)
+
     def test_default_params(self):
         ds = KNearestNeighbors(self.config)
         self.assertEqual(ds.model_params.get("n_neighbors"), 5)
@@ -287,6 +315,10 @@ class TestGaussianNaiveBayes(unittest.TestCase):
         self.assertEqual(ds.expected_class_name, "GaussianNaiveBayes")
         self.assertEqual(ds._get_model_class(), SklearnGNB)
 
+    def test_multi_flag(self):
+        ds = GaussianNaiveBayes(self.config)
+        self.assertFalse(ds.multi)
+
     def test_default_params(self):
         ds = GaussianNaiveBayes(self.config)
         self.assertEqual(ds.model_params.get("var_smoothing"), 1e-9)
@@ -315,8 +347,12 @@ class TestMLP(unittest.TestCase):
 
     def test_init_class(self):
         ds = MLP(self.config)
-        self.assertEqual(ds.expected_class_name, "MLP")
+        self.assertEqual(ds.expected_class_name, "MultilayerPerceptron")
         self.assertEqual(ds._get_model_class(), SklearnMLP)
+
+    def test_multi_flag(self):
+        ds = MLP(self.config)
+        self.assertFalse(ds.multi)
 
     def test_default_params(self):
         ds = MLP(self.config)

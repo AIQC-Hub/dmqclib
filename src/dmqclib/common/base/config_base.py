@@ -276,7 +276,7 @@ class ConfigBase(ABC):
         return self.data["step_param_set"]["steps"][step_name]
 
 
-    def get_model_params(self, model_name: str) -> Dict:
+    def get_model_params(self, model_long_name: str, model_short_name: str) -> Dict:
         """Retrieve the parameters dictionary for a model.
 
         :param model_name: The name of the model to get parameters for.
@@ -292,8 +292,10 @@ class ConfigBase(ABC):
             "model_params", {}
         )
 
-        if model_name in model_params:
-            return model_params[model_name]
+        if model_long_name in model_params:
+            return model_params[model_long_name]
+        if model_short_name in model_params:
+            return model_params[model_short_name]
         else:
             return model_params
 
@@ -439,6 +441,16 @@ class ConfigBase(ABC):
                           the configuration data within the current context of `self.data`.
         """
         return self.data["step_class_set"]["steps"][step_name]
+
+    def set_base_class(self, step_name: str, value: str):
+        """Set the associated class name for a specified step.
+
+        :param step_name: The name of the step.
+        :type step_name: str
+        :param value: The value of the step.
+        :type value: str
+        """
+        self.data["step_class_set"]["steps"][step_name] = value
 
     def get_target_variables(self) -> List[Dict]:
         """Get the list of target variable definitions from the configuration.

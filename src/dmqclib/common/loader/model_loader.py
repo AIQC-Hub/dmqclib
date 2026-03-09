@@ -32,6 +32,27 @@ def load_model_class(config: ConfigBase) -> ModelBase:
                         the :data:`~dmqclib.common.loader.model_registry.MODEL_REGISTRY`.
     """
     class_name: str = config.get_base_class("model")
+    return load_model_class_with_class_name(config, class_name)
+
+
+def load_model_class_with_class_name(config: ConfigBase, class_name: str) -> ModelBase:
+    """
+    Retrieve and instantiate a model class for the "model" step from the provided configuration.
+
+    :param config: A configuration object that includes a "base_class" entry
+                   under the "model" step, specifying which model class to load.
+                   This object must implement the ``get_base_class`` method.
+    :type config: dmqclib.common.base.config_base.ConfigBase
+    :param class_name: A configuration object that includes a "base_class" entry
+                   under the "model" step, specifying which model class to load.
+                   This object must implement the ``get_base_class`` method.
+    :type class_name: str
+    :returns: An instantiated model object, which is an instance of a class
+              inheriting from :class:`~dmqclib.common.base.model_base.ModelBase`.
+    :rtype: dmqclib.common.base.model_base.ModelBase
+    :raises ValueError: If the retrieved model class name is not found in
+                        the :data:`~dmqclib.common.loader.model_registry.MODEL_REGISTRY`.
+    """
     model_class: Optional[Type[ModelBase]] = MODEL_REGISTRY.get(class_name)
     if not model_class:
         raise ValueError(f"Unknown model class specified: {class_name}")
