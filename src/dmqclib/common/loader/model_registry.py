@@ -26,12 +26,21 @@ from dmqclib.train.models.mlp import MLP
 #: :type: Dict[str, Type[ModelBase]]
 MODEL_REGISTRY: Dict[str, Type[ModelBase]] = {
     "DecisionTree": DecisionTree,
+    "DT": DecisionTree,
     "RandomForest": RandomForest,
+    "RF": RandomForest,
     "XGBoost": XGBoost,
+    "XGB": XGBoost,
     "LogisticRegression": LogisticRegression,
+    "Logit": LogisticRegression,
     "LinearDiscriminantAnalysis": LinearDiscriminantAnalysis,
+    "LDA": LinearDiscriminantAnalysis,
+    "SupportVectorMachine": SVM,
     "SVM": SVM,
     "KNearestNeighbors": KNearestNeighbors,
+    "KNN": KNearestNeighbors,
     "GaussianNaiveBayes": GaussianNaiveBayes,
+    "GNB": GaussianNaiveBayes,
+    "MultilayerPerceptron": MLP,
     "MLP": MLP,
 }

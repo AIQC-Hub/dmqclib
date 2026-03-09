@@ -34,6 +34,7 @@ class ModelBase(ABC):
     """
 
     expected_class_name: Optional[str] = None  # Must be overridden by child classes
+    short_name: Optional[str] = None  # Must be overridden by child classes
 
     def __init__(self, config: ConfigBase) -> None:
         """
@@ -54,7 +55,7 @@ class ModelBase(ABC):
 
         # Validate that the YAML's "class" matches the child's declared class name
         base_class = config.get_base_class("model")
-        if base_class != self.expected_class_name:
+        if (base_class != self.expected_class_name) and (base_class != self.short_name):
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
                 f"but got '{base_class}'"

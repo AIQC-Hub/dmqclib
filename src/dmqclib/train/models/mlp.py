@@ -31,7 +31,7 @@ class MLP(SklearnModelBase):
        This is a feedforward neural network implementation.
     """
 
-    expected_class_name: str = "MLP"
+    expected_class_name: str = "MultilayerPerceptron"
     short_name: str = "MLP"
 
     def __init__(self, config: ConfigBase) -> None:

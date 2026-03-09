@@ -49,12 +49,20 @@ class TestModelClassLoader(unittest.TestCase):
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, XGBoost)
 
+        self.config.data["step_class_set"]["steps"]["model"] = "XGB"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, XGBoost)
+
     def test_load_logic_regression_model(self):
         """
         Tests that load_model_class successfully returns an LogisticRegression instance
         when provided with a valid configuration.
         """
         self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, LogisticRegression)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "Logit"
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, LogisticRegression)
 
@@ -67,12 +75,20 @@ class TestModelClassLoader(unittest.TestCase):
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, LinearDiscriminantAnalysis)
 
+        self.config.data["step_class_set"]["steps"]["model"] = "LDA"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, LinearDiscriminantAnalysis)
+
     def test_load_svm_model(self):
         """
         Tests that load_model_class successfully returns an SVM instance
         when provided with a valid configuration.
         """
         self.config.data["step_class_set"]["steps"]["model"] = "SVM"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, SVM)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "SupportVectorMachine"
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, SVM)
 
@@ -85,12 +101,20 @@ class TestModelClassLoader(unittest.TestCase):
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, DecisionTree)
 
+        self.config.data["step_class_set"]["steps"]["model"] = "DT"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, DecisionTree)
+
     def test_load_random_forest_model(self):
         """
         Tests that load_model_class successfully returns an RandomForest instance
         when provided with a valid configuration.
         """
         self.config.data["step_class_set"]["steps"]["model"] = "RandomForest"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, RandomForest)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "RF"
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, RandomForest)
 
@@ -103,6 +127,10 @@ class TestModelClassLoader(unittest.TestCase):
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, KNearestNeighbors)
 
+        self.config.data["step_class_set"]["steps"]["model"] = "KNN"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, KNearestNeighbors)
+
     def test_load_gnb_model(self):
         """
         Tests that load_model_class successfully returns an GaussianNaiveBayes instance
@@ -112,12 +140,20 @@ class TestModelClassLoader(unittest.TestCase):
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, GaussianNaiveBayes)
 
+        self.config.data["step_class_set"]["steps"]["model"] = "GNB"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, GaussianNaiveBayes)
+
     def test_load_mlp_model(self):
         """
         Tests that load_model_class successfully returns an MLP instance
         when provided with a valid configuration.
         """
         self.config.data["step_class_set"]["steps"]["model"] = "MLP"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, MLP)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "MultilayerPerceptron"
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, MLP)
 

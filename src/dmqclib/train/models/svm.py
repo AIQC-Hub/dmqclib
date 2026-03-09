@@ -34,7 +34,7 @@ class SVM(SklearnModelBase):
        Standard SVM implementations do not support the ``n_jobs`` parameter directly.
     """
 
-    expected_class_name: str = "SVM"
+    expected_class_name: str = "SupportVectorMachine"
     short_name: str = "SVM"
 
     def __init__(self, config: ConfigBase) -> None:
