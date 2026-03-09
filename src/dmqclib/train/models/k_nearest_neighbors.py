@@ -32,6 +32,7 @@ class KNearestNeighbors(SklearnModelBase):
     """
 
     expected_class_name: str = "KNearestNeighbors"
+    short_name: str = "KNN"
 
     def __init__(self, config: ConfigBase) -> None:
         """

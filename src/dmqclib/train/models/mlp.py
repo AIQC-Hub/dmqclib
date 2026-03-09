@@ -32,6 +32,7 @@ class MLP(SklearnModelBase):
     """
 
     expected_class_name: str = "MLP"
+    short_name: str = "MLP"
 
     def __init__(self, config: ConfigBase) -> None:
         """

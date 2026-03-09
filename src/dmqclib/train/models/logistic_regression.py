@@ -29,6 +29,7 @@ class LogisticRegression(SklearnModelBase):
     """
 
     expected_class_name: str = "LogisticRegression"
+    short_name: str = "Logit"
 
     def __init__(self, config: ConfigBase) -> None:
         """

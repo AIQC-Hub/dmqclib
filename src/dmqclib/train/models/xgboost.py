@@ -29,6 +29,7 @@ class XGBoost(SklearnModelBase):
     """
 
     expected_class_name: str = "XGBoost"
+    short_name: str = "XGB"
 
     def __init__(self, config: ConfigBase) -> None:
         """

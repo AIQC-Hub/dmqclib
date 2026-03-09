@@ -35,6 +35,7 @@ class SVM(SklearnModelBase):
     """
 
     expected_class_name: str = "SVM"
+    short_name: str = "SVM"
 
     def __init__(self, config: ConfigBase) -> None:
         """

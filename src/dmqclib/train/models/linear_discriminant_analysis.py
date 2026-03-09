@@ -32,6 +32,7 @@ class LinearDiscriminantAnalysis(SklearnModelBase):
     """
 
     expected_class_name: str = "LinearDiscriminantAnalysis"
+    short_name: str = "LDA"
 
     def __init__(self, config: ConfigBase) -> None:
         """

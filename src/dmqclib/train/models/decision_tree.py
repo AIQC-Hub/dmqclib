@@ -32,6 +32,7 @@ class DecisionTree(SklearnModelBase):
     """
 
     expected_class_name: str = "DecisionTree"
+    short_name: str = "DT"
 
     def __init__(self, config: ConfigBase) -> None:
         """

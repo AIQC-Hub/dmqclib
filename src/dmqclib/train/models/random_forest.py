@@ -31,6 +31,7 @@ class RandomForest(SklearnModelBase):
     """
 
     expected_class_name: str = "RandomForest"
+    short_name: str = "RT"
 
     def __init__(self, config: ConfigBase) -> None:
         """

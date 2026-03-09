@@ -32,6 +32,7 @@ class GaussianNaiveBayes(SklearnModelBase):
     """
 
     expected_class_name: str = "GaussianNaiveBayes"
+    short_name: str = "GNB"
 
     def __init__(self, config: ConfigBase) -> None:
         """
