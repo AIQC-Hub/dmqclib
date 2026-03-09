@@ -275,6 +275,28 @@ class ConfigBase(ABC):
         """
         return self.data["step_param_set"]["steps"][step_name]
 
+
+    def get_model_params(self, model_name: str) -> Dict:
+        """Retrieve the parameters dictionary for a model.
+
+        :param model_name: The name of the model to get parameters for.
+        :type model_name: str
+        :return: A dictionary of parameters for the specified step.
+        :rtype: dict
+        :raises KeyError: If the specified ``step_name`` is not found in the
+                          ``step_param_set.steps`` section of the configuration,
+                          or if 'step_param_set' or 'steps' are missing from
+                          the configuration data within the current context of `self.data`.
+        """
+        model_params = self.data["step_param_set"]["steps"]["model"].get(
+            "model_params", {}
+        )
+
+        if model_name in model_params:
+            return model_params[model_name]
+        else:
+            return model_params
+
     def get_dataset_folder_name(self, step_name: str) -> str:
         """Get the dataset-specific folder name for a given step.
 
