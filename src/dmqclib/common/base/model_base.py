@@ -73,6 +73,7 @@ class ModelBase(ABC):
         self.test_set: Optional[Any] = None
         self.model: Optional[Any] = None
         self.predictions: Optional[Any] = None
+        self.shap_values: Optional[Any] = None
         self.report: Optional[Any] = None
         self.contingency_table: Optional[pl.DataFrame] = None
         self.k: int = 0
