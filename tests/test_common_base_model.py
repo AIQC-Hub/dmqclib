@@ -150,9 +150,7 @@ class TestModelBaseMethods(unittest.TestCase):
         # --- Batch 1 (e.g., Fold k=0) ---
         model.k = 0
         model.test_set = pl.DataFrame({"label": [0, 1, 0]})
-        model.predictions = pl.DataFrame(
-            {"class": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
-        )
+        model.predictions = pl.DataFrame({"class": [0, 1, 0], "score": [0.1, 0.9, 0.4]})
 
         model.update_contingency_table()
 

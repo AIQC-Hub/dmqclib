@@ -13,8 +13,73 @@ import polars as pl
 
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
+from dmqclib.train.models.logistic_regression import LogisticRegression
+from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
+from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.decision_tree import DecisionTree
+from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
+from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
+from dmqclib.train.models.mlp import MLP
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
+
+
+def setup_training_step2(test_obj):
+    """
+    Prepare the test environment by loading a training configuration
+    and input training data. The input file names for train/test sets
+    are defined here for subsequent model validation tests.
+    """
+    test_obj.config_file_path = (
+        Path(__file__).resolve().parent / "data" / "config" / "test_training_001.yaml"
+    )
+    test_obj.config = TrainingConfig(str(test_obj.config_file_path))
+    test_obj.config.select("NRT_BO_001")
+    data_path = Path(__file__).resolve().parent / "data" / "training"
+    test_obj.input_file_names = {
+        "train": {
+            "temp": str(data_path / "train_set_temp.parquet"),
+            "psal": str(data_path / "train_set_psal.parquet"),
+            "pres": str(data_path / "train_set_pres.parquet"),
+        },
+        "test": {
+            "temp": str(data_path / "test_set_temp.parquet"),
+            "psal": str(data_path / "test_set_psal.parquet"),
+            "pres": str(data_path / "test_set_pres.parquet"),
+        },
+    }
+
+    test_obj.ds_input = load_step1_input_training_set(test_obj.config)
+    test_obj.ds_input.input_file_names = test_obj.input_file_names
+    test_obj.ds_input.process_targets()
+
+
+def run_fold_validation(test_obj):
+    ds = KFoldValidation(test_obj.config, training_sets=test_obj.ds_input.training_sets)
+    ds.process_targets()
+
+    # Check Reports
+    test_obj.assertIsInstance(ds.reports["temp"], pl.DataFrame)
+    test_obj.assertEqual(ds.reports["temp"].shape[0], 18)
+    test_obj.assertEqual(ds.reports["temp"].shape[1], 8)
+
+    # Check Contingency Tables
+    # "temp" has 116 rows in training set; K-fold should result in 116 predictions total.
+    test_obj.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
+    test_obj.assertEqual(ds.contingency_tables["temp"].height, 116)
+    # Expected columns: k, label, score
+    test_obj.assertListEqual(
+        ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+    )
+
+    # "psal" has 126 rows
+    test_obj.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
+    test_obj.assertEqual(ds.contingency_tables["psal"].height, 126)
+
+    # "pres" has 110 rows
+    test_obj.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
+    test_obj.assertEqual(ds.contingency_tables["pres"].height, 110)
 
 
 class TestKFoldValidation(unittest.TestCase):
@@ -30,31 +95,7 @@ class TestKFoldValidation(unittest.TestCase):
         and input training data. The input file names for train/test sets
         are defined here for subsequent model validation tests.
         """
-        self.config_file_path = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
-        )
-        self.config = TrainingConfig(str(self.config_file_path))
-        self.config.select("NRT_BO_001")
-        data_path = Path(__file__).resolve().parent / "data" / "training"
-        self.input_file_names = {
-            "train": {
-                "temp": str(data_path / "train_set_temp.parquet"),
-                "psal": str(data_path / "train_set_psal.parquet"),
-                "pres": str(data_path / "train_set_pres.parquet"),
-            },
-            "test": {
-                "temp": str(data_path / "test_set_temp.parquet"),
-                "psal": str(data_path / "test_set_psal.parquet"),
-                "pres": str(data_path / "test_set_pres.parquet"),
-            },
-        }
-
-        self.ds_input = load_step1_input_training_set(self.config)
-        self.ds_input.input_file_names = self.input_file_names
-        self.ds_input.process_targets()
+        setup_training_step2(self)
 
     def test_step_name(self):
         """
@@ -137,37 +178,6 @@ class TestKFoldValidation(unittest.TestCase):
 
         k_fold = ds.get_k_fold()
         self.assertEqual(k_fold, 10)
-
-    def test_fold_validation(self):
-        """
-        Check that the KFoldValidation process, utilizing the XGBoost model,
-        successfully processes the training sets and populates both the reports
-        and the contingency tables via the validate method.
-        """
-        ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
-        ds.process_targets()
-
-        # Check Reports
-        self.assertIsInstance(ds.reports["temp"], pl.DataFrame)
-        self.assertEqual(ds.reports["temp"].shape[0], 18)
-        self.assertEqual(ds.reports["temp"].shape[1], 8)
-
-        # Check Contingency Tables
-        # "temp" has 116 rows in training set; K-fold should result in 116 predictions total.
-        self.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
-        self.assertEqual(ds.contingency_tables["temp"].height, 116)
-        # Expected columns: k, label, score
-        self.assertListEqual(
-            ds.contingency_tables["temp"].columns, ["k", "label", "score"]
-        )
-
-        # "psal" has 126 rows
-        self.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
-        self.assertEqual(ds.contingency_tables["psal"].height, 126)
-
-        # "pres" has 110 rows
-        self.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
-        self.assertEqual(ds.contingency_tables["pres"].height, 110)
 
     def test_write_results(self):
         """
@@ -258,15 +268,9 @@ class TestKFoldValidation(unittest.TestCase):
         ds.process_targets()
         ds.create_metric_plots()
 
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["metric_plot"]["temp"])
-        )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["metric_plot"]["psal"])
-        )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["metric_plot"]["pres"])
-        )
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["pres"]))
 
         # Cleanup
         os.remove(ds.output_file_names["metric_plot"]["temp"])
@@ -299,3 +303,235 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config, training_sets=self.ds_input.training_sets)
         with self.assertRaises(ValueError):
             ds.create_metric_plots()
+
+
+class TestXGBoost(unittest.TestCase):
+    """Tests for the XGBoost model wrapper."""
+
+    def setUp(self):
+        """
+        Prepare the test environment by loading a training configuration
+        and input training data. The input file names for train/test sets
+        are defined here for subsequent model validation tests.
+        """
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "XGBoost"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is an XGBoost
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, XGBoost)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the XGBoost model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestLogisticRegression(unittest.TestCase):
+    """Tests for the Logistic Regression model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a LogisticRegression
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, LogisticRegression)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the LogisticRegression model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestLDA(unittest.TestCase):
+    """Tests for the Linear Discriminant Analysis model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = (
+            "LinearDiscriminantAnalysis"
+        )
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a LinearDiscriminantAnalysis
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, LinearDiscriminantAnalysis)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the LinearDiscriminantAnalysis model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestSVM(unittest.TestCase):
+    """Tests for the SVM model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "SVM"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is an SVM
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, SVM)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the SVM model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestDecisionTree(unittest.TestCase):
+    """Tests for the Decision Tree model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "DecisionTree"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a DecisionTree
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, DecisionTree)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the DecisionTree model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestRandomForest(unittest.TestCase):
+    """Tests for the Random Forest model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "RandomForest"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a RandomForest
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, RandomForest)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the RandomForest model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestKNN(unittest.TestCase):
+    """Tests for the K-Nearest Neighbors model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "KNearestNeighbors"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a KNearestNeighbors
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, KNearestNeighbors)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the KNearestNeighbors model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestGaussianNaiveBayes(unittest.TestCase):
+    """Tests for the Gaussian Naive Bayes model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "GaussianNaiveBayes"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a GaussianNaiveBayes
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, GaussianNaiveBayes)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the GaussianNaiveBayes model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)
+
+
+class TestMLP(unittest.TestCase):
+    """Tests for the Multi-layer Perceptron model wrapper."""
+
+    def setUp(self):
+        setup_training_step2(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "MLP"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a MLP
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, MLP)
+
+    def test_fold_validation(self):
+        """
+        Check that the KFoldValidation process, utilizing the MLP model,
+        successfully processes the training sets and populates both the reports
+        and the contingency tables via the validate method.
+        """
+        run_fold_validation(self)

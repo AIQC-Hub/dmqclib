@@ -11,8 +11,12 @@ from typing import Dict, Type
 from dmqclib.train.step1_read_input.dataset_a import InputTrainingSetA
 from dmqclib.train.step1_read_input.input_base import InputTrainingSetBase
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
+from dmqclib.train.step2_validate_model.kfold_validation_suite import (
+    KFoldValidationSuite,
+)
 from dmqclib.train.step2_validate_model.validate_base import ValidationBase
 from dmqclib.train.step4_build_model.build_model import BuildModel
+from dmqclib.train.step4_build_model.build_model_suite import BuildModelSuite
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 
 #: Registry mapping string keys to concrete implementations of
@@ -32,6 +36,7 @@ INPUT_TRAINING_SET_REGISTRY: Dict[str, Type[InputTrainingSetBase]] = {
 #: based on configuration settings, supporting various evaluation methodologies.
 MODEL_VALIDATION_REGISTRY: Dict[str, Type[ValidationBase]] = {
     "KFoldValidation": KFoldValidation,
+    "KFoldValidationSuite": KFoldValidationSuite,
 }
 
 #: Registry mapping string keys to concrete implementations of
@@ -42,4 +47,5 @@ MODEL_VALIDATION_REGISTRY: Dict[str, Type[ValidationBase]] = {
 #: configuring different model architectures.
 BUILD_MODEL_REGISTRY: Dict[str, Type[BuildModelBase]] = {
     "BuildModel": BuildModel,
+    "BuildModelSuite": BuildModelSuite,
 }

@@ -34,6 +34,8 @@ class ModelBase(ABC):
     """
 
     expected_class_name: Optional[str] = None  # Must be overridden by child classes
+    short_name: Optional[str] = None  # Must be overridden by child classes
+    multi = False  # Must be set to True for model suite class
 
     def __init__(self, config: ConfigBase) -> None:
         """
@@ -54,7 +56,7 @@ class ModelBase(ABC):
 
         # Validate that the YAML's "class" matches the child's declared class name
         base_class = config.get_base_class("model")
-        if base_class != self.expected_class_name:
+        if (base_class != self.expected_class_name) and (base_class != self.short_name):
             raise ValueError(
                 f"Configuration mismatch: expected class '{self.expected_class_name}' "
                 f"but got '{base_class}'"
@@ -105,7 +107,7 @@ class ModelBase(ABC):
         :param model: The model needs to be updated.
         :type model: Self
         """
-        pass
+        pass  # pragma: no cover
 
     def load_model(self, file_name: str) -> None:
         """

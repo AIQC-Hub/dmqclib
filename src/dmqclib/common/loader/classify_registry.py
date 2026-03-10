@@ -12,8 +12,10 @@ from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
 from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
 from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
 from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
+from dmqclib.classify.step6_classify_dataset.dataset_all_suite import ClassifyAllSuite
 from dmqclib.classify.step7_concat_datasets.concat_base import ConcatDatasetsBase
 from dmqclib.classify.step7_concat_datasets.dataset_all import ConcatDataSetAll
+from dmqclib.classify.step7_concat_datasets.dataset_suite import ConcatDataSetSuite
 from dmqclib.prepare.step1_read_input.input_base import InputDataSetBase
 from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBase
@@ -73,6 +75,7 @@ EXTRACT_CLASSIFY_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
 #: :type: Dict[str, Type[BuildModelBase]]
 CLASSIFY_CLASSIFY_REGISTRY: Dict[str, Type[BuildModelBase]] = {
     "ClassifyAll": ClassifyAll,
+    "ClassifyAllSuite": ClassifyAllSuite,
 }
 
 #: A registry mapping class names (as strings, typically from YAML configuration)
@@ -82,4 +85,5 @@ CLASSIFY_CLASSIFY_REGISTRY: Dict[str, Type[BuildModelBase]] = {
 #: :type: Dict[str, Type[ConcatDatasetsBase]]
 CLASSIFY_CONCAT_REGISTRY: Dict[str, Type[ConcatDatasetsBase]] = {
     "ConcatDataSetAll": ConcatDataSetAll,
+    "ConcatDataSetSuite": ConcatDataSetSuite,
 }

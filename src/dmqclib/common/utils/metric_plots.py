@@ -28,7 +28,7 @@ def create_metric_plots(model) -> None:
         unique_k = df["k"].unique().sort()
         has_folds = len(unique_k) > 1
 
-        plt.rcParams.update({'font.size': 14})
+        plt.rcParams.update({"font.size": 14})
         fig, (ax_roc, ax_pr) = plt.subplots(1, 2, figsize=(12, 6))
 
         # --- ROC Curve Setup ---
@@ -74,8 +74,6 @@ def create_metric_plots(model) -> None:
                     alpha=0.3,
                     label=f"ROC fold {k} (AUC = {roc_auc:.2f})",
                 )
-                # For PR, individual fold plotting can get cluttered,
-                # but we can add them faintly if desired.
                 ax_pr.plot(rec, prec, lw=1, alpha=0.3)
 
         # --- Plot Mean ROC ---
@@ -91,9 +89,7 @@ def create_metric_plots(model) -> None:
                 else f"ROC (AUC = {mean_auc:.2f})"
             )
 
-            ax_roc.plot(
-                mean_fpr, mean_tpr, color="b", label=label_roc, lw=2, alpha=0.8
-            )
+            ax_roc.plot(mean_fpr, mean_tpr, color="b", label=label_roc, lw=2, alpha=0.8)
 
             if has_folds:
                 std_tpr = np.std(tprs, axis=0)
@@ -121,7 +117,6 @@ def create_metric_plots(model) -> None:
         # --- Plot Mean PR ---
         if precisions:
             mean_precision = np.mean(precisions, axis=0)
-            # Calculate Average Precision (approximate via auc of the mean curve)
             mean_ap = auc(mean_recall, mean_precision)
 
             label_pr = (
@@ -151,6 +146,69 @@ def create_metric_plots(model) -> None:
                     alpha=0.2,
                     label=r"$\pm$ 1 std. dev.",
                 )
+
+        # PR Formatting
+        ax_pr.set_xlim([-0.05, 1.05])
+        ax_pr.set_ylim([-0.05, 1.05])
+        ax_pr.set_xlabel("Recall")
+        ax_pr.set_ylabel("Precision")
+        ax_pr.set_title(f"Precision-Recall Curve - {target_name}")
+        ax_pr.legend(loc="lower left", fontsize="small")
+        ax_pr.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        plt.savefig(output_path, format="svg")
+        plt.close(fig)
+
+
+def create_multi_method_metric_plots(model) -> None:
+    """
+    Create and save ROC and Precision-Recall plots for multiple methods overlaid
+    on the same figure. Assumes the contingency tables have a 'method' column.
+
+    The output file path is determined by :attr:`output_file_names['metric_plot']`.
+    """
+    if not model.contingency_tables:
+        raise ValueError("Member variable 'contingency_tables' must not be empty.")
+
+    for target_name, df in model.contingency_tables.items():
+        output_path = model.output_file_names["metric_plot"][target_name]
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        plt.rcParams.update({"font.size": 14})
+        fig, (ax_roc, ax_pr) = plt.subplots(1, 2, figsize=(14, 7))
+
+        # Retrieve unique methods from the aggregated dataframe
+        methods = df["method"].unique().to_list()
+
+        for method in methods:
+            method_data = df.filter(pl.col("method") == method)
+            y_true = method_data["label"].to_numpy()
+            y_score = method_data["score"].to_numpy()
+
+            if len(np.unique(y_true)) < 2:
+                continue  # Skip methods where evaluation lacks distinct classes
+
+            # ROC
+            fpr, tpr, _ = roc_curve(y_true, y_score)
+            roc_auc = auc(fpr, tpr)
+            ax_roc.plot(fpr, tpr, lw=2, label=f"{method} (AUC = {roc_auc:.2f})")
+
+            # PR
+            prec, rec, _ = precision_recall_curve(y_true, y_score)
+            # Reversing for calculation of AP across interpolatable recall
+            pr_auc = auc(rec[::-1], prec[::-1])
+            ax_pr.plot(rec, prec, lw=2, label=f"{method} (AP = {pr_auc:.2f})")
+
+        # ROC Formatting
+        ax_roc.plot([0, 1], [0, 1], linestyle="--", lw=2, color="k", alpha=0.5)
+        ax_roc.set_xlim([-0.05, 1.05])
+        ax_roc.set_ylim([-0.05, 1.05])
+        ax_roc.set_xlabel("False Positive Rate")
+        ax_roc.set_ylabel("True Positive Rate")
+        ax_roc.set_title(f"ROC Curve - {target_name}")
+        ax_roc.legend(loc="lower right", fontsize="small")
+        ax_roc.grid(True, alpha=0.3)
 
         # PR Formatting
         ax_pr.set_xlim([-0.05, 1.05])

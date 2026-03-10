@@ -275,6 +275,29 @@ class ConfigBase(ABC):
         """
         return self.data["step_param_set"]["steps"][step_name]
 
+    def get_model_params(self, model_long_name: str, model_short_name: str) -> Dict:
+        """Retrieve the parameters dictionary for a model.
+
+        :param model_name: The name of the model to get parameters for.
+        :type model_name: str
+        :return: A dictionary of parameters for the specified step.
+        :rtype: dict
+        :raises KeyError: If the specified ``step_name`` is not found in the
+                          ``step_param_set.steps`` section of the configuration,
+                          or if 'step_param_set' or 'steps' are missing from
+                          the configuration data within the current context of `self.data`.
+        """
+        model_params = self.data["step_param_set"]["steps"]["model"].get(
+            "model_params", {}
+        )
+
+        if model_long_name in model_params:
+            return model_params[model_long_name]
+        if model_short_name in model_params:
+            return model_params[model_short_name]
+        else:
+            return model_params
+
     def get_dataset_folder_name(self, step_name: str) -> str:
         """Get the dataset-specific folder name for a given step.
 
@@ -418,6 +441,16 @@ class ConfigBase(ABC):
         """
         return self.data["step_class_set"]["steps"][step_name]
 
+    def set_base_class(self, step_name: str, value: str):
+        """Set the associated class name for a specified step.
+
+        :param step_name: The name of the step.
+        :type step_name: str
+        :param value: The value of the step.
+        :type value: str
+        """
+        self.data["step_class_set"]["steps"][step_name] = value
+
     def get_target_variables(self) -> List[Dict]:
         """Get the list of target variable definitions from the configuration.
 
@@ -486,7 +519,8 @@ class ConfigBase(ABC):
             step_name, default_file_name, use_dataset_folder, folder_name_auto
         )
         return {
-            x: full_file_name.format(target_name=x) for x in self.get_target_names()
+            x: full_file_name.replace("{target_name}", x)
+            for x in self.get_target_names()
         }
 
     def update_feature_param_with_stats(self):
