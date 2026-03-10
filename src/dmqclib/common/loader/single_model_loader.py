@@ -35,7 +35,9 @@ def load_single_model_class(config: ConfigBase) -> ModelBase:
     return load_single_model_class_with_class_name(config, class_name)
 
 
-def load_single_model_class_with_class_name(config: ConfigBase, class_name: str) -> ModelBase:
+def load_single_model_class_with_class_name(
+    config: ConfigBase, class_name: str
+) -> ModelBase:
     """
     Retrieve and instantiate a model class for the "model" step from the provided configuration.
 

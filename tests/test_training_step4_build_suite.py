@@ -26,10 +26,7 @@ def setup_training_step4(test_obj):
     Forces the configuration to use the ModelSuite and limits it to two methods.
     """
     test_obj.config_file_path = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
+        Path(__file__).resolve().parent / "data" / "config" / "test_training_001.yaml"
     )
     test_obj.config = TrainingConfig(str(test_obj.config_file_path))
     test_obj.config.select("NRT_BO_001")
@@ -139,12 +136,15 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertIsNot(ds.models["xgb_temp"], ds.models["dt_temp"])
 
         # Verify that internal data was joined correctly
-        self.assertEqual(ds.models["xgb_temp"].training_set.height, 128)  # 116 train + 12 test
+        self.assertEqual(
+            ds.models["xgb_temp"].training_set.height, 128
+        )  # 116 train + 12 test
 
     def test_build_without_data(self):
         """Ensure that calling build_targets() without data raises ValueError."""
-        ds1 = BuildModelSuite(self.config, training_sets=self.ds_input.training_sets,
-                              test_sets=None)
+        ds1 = BuildModelSuite(
+            self.config, training_sets=self.ds_input.training_sets, test_sets=None
+        )
         with self.assertRaises(ValueError):
             ds1.build_targets()
 
@@ -203,29 +203,44 @@ class TestBuildModelSuite(unittest.TestCase):
         data_path = Path(__file__).resolve().parent / "data" / "training"
 
         # Override output file names to a local temporary location
-        ds.output_file_names["report"]["temp"] = str(data_path / "temp_test_report_temp.tsv")
+        ds.output_file_names["report"]["temp"] = str(
+            data_path / "temp_test_report_temp.tsv"
+        )
         ds.output_file_names["contingency_table"]["temp"] = str(
-            data_path / "temp_test_contingency_temp.tsv")
+            data_path / "temp_test_contingency_temp.tsv"
+        )
         ds.output_file_names["prediction"]["temp"] = str(
-            data_path / "temp_test_prediction_temp.parquet")
+            data_path / "temp_test_prediction_temp.parquet"
+        )
         ds.output_file_names["metric_plot"]["temp"] = str(
-            data_path / "temp_test_metric_plot_temp.svg")
+            data_path / "temp_test_metric_plot_temp.svg"
+        )
 
-        ds.output_file_names["report"]["psal"] = str(data_path / "temp_test_report_psal.tsv")
+        ds.output_file_names["report"]["psal"] = str(
+            data_path / "temp_test_report_psal.tsv"
+        )
         ds.output_file_names["contingency_table"]["psal"] = str(
-            data_path / "temp_test_contingency_psal.tsv")
+            data_path / "temp_test_contingency_psal.tsv"
+        )
         ds.output_file_names["prediction"]["psal"] = str(
-            data_path / "temp_test_prediction_psal.parquet")
+            data_path / "temp_test_prediction_psal.parquet"
+        )
         ds.output_file_names["metric_plot"]["psal"] = str(
-            data_path / "temp_test_metric_plot_psal.svg")
+            data_path / "temp_test_metric_plot_psal.svg"
+        )
 
-        ds.output_file_names["report"]["pres"] = str(data_path / "temp_test_report_pres.tsv")
+        ds.output_file_names["report"]["pres"] = str(
+            data_path / "temp_test_report_pres.tsv"
+        )
         ds.output_file_names["contingency_table"]["pres"] = str(
-            data_path / "temp_test_contingency_pres.tsv")
+            data_path / "temp_test_contingency_pres.tsv"
+        )
         ds.output_file_names["prediction"]["pres"] = str(
-            data_path / "temp_test_prediction_pres.parquet")
+            data_path / "temp_test_prediction_pres.parquet"
+        )
         ds.output_file_names["metric_plot"]["pres"] = str(
-            data_path / "temp_test_metric_plot_pres.svg")
+            data_path / "temp_test_metric_plot_pres.svg"
+        )
 
         ds.build_targets()
         ds.test_targets()
@@ -236,17 +251,23 @@ class TestBuildModelSuite(unittest.TestCase):
         ds.create_metric_plots()
 
         self.assertTrue(os.path.exists(ds.output_file_names["report"]["temp"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["temp"]))
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["temp"])
+        )
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["temp"]))
 
         self.assertTrue(os.path.exists(ds.output_file_names["report"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["psal"]))
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["psal"])
+        )
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["psal"]))
 
         self.assertTrue(os.path.exists(ds.output_file_names["report"]["pres"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["pres"]))
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["pres"])
+        )
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["pres"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["pres"]))
 
@@ -306,8 +327,11 @@ class TestBuildModelSuite(unittest.TestCase):
         """
         Ensure ValueErrors are raised if write methods are called empty datasets.
         """
-        ds = BuildModelSuite(self.config, training_sets=self.ds_input.training_sets,
-                             test_sets=self.ds_input.test_sets)
+        ds = BuildModelSuite(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
 
         with self.assertRaises(ValueError):
             ds.write_reports()

@@ -71,7 +71,9 @@ class TestModelClassLoader(unittest.TestCase):
         Tests that load_model_class successfully returns an LinearDiscriminantAnalysis instance
         when provided with a valid configuration.
         """
-        self.config.data["step_class_set"]["steps"]["model"] = "LinearDiscriminantAnalysis"
+        self.config.data["step_class_set"]["steps"]["model"] = (
+            "LinearDiscriminantAnalysis"
+        )
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, LinearDiscriminantAnalysis)
 

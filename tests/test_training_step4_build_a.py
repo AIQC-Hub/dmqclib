@@ -25,17 +25,13 @@ from dmqclib.train.models.mlp import MLP
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
-
 def setup_training_step4(test_obj):
     """
     Prepare a test training configuration and load input data for subsequent tests.
     Define mock train/test file paths for data loading.
     """
     test_obj.config_file_path = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
+        Path(__file__).resolve().parent / "data" / "config" / "test_training_001.yaml"
     )
     test_obj.config = TrainingConfig(str(test_obj.config_file_path))
     test_obj.config.select("NRT_BO_001")
@@ -164,7 +160,6 @@ class TestBuildModel(unittest.TestCase):
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_pres.tsv",
             str(ds.output_file_names["contingency_table"]["pres"]),
         )
-
 
         # Check metric plot file names
         self.assertEqual(
@@ -340,9 +335,15 @@ class TestBuildModel(unittest.TestCase):
         ds.test_targets()
         ds.write_contingency_tables()
 
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["temp"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["pres"]))
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["pres"])
+        )
 
         os.remove(ds.output_file_names["contingency_table"]["temp"])
         os.remove(ds.output_file_names["contingency_table"]["psal"])
@@ -678,7 +679,9 @@ class TestLDA(unittest.TestCase):
     def setUp(self):
         setup_training_step4(self)
 
-        self.config.data["step_class_set"]["steps"]["model"] = "LinearDiscriminantAnalysis"
+        self.config.data["step_class_set"]["steps"]["model"] = (
+            "LinearDiscriminantAnalysis"
+        )
 
     def test_base_model(self):
         """

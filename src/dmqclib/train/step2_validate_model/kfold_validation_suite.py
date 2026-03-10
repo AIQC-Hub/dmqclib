@@ -27,9 +27,9 @@ class KFoldValidationSuite(ValidationBase):
     expected_class_name: str = "KFoldValidationSuite"
 
     def __init__(
-            self,
-            config: ConfigBase,
-            training_sets: Optional[Dict[str, pl.DataFrame]] = None,
+        self,
+        config: ConfigBase,
+        training_sets: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
         Initialize the k-fold validation suite process.
@@ -89,8 +89,8 @@ class KFoldValidationSuite(ValidationBase):
         :rtype: int
         """
         return (
-                self.config.get_step_params("validate").get("k_fold", self.default_k_fold)
-                or self.default_k_fold
+            self.config.get_step_params("validate").get("k_fold", self.default_k_fold)
+            or self.default_k_fold
         )
 
     def validate(self, target_name: str) -> None:
@@ -113,7 +113,6 @@ class KFoldValidationSuite(ValidationBase):
 
         # Iterate through all configured ML methods loaded in ModelSuite
         for method_name, method_obj in self.base_model.method_objs.items():
-
             # Retrieve short_name (fallback to method_name if attribute is missing), and lowercase it
             method_lower = getattr(method_obj, "short_name", method_name).lower()
 
@@ -156,13 +155,14 @@ class KFoldValidationSuite(ValidationBase):
                 self.contingency_tables[comp_key] = pl.concat(contingency_tables)
 
             # Resolve the {method} placeholder in the output file paths specifically for this composite key
-            self.output_file_names["report"][comp_key] = (
-                self.output_file_names["report"][target_name].replace("{method}", method_lower)
-            )
+            self.output_file_names["report"][comp_key] = self.output_file_names[
+                "report"
+            ][target_name].replace("{method}", method_lower)
             self.output_file_names["contingency_table"][comp_key] = (
-                self.output_file_names["contingency_table"][target_name].replace("{method}",
-                                                                                 method_lower)
+                self.output_file_names["contingency_table"][target_name].replace(
+                    "{method}", method_lower
+                )
             )
-            self.output_file_names["metric_plot"][comp_key] = (
-                self.output_file_names["metric_plot"][target_name].replace("{method}", method_lower)
-            )
+            self.output_file_names["metric_plot"][comp_key] = self.output_file_names[
+                "metric_plot"
+            ][target_name].replace("{method}", method_lower)

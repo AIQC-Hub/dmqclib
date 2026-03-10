@@ -16,7 +16,9 @@ import polars as pl
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.train.step4_build_model.build_model_base import BuildModelBase
 from dmqclib.common.utils.metric_plots import create_multi_method_metric_plots
-from dmqclib.common.loader.single_model_loader import load_single_model_class_with_class_name
+from dmqclib.common.loader.single_model_loader import (
+    load_single_model_class_with_class_name,
+)
 
 
 class BuildModelSuite(BuildModelBase):
@@ -56,7 +58,7 @@ class BuildModelSuite(BuildModelBase):
             )
 
         self.drop_cols = ["row_id", "platform_code", "profile_no", "observation_no"]
-        self.test_cols =[
+        self.test_cols = [
             "row_id",
             "platform_code",
             "profile_no",
@@ -80,13 +82,17 @@ class BuildModelSuite(BuildModelBase):
         }
 
         # Populate paths specifically for individual model .joblib files
-        base_models = self.config.get_target_file_names("model", self.default_model_file_name)
+        base_models = self.config.get_target_file_names(
+            "model", self.default_model_file_name
+        )
         self.model_file_names = {}
         for target_name in self.config.get_target_names():
             for method_name, method_obj in self.base_model.method_objs.items():
                 method_lower = getattr(method_obj, "short_name", method_name).lower()
                 comp_key = f"{method_lower}_{target_name}"
-                self.model_file_names[comp_key] = base_models[target_name].replace("{method}", method_lower)
+                self.model_file_names[comp_key] = base_models[target_name].replace(
+                    "{method}", method_lower
+                )
 
     def build_targets(self) -> None:
         """
@@ -156,8 +162,8 @@ class BuildModelSuite(BuildModelBase):
         test_set = self.test_sets[target_name].drop(self.drop_cols)
 
         target_reports = []
-        target_predictions =[]
-        target_contingency =[]
+        target_predictions = []
+        target_contingency = []
 
         for method_name, method_obj in self.base_model.method_objs.items():
             method_lower = getattr(method_obj, "short_name", method_name).lower()
@@ -170,39 +176,54 @@ class BuildModelSuite(BuildModelBase):
 
             # Append method column to report and normalize potential mixed int/float types
             if current_model.report is not None:
-                rep_df = current_model.report.with_columns([
-                    pl.lit(method_name).alias("method")
-                ])
+                rep_df = current_model.report.with_columns(
+                    [pl.lit(method_name).alias("method")]
+                )
                 # Safely cast any integer column (like 'support') to Float64 to avoid concat errors
                 if "support" in rep_df.columns:
                     rep_df = rep_df.with_columns(pl.col("support").cast(pl.Float64))
                 target_reports.append(rep_df.select(["method", pl.exclude("method")]))
 
             # Append method column to predictions and standardize prediction types
-            pred_df = pl.concat([
+            pred_df = pl.concat(
+                [
                     self.test_sets[target_name].select(self.test_cols),
                     current_model.predictions,
-                ], how="horizontal")
-            pred_df = pred_df.with_columns([
-                pl.lit(method_name).alias("method"),
-                pl.col("class").cast(pl.Int64),
-                pl.col("score").cast(pl.Float64)
-            ])
+                ],
+                how="horizontal",
+            )
+            pred_df = pred_df.with_columns(
+                [
+                    pl.lit(method_name).alias("method"),
+                    pl.col("class").cast(pl.Int64),
+                    pl.col("score").cast(pl.Float64),
+                ]
+            )
             target_predictions.append(pred_df.select(["method", pl.exclude("method")]))
 
             # Append method column to contingency table and standardize prediction types
             if current_model.contingency_table is not None:
-                ct_df = current_model.contingency_table.with_columns([
-                    pl.lit(method_name).alias("method"),
-                    pl.col("k").cast(pl.Int64),
-                    pl.col("label").cast(pl.Int64),
-                    pl.col("score").cast(pl.Float64)
-                ])
-                target_contingency.append(ct_df.select(["method", pl.exclude("method")]))
+                ct_df = current_model.contingency_table.with_columns(
+                    [
+                        pl.lit(method_name).alias("method"),
+                        pl.col("k").cast(pl.Int64),
+                        pl.col("label").cast(pl.Int64),
+                        pl.col("score").cast(pl.Float64),
+                    ]
+                )
+                target_contingency.append(
+                    ct_df.select(["method", pl.exclude("method")])
+                )
 
-        self.reports[target_name] = pl.concat(target_reports) if target_reports else None
-        self.predictions[target_name] = pl.concat(target_predictions) if target_predictions else None
-        self.contingency_tables[target_name] = pl.concat(target_contingency) if target_contingency else None
+        self.reports[target_name] = (
+            pl.concat(target_reports) if target_reports else None
+        )
+        self.predictions[target_name] = (
+            pl.concat(target_predictions) if target_predictions else None
+        )
+        self.contingency_tables[target_name] = (
+            pl.concat(target_contingency) if target_contingency else None
+        )
 
     def read_models(self) -> None:
         """
@@ -220,9 +241,13 @@ class BuildModelSuite(BuildModelBase):
 
                 config_method = copy.deepcopy(self.config)
                 config_method.set_base_class("model", method_name)
-                new_model_instance = load_single_model_class_with_class_name(config_method, method_name)
+                new_model_instance = load_single_model_class_with_class_name(
+                    config_method, method_name
+                )
                 new_model_instance.load_model(path)
-                new_model_instance = new_model_instance.update_nthreads(new_model_instance)
+                new_model_instance = new_model_instance.update_nthreads(
+                    new_model_instance
+                )
 
                 self.models[comp_key] = new_model_instance
 

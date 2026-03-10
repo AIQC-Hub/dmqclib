@@ -10,7 +10,7 @@ the specific validation logic tailored to their model and data.
 
 import os
 from abc import abstractmethod
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List
 
 import polars as pl
 

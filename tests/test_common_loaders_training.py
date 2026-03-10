@@ -17,9 +17,10 @@ from dmqclib.common.loader.training_loader import (
     load_step4_build_model_class,
 )
 from dmqclib.train.step1_read_input.dataset_a import InputTrainingSetA
-from dmqclib.train.models.model_suite import ModelSuite
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
-from dmqclib.train.step2_validate_model.kfold_validation_suite import KFoldValidationSuite
+from dmqclib.train.step2_validate_model.kfold_validation_suite import (
+    KFoldValidationSuite,
+)
 from dmqclib.train.step4_build_model.build_model import BuildModel
 from dmqclib.train.step4_build_model.build_model_suite import BuildModelSuite
 

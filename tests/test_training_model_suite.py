@@ -25,10 +25,10 @@ class TestModelSuite(unittest.TestCase):
         Set up the configuration object using a test YAML file.
         """
         self.config_file_path = (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_training_001.yaml"
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
@@ -73,8 +73,8 @@ class TestModelSuite(unittest.TestCase):
             "methods": ["DT", "XGB", "RF"],
             "model_params": {
                 "DT": {"class_weight": "balanced"},
-                "RF": {"class_weight": "balanced"}
-            }
+                "RF": {"class_weight": "balanced"},
+            },
         }
 
         suite = ModelSuite(self.config)
@@ -112,8 +112,8 @@ class TestModelSuite(unittest.TestCase):
             "methods": ["DecisionTree", "XGBoost", "RandomForest"],
             "model_params": {
                 "DecisionTree": {"class_weight": "balanced"},
-                "RandomForest": {"class_weight": "balanced"}
-            }
+                "RandomForest": {"class_weight": "balanced"},
+            },
         }
 
         suite = ModelSuite(self.config)
@@ -149,8 +149,8 @@ class TestModelSuite(unittest.TestCase):
             "methods": ["XGB", "KNN"],
             "model_params": {
                 "XGB": {"n_estimators": 500, "max_depth": 3},
-                "KNN": {"n_neighbors": 15}
-            }
+                "KNN": {"n_neighbors": 15},
+            },
         }
 
         suite = ModelSuite(self.config)
