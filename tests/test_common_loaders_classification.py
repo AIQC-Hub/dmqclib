@@ -17,7 +17,9 @@ from dmqclib.classify.step3_select_profiles.dataset_all import SelectDataSetAll
 from dmqclib.classify.step4_select_rows.dataset_all import LocateDataSetAll
 from dmqclib.classify.step5_extract_features.dataset_all import ExtractDataSetAll
 from dmqclib.classify.step6_classify_dataset.dataset_all import ClassifyAll
+from dmqclib.classify.step6_classify_dataset.dataset_all_suite import ClassifyAllSuite
 from dmqclib.classify.step7_concat_datasets.dataset_all import ConcatDataSetAll
+from dmqclib.classify.step7_concat_datasets.dataset_suite import ConcatDataSetSuite
 from dmqclib.common.config.classify_config import ClassificationConfig
 from dmqclib.common.loader.classify_loader import (
     load_classify_step1_input_dataset,
@@ -354,6 +356,17 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
         self.assertIsInstance(ds, ClassifyAll)
         self.assertEqual(ds.step_name, "classify")
 
+    def test_load_classifiction_suite_dataset(self):
+        """
+        Check that load_classify_step6_classify_dataset returns a ClassifyAllSuite instance
+        with the correct step name.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["classify"] = "ClassifyAllSuite"
+        ds = load_classify_step6_classify_dataset(self.config)
+        self.assertIsInstance(ds, ClassifyAllSuite)
+        self.assertEqual(ds.step_name, "classify")
+
     def test_load_dataset_input_data(self):
         """
         Check that load_classify_step6_classify_dataset properly receives and sets
@@ -400,6 +413,55 @@ class TestClassifyClassifyClassLoader(unittest.TestCase):
         self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
         self.assertEqual(ds.test_sets["psal"].shape[1], 56)
 
+    def test_load_suite_dataset_input_data(self):
+        """
+        Check that load_classify_step6_classify_dataset properly receives and sets
+        the 'target_features' attribute (which populates 'test_sets' internally)
+        when provided, after all prior steps have generated the necessary data.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["classify"] = "ClassifyAllSuite"
+
+        ds_input = load_classify_step1_input_dataset(self.config)
+        ds_input.input_file_name = str(self.test_data_file)
+        ds_input.read_input_data()
+
+        ds_select = load_classify_step3_select_dataset(self.config, ds_input.input_data)
+        ds_select.label_profiles()
+
+        ds_summary = load_classify_step2_summary_dataset(
+            self.config, ds_input.input_data
+        )
+        ds_summary.calculate_stats()
+
+        ds_locate = load_classify_step4_locate_dataset(
+            self.config, ds_input.input_data, ds_select.selected_profiles
+        )
+        ds_locate.process_targets()
+
+        ds_extract = load_classify_step5_extract_dataset(
+            self.config,
+            ds_input.input_data,
+            ds_select.selected_profiles,
+            ds_locate.selected_rows,
+            ds_summary.summary_stats,
+        )
+        ds_extract.process_targets()
+
+        ds = load_classify_step6_classify_dataset(
+            self.config, ds_extract.target_features
+        )
+
+        self.assertIsInstance(ds, ClassifyAllSuite)
+
+        self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["temp"].shape[0], 19480)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
+
+        self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["psal"].shape[0], 19480)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
+
 
 class TestClassifyConcatClassLoader(unittest.TestCase):
     """
@@ -432,6 +494,14 @@ class TestClassifyConcatClassLoader(unittest.TestCase):
             "psal": str(model_path / "model_psal.joblib"),
             "pres": str(model_path / "model_pres.joblib"),
         }
+        self.suite_model_file_names = {
+            "xgb_temp": str(model_path / "model_temp_xgb.joblib"),
+            "dt_temp": str(model_path / "model_temp_dt.joblib"),
+            "xgb_psal": str(model_path / "model_psal_xgb.joblib"),
+            "dt_psal": str(model_path / "model_psal_dt.joblib"),
+            "xgb_pres": str(model_path / "model_pres_xgb.joblib"),
+            "dt_pres": str(model_path / "model_pres_dt.joblib"),
+        }
 
     def test_load_dataset_valid_config(self):
         """
@@ -440,6 +510,18 @@ class TestClassifyConcatClassLoader(unittest.TestCase):
         """
         ds = load_classify_step7_concat_dataset(self.config)
         self.assertIsInstance(ds, ConcatDataSetAll)
+        self.assertEqual(ds.step_name, "concat")
+
+    def test_load_suite_dataset_valid_config(self):
+        """
+        Check that load_classify_step7_concat_dataset returns a ConcatDataSetSuite instance
+        with the correct step name.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["classify"] = "ClassifyAllSuite"
+        self.config.data["step_class_set"]["steps"]["concat"] = "ConcatDataSetSuite"
+        ds = load_classify_step7_concat_dataset(self.config)
+        self.assertIsInstance(ds, ConcatDataSetSuite)
         self.assertEqual(ds.step_name, "concat")
 
     def test_load_dataset_input_data(self):
@@ -494,3 +576,64 @@ class TestClassifyConcatClassLoader(unittest.TestCase):
         self.assertIsInstance(ds.predictions["psal"], pl.DataFrame)
         self.assertEqual(ds.predictions["psal"].shape[0], 19480)
         self.assertEqual(ds.predictions["psal"].shape[1], 7)
+
+    def test_load_suite_dataset_input_data(self):
+        """
+        Check that load_classify_step7_concat_dataset properly receives and sets
+        the 'input_data' and 'predictions' attributes when provided, after
+        all prior steps have generated the necessary data.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["classify"] = "ClassifyAllSuite"
+        self.config.data["step_class_set"]["steps"]["concat"] = "ConcatDataSetSuite"
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_param_set"]["steps"]["model"] = {
+            "methods": ["XGB", "DT"]
+        }
+
+        ds_input = load_classify_step1_input_dataset(self.config)
+        ds_input.input_file_name = str(self.test_data_file)
+        ds_input.read_input_data()
+
+        ds_select = load_classify_step3_select_dataset(self.config, ds_input.input_data)
+        ds_select.label_profiles()
+
+        ds_summary = load_classify_step2_summary_dataset(
+            self.config, ds_input.input_data
+        )
+        ds_summary.calculate_stats()
+
+        ds_locate = load_classify_step4_locate_dataset(
+            self.config, ds_input.input_data, ds_select.selected_profiles
+        )
+        ds_locate.process_targets()
+
+        ds_extract = load_classify_step5_extract_dataset(
+            self.config,
+            ds_input.input_data,
+            ds_select.selected_profiles,
+            ds_locate.selected_rows,
+            ds_summary.summary_stats,
+        )
+        ds_extract.process_targets()
+
+        ds_classify = load_classify_step6_classify_dataset(
+            self.config, ds_extract.target_features
+        )
+        ds_classify.model_file_names = self.suite_model_file_names
+        ds_classify.read_models()
+        ds_classify.test_targets()
+
+        ds = load_classify_step7_concat_dataset(
+            self.config, ds_input.input_data, ds_classify.predictions
+        )
+
+        self.assertIsInstance(ds, ConcatDataSetSuite)
+
+        self.assertIsInstance(ds.predictions["temp"], pl.DataFrame)
+        self.assertEqual(ds.predictions["temp"].shape[0], 19480 * 2)
+        self.assertEqual(ds.predictions["temp"].shape[1], 8)
+
+        self.assertIsInstance(ds.predictions["psal"], pl.DataFrame)
+        self.assertEqual(ds.predictions["psal"].shape[0], 19480 * 2)
+        self.assertEqual(ds.predictions["psal"].shape[1], 8)

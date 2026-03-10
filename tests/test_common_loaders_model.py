@@ -12,6 +12,7 @@ from pathlib import Path
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.model_suite import ModelSuite
 
 
 class TestModelClassLoader(unittest.TestCase):
@@ -40,6 +41,23 @@ class TestModelClassLoader(unittest.TestCase):
         """
         ds = load_model_class(self.config)
         self.assertIsInstance(ds, XGBoost)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "XGB"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, XGBoost)
+
+    def test_load_model_suite(self):
+        """
+        Tests that load_model_class successfully returns an ModelSuite instance
+        when provided with a valid configuration.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "MS"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, ModelSuite)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        ds = load_model_class(self.config)
+        self.assertIsInstance(ds, ModelSuite)
 
     def test_load_model_invalid_config(self):
         """

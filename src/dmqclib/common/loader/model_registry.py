@@ -8,7 +8,8 @@ constructor for that model.
 from typing import Dict, Type
 
 from dmqclib.common.base.model_base import ModelBase
-from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.common.loader.single_model_registry import SINGLE_MODEL_REGISTRY
+from dmqclib.train.models.model_suite import ModelSuite
 
 #: A dictionary mapping model names to their corresponding Python classes.
 #:
@@ -16,6 +17,8 @@ from dmqclib.train.models.xgboost import XGBoost
 #: that inherit from :class:`dmqclib.common.base.model_base.ModelBase`.
 #:
 #: :type: Dict[str, Type[ModelBase]]
-MODEL_REGISTRY: Dict[str, Type[ModelBase]] = {
-    "XGBoost": XGBoost,
-}
+MODEL_REGISTRY: Dict[str, Type[ModelBase]] = SINGLE_MODEL_REGISTRY
+MODEL_REGISTRY.update({
+        "ModelSuite": ModelSuite,
+        "MS": ModelSuite
+    })

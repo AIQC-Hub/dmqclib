@@ -12,8 +12,91 @@ import polars as pl
 
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
-from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.step4_build_model.build_model import BuildModel
+from dmqclib.train.models.logistic_regression import LogisticRegression
+from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
+from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.decision_tree import DecisionTree
+from dmqclib.train.models.random_forest import RandomForest
+from dmqclib.train.models.xgboost import XGBoost
+from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
+from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
+from dmqclib.train.models.mlp import MLP
+from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
+
+
+
+def setup_training_step4(test_obj):
+    """
+    Prepare a test training configuration and load input data for subsequent tests.
+    Define mock train/test file paths for data loading.
+    """
+    test_obj.config_file_path = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_training_001.yaml"
+    )
+    test_obj.config = TrainingConfig(str(test_obj.config_file_path))
+    test_obj.config.select("NRT_BO_001")
+    data_path = Path(__file__).resolve().parent / "data" / "training"
+    test_obj.input_file_names = {
+        "train": {
+            "temp": str(data_path / "train_set_temp.parquet"),
+            "psal": str(data_path / "train_set_psal.parquet"),
+            "pres": str(data_path / "train_set_pres.parquet"),
+        },
+        "test": {
+            "temp": str(data_path / "test_set_temp.parquet"),
+            "psal": str(data_path / "test_set_psal.parquet"),
+            "pres": str(data_path / "test_set_pres.parquet"),
+        },
+    }
+
+    test_obj.ds_input = load_step1_input_training_set(test_obj.config)
+    test_obj.ds_input.input_file_names = test_obj.input_file_names
+    test_obj.ds_input.process_targets()
+
+
+def run_test_with_trained_model(test_obj):
+    """
+    Check that testing sets after model building populates the result columns
+    and contingency tables, verifying data types and dimensions remain consistent.
+    """
+    ds = BuildModel(
+        test_obj.config,
+        training_sets=test_obj.ds_input.training_sets,
+        test_sets=test_obj.ds_input.test_sets,
+    )
+    ds.build_targets()
+    ds.test_targets()
+
+    # Check test sets / predictions
+    test_obj.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
+    test_obj.assertEqual(ds.test_sets["temp"].shape[0], 12)
+    test_obj.assertEqual(ds.test_sets["temp"].shape[1], 56)
+
+    test_obj.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
+    test_obj.assertEqual(ds.test_sets["psal"].shape[0], 14)
+    test_obj.assertEqual(ds.test_sets["psal"].shape[1], 56)
+
+    test_obj.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+    test_obj.assertEqual(ds.test_sets["pres"].shape[0], 12)
+    test_obj.assertEqual(ds.test_sets["pres"].shape[1], 56)
+
+    # Check contingency tables
+    test_obj.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
+    # Height should match number of test rows
+    test_obj.assertEqual(ds.contingency_tables["temp"].height, 12)
+    test_obj.assertListEqual(
+        ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+    )
+
+    test_obj.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
+    test_obj.assertEqual(ds.contingency_tables["psal"].height, 14)
+
+    test_obj.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
+    test_obj.assertEqual(ds.contingency_tables["pres"].height, 12)
 
 
 class TestBuildModel(unittest.TestCase):
@@ -27,31 +110,7 @@ class TestBuildModel(unittest.TestCase):
         Prepare a test training configuration and load input data for subsequent tests.
         Define mock train/test file paths for data loading.
         """
-        self.config_file_path = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
-        )
-        self.config = TrainingConfig(str(self.config_file_path))
-        self.config.select("NRT_BO_001")
-        data_path = Path(__file__).resolve().parent / "data" / "training"
-        self.input_file_names = {
-            "train": {
-                "temp": str(data_path / "train_set_temp.parquet"),
-                "psal": str(data_path / "train_set_psal.parquet"),
-                "pres": str(data_path / "train_set_pres.parquet"),
-            },
-            "test": {
-                "temp": str(data_path / "test_set_temp.parquet"),
-                "psal": str(data_path / "test_set_psal.parquet"),
-                "pres": str(data_path / "test_set_pres.parquet"),
-            },
-        }
-
-        self.ds_input = load_step1_input_training_set(self.config)
-        self.ds_input.input_file_names = self.input_file_names
-        self.ds_input.process_targets()
+        setup_training_step4(self)
 
     def test_step_name(self):
         """Check that the BuildModel step name is correctly assigned."""
@@ -120,11 +179,6 @@ class TestBuildModel(unittest.TestCase):
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_metric_plots_pres.svg",
             str(ds.output_file_names["metric_plot"]["pres"]),
         )
-
-    def test_base_model(self):
-        """Ensure that the configured base model is an XGBoost instance."""
-        ds = BuildModel(self.config)
-        self.assertIsInstance(ds.base_model, XGBoost)
 
     def test_training_sets(self):
         """
@@ -215,46 +269,6 @@ class TestBuildModel(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             ds.build_targets()
-
-    def test_test_with_xgboost(self):
-        """
-        Check that testing sets after model building populates the result columns
-        and contingency tables, verifying data types and dimensions remain consistent.
-        """
-        ds = BuildModel(
-            self.config,
-            training_sets=self.ds_input.training_sets,
-            test_sets=self.ds_input.test_sets,
-        )
-        ds.build_targets()
-        ds.test_targets()
-
-        # Check test sets / predictions
-        self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
-        self.assertEqual(ds.test_sets["temp"].shape[0], 12)
-        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
-
-        self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
-        self.assertEqual(ds.test_sets["psal"].shape[0], 14)
-        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
-
-        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
-        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
-        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
-
-        # Check contingency tables
-        self.assertIsInstance(ds.contingency_tables["temp"], pl.DataFrame)
-        # Height should match number of test rows
-        self.assertEqual(ds.contingency_tables["temp"].height, 12)
-        self.assertListEqual(
-            ds.contingency_tables["temp"].columns, ["k", "label", "score"]
-        )
-
-        self.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
-        self.assertEqual(ds.contingency_tables["psal"].height, 14)
-
-        self.assertIsInstance(ds.contingency_tables["pres"], pl.DataFrame)
-        self.assertEqual(ds.contingency_tables["pres"].height, 12)
 
     def test_test_without_model(self):
         """Ensure that calling test_targets() without first building models raises a ValueError."""
@@ -533,3 +547,539 @@ class TestBuildModel(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             ds.write_predictions()
+
+
+class TestXGBoost(unittest.TestCase):
+    """Tests for the XGBoost model wrapper."""
+
+    def setUp(self):
+        """
+        Prepare the test environment by loading a training configuration
+        and input training data. The input file names for train/test sets
+        are defined here for subsequent model validation tests.
+        """
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "XGBoost"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is an XGBoost
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, XGBoost)
+
+    def test_trained_model(self):
+        """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], XGBoost)
+        self.assertIsInstance(ds.models["psal"], XGBoost)
+        self.assertIsInstance(ds.models["pres"], XGBoost)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_xgboost.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_xgboost.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_xgboost.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestLogisticRegression(unittest.TestCase):
+    """Tests for the Logistic Regression model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a LogisticRegression
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, LogisticRegression)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with LogisticRegression instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], LogisticRegression)
+        self.assertIsInstance(ds.models["psal"], LogisticRegression)
+        self.assertIsInstance(ds.models["pres"], LogisticRegression)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_logit.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_logit.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_logit.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestLDA(unittest.TestCase):
+    """Tests for the Linear Discriminant Analysis model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "LinearDiscriminantAnalysis"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a LinearDiscriminantAnalysis
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, LinearDiscriminantAnalysis)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with LinearDiscriminantAnalysis instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], LinearDiscriminantAnalysis)
+        self.assertIsInstance(ds.models["psal"], LinearDiscriminantAnalysis)
+        self.assertIsInstance(ds.models["pres"], LinearDiscriminantAnalysis)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_lda.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_lda.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_lda.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestSVM(unittest.TestCase):
+    """Tests for the SVM model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "SVM"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is an SVM
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, SVM)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with SVM instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], SVM)
+        self.assertIsInstance(ds.models["psal"], SVM)
+        self.assertIsInstance(ds.models["pres"], SVM)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_svm.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_svm.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_svm.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestDecisionTree(unittest.TestCase):
+    """Tests for the Decision Tree model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "DecisionTree"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a DecisionTree
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, DecisionTree)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with DecisionTree instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], DecisionTree)
+        self.assertIsInstance(ds.models["psal"], DecisionTree)
+        self.assertIsInstance(ds.models["pres"], DecisionTree)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_dt.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_dt.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_dt.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestRandomForest(unittest.TestCase):
+    """Tests for the Random Forest model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "RandomForest"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a RandomForest
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, RandomForest)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with RandomForest instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], RandomForest)
+        self.assertIsInstance(ds.models["psal"], RandomForest)
+        self.assertIsInstance(ds.models["pres"], RandomForest)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_rf.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_rf.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_rf.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestKNN(unittest.TestCase):
+    """Tests for the K-Nearest Neighbors model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "KNearestNeighbors"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a KNearestNeighbors
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, KNearestNeighbors)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with KNearestNeighbors instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], KNearestNeighbors)
+        self.assertIsInstance(ds.models["psal"], KNearestNeighbors)
+        self.assertIsInstance(ds.models["pres"], KNearestNeighbors)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_knn.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_knn.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_knn.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestGaussianNaiveBayes(unittest.TestCase):
+    """Tests for the Gaussian Naive Bayes model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "GaussianNaiveBayes"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a GaussianNaiveBayes
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, GaussianNaiveBayes)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with GaussianNaiveBayes instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], GaussianNaiveBayes)
+        self.assertIsInstance(ds.models["psal"], GaussianNaiveBayes)
+        self.assertIsInstance(ds.models["pres"], GaussianNaiveBayes)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_gnb.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_gnb.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_gnb.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
+
+
+class TestMLP(unittest.TestCase):
+    """Tests for the Multi-layer Perceptron model wrapper."""
+
+    def setUp(self):
+        setup_training_step4(self)
+
+        self.config.data["step_class_set"]["steps"]["model"] = "MLP"
+
+    def test_base_model(self):
+        """
+        Ensure the base model attribute of KFoldValidation is a MLP
+        instance, as defined by the configuration.
+        """
+        ds = KFoldValidation(self.config)
+        self.assertIsInstance(ds.base_model, MLP)
+
+    def test_training(self):
+        """Confirm that building models populates the 'models' dictionary with MLP instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_targets()
+
+        self.assertIsInstance(ds.models["temp"], MLP)
+        self.assertIsInstance(ds.models["psal"], MLP)
+        self.assertIsInstance(ds.models["pres"], MLP)
+
+    def test_model_output(self):
+        """
+        Check that testing sets after model building populates the result columns
+        and contingency tables, verifying data types and dimensions remain consistent.
+        """
+        run_test_with_trained_model(self)
+
+    def test_write_model(self):
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+        ds.model_file_names["temp"] = str(data_path / "temp_model_temp_mlp.joblib")
+        ds.model_file_names["psal"] = str(data_path / "temp_model_psal_mlp.joblib")
+        ds.model_file_names["pres"] = str(data_path / "temp_model_pres_mlp.joblib")
+
+        ds.build_targets()
+        ds.write_models()
+
+        self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["psal"]))
+        self.assertTrue(os.path.exists(ds.model_file_names["pres"]))
+
+        os.remove(ds.model_file_names["temp"])
+        os.remove(ds.model_file_names["psal"])
+        os.remove(ds.model_file_names["pres"])
