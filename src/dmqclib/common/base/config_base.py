@@ -520,7 +520,7 @@ class ConfigBase(ABC):
             step_name, default_file_name, use_dataset_folder, folder_name_auto
         )
         return {
-            x: full_file_name.format(target_name=x) for x in self.get_target_names()
+            x: full_file_name.replace("{target_name}", x) for x in self.get_target_names()
         }
 
     def update_feature_param_with_stats(self):

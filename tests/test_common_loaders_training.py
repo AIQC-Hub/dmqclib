@@ -17,8 +17,11 @@ from dmqclib.common.loader.training_loader import (
     load_step4_build_model_class,
 )
 from dmqclib.train.step1_read_input.dataset_a import InputTrainingSetA
+from dmqclib.train.models.model_suite import ModelSuite
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
+from dmqclib.train.step2_validate_model.kfold_validation_suite import KFoldValidationSuite
 from dmqclib.train.step4_build_model.build_model import BuildModel
+from dmqclib.train.step4_build_model.build_model_suite import BuildModelSuite
 
 
 class TestTrainingInputClassLoader(unittest.TestCase):
@@ -105,11 +108,43 @@ class TestModelValidationClassLoader(unittest.TestCase):
         self.assertIsInstance(ds, KFoldValidation)
         self.assertEqual(ds.step_name, "validate")
 
+    def test_load_validation_suite_dataset(self):
+        """
+        Check that load_step2_model_validation_class returns a KFoldValidationSuite
+        instance with the expected step name.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["validate"] = "KFoldValidationSuite"
+        ds = load_step2_model_validation_class(self.config)
+        self.assertIsInstance(ds, KFoldValidationSuite)
+        self.assertEqual(ds.step_name, "validate")
+
     def test_training_set_data(self):
         """
         Ensure that when training_sets are provided, KFoldValidation
         is instantiated with the correct Polars DataFrame sizes.
         """
+        ds = load_step2_model_validation_class(self.config, self.ds_input.training_sets)
+
+        self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["temp"].shape[0], 116)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 57)
+
+        self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["psal"].shape[0], 126)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 57)
+
+        self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["pres"].shape[0], 110)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 57)
+
+    def test_suit_training_set_data(self):
+        """
+        Ensure that when training_sets are provided, KFoldValidationSuite
+        is instantiated with the correct Polars DataFrame sizes.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["validate"] = "KFoldValidationSuite"
         ds = load_step2_model_validation_class(self.config, self.ds_input.training_sets)
 
         self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
@@ -171,11 +206,57 @@ class TestBuildModelClassLoader(unittest.TestCase):
         self.assertIsInstance(ds, BuildModel)
         self.assertEqual(ds.step_name, "build")
 
+    def test_load_validation_suite_dataset(self):
+        """
+        Check that load_step2_model_validation_class returns a BuildModelSuite
+        instance with the expected step name.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["build"] = "BuildModelSuite"
+        ds = load_step4_build_model_class(self.config)
+        self.assertIsInstance(ds, BuildModelSuite)
+        self.assertEqual(ds.step_name, "build")
+
     def test_training_and_test_sets(self):
         """
         Ensure that BuildModel receives the correct training and test sets
         when they are provided.
         """
+        ds = load_step4_build_model_class(
+            self.config, self.ds_input.training_sets, self.ds_input.test_sets
+        )
+
+        self.assertIsInstance(ds.training_sets["temp"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["temp"].shape[0], 116)
+        self.assertEqual(ds.training_sets["temp"].shape[1], 57)
+
+        self.assertIsInstance(ds.training_sets["psal"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["psal"].shape[0], 126)
+        self.assertEqual(ds.training_sets["psal"].shape[1], 57)
+
+        self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.training_sets["pres"].shape[0], 110)
+        self.assertEqual(ds.training_sets["pres"].shape[1], 57)
+
+        self.assertIsInstance(ds.test_sets["temp"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["temp"].shape[0], 12)
+        self.assertEqual(ds.test_sets["temp"].shape[1], 56)
+
+        self.assertIsInstance(ds.test_sets["psal"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["psal"].shape[0], 14)
+        self.assertEqual(ds.test_sets["psal"].shape[1], 56)
+
+        self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
+        self.assertEqual(ds.test_sets["pres"].shape[0], 12)
+        self.assertEqual(ds.test_sets["pres"].shape[1], 56)
+
+    def test_suit_training_and_test_sets(self):
+        """
+        Ensure that BuildModel receives the correct training and test sets
+        when they are provided.
+        """
+        self.config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
+        self.config.data["step_class_set"]["steps"]["build"] = "BuildModelSuite"
         ds = load_step4_build_model_class(
             self.config, self.ds_input.training_sets, self.ds_input.test_sets
         )

@@ -8,15 +8,8 @@ constructor for that model.
 from typing import Dict, Type
 
 from dmqclib.common.base.model_base import ModelBase
-from dmqclib.train.models.decision_tree import DecisionTree
-from dmqclib.train.models.random_forest import RandomForest
-from dmqclib.train.models.xgboost import XGBoost
-from dmqclib.train.models.logistic_regression import LogisticRegression
-from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
-from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
-from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.common.loader.single_model_registry import SINGLE_MODEL_REGISTRY
+from dmqclib.train.models.model_suite import ModelSuite
 
 #: A dictionary mapping model names to their corresponding Python classes.
 #:
@@ -24,23 +17,8 @@ from dmqclib.train.models.mlp import MLP
 #: that inherit from :class:`dmqclib.common.base.model_base.ModelBase`.
 #:
 #: :type: Dict[str, Type[ModelBase]]
-MODEL_REGISTRY: Dict[str, Type[ModelBase]] = {
-    "DecisionTree": DecisionTree,
-    "DT": DecisionTree,
-    "RandomForest": RandomForest,
-    "RF": RandomForest,
-    "XGBoost": XGBoost,
-    "XGB": XGBoost,
-    "LogisticRegression": LogisticRegression,
-    "Logit": LogisticRegression,
-    "LinearDiscriminantAnalysis": LinearDiscriminantAnalysis,
-    "LDA": LinearDiscriminantAnalysis,
-    "SupportVectorMachine": SVM,
-    "SVM": SVM,
-    "KNearestNeighbors": KNearestNeighbors,
-    "KNN": KNearestNeighbors,
-    "GaussianNaiveBayes": GaussianNaiveBayes,
-    "GNB": GaussianNaiveBayes,
-    "MultilayerPerceptron": MLP,
-    "MLP": MLP,
-}
+MODEL_REGISTRY: Dict[str, Type[ModelBase]] = SINGLE_MODEL_REGISTRY
+MODEL_REGISTRY.update({
+        "ModelSuite": ModelSuite,
+        "MS": ModelSuite
+    })

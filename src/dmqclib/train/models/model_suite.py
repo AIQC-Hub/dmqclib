@@ -11,7 +11,7 @@ from typing import Dict, Any, List, Self
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
 
-from dmqclib.common.loader.model_loader import load_model_class_with_class_name
+from dmqclib.common.loader.single_model_loader import load_single_model_class_with_class_name
 
 
 class ModelSuite(ModelBase):
@@ -55,7 +55,7 @@ class ModelSuite(ModelBase):
     def _load_model_class_with_method_name(self, config: ConfigBase, method: str) -> Any:
         config_method = copy.deepcopy(config)
         config_method.set_base_class("model", method)
-        return load_model_class_with_class_name(config_method, method)
+        return load_single_model_class_with_class_name(config_method, method)
 
     def _get_model_class(self) -> Any:
         """

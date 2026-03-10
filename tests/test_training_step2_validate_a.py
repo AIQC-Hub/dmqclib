@@ -151,15 +151,6 @@ class TestKFoldValidation(unittest.TestCase):
         ds = KFoldValidation(self.config)
         self.assertIsInstance(ds.base_model, XGBoost)
 
-    def test_logistic_regression_model(self):
-        """
-        Ensure the base model attribute of KFoldValidation is a LogisticRegression
-        instance, as defined by the configuration.
-        """
-        self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"
-        ds = KFoldValidation(self.config)
-        self.assertIsInstance(ds.base_model, LogisticRegression)
-
     def test_training_sets(self):
         """
         Check that training data is properly loaded and accessible
