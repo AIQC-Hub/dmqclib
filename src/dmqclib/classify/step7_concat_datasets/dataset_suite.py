@@ -31,10 +31,10 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
     expected_class_name: str = "ConcatDataSetSuite"
 
     def __init__(
-            self,
-            config: ConfigBase,
-            input_data: Optional[pl.DataFrame] = None,
-            predictions: Optional[Dict[str, pl.DataFrame]] = None,
+        self,
+        config: ConfigBase,
+        input_data: Optional[pl.DataFrame] = None,
+        predictions: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
         Initialize the concatenation workflow for multi-method predictions and input data.
@@ -84,7 +84,9 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
 
         for key, df in self.predictions.items():
             # 1. Extract the ground truth label (identical across methods for the same observation)
-            target_wide = df.select(join_keys + ["label"]).unique(subset=join_keys, keep="first")
+            target_wide = df.select(join_keys + ["label"]).unique(
+                subset=join_keys, keep="first"
+            )
             target_wide = target_wide.rename({"label": f"{key}_label"})
 
             # 2. Extract unique methods present in this target's predictions
@@ -92,12 +94,16 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
 
             # 3. For each method, isolate its rows, rename the columns, and join to target_wide
             for m in methods:
-                m_df = df.filter(pl.col("method") == m).select(
-                    join_keys + ["class", "score"]
-                ).rename({
-                    "class": f"{m.lower()}_{key}_predicted",
-                    "score": f"{m.lower()}_{key}_score",
-                })
+                m_df = (
+                    df.filter(pl.col("method") == m)
+                    .select(join_keys + ["class", "score"])
+                    .rename(
+                        {
+                            "class": f"{m.lower()}_{key}_predicted",
+                            "score": f"{m.lower()}_{key}_score",
+                        }
+                    )
+                )
 
                 target_wide = target_wide.join(m_df, on=join_keys, how="left")
 

@@ -44,7 +44,10 @@ class ConcreteSklearnModel(SklearnModelBase):
     """
     Concrete implementation of SklearnModelBase for testing.
     """
-    expected_class_name: str = "XGBoost"  # Reusing a valid class name from config for simplicity
+
+    expected_class_name: str = (
+        "XGBoost"  # Reusing a valid class name from config for simplicity
+    )
 
     def __init__(self, config: ConfigBase) -> None:
         super().__init__(config)
@@ -64,10 +67,10 @@ class TestSklearnModelBase(unittest.TestCase):
         Set up configuration and a concrete model instance.
         """
         self.config_file_path = (
-                Path(__file__).resolve().parent
-                / "data"
-                / "config"
-                / "test_training_001.yaml"
+            Path(__file__).resolve().parent
+            / "data"
+            / "config"
+            / "test_training_001.yaml"
         )
         self.config = TrainingConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
@@ -78,10 +81,9 @@ class TestSklearnModelBase(unittest.TestCase):
         Ensure build converts data and fits the underlying model.
         """
         # Setup dummy training data
-        self.model_wrapper.training_set = pl.DataFrame({
-            "feature1": [1.0, 2.0, 3.0],
-            "label": [0, 1, 0]
-        })
+        self.model_wrapper.training_set = pl.DataFrame(
+            {"feature1": [1.0, 2.0, 3.0], "label": [0, 1, 0]}
+        )
 
         self.model_wrapper.build()
 
@@ -101,10 +103,9 @@ class TestSklearnModelBase(unittest.TestCase):
         """
         # We need a fitted model (or just an instance for the mock)
         self.model_wrapper.model = MockSklearnClassifier()
-        self.model_wrapper.test_set = pl.DataFrame({
-            "feature1": [1.0, 2.0],
-            "label": [0, 1]
-        })
+        self.model_wrapper.test_set = pl.DataFrame(
+            {"feature1": [1.0, 2.0], "label": [0, 1]}
+        )
 
         self.model_wrapper.predict()
 
@@ -128,10 +129,12 @@ class TestSklearnModelBase(unittest.TestCase):
         """
         self.model_wrapper.k = 1
         self.model_wrapper.test_set = pl.DataFrame({"label": [0, 1, 0, 1]})
-        self.model_wrapper.predictions = pl.DataFrame({
-            "class": [0, 1, 0, 0],  # One error
-            "score": [0.5, 0.5, 0.5, 0.5]
-        })
+        self.model_wrapper.predictions = pl.DataFrame(
+            {
+                "class": [0, 1, 0, 0],  # One error
+                "score": [0.5, 0.5, 0.5, 0.5],
+            }
+        )
 
         self.model_wrapper.create_report()
 
@@ -139,7 +142,9 @@ class TestSklearnModelBase(unittest.TestCase):
         self.assertIsInstance(self.model_wrapper.report, pl.DataFrame)
         self.assertIn("k", self.model_wrapper.report.columns)
         self.assertIn("metric_type", self.model_wrapper.report.columns)
-        self.assertIn("value", self.model_wrapper.report.columns)  # For accuracy/balanced
+        self.assertIn(
+            "value", self.model_wrapper.report.columns
+        )  # For accuracy/balanced
 
         # Verify specific rows exist
         metrics = self.model_wrapper.report["metric_type"].unique().to_list()

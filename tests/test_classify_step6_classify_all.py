@@ -32,6 +32,7 @@ from dmqclib.train.models.mlp import MLP
 TEST_COUNT = 3
 METHOD_TEST_COUNT = 1
 
+
 class TestClassifyAllClass:
     """
     A suite of tests ensuring that the `ClassifyAll` step correctly loads models,
@@ -63,12 +64,8 @@ class TestClassifyAllClass:
         file_classify = (
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
         )
-        file_contingency = (
-            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
-        )
-        file_metric_plots = (
-            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
-        )
+        file_contingency = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
+        file_metric_plots = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
 
         # Check model file names
         assert file_model.format("temp") == str(ds.model_file_names["temp"])
@@ -177,10 +174,7 @@ def _setup_classify_all(test_obj):
         config_path / "test_classify_003.yaml",
     ]
     test_obj.test_data_file = str(
-        Path(__file__).resolve().parent
-        / "data"
-        / "input"
-        / "nrt_cora_bo_test.parquet"
+        Path(__file__).resolve().parent / "data" / "input" / "nrt_cora_bo_test.parquet"
     )
     _setup_datasets(test_obj)
 

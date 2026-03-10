@@ -8,7 +8,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from typing import Dict, Any
+from typing import Dict
 
 import polars as pl
 import matplotlib

@@ -165,11 +165,20 @@ class TestConcatDataSetSuite(unittest.TestCase):
 
         # Check that specific wide-format columns were created
         expected_columns = [
-            "temp_label", "xgb_temp_predicted", "xgb_temp_score", "dt_temp_predicted",
+            "temp_label",
+            "xgb_temp_predicted",
+            "xgb_temp_score",
+            "dt_temp_predicted",
             "dt_temp_score",
-            "psal_label", "xgb_psal_predicted", "xgb_psal_score", "dt_psal_predicted",
+            "psal_label",
+            "xgb_psal_predicted",
+            "xgb_psal_score",
+            "dt_psal_predicted",
             "dt_psal_score",
-            "pres_label", "xgb_pres_predicted", "xgb_pres_score", "dt_pres_predicted",
+            "pres_label",
+            "xgb_pres_predicted",
+            "xgb_pres_score",
+            "dt_pres_predicted",
             "dt_pres_score",
         ]
 

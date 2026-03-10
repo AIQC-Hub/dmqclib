@@ -275,7 +275,6 @@ class ConfigBase(ABC):
         """
         return self.data["step_param_set"]["steps"][step_name]
 
-
     def get_model_params(self, model_long_name: str, model_short_name: str) -> Dict:
         """Retrieve the parameters dictionary for a model.
 
@@ -520,7 +519,8 @@ class ConfigBase(ABC):
             step_name, default_file_name, use_dataset_folder, folder_name_auto
         )
         return {
-            x: full_file_name.replace("{target_name}", x) for x in self.get_target_names()
+            x: full_file_name.replace("{target_name}", x)
+            for x in self.get_target_names()
         }
 
     def update_feature_param_with_stats(self):

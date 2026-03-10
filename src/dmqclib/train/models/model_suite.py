@@ -4,6 +4,7 @@ from `dmqclib.common.base.model_base.ModelBase`.
 
 It facilitates training, prediction, and evaluation with multiple ML methods.
 """
+
 import copy
 
 from typing import Dict, Any, List, Self
@@ -11,7 +12,9 @@ from typing import Dict, Any, List, Self
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
 
-from dmqclib.common.loader.single_model_loader import load_single_model_class_with_class_name
+from dmqclib.common.loader.single_model_loader import (
+    load_single_model_class_with_class_name,
+)
 
 
 class ModelSuite(ModelBase):
@@ -41,18 +44,27 @@ class ModelSuite(ModelBase):
         super().__init__(config=config)
 
         self.default_methods: List[str] = [
-            "Logit", "LDA", "SVM",
-            "DT", "XGB", "RF",
-            "GNB", "KNN", "MLP"
+            "Logit",
+            "LDA",
+            "SVM",
+            "DT",
+            "XGB",
+            "RF",
+            "GNB",
+            "KNN",
+            "MLP",
         ]
-        self.methods = self.config.get_step_params("model").get("methods", self.default_methods)
+        self.methods = self.config.get_step_params("model").get(
+            "methods", self.default_methods
+        )
 
         self.method_objs: Dict[str, Any] = {
-            m: self._load_model_class_with_method_name(config, m)
-            for m in self.methods
+            m: self._load_model_class_with_method_name(config, m) for m in self.methods
         }
 
-    def _load_model_class_with_method_name(self, config: ConfigBase, method: str) -> Any:
+    def _load_model_class_with_method_name(
+        self, config: ConfigBase, method: str
+    ) -> Any:
         config_method = copy.deepcopy(config)
         config_method.set_base_class("model", method)
         return load_single_model_class_with_class_name(config_method, method)

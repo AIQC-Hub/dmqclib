@@ -28,7 +28,7 @@ def create_metric_plots(model) -> None:
         unique_k = df["k"].unique().sort()
         has_folds = len(unique_k) > 1
 
-        plt.rcParams.update({'font.size': 14})
+        plt.rcParams.update({"font.size": 14})
         fig, (ax_roc, ax_pr) = plt.subplots(1, 2, figsize=(12, 6))
 
         # --- ROC Curve Setup ---
@@ -89,9 +89,7 @@ def create_metric_plots(model) -> None:
                 else f"ROC (AUC = {mean_auc:.2f})"
             )
 
-            ax_roc.plot(
-                mean_fpr, mean_tpr, color="b", label=label_roc, lw=2, alpha=0.8
-            )
+            ax_roc.plot(mean_fpr, mean_tpr, color="b", label=label_roc, lw=2, alpha=0.8)
 
             if has_folds:
                 std_tpr = np.std(tprs, axis=0)
@@ -177,7 +175,7 @@ def create_multi_method_metric_plots(model) -> None:
         output_path = model.output_file_names["metric_plot"][target_name]
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-        plt.rcParams.update({'font.size': 14})
+        plt.rcParams.update({"font.size": 14})
         fig, (ax_roc, ax_pr) = plt.subplots(1, 2, figsize=(14, 7))
 
         # Retrieve unique methods from the aggregated dataframe

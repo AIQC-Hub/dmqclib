@@ -14,7 +14,9 @@ import polars as pl
 from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.train.models.model_suite import ModelSuite
-from dmqclib.train.step2_validate_model.kfold_validation_suite import KFoldValidationSuite
+from dmqclib.train.step2_validate_model.kfold_validation_suite import (
+    KFoldValidationSuite,
+)
 
 
 def setup_training_step2(test_obj):
@@ -24,10 +26,7 @@ def setup_training_step2(test_obj):
     are defined here for subsequent model validation tests.
     """
     test_obj.config_file_path = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
+        Path(__file__).resolve().parent / "data" / "config" / "test_training_001.yaml"
     )
     test_obj.config = TrainingConfig(str(test_obj.config_file_path))
     test_obj.config.select("NRT_BO_001")
@@ -126,7 +125,9 @@ class TestKFoldValidationSuite(unittest.TestCase):
         Check that the KFoldValidationSuite process successfully processes the
         training sets across multiple methods and populates the composite keys.
         """
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         ds.process_targets()
 
         # Check Reports - ensure composite keys exist
@@ -157,24 +158,32 @@ class TestKFoldValidationSuite(unittest.TestCase):
         Ensure validation reports are written to the specified output files
         with composite keys and that temporary files are cleaned up.
         """
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
 
         # Override specific composite key paths for testing
         ds.output_file_names["report"]["xgb_temp"] = str(
-            data_path / "temp_validation_report_xgb_temp.tsv")
+            data_path / "temp_validation_report_xgb_temp.tsv"
+        )
         ds.output_file_names["report"]["xgb_psal"] = str(
-            data_path / "temp_validation_report_xgb_psal.tsv")
+            data_path / "temp_validation_report_xgb_psal.tsv"
+        )
         ds.output_file_names["report"]["xgb_pres"] = str(
-            data_path / "temp_validation_report_xgb_pres.tsv")
+            data_path / "temp_validation_report_xgb_pres.tsv"
+        )
         ds.output_file_names["report"]["dt_temp"] = str(
-            data_path / "temp_validation_report_dt_temp.tsv")
+            data_path / "temp_validation_report_dt_temp.tsv"
+        )
         ds.output_file_names["report"]["dt_psal"] = str(
-            data_path / "temp_validation_report_dt_psal.tsv")
+            data_path / "temp_validation_report_dt_psal.tsv"
+        )
         ds.output_file_names["report"]["dt_pres"] = str(
-            data_path / "temp_validation_report_dt_pres.tsv")
+            data_path / "temp_validation_report_dt_pres.tsv"
+        )
 
         ds.write_reports()
 
@@ -196,33 +205,53 @@ class TestKFoldValidationSuite(unittest.TestCase):
         """
         Ensure contingency tables are written to the specified output files.
         """
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
 
         # Override output paths for testing
         ds.output_file_names["contingency_table"]["xgb_temp"] = str(
-            data_path / "temp_contingency_xgb_temp.tsv")
+            data_path / "temp_contingency_xgb_temp.tsv"
+        )
         ds.output_file_names["contingency_table"]["xgb_psal"] = str(
-            data_path / "temp_contingency_xgb_psal.tsv")
+            data_path / "temp_contingency_xgb_psal.tsv"
+        )
         ds.output_file_names["contingency_table"]["xgb_pres"] = str(
-            data_path / "temp_contingency_xgb_pres.tsv")
+            data_path / "temp_contingency_xgb_pres.tsv"
+        )
         ds.output_file_names["contingency_table"]["dt_temp"] = str(
-            data_path / "temp_contingency_dt_temp.tsv")
+            data_path / "temp_contingency_dt_temp.tsv"
+        )
         ds.output_file_names["contingency_table"]["dt_psal"] = str(
-            data_path / "temp_contingency_dt_psal.tsv")
+            data_path / "temp_contingency_dt_psal.tsv"
+        )
         ds.output_file_names["contingency_table"]["dt_pres"] = str(
-            data_path / "temp_contingency_dt_pres.tsv")
+            data_path / "temp_contingency_dt_pres.tsv"
+        )
 
         ds.write_contingency_tables()
 
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["xgb_temp"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["xgb_psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["xgb_pres"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["dt_temp"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["dt_psal"]))
-        self.assertTrue(os.path.exists(ds.output_file_names["contingency_table"]["dt_pres"]))
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["xgb_temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["xgb_psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["xgb_pres"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["dt_temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["dt_psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["contingency_table"]["dt_pres"])
+        )
 
         os.remove(ds.output_file_names["contingency_table"]["xgb_temp"])
         os.remove(ds.output_file_names["contingency_table"]["xgb_psal"])
@@ -236,26 +265,35 @@ class TestKFoldValidationSuite(unittest.TestCase):
         Ensure ROC and Precision-Recall plots written to the specified output files.
         """
         import matplotlib
+
         matplotlib.use("Agg")  # Prevent plots popping up during testing
 
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         ds.process_targets()
 
         data_path = Path(__file__).resolve().parent / "data" / "training"
 
         # Override output paths for testing
         ds.output_file_names["metric_plot"]["xgb_temp"] = str(
-            data_path / "temp_metric_plots_xgb_temp.tsv")
+            data_path / "temp_metric_plots_xgb_temp.tsv"
+        )
         ds.output_file_names["metric_plot"]["xgb_psal"] = str(
-            data_path / "temp_metric_plots_xgb_psal.tsv")
+            data_path / "temp_metric_plots_xgb_psal.tsv"
+        )
         ds.output_file_names["metric_plot"]["xgb_pres"] = str(
-            data_path / "temp_metric_plots_xgb_pres.tsv")
+            data_path / "temp_metric_plots_xgb_pres.tsv"
+        )
         ds.output_file_names["metric_plot"]["dt_temp"] = str(
-            data_path / "temp_metric_plots_dt_temp.tsv")
+            data_path / "temp_metric_plots_dt_temp.tsv"
+        )
         ds.output_file_names["metric_plot"]["dt_psal"] = str(
-            data_path / "temp_metric_plots_dt_psal.tsv")
+            data_path / "temp_metric_plots_dt_psal.tsv"
+        )
         ds.output_file_names["metric_plot"]["dt_pres"] = str(
-            data_path / "temp_metric_plots_dt_pres.tsv")
+            data_path / "temp_metric_plots_dt_pres.tsv"
+        )
 
         ds.create_metric_plots()
 
@@ -277,7 +315,9 @@ class TestKFoldValidationSuite(unittest.TestCase):
         """
         Ensure that calling write_reports with empty reports raises a ValueError.
         """
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         with self.assertRaises(ValueError):
             ds.write_reports()
 
@@ -285,7 +325,9 @@ class TestKFoldValidationSuite(unittest.TestCase):
         """
         Ensure that calling write_contingency_tables with empty tables raises a ValueError.
         """
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         with self.assertRaises(ValueError):
             ds.write_contingency_tables()
 
@@ -293,6 +335,8 @@ class TestKFoldValidationSuite(unittest.TestCase):
         """
         Ensure that calling create_metric_plots with empty tables raises a ValueError.
         """
-        ds = KFoldValidationSuite(self.config, training_sets=self.ds_input.training_sets)
+        ds = KFoldValidationSuite(
+            self.config, training_sets=self.ds_input.training_sets
+        )
         with self.assertRaises(ValueError):
             ds.create_metric_plots()

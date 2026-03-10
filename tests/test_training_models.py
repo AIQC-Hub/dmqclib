@@ -62,7 +62,7 @@ class TestXGBoost(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "max_depth": 10,
-            "n_jobs": 4
+            "n_jobs": 4,
         }
         ds = XGBoost(self.config)
         self.assertEqual(ds.model_params["max_depth"], 10)
@@ -99,7 +99,7 @@ class TestLogisticRegression(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "C": 0.5,
-            "max_iter": 500
+            "max_iter": 500,
         }
         ds = LogisticRegression(self.config)
         self.assertEqual(ds.model_params["C"], 0.5)
@@ -118,7 +118,9 @@ class TestLDA(unittest.TestCase):
         )
         self.config = TrainingConfig(str(self.config_file_path))
         self.config.select("NRT_BO_001")
-        self.config.data["step_class_set"]["steps"]["model"] = "LinearDiscriminantAnalysis"
+        self.config.data["step_class_set"]["steps"]["model"] = (
+            "LinearDiscriminantAnalysis"
+        )
 
     def test_init_class(self):
         ds = LinearDiscriminantAnalysis(self.config)
@@ -175,7 +177,7 @@ class TestSVM(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "C": 0.5,
-            "kernel": "rbf"
+            "kernel": "rbf",
         }
         ds = SVM(self.config)
         self.assertEqual(ds.model_params["C"], 0.5)
@@ -213,7 +215,7 @@ class TestDecisionTree(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "max_depth": 5,
-            "min_samples_split": 4
+            "min_samples_split": 4,
         }
         ds = DecisionTree(self.config)
         self.assertEqual(ds.model_params["max_depth"], 5)
@@ -251,7 +253,7 @@ class TestRandomForest(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "n_estimators": 50,
-            "max_features": "log2"
+            "max_features": "log2",
         }
         ds = RandomForest(self.config)
         self.assertEqual(ds.model_params["n_estimators"], 50)
@@ -289,7 +291,7 @@ class TestKNN(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "n_neighbors": 10,
-            "weights": "distance"
+            "weights": "distance",
         }
         ds = KNearestNeighbors(self.config)
         self.assertEqual(ds.model_params["n_neighbors"], 10)
@@ -362,7 +364,7 @@ class TestMLP(unittest.TestCase):
     def test_config_params_override(self):
         self.config.data["step_param_set"]["steps"]["model"]["model_params"] = {
             "hidden_layer_sizes": (50, 50),
-            "learning_rate_init": 0.01
+            "learning_rate_init": 0.01,
         }
         ds = MLP(self.config)
         self.assertEqual(ds.model_params["hidden_layer_sizes"], (50, 50))

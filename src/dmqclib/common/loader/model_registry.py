@@ -18,7 +18,4 @@ from dmqclib.train.models.model_suite import ModelSuite
 #:
 #: :type: Dict[str, Type[ModelBase]]
 MODEL_REGISTRY: Dict[str, Type[ModelBase]] = SINGLE_MODEL_REGISTRY
-MODEL_REGISTRY.update({
-        "ModelSuite": ModelSuite,
-        "MS": ModelSuite
-    })
+MODEL_REGISTRY.update({"ModelSuite": ModelSuite, "MS": ModelSuite})

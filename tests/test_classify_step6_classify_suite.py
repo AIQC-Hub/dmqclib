@@ -75,22 +75,23 @@ class TestClassifyAllSuiteClass:
         file_classify = (
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
         )
-        file_contingency = (
-            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
-        )
-        file_metric_plots = (
-            "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
-        )
+        file_contingency = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
+        file_metric_plots = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
 
         # Check model file names (should use composite keys)
         assert file_model.format("xgb", "temp") == str(ds.model_file_names["xgb_temp"])
         assert file_model.format("dt", "psal") == str(ds.model_file_names["dt_psal"])
 
         # Check aggregated result file names (should use target keys)
-        assert file_classify.format("temp") == str(ds.output_file_names["report"]["temp"])
+        assert file_classify.format("temp") == str(
+            ds.output_file_names["report"]["temp"]
+        )
         assert file_contingency.format("psal") == str(
-            ds.output_file_names["contingency_table"]["psal"])
-        assert file_metric_plots.format("pres") == str(ds.output_file_names["metric_plot"]["pres"])
+            ds.output_file_names["contingency_table"]["psal"]
+        )
+        assert file_metric_plots.format("pres") == str(
+            ds.output_file_names["metric_plot"]["pres"]
+        )
 
     def test_base_model(self):
         """Ensure that the configured base model is a ModelSuite instance."""
@@ -109,9 +110,7 @@ def _setup_datasets(test_obj):
         # Inject ModelSuite settings
         config.data["step_class_set"]["steps"]["classify"] = "ClassifyAllSuite"
         config.data["step_class_set"]["steps"]["model"] = "ModelSuite"
-        config.data["step_param_set"]["steps"]["model"] = {
-            "methods": ["XGB", "DT"]
-        }
+        config.data["step_param_set"]["steps"]["model"] = {"methods": ["XGB", "DT"]}
 
         ds_input = load_classify_step1_input_dataset(config)
         ds_input.input_file_name = str(test_obj.test_data_file)
@@ -156,10 +155,7 @@ def _setup_classify_all_suite(test_obj):
         config_path / "test_classify_003.yaml",
     ]
     test_obj.test_data_file = str(
-        Path(__file__).resolve().parent
-        / "data"
-        / "input"
-        / "nrt_cora_bo_test.parquet"
+        Path(__file__).resolve().parent / "data" / "input" / "nrt_cora_bo_test.parquet"
     )
     _setup_datasets(test_obj)
 

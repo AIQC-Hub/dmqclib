@@ -32,10 +32,7 @@ def setup_training_step2(test_obj):
     are defined here for subsequent model validation tests.
     """
     test_obj.config_file_path = (
-            Path(__file__).resolve().parent
-            / "data"
-            / "config"
-            / "test_training_001.yaml"
+        Path(__file__).resolve().parent / "data" / "config" / "test_training_001.yaml"
     )
     test_obj.config = TrainingConfig(str(test_obj.config_file_path))
     test_obj.config.select("NRT_BO_001")
@@ -271,15 +268,9 @@ class TestKFoldValidation(unittest.TestCase):
         ds.process_targets()
         ds.create_metric_plots()
 
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["metric_plot"]["temp"])
-        )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["metric_plot"]["psal"])
-        )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["metric_plot"]["pres"])
-        )
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["pres"]))
 
         # Cleanup
         os.remove(ds.output_file_names["metric_plot"]["temp"])
@@ -375,7 +366,9 @@ class TestLDA(unittest.TestCase):
     def setUp(self):
         setup_training_step2(self)
 
-        self.config.data["step_class_set"]["steps"]["model"] = "LinearDiscriminantAnalysis"
+        self.config.data["step_class_set"]["steps"]["model"] = (
+            "LinearDiscriminantAnalysis"
+        )
 
     def test_base_model(self):
         """
