@@ -167,6 +167,21 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertEqual(ds.training_sets["pres"].shape[0], 110)
         self.assertEqual(ds.training_sets["pres"].shape[1], 57)
 
+    def test_shap_flag(self):
+        ds = KFoldValidation(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = KFoldValidation(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = KFoldValidation(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
     def test_default_k_fold(self):
         """
         Confirm that the k_fold value defaults to 10 if no specific

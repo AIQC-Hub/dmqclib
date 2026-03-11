@@ -210,6 +210,21 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["pres"].shape[0], 12)
         self.assertEqual(ds.test_sets["pres"].shape[1], 56)
 
+    def test_shap_flag(self):
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertTrue(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
     def test_train_with_xgboost(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
         ds = BuildModel(

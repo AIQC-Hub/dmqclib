@@ -91,6 +91,27 @@ class TestKFoldValidationSuite(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "multi=True"):
             _ = KFoldValidationSuite(self.config)
 
+    def test_shap_flag(self):
+        ds = KFoldValidationSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = KFoldValidationSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = KFoldValidationSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
     def test_output_file_names_init(self):
         """
         Verify that the default output file names initially retain the {method}

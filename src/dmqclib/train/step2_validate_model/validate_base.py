@@ -105,6 +105,7 @@ class ValidationBase(DataSetBase):
         and can be used or extended in the subclass's validation routines.
         """
         self.base_model = load_model_class(self.config)
+        self.base_model.enable_shap = False
 
     def process_targets(self) -> None:
         """

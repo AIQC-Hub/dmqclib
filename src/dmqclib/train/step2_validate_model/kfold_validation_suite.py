@@ -79,6 +79,8 @@ class KFoldValidationSuite(ValidationBase):
             "observation_no",
         ]
 
+        self.base_model.set_enable_shap(False)
+
     def get_k_fold(self) -> int:
         """
         Retrieve the number of folds to use for cross-validation from

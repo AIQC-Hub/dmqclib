@@ -110,6 +110,21 @@ class TestClassifyAllClass:
         ds = ClassifyAll(self.config)
         assert isinstance(ds.base_model, XGBoost)
 
+    def test_shap_flag(self):
+        ds = ClassifyAll(self.config)
+        model = ds.base_model
+        assert not model.enable_shap
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = ClassifyAll(self.config)
+        model = ds.base_model
+        assert model.enable_shap
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = ClassifyAll(self.config)
+        model = ds.base_model
+        assert not model.enable_shap
+
     def test_logistic_regression_model(self):
         """Ensure that the configured base model is a LogisticRegression instance."""
         self.config.data["step_class_set"]["steps"]["model"] = "LogisticRegression"

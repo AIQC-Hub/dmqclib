@@ -231,6 +231,28 @@ class TestClassifyAllSuite:
         assert "dt_temp" in ds.models
 
     @pytest.mark.parametrize("idx", range(TEST_COUNT))
+    def test_shap_flag(self, idx):
+        ds = ClassifyAllSuite(self.configs[idx])
+        model = ds.base_model
+        assert not model.enable_shap
+        for method_obj in model.method_objs.values():
+            assert not method_obj.enable_shap
+
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = ClassifyAllSuite(self.configs[idx])
+        model = ds.base_model
+        assert model.enable_shap
+        for method_obj in model.method_objs.values():
+            assert method_obj.enable_shap
+
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = ClassifyAllSuite(self.configs[idx])
+        model = ds.base_model
+        assert not model.enable_shap
+        for method_obj in model.method_objs.values():
+            assert not method_obj.enable_shap
+
+    @pytest.mark.parametrize("idx", range(TEST_COUNT))
     def test_with_models(self, idx):
         """
         Check that testing targets populates aggregated result columns and

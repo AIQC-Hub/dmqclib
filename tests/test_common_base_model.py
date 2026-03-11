@@ -140,6 +140,18 @@ class TestModelBaseMethods(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Member variable 'predictions'"):
             model.update_contingency_table()
 
+    def test_shap_flag(self):
+        model = ModelBaseWithExpectedName(self.config)
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        model = ModelBaseWithExpectedName(self.config)
+        self.assertTrue(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        model = ModelBaseWithExpectedName(self.config)
+        self.assertFalse(model.enable_shap)
+
     def test_update_contingency_table_flow(self):
         """
         Ensure that the contingency table is correctly initialized and

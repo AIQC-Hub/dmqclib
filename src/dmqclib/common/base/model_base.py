@@ -78,6 +78,12 @@ class ModelBase(ABC):
         self.contingency_table: Optional[pl.DataFrame] = None
         self.k: int = 0
 
+        # Check config to see if SHAP should be calculated
+        self.enable_shap: bool = self.config.get_step_params("model").get("calculate_shap", False)
+
+        # Initialize storage for SHAP values explicitly
+        self.shap_values: Optional[pl.DataFrame] = None
+
     @abstractmethod
     def build(self) -> None:
         """

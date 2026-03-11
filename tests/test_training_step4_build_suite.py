@@ -85,6 +85,27 @@ class TestBuildModelSuite(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "multi=True"):
             _ = BuildModelSuite(self.config)
 
+    def test_shap_flag(self):
+        ds = BuildModelSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModelSuite(self.config)
+        model = ds.base_model
+        self.assertTrue(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertTrue(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = BuildModelSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
     def test_output_file_names(self):
         """
         Verify that default output file names correctly reflect composite keys
