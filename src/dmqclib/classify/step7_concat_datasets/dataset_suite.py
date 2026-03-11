@@ -96,10 +96,10 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
             for m in methods:
                 m_df = (
                     df.filter(pl.col("method") == m)
-                    .select(join_keys + ["class", "score"])
+                    .select(join_keys + ["predicted_label", "score"])
                     .rename(
                         {
-                            "class": f"{m.lower()}_{key}_predicted",
+                            "predicted_label": f"{m.lower()}_{key}_predicted",
                             "score": f"{m.lower()}_{key}_score",
                         }
                     )

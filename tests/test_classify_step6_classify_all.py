@@ -64,7 +64,7 @@ class TestClassifyAllClass:
         file_classify = (
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
         )
-        file_contingency = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
+        file_contingency = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.parquet"
         file_metric_plots = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
 
         # Check model file names
@@ -205,9 +205,9 @@ def _setup_classify_all(test_obj):
         "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
     }
     test_obj.contingency_table_file_names = {
-        "temp": str(data_path / "temp_classify_contingency_tables_temp.tsv"),
-        "psal": str(data_path / "temp_classify_contingency_tables_psal.tsv"),
-        "pres": str(data_path / "temp_classify_contingency_tables_pres.tsv"),
+        "temp": str(data_path / "temp_classify_contingency_tables_temp.parquet"),
+        "psal": str(data_path / "temp_classify_contingency_tables_psal.parquet"),
+        "pres": str(data_path / "temp_classify_contingency_tables_pres.parquet"),
     }
     test_obj.metric_plots_file_names = {
         "temp": str(data_path / "temp_classify_metric_plots_temp.svg"),
@@ -295,7 +295,7 @@ class TestClassifyAll:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -523,7 +523,7 @@ class TestXGBoost:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -590,7 +590,7 @@ class TestLogisticRegression:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -657,7 +657,7 @@ class TestLDA:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -724,7 +724,7 @@ class TestSVM:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -791,7 +791,7 @@ class TestDecisionTree:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -858,7 +858,7 @@ class TestRandomForest:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -925,7 +925,7 @@ class TestKNN:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -992,7 +992,7 @@ class TestGaussianNaiveBayes:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480
@@ -1059,7 +1059,7 @@ class TestMLP:
         # Check Contingency Tables
         assert isinstance(ds.contingency_tables["temp"], pl.DataFrame)
         assert ds.contingency_tables["temp"].height == 19480
-        assert ds.contingency_tables["temp"].columns == ["k", "label", "score"]
+        assert ds.contingency_tables["temp"].columns == ["k", "label", "predicted_label", "score"]
 
         assert isinstance(ds.contingency_tables["psal"], pl.DataFrame)
         assert ds.contingency_tables["psal"].height == 19480

@@ -130,7 +130,7 @@ class SklearnModelBase(ModelBase):
 
         self.predictions = pl.DataFrame(
             {
-                "class": self.model.predict(x_test),
+                "predicted_label": self.model.predict(x_test),
                 "score": self.model.predict_proba(x_test)[:, 1],
             }
         )
@@ -145,6 +145,9 @@ class SklearnModelBase(ModelBase):
         """
         if self.test_set is None:
             raise ValueError("Member variable 'test_set' must not be empty to calculate SHAP.")
+
+        if self.predictions is None:
+            raise ValueError("Member variable 'predictions' must not be empty.")
 
         # Import shap inline to avoid heavy dependency loading if SHAP is disabled
         import shap
@@ -191,7 +194,15 @@ class SklearnModelBase(ModelBase):
         feature_names = x_test.columns.tolist()
         shap_cols = {f"{col}_shap": shap_output[:, i] for i, col in enumerate(feature_names)}
 
-        self.shap_values = pl.DataFrame(shap_cols)
+        current_data = pl.DataFrame(
+            {
+                "label": self.test_set["label"],
+                "predicted_label": self.predictions["predicted_label"],
+                "score": self.predictions["score"],
+            }
+        )
+
+        self.shap_values = pl.concat([current_data, pl.DataFrame(shap_cols)], how="horizontal")
 
     def create_report(self) -> None:
         """
@@ -210,7 +221,7 @@ class SklearnModelBase(ModelBase):
             raise ValueError("Member variable 'predictions' must not be empty.")
 
         y_test = self.test_set["label"].to_pandas()
-        y_pred = self.predictions["class"].to_pandas()
+        y_pred = self.predictions["predicted_label"].to_pandas()
 
         classification_dict = classification_report(
             y_test, y_pred, output_dict=True, zero_division=0

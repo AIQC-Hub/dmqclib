@@ -163,6 +163,7 @@ class ModelBase(ABC):
             {
                 "k": self.k,
                 "label": self.test_set["label"],
+                "predicted_label": self.predictions["predicted_label"],
                 "score": self.predictions["score"],
             }
         )

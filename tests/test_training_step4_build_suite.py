@@ -129,7 +129,7 @@ class TestBuildModelSuite(unittest.TestCase):
             str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.parquet",
             str(ds.output_file_names["contingency_table"]["psal"]),
         )
         self.assertEqual(
@@ -228,7 +228,7 @@ class TestBuildModelSuite(unittest.TestCase):
             data_path / "temp_test_report_temp.tsv"
         )
         ds.output_file_names["contingency_table"]["temp"] = str(
-            data_path / "temp_test_contingency_temp.tsv"
+            data_path / "temp_test_contingency_temp.parquet"
         )
         ds.output_file_names["prediction"]["temp"] = str(
             data_path / "temp_test_prediction_temp.parquet"
@@ -241,7 +241,7 @@ class TestBuildModelSuite(unittest.TestCase):
             data_path / "temp_test_report_psal.tsv"
         )
         ds.output_file_names["contingency_table"]["psal"] = str(
-            data_path / "temp_test_contingency_psal.tsv"
+            data_path / "temp_test_contingency_psal.parquet"
         )
         ds.output_file_names["prediction"]["psal"] = str(
             data_path / "temp_test_prediction_psal.parquet"
@@ -254,7 +254,7 @@ class TestBuildModelSuite(unittest.TestCase):
             data_path / "temp_test_report_pres.tsv"
         )
         ds.output_file_names["contingency_table"]["pres"] = str(
-            data_path / "temp_test_contingency_pres.tsv"
+            data_path / "temp_test_contingency_pres.parquet"
         )
         ds.output_file_names["prediction"]["pres"] = str(
             data_path / "temp_test_prediction_pres.parquet"

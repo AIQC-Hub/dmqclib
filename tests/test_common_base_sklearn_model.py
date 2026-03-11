@@ -129,9 +129,9 @@ class TestSklearnModelBase(unittest.TestCase):
 
         self.assertIsNotNone(self.model_wrapper.predictions)
         self.assertEqual(self.model_wrapper.predictions.shape, (2, 2))
-        self.assertListEqual(self.model_wrapper.predictions.columns, ["class", "score"])
+        self.assertListEqual(self.model_wrapper.predictions.columns, ["predicted_label", "score"])
         # Based on MockSklearnClassifier logic:
-        self.assertEqual(self.model_wrapper.predictions["class"][0], 0.0)
+        self.assertEqual(self.model_wrapper.predictions["predicted_label"][0], 0.0)
         self.assertEqual(self.model_wrapper.predictions["score"][0], 0.5)
 
     def test_predict_empty_test_set(self):
@@ -149,7 +149,7 @@ class TestSklearnModelBase(unittest.TestCase):
         self.model_wrapper.test_set = pl.DataFrame({"label":[0, 1, 0, 1]})
         self.model_wrapper.predictions = pl.DataFrame(
             {
-                "class": [0, 1, 0, 0],  # One error
+                "predicted_label": [0, 1, 0, 0],  # One error
                 "score":[0.5, 0.5, 0.5, 0.5],
             }
         )
@@ -238,6 +238,7 @@ class TestSklearnModelBase(unittest.TestCase):
             self.model_wrapper.expected_class_name = "XGBoost"
             self.model_wrapper.model = MockSklearnClassifier()
             self.model_wrapper.test_set = pl.DataFrame({"f1": [1.0, 2.0], "f2":[3.0, 4.0], "label": [0, 1]})
+            self.model_wrapper.predictions = pl.DataFrame({"label": [0, 1], "predicted_label": [0, 1], "score": [0.1, 0.9]})
 
             self.model_wrapper.calculate_shap()
 
@@ -246,7 +247,7 @@ class TestSklearnModelBase(unittest.TestCase):
 
             # Verify Polars DataFrame was constructed properly
             self.assertIsNotNone(self.model_wrapper.shap_values)
-            self.assertListEqual(self.model_wrapper.shap_values.columns, ["f1_shap", "f2_shap"])
+            self.assertListEqual(self.model_wrapper.shap_values.columns, ["label", "predicted_label", "score", "f1_shap", "f2_shap"])
             self.assertEqual(self.model_wrapper.shap_values["f1_shap"][0], 0.1)
 
     def test_calculate_shap_linear_explainer(self):
@@ -264,6 +265,7 @@ class TestSklearnModelBase(unittest.TestCase):
             self.model_wrapper.model = MockSklearnClassifier()
             self.model_wrapper.training_set = pl.DataFrame({"f1": [1.0], "f2": [2.0], "label": [0]})
             self.model_wrapper.test_set = pl.DataFrame({"f1": [1.0], "f2":[2.0], "label": [0]})
+            self.model_wrapper.predictions = pl.DataFrame({"label": [0], "predicted_label": [0], "score": [0.4]})
 
             self.model_wrapper.calculate_shap()
 
@@ -293,6 +295,7 @@ class TestSklearnModelBase(unittest.TestCase):
             self.model_wrapper.model = MockSklearnClassifier()
             self.model_wrapper.training_set = pl.DataFrame({"f1": [1.0], "f2": [2.0], "label": [0]})
             self.model_wrapper.test_set = pl.DataFrame({"f1": [1.0], "f2": [2.0], "label": [0]})
+            self.model_wrapper.predictions = pl.DataFrame({"label": [0], "predicted_label": [0], "score": [0.1]})
 
             # Suppress the UserWarning triggered when routing to KernelExplainer
             with warnings.catch_warnings():

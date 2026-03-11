@@ -63,7 +63,7 @@ class ValidationBase(DataSetBase):
         #: Default file naming pattern for validation reports and contingency tables.
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{target_name}.tsv",
-            "contingency_table": "contingency_tables_{target_name}.tsv",
+            "contingency_table": "contingency_tables_{target_name}.parquet",
             "metric_plot": "metric_plots_{target_name}.svg",
         }
 
@@ -163,7 +163,7 @@ class ValidationBase(DataSetBase):
         for target_name, df in self.contingency_tables.items():
             output_path = self.output_file_names["contingency_table"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            df.write_csv(output_path, separator="\t")
+            df.write_parquet(output_path)
 
     def create_metric_plots(self) -> None:
         """

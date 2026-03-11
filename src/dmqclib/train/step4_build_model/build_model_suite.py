@@ -70,7 +70,8 @@ class BuildModelSuite(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "test_report_{target_name}.tsv",
             "prediction": "test_prediction_{target_name}.parquet",
-            "contingency_table": "test_contingency_tables_{target_name}.tsv",
+            "contingency_table": "test_contingency_tables_{target_name}.parquet",
+            "shap_value": "test_shap_values_{target_name}.parquet",
             "metric_plot": "test_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{method}_{target_name}.joblib"
@@ -164,6 +165,7 @@ class BuildModelSuite(BuildModelBase):
         target_reports = []
         target_predictions = []
         target_contingency = []
+        target_snap_values = []
 
         for method_name, method_obj in self.base_model.method_objs.items():
             method_lower = getattr(method_obj, "short_name", method_name).lower()
@@ -195,7 +197,7 @@ class BuildModelSuite(BuildModelBase):
             pred_df = pred_df.with_columns(
                 [
                     pl.lit(method_name).alias("method"),
-                    pl.col("class").cast(pl.Int64),
+                    pl.col("predicted_label").cast(pl.Int64),
                     pl.col("score").cast(pl.Float64),
                 ]
             )
@@ -206,8 +208,7 @@ class BuildModelSuite(BuildModelBase):
                 ct_df = current_model.contingency_table.with_columns(
                     [
                         pl.lit(method_name).alias("method"),
-                        pl.col("k").cast(pl.Int64),
-                        pl.col("label").cast(pl.Int64),
+                        pl.col("predicted_label").cast(pl.Int64),
                         pl.col("score").cast(pl.Float64),
                     ]
                 )

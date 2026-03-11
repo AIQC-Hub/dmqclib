@@ -75,7 +75,7 @@ class TestClassifyAllSuiteClass:
         file_classify = (
             "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_report_{}.tsv"
         )
-        file_contingency = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.tsv"
+        file_contingency = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_contingency_tables_{}.parquet"
         file_metric_plots = "/path/to/classify_1/nrt_bo_001/classify_folder_1/classify_metric_plots_{}.svg"
 
         # Check model file names (should use composite keys)
@@ -171,9 +171,9 @@ def _setup_classify_all_suite(test_obj):
         "pres": str(data_path / "temp_classify_prediction_pres.parquet"),
     }
     test_obj.contingency_table_file_names = {
-        "temp": str(data_path / "temp_classify_contingency_tables_temp.tsv"),
-        "psal": str(data_path / "temp_classify_contingency_tables_psal.tsv"),
-        "pres": str(data_path / "temp_classify_contingency_tables_pres.tsv"),
+        "temp": str(data_path / "temp_classify_contingency_tables_temp.parquet"),
+        "psal": str(data_path / "temp_classify_contingency_tables_psal.parquet"),
+        "pres": str(data_path / "temp_classify_contingency_tables_pres.parquet"),
     }
     test_obj.metric_plots_file_names = {
         "temp": str(data_path / "temp_classify_metric_plots_temp.svg"),

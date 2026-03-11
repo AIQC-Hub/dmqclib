@@ -72,7 +72,7 @@ class ClassifyAllSuite(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "classify_report_{target_name}.tsv",
             "prediction": "classify_prediction_{target_name}.parquet",
-            "contingency_table": "classify_contingency_tables_{target_name}.tsv",
+            "contingency_table": "classify_contingency_tables_{target_name}.parquet",
             "metric_plot": "classify_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{method}_{target_name}.joblib"
@@ -168,7 +168,7 @@ class ClassifyAllSuite(BuildModelBase):
             pred_df = pred_df.with_columns(
                 [
                     pl.lit(method_name).alias("method"),
-                    pl.col("class").cast(pl.Int64),
+                    pl.col("predicted_label").cast(pl.Int64),
                     pl.col("score").cast(pl.Float64),
                 ]
             )
@@ -180,7 +180,7 @@ class ClassifyAllSuite(BuildModelBase):
                     [
                         pl.lit(method_name).alias("method"),
                         pl.col("k").cast(pl.Int64),
-                        pl.col("label").cast(pl.Int64),
+                        pl.col("predicted_label").cast(pl.Int64),
                         pl.col("score").cast(pl.Float64),
                     ]
                 )

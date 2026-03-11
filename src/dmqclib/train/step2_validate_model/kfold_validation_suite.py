@@ -57,7 +57,7 @@ class KFoldValidationSuite(ValidationBase):
         # Redefine default file names to include the {method} placeholder
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{method}_{target_name}.tsv",
-            "contingency_table": "contingency_tables_{method}_{target_name}.tsv",
+            "contingency_table": "contingency_tables_{method}_{target_name}.parquet",
             "metric_plot": "metric_plots_{method}_{target_name}.svg",
         }
 

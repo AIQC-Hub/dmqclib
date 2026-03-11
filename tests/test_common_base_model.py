@@ -162,32 +162,32 @@ class TestModelBaseMethods(unittest.TestCase):
         # --- Batch 1 (e.g., Fold k=0) ---
         model.k = 0
         model.test_set = pl.DataFrame({"label": [0, 1, 0]})
-        model.predictions = pl.DataFrame({"class": [0, 1, 0], "score": [0.1, 0.9, 0.4]})
+        model.predictions = pl.DataFrame({"label": [0, 1, 0], "predicted_label": [0, 1, 0], "score": [0.1, 0.9, 0.4]})
 
         model.update_contingency_table()
 
         # Check initialization
         self.assertIsNotNone(model.contingency_table)
-        self.assertEqual(model.contingency_table.shape, (3, 3))
-        self.assertListEqual(model.contingency_table.columns, ["k", "label", "score"])
+        self.assertEqual(model.contingency_table.shape, (3, 4))
+        self.assertListEqual(model.contingency_table.columns, ["k", "label", "predicted_label", "score"])
 
         # Verify content of Batch 1
         expected_batch_1 = pl.DataFrame(
-            {"k": [0, 0, 0], "label": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
+            {"k": [0, 0, 0], "label": [0, 1, 0], "predicted_label": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
         )
         self.assertTrue(model.contingency_table.equals(expected_batch_1))
 
         # --- Batch 2 (e.g., Fold k=1) ---
         model.k = 1
         model.test_set = pl.DataFrame({"label": [1, 1]})
-        model.predictions = pl.DataFrame({"class": [1, 0], "score": [0.8, 0.3]})
+        model.predictions = pl.DataFrame({"label": [1, 0], "predicted_label": [1, 0], "score": [0.8, 0.3]})
 
         model.update_contingency_table()
 
         # Check appending behavior
-        self.assertEqual(model.contingency_table.shape, (5, 3))
+        self.assertEqual(model.contingency_table.shape, (5, 4))
 
         # Verify that k=1 rows were added
         k1_rows = model.contingency_table.filter(pl.col("k") == 1)
-        self.assertEqual(k1_rows.shape, (2, 3))
+        self.assertEqual(k1_rows.shape, (2, 4))
         self.assertEqual(k1_rows["score"].to_list(), [0.8, 0.3])
