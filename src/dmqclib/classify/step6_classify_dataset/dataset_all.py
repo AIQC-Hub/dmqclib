@@ -60,7 +60,8 @@ class ClassifyAll(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "classify_report_{target_name}.tsv",
             "prediction": "classify_prediction_{target_name}.parquet",
-            "contingency_table": "classify_contingency_tables_{target_name}.tsv",
+            "contingency_table": "classify_contingency_tables_{target_name}.parquet",
+            "shap_value": "test_shap_values_{target_name}.parquet",
             "metric_plot": "classify_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
@@ -137,6 +138,9 @@ class ClassifyAll(BuildModelBase):
 
         if self.base_model.contingency_table is not None:
             self.contingency_tables[target_name] = self.base_model.contingency_table
+
+        if self.base_model.shap_values is not None:
+            self.shap_values[target_name] = self.base_model.shap_values
 
         predictions = self.base_model.predictions
         self.predictions[target_name] = pl.concat(

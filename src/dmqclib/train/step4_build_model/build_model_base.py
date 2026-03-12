@@ -74,7 +74,8 @@ class BuildModelBase(DataSetBase):
         self.default_file_names: Dict[str, str] = {
             "report": "test_report_{target_name}.tsv",
             "prediction": "test_prediction_{target_name}.parquet",
-            "contingency_table": "test_contingency_tables_{target_name}.tsv",
+            "contingency_table": "test_contingency_tables_{target_name}.parquet",
+            "shap_value": "test_shap_values_{target_name}.parquet",
             "metric_plot": "test_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
@@ -106,6 +107,8 @@ class BuildModelBase(DataSetBase):
         self.reports: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store contingency tables keyed by target name.
         self.contingency_tables: Dict[str, pl.DataFrame] = {}
+        #: A dictionary to store SHAP values keyed by target name.
+        self.shap_values: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store predictions results keyed by target name.
         self.predictions: Dict[str, pl.DataFrame] = {}
 
@@ -201,7 +204,25 @@ class BuildModelBase(DataSetBase):
         for target_name, df in self.contingency_tables.items():
             output_path = self.output_file_names["contingency_table"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            df.write_csv(output_path, separator="\t")
+            df.write_parquet(output_path)
+
+    def write_shap_values(self) -> None:
+        """
+        Write each target's SHAP values to a TSV file.
+
+        :raises ValueError: If :attr:`shap_values` is empty, indicating no tests
+                            have been carried out or no tables stored.
+        """
+        if not self.base_model.enable_shap:
+            return
+
+        if not self.shap_values:
+            raise ValueError("Member variable 'shap_values' must not be empty.")
+
+        for target_name, df in self.shap_values.items():
+            output_path = self.output_file_names["shap_value"][target_name]
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            df.write_parquet(output_path)
 
     def create_metric_plots(self) -> None:
         """

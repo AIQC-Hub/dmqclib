@@ -85,6 +85,27 @@ class TestBuildModelSuite(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "multi=True"):
             _ = BuildModelSuite(self.config)
 
+    def test_shap_flag(self):
+        ds = BuildModelSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModelSuite(self.config)
+        model = ds.base_model
+        self.assertTrue(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertTrue(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = BuildModelSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
     def test_output_file_names(self):
         """
         Verify that default output file names correctly reflect composite keys
@@ -108,8 +129,12 @@ class TestBuildModelSuite(unittest.TestCase):
             str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.parquet",
             str(ds.output_file_names["contingency_table"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_psal.parquet",
+            str(ds.output_file_names["shap_value"]["psal"]),
         )
         self.assertEqual(
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_metric_plots_pres.svg",
@@ -195,6 +220,7 @@ class TestBuildModelSuite(unittest.TestCase):
         """
         Check that aggregated reports, contingency tables, and predictions are written.
         """
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
         ds = BuildModelSuite(
             self.config,
             training_sets=self.ds_input.training_sets,
@@ -207,7 +233,10 @@ class TestBuildModelSuite(unittest.TestCase):
             data_path / "temp_test_report_temp.tsv"
         )
         ds.output_file_names["contingency_table"]["temp"] = str(
-            data_path / "temp_test_contingency_temp.tsv"
+            data_path / "temp_test_contingency_temp.parquet"
+        )
+        ds.output_file_names["shap_value"]["temp"] = str(
+            data_path / "temp_test_shap_values_temp.parquet"
         )
         ds.output_file_names["prediction"]["temp"] = str(
             data_path / "temp_test_prediction_temp.parquet"
@@ -220,7 +249,10 @@ class TestBuildModelSuite(unittest.TestCase):
             data_path / "temp_test_report_psal.tsv"
         )
         ds.output_file_names["contingency_table"]["psal"] = str(
-            data_path / "temp_test_contingency_psal.tsv"
+            data_path / "temp_test_contingency_psal.parquet"
+        )
+        ds.output_file_names["shap_value"]["psal"] = str(
+            data_path / "temp_test_shap_values_psal.parquet"
         )
         ds.output_file_names["prediction"]["psal"] = str(
             data_path / "temp_test_prediction_psal.parquet"
@@ -233,7 +265,10 @@ class TestBuildModelSuite(unittest.TestCase):
             data_path / "temp_test_report_pres.tsv"
         )
         ds.output_file_names["contingency_table"]["pres"] = str(
-            data_path / "temp_test_contingency_pres.tsv"
+            data_path / "temp_test_contingency_pres.parquet"
+        )
+        ds.output_file_names["shap_value"]["pres"] = str(
+            data_path / "temp_test_shap_values_pres.parquet"
         )
         ds.output_file_names["prediction"]["pres"] = str(
             data_path / "temp_test_prediction_pres.parquet"
@@ -247,12 +282,16 @@ class TestBuildModelSuite(unittest.TestCase):
 
         ds.write_reports()
         ds.write_contingency_tables()
+        ds.write_shap_values()
         ds.write_predictions()
         ds.create_metric_plots()
 
         self.assertTrue(os.path.exists(ds.output_file_names["report"]["temp"]))
         self.assertTrue(
             os.path.exists(ds.output_file_names["contingency_table"]["temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["shap_value"]["temp"])
         )
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["temp"]))
@@ -261,6 +300,9 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertTrue(
             os.path.exists(ds.output_file_names["contingency_table"]["psal"])
         )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["shap_value"]["psal"])
+        )
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["psal"]))
 
@@ -268,22 +310,28 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertTrue(
             os.path.exists(ds.output_file_names["contingency_table"]["pres"])
         )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["shap_value"]["pres"])
+        )
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["pres"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["pres"]))
 
         # Cleanup
         os.remove(ds.output_file_names["report"]["temp"])
         os.remove(ds.output_file_names["contingency_table"]["temp"])
+        os.remove(ds.output_file_names["shap_value"]["temp"])
         os.remove(ds.output_file_names["prediction"]["temp"])
         os.remove(ds.output_file_names["metric_plot"]["temp"])
 
         os.remove(ds.output_file_names["report"]["psal"])
         os.remove(ds.output_file_names["contingency_table"]["psal"])
+        os.remove(ds.output_file_names["shap_value"]["psal"])
         os.remove(ds.output_file_names["prediction"]["psal"])
         os.remove(ds.output_file_names["metric_plot"]["psal"])
 
         os.remove(ds.output_file_names["report"]["pres"])
         os.remove(ds.output_file_names["contingency_table"]["pres"])
+        os.remove(ds.output_file_names["shap_value"]["pres"])
         os.remove(ds.output_file_names["prediction"]["pres"])
         os.remove(ds.output_file_names["metric_plot"]["pres"])
 

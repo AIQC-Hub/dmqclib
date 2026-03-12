@@ -70,7 +70,7 @@ def run_fold_validation(test_obj):
     test_obj.assertEqual(ds.contingency_tables["temp"].height, 116)
     # Expected columns: k, label, score
     test_obj.assertListEqual(
-        ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        ds.contingency_tables["temp"].columns, ["k", "label", "predicted_label", "score"]
     )
 
     # "psal" has 126 rows
@@ -122,11 +122,11 @@ class TestKFoldValidation(unittest.TestCase):
 
         # Check contingency table file names
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_temp.tsv",
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_temp.parquet",
             str(ds.output_file_names["contingency_table"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_psal.tsv",
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_psal.parquet",
             str(ds.output_file_names["contingency_table"]["psal"]),
         )
 
@@ -166,6 +166,21 @@ class TestKFoldValidation(unittest.TestCase):
         self.assertIsInstance(ds.training_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.training_sets["pres"].shape[0], 110)
         self.assertEqual(ds.training_sets["pres"].shape[1], 57)
+
+    def test_shap_flag(self):
+        ds = KFoldValidation(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = KFoldValidation(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = KFoldValidation(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
 
     def test_default_k_fold(self):
         """
@@ -219,13 +234,13 @@ class TestKFoldValidation(unittest.TestCase):
 
         # Override output paths for testing
         ds.output_file_names["contingency_table"]["temp"] = str(
-            data_path / "temp_contingency_temp.tsv"
+            data_path / "temp_contingency_temp.parquet"
         )
         ds.output_file_names["contingency_table"]["psal"] = str(
-            data_path / "temp_contingency_psal.tsv"
+            data_path / "temp_contingency_psal.parquet"
         )
         ds.output_file_names["contingency_table"]["pres"] = str(
-            data_path / "temp_contingency_pres.tsv"
+            data_path / "temp_contingency_pres.parquet"
         )
 
         ds.process_targets()

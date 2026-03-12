@@ -3,12 +3,12 @@ This module defines `SklearnModelBase`, an abstract base class for models
 that adhere to the Scikit-Learn API (including XGBoost and native sklearn models).
 
 It implements common workflows for data conversion, model building,
-prediction, and reporting, reducing code duplication across specific
-algorithm implementations.
+prediction, reporting, and SHAP value calculation for Explainable AI (XAI).
 """
 
+import warnings
 from abc import abstractmethod
-from typing import Any, Self
+from typing import Any, Self, Optional
 
 import polars as pl
 from sklearn.metrics import classification_report
@@ -26,8 +26,13 @@ class SklearnModelBase(ModelBase):
     underlying model object supports the standard ``fit``, ``predict``,
     and ``predict_proba`` methods.
 
+    It also integrates SHAP (SHapley Additive exPlanations) to provide feature
+    importance values. SHAP calculation is controlled by the `calculate_shap`
+    configuration flag, and can be overridden via `self.enable_shap` to
+    disable it during computationally heavy steps like k-fold validation.
+
     Subclasses must implement:
-      - :meth:`_get_model_class`: To return the specific class type (e.g. XGBClassifier).
+      - :meth:`_get_model_class`: To return the specific class type.
     """
 
     def __init__(self, config: ConfigBase) -> None:
@@ -38,7 +43,12 @@ class SklearnModelBase(ModelBase):
         :type config: ConfigBase
         """
         super().__init__(config=config)
-        # self.model_params must be initialized by the child class before usage.
+
+        # Check config to see if SHAP should be calculated
+        self.enable_shap: bool = self.config.get_step_params("model").get("calculate_shap", False)
+
+        # Initialize storage for SHAP values explicitly
+        self.shap_values: Optional[pl.DataFrame] = None
 
     @abstractmethod
     def _get_model_class(self) -> Any:
@@ -80,12 +90,16 @@ class SklearnModelBase(ModelBase):
           1. Call :meth:`predict` to generate predictions on the test set.
           2. Call :meth:`create_report` to compute metrics.
           3. Call :meth:`update_contingency_table` to store scores.
+          4. Call :meth:`calculate_shap` to compute feature importances (if enabled).
 
         :raises ValueError: If :attr:`test_set` is ``None``.
         """
         self.predict()
         self.create_report()
         self.update_contingency_table()
+
+        if self.enable_shap:
+            self.calculate_shap()
 
     def update_nthreads(self, model: Self) -> Self:
         """
@@ -116,10 +130,86 @@ class SklearnModelBase(ModelBase):
 
         self.predictions = pl.DataFrame(
             {
-                "class": self.model.predict(x_test),
+                "predicted_label": self.model.predict(x_test),
                 "score": self.model.predict_proba(x_test)[:, 1],
             }
         )
+
+    def calculate_shap(self) -> None:
+        """
+        Calculates SHAP values for the test set based on the specific model type.
+
+        It automatically selects the optimal Explainer (`TreeExplainer`, `LinearExplainer`,
+        or `KernelExplainer`). SHAP results are formatted into a Polars DataFrame
+        and stored in :attr:`shap_values`.
+        """
+        if self.test_set is None:
+            raise ValueError("Member variable 'test_set' must not be empty to calculate SHAP.")
+
+        if self.predictions is None:
+            raise ValueError("Member variable 'predictions' must not be empty.")
+
+        # Import shap inline to avoid heavy dependency loading if SHAP is disabled
+        import shap
+        import numpy as np
+
+        x_test = self.test_set.select(pl.exclude("label")).to_pandas()
+
+        # Determine optimal background data for explainers that require it
+        if self.training_set is not None:
+            background_data = self.training_set.select(pl.exclude("label")).to_pandas()
+        else:
+            # Fallback to test data if training data is unavailable (e.g., classification phase)
+            background_data = x_test
+
+        model_name = getattr(self, "expected_class_name", "Unknown")
+
+        # 1. Tree Models (Fast & Exact)
+        if model_name in ["XGBoost", "RandomForest", "DecisionTree"]:
+            explainer = shap.TreeExplainer(self.model)
+            shap_output = explainer.shap_values(x_test)
+
+        # 2. Linear Models (Fast)
+        elif model_name in ["LogisticRegression", "LinearDiscriminantAnalysis"]:
+            explainer = shap.LinearExplainer(self.model, background_data)
+            shap_output = explainer.shap_values(x_test)
+
+        # 3. Model-Agnostic / Neural Models (Slow)
+        else:
+            warnings.warn(f"Using slow KernelExplainer for {model_name}. This may take a while.")
+            # Summarize background data heavily to prevent massive slowdowns
+            background_summary = shap.kmeans(background_data, min(100, background_data.shape[0]))
+
+            explainer = shap.KernelExplainer(self.model.predict_proba, background_summary)
+            shap_output = explainer.shap_values(x_test)
+
+        # --- STANDARDIZE SHAP OUTPUT SHAPE ---
+        # 1. Handle lists (RandomForest/DecisionTree returns [array_class0, array_class1])
+        if isinstance(shap_output, list):
+            # Take the positive class (index 1) if binary classification
+            shap_output = shap_output[1] if len(shap_output) > 1 else shap_output[0]
+
+        # 2. Handle 3D arrays (Some explainers return (n_samples, n_features, n_classes))
+        if len(shap_output.shape) == 3:
+            # Take the positive class (index 1)
+            shap_output = shap_output[:, :, 1]
+
+        # Create dictionary explicitly converting to 1D float64 arrays
+        feature_names = x_test.columns.tolist()
+        shap_cols = {
+            f"{col}_shap": np.array(shap_output[:, i], dtype=np.float64).flatten()
+            for i, col in enumerate(feature_names)
+        }
+
+        current_data = pl.DataFrame(
+            {
+                "label": self.test_set["label"],
+                "predicted_label": self.predictions["predicted_label"],
+                "score": self.predictions["score"],
+            }
+        )
+
+        self.shap_values = pl.concat([current_data, pl.DataFrame(shap_cols)], how="horizontal")
 
     def create_report(self) -> None:
         """
@@ -138,7 +228,7 @@ class SklearnModelBase(ModelBase):
             raise ValueError("Member variable 'predictions' must not be empty.")
 
         y_test = self.test_set["label"].to_pandas()
-        y_pred = self.predictions["class"].to_pandas()
+        y_pred = self.predictions["predicted_label"].to_pandas()
 
         classification_dict = classification_report(
             y_test, y_pred, output_dict=True, zero_division=0

@@ -75,6 +75,13 @@ class ModelSuite(ModelBase):
         """
         return None  # pragma: no cover
 
+    def set_enable_shap(self, enable_shap: bool):
+        """
+        Set all shap flag in all models.
+        """
+        for method_obj in self.method_objs.values():
+            method_obj.enable_shap = enable_shap
+
     def build(self) -> None:
         """
         Build the model architecture or pipeline.

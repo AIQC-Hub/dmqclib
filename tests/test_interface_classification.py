@@ -111,13 +111,13 @@ class TestClassifyDataSet:
         assert os.path.exists(str(dir_classify / "classify_report_psal.tsv"))
         assert os.path.exists(str(dir_classify / "classify_report_pres.tsv"))
         assert os.path.exists(
-            str(dir_classify / "classify_contingency_tables_temp.tsv")
+            str(dir_classify / "classify_contingency_tables_temp.parquet")
         )
         assert os.path.exists(
-            str(dir_classify / "classify_contingency_tables_psal.tsv")
+            str(dir_classify / "classify_contingency_tables_psal.parquet")
         )
         assert os.path.exists(
-            str(dir_classify / "classify_contingency_tables_pres.tsv")
+            str(dir_classify / "classify_contingency_tables_pres.parquet")
         )
         assert os.path.exists(str(dir_classify / "classify_metric_plots_temp.svg"))
         assert os.path.exists(str(dir_classify / "classify_metric_plots_psal.svg"))
@@ -233,13 +233,13 @@ class TestClassifyDataSetNegX5(unittest.TestCase):
         self.assertTrue(os.path.exists(str(dir_classify / "classify_report_psal.tsv")))
         self.assertTrue(os.path.exists(str(dir_classify / "classify_report_pres.tsv")))
         self.assertTrue(
-            os.path.exists(str(dir_classify / "classify_contingency_tables_temp.tsv"))
+            os.path.exists(str(dir_classify / "classify_contingency_tables_temp.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(dir_classify / "classify_contingency_tables_psal.tsv"))
+            os.path.exists(str(dir_classify / "classify_contingency_tables_psal.parquet"))
         )
         self.assertTrue(
-            os.path.exists(str(dir_classify / "classify_contingency_tables_pres.tsv"))
+            os.path.exists(str(dir_classify / "classify_contingency_tables_pres.parquet"))
         )
         self.assertTrue(
             os.path.exists(str(dir_classify / "classify_metric_plots_temp.svg"))

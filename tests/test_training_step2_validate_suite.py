@@ -91,6 +91,27 @@ class TestKFoldValidationSuite(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "multi=True"):
             _ = KFoldValidationSuite(self.config)
 
+    def test_shap_flag(self):
+        ds = KFoldValidationSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = KFoldValidationSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = KFoldValidationSuite(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+        for method_obj in model.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
     def test_output_file_names_init(self):
         """
         Verify that the default output file names initially retain the {method}
@@ -104,7 +125,7 @@ class TestKFoldValidationSuite(unittest.TestCase):
             str(ds.output_file_names["report"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_{method}_temp.tsv",
+            "/path/to/validate_1/nrt_bo_001/validate_folder_1/contingency_tables_{method}_temp.parquet",
             str(ds.output_file_names["contingency_table"]["temp"]),
         )
         self.assertEqual(
@@ -144,7 +165,7 @@ class TestKFoldValidationSuite(unittest.TestCase):
         self.assertIsInstance(ds.contingency_tables["dt_psal"], pl.DataFrame)
         self.assertEqual(ds.contingency_tables["dt_psal"].height, 126)
         self.assertListEqual(
-            ds.contingency_tables["dt_psal"].columns, ["k", "label", "score"]
+            ds.contingency_tables["dt_psal"].columns, ["k", "label", "predicted_label", "score"]
         )
 
         # Check that file paths were dynamically updated for the composite keys
@@ -214,10 +235,10 @@ class TestKFoldValidationSuite(unittest.TestCase):
 
         # Override output paths for testing
         ds.output_file_names["contingency_table"]["xgb_temp"] = str(
-            data_path / "temp_contingency_xgb_temp.tsv"
+            data_path / "temp_contingency_xgb_temp.parquet"
         )
         ds.output_file_names["contingency_table"]["xgb_psal"] = str(
-            data_path / "temp_contingency_xgb_psal.tsv"
+            data_path / "temp_contingency_xgb_psal.parquet"
         )
         ds.output_file_names["contingency_table"]["xgb_pres"] = str(
             data_path / "temp_contingency_xgb_pres.tsv"

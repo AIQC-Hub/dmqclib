@@ -73,9 +73,16 @@ class ModelBase(ABC):
         self.test_set: Optional[Any] = None
         self.model: Optional[Any] = None
         self.predictions: Optional[Any] = None
+        self.shap_values: Optional[Any] = None
         self.report: Optional[Any] = None
         self.contingency_table: Optional[pl.DataFrame] = None
         self.k: int = 0
+
+        # Check config to see if SHAP should be calculated
+        self.enable_shap: bool = self.config.get_step_params("model").get("calculate_shap", False)
+
+        # Initialize storage for SHAP values explicitly
+        self.shap_values: Optional[pl.DataFrame] = None
 
     @abstractmethod
     def build(self) -> None:
@@ -156,6 +163,7 @@ class ModelBase(ABC):
             {
                 "k": self.k,
                 "label": self.test_set["label"],
+                "predicted_label": self.predictions["predicted_label"],
                 "score": self.predictions["score"],
             }
         )

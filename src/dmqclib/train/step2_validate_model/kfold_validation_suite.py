@@ -57,7 +57,7 @@ class KFoldValidationSuite(ValidationBase):
         # Redefine default file names to include the {method} placeholder
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{method}_{target_name}.tsv",
-            "contingency_table": "contingency_tables_{method}_{target_name}.tsv",
+            "contingency_table": "contingency_tables_{method}_{target_name}.parquet",
             "metric_plot": "metric_plots_{method}_{target_name}.svg",
         }
 
@@ -78,6 +78,8 @@ class KFoldValidationSuite(ValidationBase):
             "profile_no",
             "observation_no",
         ]
+
+        self.base_model.set_enable_shap(False)
 
     def get_k_fold(self) -> int:
         """

@@ -85,7 +85,7 @@ def run_test_with_trained_model(test_obj):
     # Height should match number of test rows
     test_obj.assertEqual(ds.contingency_tables["temp"].height, 12)
     test_obj.assertListEqual(
-        ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        ds.contingency_tables["temp"].columns, ["k", "label", "predicted_label", "score"]
     )
 
     test_obj.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
@@ -149,16 +149,30 @@ class TestBuildModel(unittest.TestCase):
 
         # Check Contingency Table paths
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_temp.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_temp.parquet",
             str(ds.output_file_names["contingency_table"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.parquet",
             str(ds.output_file_names["contingency_table"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_pres.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_pres.parquet",
             str(ds.output_file_names["contingency_table"]["pres"]),
+        )
+
+        # Check SHAP value file names
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_temp.parquet",
+            str(ds.output_file_names["shap_value"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_psal.parquet",
+            str(ds.output_file_names["shap_value"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_pres.parquet",
+            str(ds.output_file_names["shap_value"]["pres"]),
         )
 
         # Check metric plot file names
@@ -209,6 +223,21 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.test_sets["pres"], pl.DataFrame)
         self.assertEqual(ds.test_sets["pres"].shape[0], 12)
         self.assertEqual(ds.test_sets["pres"].shape[1], 56)
+
+    def test_shap_flag(self):
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertTrue(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
 
     def test_train_with_xgboost(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
@@ -322,13 +351,13 @@ class TestBuildModel(unittest.TestCase):
 
         # Override output file names for testing
         ds.output_file_names["contingency_table"]["temp"] = str(
-            data_path / "temp_test_contingency_tables_temp.tsv"
+            data_path / "temp_test_contingency_tables_temp.parquet"
         )
         ds.output_file_names["contingency_table"]["psal"] = str(
-            data_path / "temp_test_contingency_tables_psal.tsv"
+            data_path / "temp_test_contingency_tables_psal.parquet"
         )
         ds.output_file_names["contingency_table"]["pres"] = str(
-            data_path / "temp_test_contingency_tables_pres.tsv"
+            data_path / "temp_test_contingency_tables_pres.parquet"
         )
 
         ds.build_targets()
@@ -348,6 +377,48 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["contingency_table"]["temp"])
         os.remove(ds.output_file_names["contingency_table"]["psal"])
         os.remove(ds.output_file_names["contingency_table"]["pres"])
+
+    def test_write_shap_values(self):
+        """
+        Check that contingency tables are correctly written to file,
+        and then remove the temporary files created.
+        """
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output file names for testing
+        ds.output_file_names["shap_value"]["temp"] = str(
+            data_path / "temp_test_shap_values_temp.parquet"
+        )
+        ds.output_file_names["shap_value"]["psal"] = str(
+            data_path / "temp_test_shap_values_psal.parquet"
+        )
+        ds.output_file_names["shap_value"]["pres"] = str(
+            data_path / "temp_test_shap_values_pres.parquet"
+        )
+
+        ds.build_targets()
+        ds.test_targets()
+        ds.write_shap_values()
+
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["shap_value"]["temp"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["shap_value"]["psal"])
+        )
+        self.assertTrue(
+            os.path.exists(ds.output_file_names["shap_value"]["pres"])
+        )
+
+        os.remove(ds.output_file_names["shap_value"]["temp"])
+        os.remove(ds.output_file_names["shap_value"]["psal"])
+        os.remove(ds.output_file_names["shap_value"]["pres"])
 
     def test_create_metric_plots(self):
         """
