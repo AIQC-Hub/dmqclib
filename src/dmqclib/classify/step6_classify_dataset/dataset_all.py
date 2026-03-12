@@ -139,6 +139,9 @@ class ClassifyAll(BuildModelBase):
         if self.base_model.contingency_table is not None:
             self.contingency_tables[target_name] = self.base_model.contingency_table
 
+        if self.base_model.shap_values is not None:
+            self.shap_values[target_name] = self.base_model.shap_values
+
         predictions = self.base_model.predictions
         self.predictions[target_name] = pl.concat(
             [

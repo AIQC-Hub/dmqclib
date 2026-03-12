@@ -213,6 +213,9 @@ class BuildModelBase(DataSetBase):
         :raises ValueError: If :attr:`shap_values` is empty, indicating no tests
                             have been carried out or no tables stored.
         """
+        if not self.base_model.enable_shap:
+            return
+
         if not self.shap_values:
             raise ValueError("Member variable 'shap_values' must not be empty.")
 

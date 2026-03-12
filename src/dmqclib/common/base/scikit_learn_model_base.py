@@ -151,6 +151,7 @@ class SklearnModelBase(ModelBase):
 
         # Import shap inline to avoid heavy dependency loading if SHAP is disabled
         import shap
+        import numpy as np
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
 
@@ -164,13 +165,9 @@ class SklearnModelBase(ModelBase):
         model_name = getattr(self, "expected_class_name", "Unknown")
 
         # 1. Tree Models (Fast & Exact)
-        if model_name in["XGBoost", "RandomForest", "DecisionTree"]:
+        if model_name in ["XGBoost", "RandomForest", "DecisionTree"]:
             explainer = shap.TreeExplainer(self.model)
             shap_output = explainer.shap_values(x_test)
-
-            # RF/DT return lists [class_0, class_1]; XGBoost binary returns a single array
-            if isinstance(shap_output, list):
-                shap_output = shap_output[1]
 
         # 2. Linear Models (Fast)
         elif model_name in ["LogisticRegression", "LinearDiscriminantAnalysis"]:
@@ -186,13 +183,23 @@ class SklearnModelBase(ModelBase):
             explainer = shap.KernelExplainer(self.model.predict_proba, background_summary)
             shap_output = explainer.shap_values(x_test)
 
-            # predict_proba returns 2D outputs, KernelExplainer returns a list
-            if isinstance(shap_output, list):
-                shap_output = shap_output[1]
+        # --- STANDARDIZE SHAP OUTPUT SHAPE ---
+        # 1. Handle lists (RandomForest/DecisionTree returns [array_class0, array_class1])
+        if isinstance(shap_output, list):
+            # Take the positive class (index 1) if binary classification
+            shap_output = shap_output[1] if len(shap_output) > 1 else shap_output[0]
 
-        # Create a dictionary of features mapping to their calculated SHAP values
+        # 2. Handle 3D arrays (Some explainers return (n_samples, n_features, n_classes))
+        if len(shap_output.shape) == 3:
+            # Take the positive class (index 1)
+            shap_output = shap_output[:, :, 1]
+
+        # Create dictionary explicitly converting to 1D float64 arrays
         feature_names = x_test.columns.tolist()
-        shap_cols = {f"{col}_shap": shap_output[:, i] for i, col in enumerate(feature_names)}
+        shap_cols = {
+            f"{col}_shap": np.array(shap_output[:, i], dtype=np.float64).flatten()
+            for i, col in enumerate(feature_names)
+        }
 
         current_data = pl.DataFrame(
             {

@@ -161,6 +161,20 @@ class TestBuildModel(unittest.TestCase):
             str(ds.output_file_names["contingency_table"]["pres"]),
         )
 
+        # Check SHAP value file names
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_temp.parquet",
+            str(ds.output_file_names["shap_value"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_psal.parquet",
+            str(ds.output_file_names["shap_value"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_pres.parquet",
+            str(ds.output_file_names["shap_value"]["pres"]),
+        )
+
         # Check metric plot file names
         self.assertEqual(
             "/path/to/build_1/nrt_bo_001/build_folder_1/test_metric_plots_temp.svg",
@@ -405,7 +419,6 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["shap_value"]["temp"])
         os.remove(ds.output_file_names["shap_value"]["psal"])
         os.remove(ds.output_file_names["shap_value"]["pres"])
-
 
     def test_create_metric_plots(self):
         """

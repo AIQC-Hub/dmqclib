@@ -175,6 +175,11 @@ def _setup_classify_all_suite(test_obj):
         "psal": str(data_path / "temp_classify_contingency_tables_psal.parquet"),
         "pres": str(data_path / "temp_classify_contingency_tables_pres.parquet"),
     }
+    test_obj.shap_value_file_names = {
+        "temp": str(data_path / "temp_classify_shap_values_temp.parquet"),
+        "psal": str(data_path / "temp_classify_shap_values_psal.parquet"),
+        "pres": str(data_path / "temp_classify_shap_values_pres.parquet"),
+    }
     test_obj.metric_plots_file_names = {
         "temp": str(data_path / "temp_classify_metric_plots_temp.svg"),
         "psal": str(data_path / "temp_classify_metric_plots_psal.svg"),
@@ -325,6 +330,27 @@ class TestClassifyAllSuite:
         os.remove(ds.output_file_names["contingency_table"]["temp"])
         os.remove(ds.output_file_names["contingency_table"]["psal"])
         os.remove(ds.output_file_names["contingency_table"]["pres"])
+
+    @pytest.mark.parametrize("idx", range(TEST_COUNT))
+    def test_write_shap_values(self, idx):
+        """Verify that aggregated contingency tables are correctly written to file."""
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = ClassifyAllSuite(
+            self.configs[idx],
+            test_sets=self.extracts[idx].target_features,
+        )
+        ds.model_file_names = self.model_file_names
+        ds.output_file_names["shap_value"] = self.shap_value_file_names
+
+        ds.read_models()
+        ds.test_targets()
+        ds.write_shap_values()
+
+        assert os.path.exists(ds.output_file_names["shap_value"]["temp"])
+
+        os.remove(ds.output_file_names["shap_value"]["temp"])
+        os.remove(ds.output_file_names["shap_value"]["psal"])
+        os.remove(ds.output_file_names["shap_value"]["pres"])
 
     @pytest.mark.parametrize("idx", range(TEST_COUNT))
     def test_create_metric_plot(self, idx):
