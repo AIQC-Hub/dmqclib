@@ -178,8 +178,9 @@ class BuildModelSuite(BuildModelBase):
 
             # Append method column to report and normalize potential mixed int/float types
             if current_model.report is not None:
-                rep_df = current_model.report.with_columns([pl.lit(method_name).alias("method")]
-                                                           )
+                rep_df = current_model.report.with_columns(
+                    [pl.lit(method_name).alias("method")]
+                )
                 # Safely cast any integer column (like 'support') to Float64 to avoid concat errors
                 if "support" in rep_df.columns:
                     rep_df = rep_df.with_columns(pl.col("support").cast(pl.Float64))
@@ -193,21 +194,23 @@ class BuildModelSuite(BuildModelBase):
                 ],
                 how="horizontal",
             )
-            pred_df = pred_df.with_columns([
-                pl.lit(method_name).alias("method"),
-                pl.col("predicted_label").cast(pl.Int64),
-                pl.col("score").cast(pl.Float64),
-            ]
+            pred_df = pred_df.with_columns(
+                [
+                    pl.lit(method_name).alias("method"),
+                    pl.col("predicted_label").cast(pl.Int64),
+                    pl.col("score").cast(pl.Float64),
+                ]
             )
             target_predictions.append(pred_df.select(["method", pl.exclude("method")]))
 
             # Append method column to contingency table and standardize prediction types
             if current_model.contingency_table is not None:
-                ct_df = current_model.contingency_table.with_columns([
-                    pl.lit(method_name).alias("method"),
-                    pl.col("predicted_label").cast(pl.Int64),
-                    pl.col("score").cast(pl.Float64),
-                ]
+                ct_df = current_model.contingency_table.with_columns(
+                    [
+                        pl.lit(method_name).alias("method"),
+                        pl.col("predicted_label").cast(pl.Int64),
+                        pl.col("score").cast(pl.Float64),
+                    ]
                 )
                 target_contingency.append(
                     ct_df.select(["method", pl.exclude("method")])
@@ -215,18 +218,20 @@ class BuildModelSuite(BuildModelBase):
 
             # Append method column to shap values and standardize prediction types
             if current_model.shap_values is not None:
-                shap_df = current_model.shap_values.with_columns([
-                    pl.lit(method_name).alias("method"),
-                    pl.col("predicted_label").cast(pl.Int64),
-                    pl.col("score").cast(pl.Float64),
-                ]
+                shap_df = current_model.shap_values.with_columns(
+                    [
+                        pl.lit(method_name).alias("method"),
+                        pl.col("predicted_label").cast(pl.Int64),
+                        pl.col("score").cast(pl.Float64),
+                    ]
                 )
 
                 # Explicitly cast all SHAP columns to Float64 just to be safe
                 shap_features = [c for c in shap_df.columns if c.endswith("_shap")]
                 if shap_features:
                     shap_df = shap_df.with_columns(
-                        [pl.col(c).cast(pl.Float64) for c in shap_features])
+                        [pl.col(c).cast(pl.Float64) for c in shap_features]
+                    )
 
                 target_shap_values.append(
                     shap_df.select(["method", pl.exclude("method")])

@@ -329,10 +329,15 @@ ruff format tests
 
 The package is published to [PyPI](https://pypi.org/project/dmqclib/) automatically via a GitHub Action whenever a new release is created on GitHub.
 
+### conda-forge (Automatic)
+
+The conda-forge bot automatically creates a pull request and merges it into the main branch when a new version of the package is published on PyPI.
+
 ### conda-forge (Manual)
 
-#### Bump version
-Updating the package on `conda-forge` involves creating a pull request to the `conda-forge/dmqclib-feedstock` repository.
+#### Bump version with new dependencies
+
+When runtime dependencies change, the automated PR from the conda-forge bot may fail. In that case, you must manually update the feedstock by creating a pull request to the `conda-forge/dmqclib-feedstock` repository in this case.
 
 1.  **Install build tools:**
     ```bash

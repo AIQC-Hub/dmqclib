@@ -45,7 +45,9 @@ class SklearnModelBase(ModelBase):
         super().__init__(config=config)
 
         # Check config to see if SHAP should be calculated
-        self.enable_shap: bool = self.config.get_step_params("model").get("calculate_shap", False)
+        self.enable_shap: bool = self.config.get_step_params("model").get(
+            "calculate_shap", False
+        )
 
         # Initialize storage for SHAP values explicitly
         self.shap_values: Optional[pl.DataFrame] = None
@@ -144,7 +146,9 @@ class SklearnModelBase(ModelBase):
         and stored in :attr:`shap_values`.
         """
         if self.test_set is None:
-            raise ValueError("Member variable 'test_set' must not be empty to calculate SHAP.")
+            raise ValueError(
+                "Member variable 'test_set' must not be empty to calculate SHAP."
+            )
 
         if self.predictions is None:
             raise ValueError("Member variable 'predictions' must not be empty.")
@@ -176,11 +180,17 @@ class SklearnModelBase(ModelBase):
 
         # 3. Model-Agnostic / Neural Models (Slow)
         else:
-            warnings.warn(f"Using slow KernelExplainer for {model_name}. This may take a while.")
+            warnings.warn(
+                f"Using slow KernelExplainer for {model_name}. This may take a while."
+            )
             # Summarize background data heavily to prevent massive slowdowns
-            background_summary = shap.kmeans(background_data, min(100, background_data.shape[0]))
+            background_summary = shap.kmeans(
+                background_data, min(100, background_data.shape[0])
+            )
 
-            explainer = shap.KernelExplainer(self.model.predict_proba, background_summary)
+            explainer = shap.KernelExplainer(
+                self.model.predict_proba, background_summary
+            )
             shap_output = explainer.shap_values(x_test)
 
         # --- STANDARDIZE SHAP OUTPUT SHAPE ---
@@ -209,7 +219,9 @@ class SklearnModelBase(ModelBase):
             }
         )
 
-        self.shap_values = pl.concat([current_data, pl.DataFrame(shap_cols)], how="horizontal")
+        self.shap_values = pl.concat(
+            [current_data, pl.DataFrame(shap_cols)], how="horizontal"
+        )
 
     def create_report(self) -> None:
         """
