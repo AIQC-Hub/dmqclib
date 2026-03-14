@@ -61,6 +61,7 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
 
         The method pivots the 'method' column into distinct prediction and score columns
         for each algorithm. It uses the following column naming convention:
+
           - ``{key}_label``
           - ``{method}_{key}_predicted``
           - ``{method}_{key}_score``

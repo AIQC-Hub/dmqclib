@@ -24,3 +24,11 @@ dmqclib.train.step4\_build\_model.build\_model\_base module
    :members:
    :show-inheritance:
    :undoc-members:
+
+dmqclib.train.step4\_build\_model.build\_model\_suite module
+------------------------------------------------------------
+
+.. automodule:: dmqclib.train.step4_build_model.build_model_suite
+   :members:
+   :show-inheritance:
+   :undoc-members:

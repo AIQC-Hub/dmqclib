@@ -25,6 +25,7 @@ class ModelSuite(ModelBase):
     common model class interface.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML configuration, if defined.
     - Manages a collection of different machine learning models for comparative analysis
       or ensemble operations.

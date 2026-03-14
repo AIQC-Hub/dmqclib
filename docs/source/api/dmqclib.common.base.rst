@@ -40,3 +40,11 @@ dmqclib.common.base.model\_base module
    :members:
    :show-inheritance:
    :undoc-members:
+
+dmqclib.common.base.scikit\_learn\_model\_base module
+-----------------------------------------------------
+
+.. automodule:: dmqclib.common.base.scikit_learn_model_base
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -3,6 +3,12 @@ Welcome to the `dmqclib` documentation!
 
 ``dmqclib`` is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project.
 
+.. note::
+   To unlock the full potential of your model building processes, comprehensive configuration is key. For a streamlined initial test or to explore the library with base settings, see the :doc:`how-to/quick_start` guide.
+
+Workflow of `dmqclib`
+---------------------------------------------
+
 The library is designed around a three-stage workflow:
 
 1.  **Dataset Preparation:** Prepare feature datasets from raw data and generate training, validation, and test data sets.
@@ -11,24 +17,26 @@ The library is designed around a three-stage workflow:
 
 Each stage is controlled by a YAML configuration file, allowing you to define and reproduce your entire workflow with ease.
 
-.. note::
-   To unlock the full potential of your model building processes, comprehensive configuration is key. For a streamlined initial test or to explore the library with base settings, see the :doc:`how-to/quick_start` guide.
+Algorithms supported by `dmqclib`
+---------------------------------------------
 
 ================================ ================================= ============ ======================
 Category                         Algorithm                         Short Name   Method
 ================================ ================================= ============ ======================
 Tree-Based & Ensemble            **XGBoost**                       XGB          Ensemble (Boosting)
-                                 **Random Forest**                 RF           Ensemble (Bagging)
-                                 **Decision Tree**                 DT           Tree
+\                                **Random Forest**                 RF           Ensemble (Bagging)
+\                                **Decision Tree**                 DT           Tree
 Linear & Geometric               **Logistic Regression**           Logit        Linear
-                                 **Linear Discriminant Analysis**  LDA          Linear / Statistical
-                                 **Support Vector Machine**        SVM          Geometric
-Instance-Based (Distance-Based)  **K-Nearest Neighbors**           KNN          Distance-based
+\                                **Linear Discriminant Analysis**  LDA          Linear / Statistical
+\                                **Support Vector Machine**        SVM          Geometric
+Instance-Based                   **K-Nearest Neighbors**           KNN          Distance-based
 Probabilistic                    **Gaussian Naive Bayes**          GNB          Probabilistic
 Neural Network                   **Multilayer Perceptron**         MLP          Neural Network
 ================================ ================================= ============ ======================
 
-**Project Links**
+Project links
+---------------------------------------------
+
   - `GitHub Repository <https://github.com/AIQC-Hub/dmqclib>`_
   - `Issue Tracker <https://github.com/AIQC-Hub/dmqclib/issues>`_
   - `Pull Requests <https://github.com/AIQC-Hub/dmqclib/pulls>`_

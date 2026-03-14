@@ -26,6 +26,7 @@ def create_metric_plots(model) -> None:
 
     :param model: An object containing evaluation results and output configuration.
                   It is expected to have the following attributes:
+
                   - ``contingency_tables`` (dict[str, polars.DataFrame]): A dictionary
                     where keys are target names and values are Polars DataFrames. Each
                     DataFrame must contain at least 'k' (fold identifier), 'label'
@@ -35,6 +36,7 @@ def create_metric_plots(model) -> None:
                     containing output file paths. Specifically,
                     ``output_file_names['metric_plot'][target_name]`` should provide
                     the full path where the plot for a given target will be saved.
+
     :type model: object
     :raises ValueError: If ``model.contingency_tables`` is empty.
     :return: None
@@ -192,6 +194,7 @@ def create_multi_method_metric_plots(model) -> None:
 
     :param model: An object containing evaluation results and output configuration.
                   It is expected to have the following attributes:
+
                   - ``contingency_tables`` (dict[str, polars.DataFrame]): A dictionary
                     where keys are target names and values are Polars DataFrames. Each
                     DataFrame must contain at least 'method' (method identifier), 'label'
@@ -201,6 +204,7 @@ def create_multi_method_metric_plots(model) -> None:
                     containing output file paths. Specifically,
                     ``output_file_names['metric_plot'][target_name]`` should provide
                     the full path where the plot for a given target will be saved.
+
     :type model: object
     :raises ValueError: If ``model.contingency_tables`` is empty.
     :return: None

@@ -73,6 +73,22 @@ dmqclib.common.loader.model\_registry module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.common.loader.single\_model\_loader module
+--------------------------------------------------
+
+.. automodule:: dmqclib.common.loader.single_model_loader
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.common.loader.single\_model\_registry module
+----------------------------------------------------
+
+.. automodule:: dmqclib.common.loader.single_model_registry
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.common.loader.training\_loader module
 ---------------------------------------------
 
