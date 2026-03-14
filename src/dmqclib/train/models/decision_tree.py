@@ -39,7 +39,7 @@ class DecisionTree(SklearnModelBase):
         Initialize the Decision Tree model with default or user-specified parameters.
 
         :param config: A configuration object providing model parameters.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         """
         super().__init__(config=config)
 
@@ -65,5 +65,6 @@ class DecisionTree(SklearnModelBase):
         Return the Scikit-Learn DecisionTreeClassifier class.
 
         :return: The DecisionTreeClassifier class.
+        :rtype: typing.Any
         """
         return SklearnDT

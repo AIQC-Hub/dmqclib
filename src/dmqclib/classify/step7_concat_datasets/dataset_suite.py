@@ -1,11 +1,7 @@
 """
-This module defines the `ConcatDataSetSuite` class, which extends `ConcatDatasetsBase` to
-facilitate the concatenation of multi-method model predictions (from ModelSuite)
-with the original input dataset.
-
-It handles pivoting the long-format predictions (which contain an extra 'method' column)
-into a wide format before merging, ensuring all predictions from different algorithms
-are aligned row-by-row with the input data.
+This module provides the ConcatDataSetSuite class, which is responsible for merging
+multi-method model predictions into a wide-format dataset aligned with the
+original input data.
 """
 
 from typing import Optional, Dict
@@ -23,9 +19,10 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
 
     This class handles predictions containing a 'method' column, expanding them
     into a wide format where each method's predictions and scores become separate
-    columns formatted as `{method}_{target}_predicted` and `{method}_{target}_score`.
+    columns formatted as ``{method}_{target}_predicted`` and ``{method}_{target}_score``.
 
-    This class sets its :attr:`expected_class_name` to ``"ConcatDataSetSuite"``.
+    :ivar expected_class_name: The name of the class used for validation or logging.
+    :vartype expected_class_name: str
     """
 
     expected_class_name: str = "ConcatDataSetSuite"
@@ -39,16 +36,17 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
         """
         Initialize the concatenation workflow for multi-method predictions and input data.
 
-        :param config: A dataset configuration object that manages paths,
-                       target definitions, and parameters for data processing.
+        :param config: A dataset configuration object that manages paths, target
+            definitions, and parameters for data processing.
         :type config: ConfigBase
-        :param input_data: A Polars DataFrame containing all available data
-                           to which predictions will be concatenated, defaults to None.
+        :param input_data: A Polars DataFrame containing all available data to which
+            predictions will be concatenated, defaults to None.
         :type input_data: Optional[pl.DataFrame]
         :param predictions: A dictionary mapping each target to its respective Polars
-                            DataFrame of predictions (containing a 'method' column),
-                            defaults to None.
+            DataFrame of predictions (containing a 'method' column), defaults to None.
         :type predictions: Optional[Dict[str, pl.DataFrame]]
+        :return: None
+        :rtype: None
         """
         super().__init__(
             config=config,
@@ -63,13 +61,15 @@ class ConcatDataSetSuite(ConcatDatasetsBase):
 
         The method pivots the 'method' column into distinct prediction and score columns
         for each algorithm. It uses the following column naming convention:
-          - `{key}_label`
-          - `{method}_{key}_predicted`
-          - `{method}_{key}_score`
+          - ``{key}_label``
+          - ``{method}_{key}_predicted``
+          - ``{method}_{key}_score``
 
         The result is stored in the :attr:`merged_predictions` attribute.
 
         :raises ValueError: If :attr:`predictions` or :attr:`input_data` is None.
+        :return: None
+        :rtype: None
         """
         if self.input_data is None:
             raise ValueError("Member variable 'input_data' must not be empty.")

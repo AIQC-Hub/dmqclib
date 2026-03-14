@@ -1,13 +1,8 @@
 """
-This module provides a specialized class, LocateDataSetA, for identifying and
-extracting positive and negative data rows from oceanographic profiles. It is
-designed to prepare paired datasets for machine learning training or evaluation
-by aligning "bad" quality-controlled observations (positive examples) with
-"good" quality-controlled observations (negative examples) based on profile
-and pressure proximity.
-
-It extends :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
-and utilizes Polars DataFrames for efficient data manipulation.
+This module provides the LocateDataSetAll class, which is used for identifying and
+extracting positive and negative data rows from oceanographic profiles. It filters
+observations based on quality control (QC) flags to prepare datasets for machine
+learning training or evaluation tasks.
 """
 
 from typing import Dict, Optional
@@ -21,15 +16,12 @@ from dmqclib.prepare.step4_select_rows.locate_base import LocatePositionBase
 class LocateDataSetAll(LocatePositionBase):
     """
     A subclass of :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
-    that locates both positive and negative rows from BO NRT+Cora test data for
-    training or evaluation purposes.
+    that locates both positive and negative rows from data for training or evaluation purposes.
 
     The workflow involves:
-
       - Selecting rows that have "bad" QC flags (positive examples).
       - Selecting rows that have "good" QC flags (negative examples).
-      - Concatenating and labeling them for subsequent steps in a machine
-        learning pipeline.
+      - Concatenating and labeling them for subsequent steps in a machine learning pipeline.
     """
 
     expected_class_name: str = "LocateDataSetAll"
@@ -41,19 +33,14 @@ class LocateDataSetAll(LocatePositionBase):
         selected_profiles: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the dataset with configuration, an input DataFrame,
-        and a DataFrame of selected profiles.
+        Initialize the dataset with configuration, an input DataFrame, and a
+        DataFrame of selected profiles.
 
-        :param config: A dataset configuration object specifying paths,
-                       parameters, and target definitions for locating test data rows.
+        :param config: A dataset configuration object specifying paths and parameters.
         :type config: dmqclib.common.base.config_base.ConfigBase
-        :param input_data: A Polars DataFrame containing the full data
-                           from which positive and negative rows will be derived.
-                           Defaults to None.
+        :param input_data: A Polars DataFrame containing the full data to be processed.
         :type input_data: polars.DataFrame or None
-        :param selected_profiles: A Polars DataFrame containing profiles
-                                  that have already been labeled as positive or negative.
-                                  Defaults to None.
+        :param selected_profiles: A Polars DataFrame containing profiles that have already been labeled.
         :type selected_profiles: polars.DataFrame or None
         """
         super().__init__(
@@ -62,19 +49,13 @@ class LocateDataSetAll(LocatePositionBase):
 
     def select_all_rows(self, target_name: str, target_value: Dict) -> None:
         """
-        Collect all rows for a specified target by applying
-        flag-based labeling to each record.
+        Collect all rows for a specified target by applying flag-based labeling to each record.
 
-        This method assumes that :attr:`input_data` has been set prior to its call.
-
-        :param target_name: The name (key) of the target in the
-                            configuration's target dictionary.
+        :param target_name: The name (key) of the target in the configuration's target dictionary.
         :type target_name: str
-        :param target_value: A dictionary of target metadata,
-                             including the relevant QC flag variable name
-                             (e.g., ``{"flag": "BATHY_QC_FLAG"}``).
-        :type target_value: dict
-        :raises ValueError: If :attr:`input_data` is None when this method is called.
+        :param target_value: A dictionary of target metadata, including QC flag names and values.
+        :type target_value: Dict
+        :raises ValueError: If the internal input_data attribute is None.
         """
         if self.input_data is None:
             raise ValueError("Member variable 'input_data' must not be empty.")
@@ -110,16 +91,11 @@ class LocateDataSetAll(LocatePositionBase):
 
     def locate_target_rows(self, target_name: str, target_value: Dict) -> None:
         """
-        Locate target rows for training or evaluation by calling :meth:`select_all_rows`.
-
-        This method acts as a wrapper, ensuring all rows are considered for the target
-        based on the provided QC flag.
+        Locate target rows for training or evaluation by calling select_all_rows.
 
         :param target_name: Name of the target variable.
         :type target_name: str
-        :param target_value: A dictionary of target metadata, including
-                             the QC flag variable name used for labeling
-                             (e.g., ``{"flag": "TEMP_QC_FLAG"}``).
-        :type target_value: dict
+        :param target_value: A dictionary of target metadata used for labeling.
+        :type target_value: Dict
         """
         self.select_all_rows(target_name, target_value)

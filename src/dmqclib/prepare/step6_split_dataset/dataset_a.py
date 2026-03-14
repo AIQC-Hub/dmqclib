@@ -1,9 +1,8 @@
 """
-This module defines `SplitDataSetA`, a specialized class for splitting feature
-data into training and test sets. It handles unique requirements for
-Copernicus CTD data, including maintaining relationships between positive
-and negative samples via shared identifiers and assigning k-fold indices for
-cross-validation.
+This module defines the `SplitDataSetA` class, which is responsible for partitioning
+feature data into training and test sets specifically for Copernicus CTD data.
+It ensures that related positive and negative samples (grouped by pair identifiers)
+remain together during the split and assigns k-fold indices for cross-validation.
 """
 
 from typing import Optional, Dict
@@ -21,7 +20,6 @@ class SplitDataSetA(SplitDataSetBase):
     training and test sets for Copernicus CTD data.
 
     This class performs the following tasks:
-
       - Randomly samples a fraction of rows for the test set.
       - Ensures matching positive and negative rows are grouped by shared
         identifiers (e.g., ``pair_id``).
@@ -30,10 +28,8 @@ class SplitDataSetA(SplitDataSetBase):
       - Optionally drops columns that are not required for subsequent analysis.
 
     .. note::
-
-       This class, :class:`SplitDataSetA`, is specifically designed to split
-       feature data into training and test sets with particular handling for
-       Copernicus CTD data.
+       This class is specifically designed for Copernicus CTD data structures
+       where positive and negative samples are linked via a ``pair_id``.
     """
 
     expected_class_name: str = "SplitDataSetA"
@@ -44,11 +40,10 @@ class SplitDataSetA(SplitDataSetBase):
         target_features: Optional[Dict[str, pl.DataFrame]] = None,
     ) -> None:
         """
-        Initialize the dataset splitting class with configuration
-        and target features.
+        Initialize the dataset splitting class with configuration and target features.
 
-        :param config: A dataset configuration object that specifies
-                       paths, test-set fraction, and k-fold details.
+        :param config: A dataset configuration object that specifies paths,
+                       test-set fraction, and k-fold details.
         :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
         :param target_features: A dictionary mapping target names to Polars
                                 DataFrames containing extracted features.
@@ -68,11 +63,9 @@ class SplitDataSetA(SplitDataSetBase):
         """
         Split the specified target's DataFrame into training and test sets.
 
-        1. A random fraction of rows labeled 1 (positive) is sampled to form
-           the test set.
-        2. Rows labeled 0 (negative) with matching ``pair_id`` are joined
-           to that test set.
-        3. The remaining rows form the training set.
+        The method samples positive labels (label=1) based on a configured fraction,
+        then identifies corresponding negative labels (label=0) using ``pair_id``
+        to ensure consistency. The remaining data is assigned to the training set.
 
         :param target_name: The target name identifying which DataFrame in
                             :attr:`target_features` to split.
@@ -116,10 +109,9 @@ class SplitDataSetA(SplitDataSetBase):
         """
         Assign a k-fold identifier to each row in the training set for cross-validation.
 
-        1. Extracts rows labeled 1 (positive) and unevenly distributes them across
-           the specified number of folds.
-        2. Joins negative rows based on ``pair_id`` so they share the same fold
-           assignment.
+        Positive samples are distributed across k folds, and negative samples
+        are assigned the same fold index as their corresponding positive sample
+        via ``pair_id``.
 
         :param target_name: The target name identifying the training set
                             within :attr:`training_sets`.
@@ -165,11 +157,13 @@ class SplitDataSetA(SplitDataSetBase):
 
     def drop_columns(self, target_name: str) -> None:
         """
-        Remove specified working columns from both the training and test sets,
-        leaving only the essential columns for subsequent steps.
+        Remove working columns (e.g., profile_id, pair_id) from the datasets.
 
-        :param target_name: The target name identifying which training and test sets
-                            to modify.
+        This cleans the DataFrames to include only features and labels required
+        for model training and evaluation.
+
+        :param target_name: The target name identifying which training and test
+                            sets to modify.
         :type target_name: str
         """
         self.training_sets[target_name] = self.training_sets[target_name].drop(

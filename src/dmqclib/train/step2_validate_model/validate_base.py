@@ -150,7 +150,7 @@ class ValidationBase(DataSetBase):
 
     def write_contingency_tables(self) -> None:
         """
-        Write the contingency tables stored in :attr:`contingency_tables` to TSV files.
+        Write the contingency tables stored in :attr:`contingency_tables` to Parquet files.
 
         Each target's contingency DataFrame is written to a file specified by
         :attr:`output_file_names`. Directories are created if they do not exist.
@@ -167,8 +167,12 @@ class ValidationBase(DataSetBase):
 
     def create_metric_plots(self) -> None:
         """
-        Create and save ROC and Precision-Recall plots as an SVG file.
+        Generate and save ROC and Precision-Recall plots for each target.
 
-        Call the common function create_metric_plots
+        This method iterates through the validation reports stored in :attr:`reports`,
+        and for each target, it generates and saves an SVG file containing
+        the ROC curve and Precision-Recall curve using the
+        :func:`dmqclib.common.utils.metric_plots.create_metric_plots` utility function.
+        The output file path for each plot is determined by :attr:`output_file_names`.
         """
         create_metric_plots(self)

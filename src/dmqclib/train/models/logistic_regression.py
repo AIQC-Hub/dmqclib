@@ -58,5 +58,6 @@ class LogisticRegression(SklearnModelBase):
         Return the Scikit-Learn LogisticRegression class.
 
         :return: The LogisticRegression class.
+        :rtype: Any
         """
         return SklearnLR

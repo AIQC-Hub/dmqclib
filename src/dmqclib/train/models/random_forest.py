@@ -65,5 +65,6 @@ class RandomForest(SklearnModelBase):
         Return the Scikit-Learn RandomForestClassifier class.
 
         :return: The RandomForestClassifier class.
+        :rtype: Any
         """
         return SklearnRF

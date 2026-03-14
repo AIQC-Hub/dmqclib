@@ -62,6 +62,7 @@ class KNearestNeighbors(SklearnModelBase):
         """
         Return the Scikit-Learn KNeighborsClassifier class.
 
-        :return: The KNeighborsClassifier class.
+        :returns: The KNeighborsClassifier class.
+        :rtype: Any
         """
         return SklearnKNN

@@ -1,9 +1,7 @@
 """
-This module provides the FlankUp class for extracting "flanking" (neighboring) observations around the target
-rows.
-
-It extends FeatureBase and is designed for specific data processing needs,
-such as those encountered with Copernicus CTD data.
+This module defines the FlankUp class, which is responsible for extracting
+neighboring (flanking) observations for specific target rows in a dataset.
+It is primarily used for feature engineering with Copernicus CTD data.
 """
 
 from typing import Optional, Dict

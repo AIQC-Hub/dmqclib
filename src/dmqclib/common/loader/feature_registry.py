@@ -22,6 +22,8 @@ from dmqclib.prepare.features.profile_summary import ProfileSummaryStats
 #: A dictionary mapping feature identifiers (str) to classes that inherit
 #: from :class:`FeatureBase`. These classes are dynamically loaded based
 #: on the "feature" key in a feature configuration dictionary.
+#:
+#: :type: Dict[str, Type[FeatureBase]]
 FEATURE_REGISTRY: Dict[str, Type[FeatureBase]] = {
     "location": LocationFeat,
     "day_of_year": DayOfYearFeat,

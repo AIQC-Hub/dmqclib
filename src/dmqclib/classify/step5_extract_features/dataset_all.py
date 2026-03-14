@@ -1,8 +1,8 @@
 """
-This module defines the ExtractDataSetAll class, a specialized feature extraction
-component for processing Copernicus CTD data. It extends the base feature
-extraction capabilities provided by ExtractFeatureBase and integrates with a
-configuration system for managing data paths and parameters.
+This module provides the ExtractDataSetAll class, which is designed for extracting
+features from Copernicus CTD (Conductivity, Temperature, and Depth) datasets.
+It inherits from ExtractFeatureBase and utilizes a configuration-driven approach
+to define data targets and output paths.
 """
 
 from typing import Optional, Dict
@@ -15,12 +15,15 @@ from dmqclib.prepare.step5_extract_features.extract_base import ExtractFeatureBa
 
 class ExtractDataSetAll(ExtractFeatureBase):
     """
-    A subclass of :class:`ExtractFeatureBase` for extracting features
-    from Copernicus CTD data.
+    Feature extraction implementation specifically for Copernicus CTD data.
 
-    This class sets its :attr:`expected_class_name` to ``ExtractDataSetAll`` so
-    that it matches the relevant YAML configuration. All feature extraction logic
-    inherits from the parent class, :class:`ExtractFeatureBase`.
+    This class serves as a concrete implementation of the :class:`ExtractFeatureBase`
+    interface, specializing in the configuration and file naming conventions
+    required for full CTD dataset processing.
+
+    :cvar expected_class_name: The identifier used to match this class with
+                               configuration settings.
+    :vartype expected_class_name: str
     """
 
     expected_class_name: str = "ExtractDataSetAll"
@@ -34,26 +37,17 @@ class ExtractDataSetAll(ExtractFeatureBase):
         summary_stats: Optional[pl.DataFrame] = None,
     ) -> None:
         """
-        Initialize the feature extraction process for Copernicus CTD data.
+        Initialize the ExtractDataSetAll class with configuration and optional data.
 
-        :param config: A configuration object that manages paths, target definitions,
-                       and parameters for feature extraction.
+        :param config: The configuration instance providing parameters and paths.
         :type config: ConfigBase
-        :param input_data: An optional Polars DataFrame containing the complete dataset
-                           for feature extraction. If not provided at initialization,
-                           it should be assigned later.
+        :param input_data: Polars DataFrame containing the raw input data.
         :type input_data: Optional[pl.DataFrame]
-        :param selected_profiles: An optional Polars DataFrame of selected profiles
-                                  from earlier steps. If not provided, it should be
-                                  assigned later.
+        :param selected_profiles: DataFrame containing metadata or IDs for selected profiles.
         :type selected_profiles: Optional[pl.DataFrame]
-        :param selected_rows: An optional dictionary mapping target names to respective
-                            DataFrames containing the rows needed for feature generation.
-                            If not provided, it should be assigned later.
+        :param selected_rows: A mapping of target names to DataFrames containing specific row data.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
-        :param summary_stats: An optional Polars DataFrame with summary statistics,
-                              potentially used for scaling or normalization.
-                              If not provided, it should be assigned later.
+        :param summary_stats: DataFrame containing statistics for normalization or scaling.
         :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
@@ -64,18 +58,17 @@ class ExtractDataSetAll(ExtractFeatureBase):
             summary_stats=summary_stats,
         )
 
-        #: Default file naming pattern when writing feature files for each target.
+        #: Default string template for naming exported feature files.
         self.default_file_name: str = (
             "extracted_features_classify_{target_name}.parquet"
         )
 
-        #: Dictionary mapping target names to the corresponding Parquet file paths.
+        #: Resolved mapping of target names to their specific output file paths.
         self.output_file_names: Dict[str, str] = self.config.get_target_file_names(
             step_name="extract", default_file_name=self.default_file_name
         )
 
-        #: Column names used for intermediate or reference purposes
-        #: (e.g., linking positive and negative rows).
+        #: List of columns to be excluded or dropped during the extraction process.
         self.drop_col_names = [
             "profile_id",
             "pair_id",

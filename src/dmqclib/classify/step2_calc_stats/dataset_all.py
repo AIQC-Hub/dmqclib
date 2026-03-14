@@ -1,10 +1,10 @@
 """
-This module defines the `SummaryDataSetAll` class, a specialized class for
+This module defines the SummaryDataSetAll class, a specialized class for
 calculating summary statistics specifically for BO NRT (Near Real-Time) and
 Cora test datasets using the Polars data manipulation library.
 
-It extends `SummaryStatsBase` to provide a concrete implementation for these
-specific data contexts, integrating with a `ConfigBase` object for path and
+It extends SummaryStatsBase to provide a concrete implementation for these
+specific data contexts, integrating with a ConfigBase object for path and
 parameter management, and defining default output file names.
 """
 
@@ -17,11 +17,14 @@ from dmqclib.prepare.step2_calc_stats.summary_base import SummaryStatsBase
 
 class SummaryDataSetAll(SummaryStatsBase):
     """
-    Subclass of :class:`SummaryStatsBase` for calculating summary statistics
-    for Copernicus CTD data using Polars.
+    Subclass of SummaryStatsBase for calculating summary statistics
+    for BO NRT and Cora test datasets (Copernicus CTD data) using Polars.
 
-    Sets :attr:`expected_class_name` to ``SummaryDataSetAll`` to match
+    Sets expected_class_name to 'SummaryDataSetAll' to match
     the relevant YAML configuration.
+
+    :cvar expected_class_name: The name of the class used for configuration matching.
+    :vartype expected_class_name: str
     """
 
     expected_class_name: str = "SummaryDataSetAll"

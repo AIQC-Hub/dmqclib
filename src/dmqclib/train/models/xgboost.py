@@ -1,5 +1,6 @@
 """
-This module provides an XGBoost model wrapper, inheriting from `dmqclib.common.base.scikit_learn_model_base.SklearnModelBase`.
+This module provides an XGBoost model wrapper, inheriting from
+:class:`dmqclib.common.base.scikit_learn_model_base.SklearnModelBase`.
 
 It facilitates training, prediction, and evaluation of an XGBoost classifier using Polars DataFrames,
 converting them to Pandas for compatibility with the `xgboost` library.
@@ -17,15 +18,17 @@ class XGBoost(SklearnModelBase):
     """
     An XGBoost model wrapper class for training and testing.
 
-    Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
+    Inherits from :class:`dmqclib.common.base.scikit_learn_model_base.SklearnModelBase`
+    to reuse common Scikit-Learn API logic.
 
     Features include:
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
-    - Uses ``xgboost.XGBClassifier``.
+    - Uses :class:`xgboost.XGBClassifier`.
 
     .. note::
-       This class sets :attr:`expected_class_name` to ``"XGBoost"``.
+       This class sets :attr:`expected_class_name` to ``"XGBoost"``
+       and :attr:`short_name` to ``"XGB"``.
     """
 
     expected_class_name: str = "XGBoost"
@@ -36,7 +39,7 @@ class XGBoost(SklearnModelBase):
         Initialize the XGBoost model with default or user-specified parameters.
 
         :param config: A configuration object providing model parameters.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         """
         super().__init__(config=config)
 
@@ -58,5 +61,6 @@ class XGBoost(SklearnModelBase):
         Return the XGBoost classifier class.
 
         :return: The XGBClassifier class.
+        :rtype: type[xgboost.XGBClassifier]
         """
         return xgb.XGBClassifier

@@ -243,14 +243,18 @@ class TestClassifyAllSuite:
         for method_obj in model.method_objs.values():
             assert not method_obj.enable_shap
 
-        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = (
+            True
+        )
         ds = ClassifyAllSuite(self.configs[idx])
         model = ds.base_model
         assert model.enable_shap
         for method_obj in model.method_objs.values():
             assert method_obj.enable_shap
 
-        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = (
+            False
+        )
         ds = ClassifyAllSuite(self.configs[idx])
         model = ds.base_model
         assert not model.enable_shap
@@ -334,7 +338,9 @@ class TestClassifyAllSuite:
     @pytest.mark.parametrize("idx", range(TEST_COUNT))
     def test_write_shap_values(self, idx):
         """Verify that aggregated contingency tables are correctly written to file."""
-        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = (
+            True
+        )
         ds = ClassifyAllSuite(
             self.configs[idx],
             test_sets=self.extracts[idx].target_features,

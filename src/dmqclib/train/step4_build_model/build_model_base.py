@@ -1,6 +1,6 @@
 """
-Provides an abstract base class, :class:`BuildModelBase`, for building and testing
-machine learning models using structured training and test datasets.
+Provides an abstract base class, :class:`dmqclib.common.base.build_model_base.BuildModelBase`,
+for building and testing machine learning models using structured training and test datasets.
 
 This module establishes a framework for model development within a larger
 data quality control (DMQC) system, integrating with configuration management
@@ -11,7 +11,7 @@ frameworks.
 
 import os
 from abc import abstractmethod
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 import polars as pl
 
@@ -27,7 +27,7 @@ class BuildModelBase(DataSetBase):
     An abstract base class to build and test models, using training/test sets
     and a YAML-based configuration.
 
-    Inherits from :class:`DataSetBase` (with step name ``"build"``)
+    Inherits from :class:`dmqclib.common.base.dataset_base.DataSetBase` (with step name ``"build"``)
     to ensure that the provided configuration matches the expected
     fields for model-building. Subclasses must define their own
     logic in the :meth:`build` and :meth:`test` abstract methods,
@@ -38,7 +38,7 @@ class BuildModelBase(DataSetBase):
        If you intend to instantiate this class directly (rather than a subclass),
        you may need to define an ``expected_class_name`` that matches
        the config's ``base_class`` property. Otherwise, a
-       :class:`NotImplementedError` may be raised.
+       :exc:`NotImplementedError` may be raised.
     """
 
     def __init__(
@@ -54,15 +54,15 @@ class BuildModelBase(DataSetBase):
 
         :param config: A training configuration object containing
                        paths and parameters for building and testing models.
-        :type config: ConfigBase
-        :param training_sets: A dictionary of Polars DataFrames, where keys are target
+        :type config: dmqclib.common.base.config_base.ConfigBase
+        :param training_sets: A dictionary of :class:`polars.DataFrame`, where keys are target
                               names and values are DataFrames with training examples
-                              for that target. Defaults to None.
-        :type training_sets: Optional[Dict[str, pl.DataFrame]]
-        :param test_sets: A dictionary of Polars DataFrames, where keys are target
+                              for that target. Defaults to :obj:`None`.
+        :type training_sets: Optional[Dict[str, polars.DataFrame]]
+        :param test_sets: A dictionary of :class:`polars.DataFrame`, where keys are target
                           names and values are DataFrames with testing examples
-                          for that target. Defaults to None.
-        :type test_sets: Optional[Dict[str, pl.DataFrame]]
+                          for that target. Defaults to :obj:`None`.
+        :type test_sets: Optional[Dict[str, polars.DataFrame]]
         :param step_name: The name of the current processing step,
                           defaults to "build".
         :type step_name: str
@@ -80,7 +80,7 @@ class BuildModelBase(DataSetBase):
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
 
-        #: A dictionary mapping "model" or "result" to
+        #: A dictionary mapping result type (e.g., "report", "prediction") to
         #: target-specific file paths.
         self.output_file_names: Dict[str, Dict[str, str]] = {
             k: self.config.get_target_file_names(step_name="build", default_file_name=v)
@@ -92,24 +92,25 @@ class BuildModelBase(DataSetBase):
             "model", self.default_model_file_name
         )
 
-        #: A Polars DataFrame (or dictionary) containing training data.
+        #: A dictionary containing training data keyed by target name.
         self.training_sets: Optional[Dict[str, pl.DataFrame]] = training_sets
-        #: A Polars DataFrame (or dictionary) containing test data.
+        #: A dictionary containing test data keyed by target name.
         self.test_sets: Optional[Dict[str, pl.DataFrame]] = test_sets
 
-        #: Loaded from :meth:`load_base_model`; can be overridden for each target.
+        #: The base model instance loaded from :meth:`load_base_model`;
+        #: can be overridden for each target.
         self.base_model: Optional[ModelBase] = None
         self.load_base_model()
 
         #: A dictionary to store model objects keyed by target name.
         self.models: Dict[str, Optional[ModelBase]] = {}
-        #: A dictionary to store test results keyed by target name.
+        #: A dictionary to store test reports keyed by target name.
         self.reports: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store contingency tables keyed by target name.
         self.contingency_tables: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store SHAP values keyed by target name.
         self.shap_values: Dict[str, pl.DataFrame] = {}
-        #: A dictionary to store predictions results keyed by target name.
+        #: A dictionary to store prediction results keyed by target name.
         self.predictions: Dict[str, pl.DataFrame] = {}
 
     def load_base_model(self) -> None:
@@ -193,7 +194,7 @@ class BuildModelBase(DataSetBase):
 
     def write_contingency_tables(self) -> None:
         """
-        Write each target's contingency table to a TSV file.
+        Write each target's contingency table to a Parquet file.
 
         :raises ValueError: If :attr:`contingency_tables` is empty, indicating no tests
                             have been carried out or no tables stored.
@@ -208,16 +209,22 @@ class BuildModelBase(DataSetBase):
 
     def write_shap_values(self) -> None:
         """
-        Write each target's SHAP values to a TSV file.
+        Write each target's SHAP values to a Parquet file.
 
-        :raises ValueError: If :attr:`shap_values` is empty, indicating no tests
-                            have been carried out or no tables stored.
+        This method checks if SHAP values are enabled in the base model. If not,
+        it returns without writing.
+
+        :raises ValueError: If :attr:`shap_values` is empty while SHAP is enabled,
+                            indicating no SHAP values were computed or stored.
         """
-        if not self.base_model.enable_shap:
+        if not self.base_model or not getattr(self.base_model, "enable_shap", False):
+            # If base_model is None or does not have enable_shap, or enable_shap is False, skip.
             return
 
         if not self.shap_values:
-            raise ValueError("Member variable 'shap_values' must not be empty.")
+            raise ValueError(
+                "Member variable 'shap_values' must not be empty if SHAP is enabled."
+            )
 
         for target_name, df in self.shap_values.items():
             output_path = self.output_file_names["shap_value"][target_name]
@@ -226,9 +233,9 @@ class BuildModelBase(DataSetBase):
 
     def create_metric_plots(self) -> None:
         """
-        Create and save ROC and Precision-Recall plots as an SVG file.
+        Create and save ROC and Precision-Recall plots as an SVG file for each target.
 
-        Call the common function create_metric_plots
+        Calls the common utility function :func:`dmqclib.common.utils.metric_plots.create_metric_plots`.
         """
         create_metric_plots(self)
 
@@ -255,13 +262,22 @@ class BuildModelBase(DataSetBase):
 
         :raises FileNotFoundError: If a model file does not exist
                                    for a particular target.
+        :raises RuntimeError: If the :attr:`base_model` is not loaded, which is
+                              required to update model thread settings.
         """
         for target_name, path in self.model_file_names.items():
             if not os.path.exists(path):
                 raise FileNotFoundError(f"File '{path}' does not exist.")
 
-            new_model_instance = load_model_class(self.config)
+            # Assuming load_model_class returns an instance of ModelBase or a compatible type
+            new_model_instance: Any = load_model_class(self.config)
             new_model_instance.load_model(path)
+
+            if self.base_model is None:
+                raise RuntimeError(
+                    "Base model is not loaded; cannot update thread settings for read model."
+                )
+
             new_model_instance = self.base_model.update_nthreads(new_model_instance)
             self.models[target_name] = new_model_instance
 

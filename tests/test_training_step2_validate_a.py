@@ -70,7 +70,8 @@ def run_fold_validation(test_obj):
     test_obj.assertEqual(ds.contingency_tables["temp"].height, 116)
     # Expected columns: k, label, score
     test_obj.assertListEqual(
-        ds.contingency_tables["temp"].columns, ["k", "label", "predicted_label", "score"]
+        ds.contingency_tables["temp"].columns,
+        ["k", "label", "predicted_label", "score"],
     )
 
     # "psal" has 126 rows

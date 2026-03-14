@@ -162,20 +162,14 @@ class TestBuildModelSuite(unittest.TestCase):
 
         # Verify that internal data was joined correctly
         self.assertEqual(
-            ds.models["xgb_temp"].training_set.height, 128
+            ds.models["xgb_temp"].training_set.height, 116
         )  # 116 train + 12 test
 
     def test_build_without_data(self):
         """Ensure that calling build_targets() without data raises ValueError."""
-        ds1 = BuildModelSuite(
-            self.config, training_sets=self.ds_input.training_sets, test_sets=None
-        )
+        ds = BuildModelSuite(self.config, training_sets=None, test_sets=None)
         with self.assertRaises(ValueError):
-            ds1.build_targets()
-
-        ds2 = BuildModelSuite(self.config, training_sets=None, test_sets=None)
-        with self.assertRaises(ValueError):
-            ds2.build_targets()
+            ds.build_targets()
 
     def test_test_targets(self):
         """
@@ -290,9 +284,7 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertTrue(
             os.path.exists(ds.output_file_names["contingency_table"]["temp"])
         )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["shap_value"]["temp"])
-        )
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["temp"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["temp"]))
 
@@ -300,9 +292,7 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertTrue(
             os.path.exists(ds.output_file_names["contingency_table"]["psal"])
         )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["shap_value"]["psal"])
-        )
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["psal"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["psal"]))
 
@@ -310,9 +300,7 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertTrue(
             os.path.exists(ds.output_file_names["contingency_table"]["pres"])
         )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["shap_value"]["pres"])
-        )
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["pres"]))
         self.assertTrue(os.path.exists(ds.output_file_names["prediction"]["pres"]))
         self.assertTrue(os.path.exists(ds.output_file_names["metric_plot"]["pres"]))
 

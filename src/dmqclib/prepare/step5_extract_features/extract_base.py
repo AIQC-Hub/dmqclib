@@ -1,11 +1,8 @@
 """
-This module defines the `ExtractFeatureBase` abstract base class, which provides
-a foundational structure for extracting features from various datasets using Polars.
-
-It leverages a configuration system to define targets and feature extraction parameters,
-and dynamically loads feature-specific logic. The class handles data filtering,
-feature generation for multiple targets, and persistence of the extracted features
-to Parquet files.
+This module provides the ExtractFeatureBase abstract base class, designed for
+orchestrating feature extraction workflows using Polars. It facilitates
+the processing of dataset targets, dynamic loading of feature extraction
+logic, and the persistence of generated features to disk.
 """
 
 import os
@@ -40,27 +37,20 @@ class ExtractFeatureBase(DataSetBase):
         """
         Initialize the feature extraction base class.
 
-        This constructor sets up the configuration, initializes data holders,
-        and prepares for feature extraction processes.
-
         :param config: The configuration object, containing paths and target definitions.
         :type config: ConfigBase
         :param input_data: A Polars DataFrame providing the full dataset from which
-                           features are extracted, defaults to None.
+                           features are extracted.
         :type input_data: Optional[pl.DataFrame]
         :param selected_profiles: A Polars DataFrame containing profiles that have
-                                 been selected for processing, defaults to None.
+                                 been selected for processing.
         :type selected_profiles: Optional[pl.DataFrame]
         :param selected_rows: A dictionary mapping target names to Polars DataFrames
-                            of rows relevant for those targets, defaults to None.
+                            of rows relevant for those targets.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: A Polars DataFrame containing summary statistics that
-                              might guide feature scaling, defaults to None.
+                              might guide feature scaling.
         :type summary_stats: Optional[pl.DataFrame]
-        :raises NotImplementedError: If the subclass does not define
-                                     ``expected_class_name`` (when instantiating a real subclass).
-        :raises ValueError: If the provided YAML config does not match this class's
-                            ``expected_class_name``.
         """
         super().__init__(step_name="extract", config=config)
 
@@ -102,11 +92,6 @@ class ExtractFeatureBase(DataSetBase):
         This method ensures that the resulting :attr:`filtered_input` only
         contains rows also present in :attr:`selected_profiles`. The data
         is joined on columns ``platform_code`` and ``profile_no``.
-
-        :raises polars.exceptions.ComputeError: If either ``platform_code`` or
-                                                ``profile_no`` columns are missing
-                                                from the input DataFrames, or if
-                                                the join operation fails.
         """
         self.filtered_input = self.input_data.join(
             self.selected_profiles.select(
@@ -179,9 +164,7 @@ class ExtractFeatureBase(DataSetBase):
 
         :param target_name: The target for which features will be extracted.
         :type target_name: str
-        :param feature_info: A dictionary of feature extraction parameters,
-                             typically including the class name and any specific
-                             arguments for the feature extraction.
+        :param feature_info: A dictionary of feature extraction parameters.
         :type feature_info: Dict
         :return: A DataFrame containing newly extracted or transformed features.
         :rtype: pl.DataFrame
@@ -206,12 +189,9 @@ class ExtractFeatureBase(DataSetBase):
         Write the extracted features to their respective files.
 
         Iterates through the :attr:`target_features` dictionary and writes each
-        Polars DataFrame to a Parquet file, creating necessary directories. The
-        output file paths are determined during initialization based on the
-        configuration.
+        Polars DataFrame to a Parquet file, creating necessary directories.
 
-        :raises ValueError: If :attr:`target_features` is empty, meaning no features
-                            have been extracted to write.
+        :raises ValueError: If :attr:`target_features` is empty.
         """
         if not self.target_features:
             raise ValueError("Member variable 'target_features' must not be empty.")

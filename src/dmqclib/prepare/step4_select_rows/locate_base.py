@@ -55,10 +55,8 @@ class LocatePositionBase(DataSetBase):
         :type selected_profiles: :class:`polars.DataFrame`, optional
         :raises NotImplementedError: If ``expected_class_name`` is not defined
                                      by a subclass and this class is directly instantiated.
-                                     (Raised by :class:`DataSetBase` constructor).
         :raises ValueError: If the YAML's ``base_class`` does not match
                             the subclass's ``expected_class_name``.
-                            (Raised by :class:`DataSetBase` constructor).
         """
         super().__init__(step_name="locate", config=config)
 
@@ -108,7 +106,7 @@ class LocatePositionBase(DataSetBase):
         defined by the target. The identified rows for the given target should
         be stored in the :attr:`selected_rows` dictionary under the ``target_name`` key.
 
-        :param target_name: The name of the target variable (e.g., 'training_data', 'validation_set').
+        :param target_name: The name of the target variable (e.g., 'training_data').
         :type target_name: str
         :param target_value: A dictionary containing metadata or specific criteria
                              for the target, as defined in the configuration.

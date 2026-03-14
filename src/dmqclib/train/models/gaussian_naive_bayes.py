@@ -58,5 +58,6 @@ class GaussianNaiveBayes(SklearnModelBase):
         Return the Scikit-Learn GaussianNB class.
 
         :return: The GaussianNB class.
+        :rtype: Any
         """
         return SklearnGNB

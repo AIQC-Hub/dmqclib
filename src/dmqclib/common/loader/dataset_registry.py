@@ -22,52 +22,52 @@ from dmqclib.prepare.step6_split_dataset.dataset_a import SplitDataSetA
 from dmqclib.prepare.step6_split_dataset.dataset_all import SplitDataSetAll
 from dmqclib.prepare.step6_split_dataset.split_base import SplitDataSetBase
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step1_read_input tasks.
+#: A registry mapping class names (used in YAML config) to their corresponding
+#: Python classes for step1_read_input tasks.
 #:
-#: :type: Dict[str, Type[dmqclib.prepare.step1_read_input.input_base.InputDataSetBase]]
+#: :type: Dict[str, Type[InputDataSetBase]]
 INPUT_DATASET_REGISTRY: Dict[str, Type[InputDataSetBase]] = {
     "InputDataSetA": InputDataSetA,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step2_calc_stats tasks.
+#: A registry mapping class names (used in YAML config) to their corresponding
+#: Python classes for step2_calc_stats tasks.
 #:
-#: :type: Dict[str, Type[dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase]]
+#: :type: Dict[str, Type[SummaryStatsBase]]
 SUMMARY_DATASET_REGISTRY: Dict[str, Type[SummaryStatsBase]] = {
     "SummaryDataSetA": SummaryDataSetA,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step3_select_profiles tasks.
+#: A registry mapping class names (used in YAML config) to their corresponding
+#: Python classes for step3_select_profiles tasks.
 #:
-#: :type: Dict[str, Type[dmqclib.prepare.step3_select_profiles.select_base.ProfileSelectionBase]]
+#: :type: Dict[str, Type[ProfileSelectionBase]]
 SELECT_DATASET_REGISTRY: Dict[str, Type[ProfileSelectionBase]] = {
     "SelectDataSetA": SelectDataSetA,
     "SelectDataSetAll": SelectDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step4_select_rows tasks.
+#: A registry mapping class names (used in YAML config) to their corresponding
+#: Python classes for step4_select_rows tasks.
 #:
-#: :type: Dict[str, Type[dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase]]
+#: :type: Dict[str, Type[LocatePositionBase]]
 LOCATE_DATASET_REGISTRY: Dict[str, Type[LocatePositionBase]] = {
     "LocateDataSetA": LocateDataSetA,
     "LocateDataSetAll": LocateDataSetAll,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step5_extract_features tasks.
+#: A registry mapping class names (used in YAML config) to their corresponding
+#: Python classes for step5_extract_features tasks.
 #:
-#: :type: Dict[str, Type[dmqclib.prepare.step5_extract_features.extract_base.ExtractFeatureBase]]
+#: :type: Dict[str, Type[ExtractFeatureBase]]
 EXTRACT_DATASET_REGISTRY: Dict[str, Type[ExtractFeatureBase]] = {
     "ExtractDataSetA": ExtractDataSetA,
 }
 
-#: A registry mapping class names (used in YAML config) to the
-#: actual Python classes for step6_split_dataset tasks.
+#: A registry mapping class names (used in YAML config) to their corresponding
+#: Python classes for step6_split_dataset tasks.
 #:
-#: :type: Dict[str, Type[dmqclib.prepare.step6_split_dataset.split_base.SplitDataSetBase]]
+#: :type: Dict[str, Type[SplitDataSetBase]]
 SPLIT_DATASET_REGISTRY: Dict[str, Type[SplitDataSetBase]] = {
     "SplitDataSetA": SplitDataSetA,
     "SplitDataSetAll": SplitDataSetAll,

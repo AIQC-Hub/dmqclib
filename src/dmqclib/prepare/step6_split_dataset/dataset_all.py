@@ -1,9 +1,7 @@
 """
-This module defines `SplitDataSetA`, a specialized class for splitting feature
-data into training and test sets. It handles unique requirements for
-Copernicus CTD data, including maintaining relationships between positive
-and negative samples via shared identifiers and assigning k-fold indices for
-cross-validation.
+This module defines the `SplitDataSetAll` class, which is responsible for partitioning
+feature data into training and test sets. It provides functionality for random sampling,
+k-fold cross-validation index assignment, and column cleanup for Copernicus CTD datasets.
 """
 
 from typing import Optional, Dict
@@ -21,7 +19,6 @@ class SplitDataSetAll(SplitDataSetBase):
     training and test sets for Copernicus CTD data.
 
     This class performs the following tasks:
-
       - Randomly samples a fraction of rows for the test set.
       - Ensures matching positive and negative rows are grouped by shared
         identifiers (e.g., ``pair_id``).
@@ -30,7 +27,6 @@ class SplitDataSetAll(SplitDataSetBase):
       - Optionally drops columns that are not required for subsequent analysis.
 
     .. note::
-
        This class, :class:`SplitDataSetAll`, is specifically designed to split
        feature data into training and test sets with particular handling for
        Copernicus CTD data.
