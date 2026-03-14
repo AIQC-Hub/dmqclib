@@ -14,6 +14,20 @@ Each stage is controlled by a YAML configuration file, allowing you to define an
 .. note::
    To unlock the full potential of your model building processes, comprehensive configuration is key. For a streamlined initial test or to explore the library with base settings, see the :doc:`how-to/quick_start` guide.
 
+================================ ================================= ============ ======================
+Category                         Algorithm                         Short Name   Method
+================================ ================================= ============ ======================
+Tree-Based & Ensemble            **XGBoost**                       XGB          Ensemble (Boosting)
+                                 **Random Forest**                 RF           Ensemble (Bagging)
+                                 **Decision Tree**                 DT           Tree
+Linear & Geometric               **Logistic Regression**           Logit        Linear
+                                 **Linear Discriminant Analysis**  LDA          Linear / Statistical
+                                 **Support Vector Machine**        SVM          Geometric
+Instance-Based (Distance-Based)  **K-Nearest Neighbors**           KNN          Distance-based
+Probabilistic                    **Gaussian Naive Bayes**          GNB          Probabilistic
+Neural Network                   **Multilayer Perceptron**         MLP          Neural Network
+================================ ================================= ============ ======================
+
 **Project Links**
   - `GitHub Repository <https://github.com/AIQC-Hub/dmqclib>`_
   - `Issue Tracker <https://github.com/AIQC-Hub/dmqclib/issues>`_
