@@ -1,10 +1,10 @@
 """
-This module defines the abstract base class for profile selection and group labeling
-within the dmqclib framework.
+Module for profile selection and group labeling base class.
 
-It provides a foundational structure for classes that identify and categorize
-profiles based on specific criteria, enabling the subsequent storage of these
-labeled profiles. Subclasses must implement the concrete logic for profile labeling.
+This module defines the abstract base class :class:`ProfileSelectionBase`, which
+serves as a template for selecting and labeling profiles within the dmqclib
+framework. It integrates with configuration and dataset base classes to
+standardize the profile selection step and output.
 """
 
 import os
@@ -22,7 +22,8 @@ class ProfileSelectionBase(DataSetBase):
     Abstract base class for profile selection and group labeling.
 
     Inherits from :class:`dmqclib.common.base.dataset_base.DataSetBase` to leverage
-    configuration handling and validation.
+    configuration handling and validation. Subclasses must implement the concrete
+    logic for profile labeling.
 
     Subclasses must define:
 
@@ -54,12 +55,12 @@ class ProfileSelectionBase(DataSetBase):
         This constructor calls the base class :meth:`dmqclib.common.base.dataset_base.DataSetBase.__init__`
         and sets up file paths and data holders.
 
-        :param config: A dataset configuration object that provides
-                       file naming conventions and folder paths.
+        :param config: A dataset configuration object that provides file naming
+                       conventions and folder paths.
         :type config: dmqclib.common.base.config_base.ConfigBase
-        :param input_data: Optional Polars DataFrame that serves as the
-                           initial data for profile selection, defaults to None.
-        :type input_data: Optional[pl.DataFrame]
+        :param input_data: Optional Polars DataFrame that serves as the initial data
+                           for profile selection, defaults to None.
+        :type input_data: Optional[polars.DataFrame]
         :raises NotImplementedError: If ``expected_class_name`` is not defined by a subclass
                                       when the base class constructor is called.
         :raises ValueError: If the "base_class" field in the YAML configuration

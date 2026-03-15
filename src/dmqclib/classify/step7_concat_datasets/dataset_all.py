@@ -1,6 +1,6 @@
 """
-This module defines the `ConcatDataSetAll` class, which extends `ConcatDatasetsBase` to
-facilitate the concatenation of model predictions with the original input dataset.
+This module defines the ConcatDataSetAll class, which extends ConcatDatasetsBase
+to facilitate the concatenation of model predictions with the original input dataset.
 It is designed to integrate into a larger data quality control (DQC) workflow,
 specifically within the classification and merging steps.
 """
@@ -19,8 +19,11 @@ class ConcatDataSetAll(ConcatDatasetsBase):
 
     This class sets its :attr:`expected_class_name` to ``"ConcatDataSetAll"``,
     ensuring it is recognized in the YAML configuration as a valid
-    extract class. It inherits the concatenation
-    pipeline from :class:`ConcatDatasetsBase`.
+    processing class. It inherits the concatenation pipeline from
+    :class:`ConcatDatasetsBase`.
+
+    :ivar expected_class_name: The identifier used for configuration mapping.
+    :vartype expected_class_name: str
     """
 
     expected_class_name: str = "ConcatDataSetAll"

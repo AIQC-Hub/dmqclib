@@ -39,13 +39,15 @@ class SklearnModelBase(ModelBase):
         """
         Initialize the model base.
 
-        :param config: A configuration object.
+        :param config: A configuration object containing model and step parameters.
         :type config: ConfigBase
         """
         super().__init__(config=config)
 
         # Check config to see if SHAP should be calculated
-        self.enable_shap: bool = self.config.get_step_params("model").get("calculate_shap", False)
+        self.enable_shap: bool = self.config.get_step_params("model").get(
+            "calculate_shap", False
+        )
 
         # Initialize storage for SHAP values explicitly
         self.shap_values: Optional[pl.DataFrame] = None
@@ -56,6 +58,7 @@ class SklearnModelBase(ModelBase):
         Return the class type of the underlying model to be instantiated.
 
         :return: The class object (e.g., xgboost.XGBClassifier, sklearn.linear_model.LogisticRegression).
+        :rtype: Any
         """
         pass
 
@@ -105,9 +108,10 @@ class SklearnModelBase(ModelBase):
         """
         Update the number of threads set in the model.
 
-        :param model: The model needs to be updated.
+        :param model: The model instance whose thread count needs to be updated.
         :type model: Self
         :return: The updated model instance.
+        :rtype: Self
         """
         if "n_jobs" in self.model_params and hasattr(model.model, "n_jobs"):
             model.model.n_jobs = self.model_params["n_jobs"]
@@ -142,9 +146,13 @@ class SklearnModelBase(ModelBase):
         It automatically selects the optimal Explainer (`TreeExplainer`, `LinearExplainer`,
         or `KernelExplainer`). SHAP results are formatted into a Polars DataFrame
         and stored in :attr:`shap_values`.
+
+        :raises ValueError: If :attr:`test_set` or :attr:`predictions` are ``None``.
         """
         if self.test_set is None:
-            raise ValueError("Member variable 'test_set' must not be empty to calculate SHAP.")
+            raise ValueError(
+                "Member variable 'test_set' must not be empty to calculate SHAP."
+            )
 
         if self.predictions is None:
             raise ValueError("Member variable 'predictions' must not be empty.")
@@ -176,11 +184,17 @@ class SklearnModelBase(ModelBase):
 
         # 3. Model-Agnostic / Neural Models (Slow)
         else:
-            warnings.warn(f"Using slow KernelExplainer for {model_name}. This may take a while.")
+            warnings.warn(
+                f"Using slow KernelExplainer for {model_name}. This may take a while."
+            )
             # Summarize background data heavily to prevent massive slowdowns
-            background_summary = shap.kmeans(background_data, min(100, background_data.shape[0]))
+            background_summary = shap.kmeans(
+                background_data, min(100, background_data.shape[0])
+            )
 
-            explainer = shap.KernelExplainer(self.model.predict_proba, background_summary)
+            explainer = shap.KernelExplainer(
+                self.model.predict_proba, background_summary
+            )
             shap_output = explainer.shap_values(x_test)
 
         # --- STANDARDIZE SHAP OUTPUT SHAPE ---
@@ -209,7 +223,9 @@ class SklearnModelBase(ModelBase):
             }
         )
 
-        self.shap_values = pl.concat([current_data, pl.DataFrame(shap_cols)], how="horizontal")
+        self.shap_values = pl.concat(
+            [current_data, pl.DataFrame(shap_cols)], how="horizontal"
+        )
 
     def create_report(self) -> None:
         """

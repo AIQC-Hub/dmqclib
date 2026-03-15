@@ -1,8 +1,7 @@
 """
-This module defines the ProfileSummaryStats class, a specialized feature
-extraction component for combining row references with summary statistics
-from Polars DataFrames. It is designed to extract, transform, and optionally
-scale statistical features based on pre-computed summary data.
+This module provides the ProfileSummaryStats class, which is responsible for
+extracting and scaling statistical features from Polars DataFrames by merging
+row-level data with summary statistics.
 """
 
 from typing import Optional, Dict
@@ -39,37 +38,25 @@ class ProfileSummaryStats(FeatureBase):
         :param target_name: The name of the target used to lookup
                             corresponding rows in :attr:`selected_rows`.
         :type target_name: Optional[str]
-        :param feature_info: A dictionary specifying
-                             feature parameters and stats.
-
+        :param feature_info: A dictionary specifying feature parameters and stats.
                              Example structure:
                              .. code-block:: python
 
                                 {
                                   "stats": {
                                     "temp": {
-                                      "min": {
-                                        "min": 0.0,
-                                        "max": 30.0
-                                      },
-                                      "mean": {
-                                        "min": 0.0,
-                                        "max": 30.0
-                                      }
-                                      # ...
-                                    },
-                                    "psal": {
-                                      # ...
+                                      "min": {"min": 0.0, "max": 30.0},
+                                      "mean": {"min": 0.0, "max": 30.0}
                                     }
-                                  }
+                                  },
+                                  "col_names": ["temp"],
+                                  "summary_stats_names": ["min", "mean"],
+                                  "stats_set": {"type": "min_max"}
                                 }
         :type feature_info: Optional[Dict]
-        :param selected_profiles: A Polars DataFrame of selected profiles,
-                                  typically unused by this class but provided
-                                  for consistency.
+        :param selected_profiles: A Polars DataFrame of selected profiles.
         :type selected_profiles: Optional[pl.DataFrame]
-        :param filtered_input: A Polars DataFrame of potentially filtered input data,
-                               not directly used here.
+        :param filtered_input: A Polars DataFrame of potentially filtered input data.
         :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary of DataFrames keyed by target names,
                               containing rows for which features are extracted.
@@ -89,18 +76,13 @@ class ProfileSummaryStats(FeatureBase):
 
     def extract_features(self) -> None:
         """
-        Traverse the :attr:`feature_info["stats"]` structure to assemble
+        Traverse the :attr:`feature_info` structure to assemble
         columns from :attr:`summary_stats`, merging them into :attr:`features`.
 
         Steps:
-
-          1. :meth:`_filter_selected_rows_cols` - initialize :attr:`features` by selecting
-             base columns (row_id, platform_code, profile_no).
-          2. For each top-level key and subkey in :attr:`feature_info["stats"]`,
-             call :meth:`_extract_single_summary` to join in the corresponding
-             metric from :attr:`summary_stats`.
-          3. Drop columns (platform_code, profile_no) that are no longer needed in
-             the final feature set.
+          1. Initialize :attr:`features` via :meth:`_filter_selected_rows_cols`.
+          2. Join metrics from :attr:`summary_stats` for each variable/metric pair.
+          3. Remove join keys (platform_code, profile_no) from the final result.
         """
         self._filter_selected_rows_cols()
 
@@ -125,14 +107,11 @@ class ProfileSummaryStats(FeatureBase):
 
     def _extract_single_summary(self, variable_name: str, metric_name: str) -> None:
         """
-        Join a single summary statistic (e.g., min, mean, max) from :attr:`summary_stats`
-        onto :attr:`features`.
+        Join a single summary statistic from :attr:`summary_stats` onto :attr:`features`.
 
-        :param variable_name: The variable category key (e.g., "temp", "psal") in
-                              :attr:`summary_stats`. This was previously named `target_name`.
+        :param variable_name: The variable category key (e.g., "temp", "psal").
         :type variable_name: str
-        :param metric_name: The specific metric key (e.g., "min", "mean", "max")
-                            under the variable category. This was previously named `var_name`.
+        :param metric_name: The specific metric key (e.g., "min", "mean", "max").
         :type metric_name: str
         """
         self.features = self.features.join(
@@ -148,20 +127,15 @@ class ProfileSummaryStats(FeatureBase):
     def scale_first(self) -> None:
         """
         An initial scaling hook (unimplemented).
-
-        Subclasses or calling code can override or extend this method
-        to perform additional transformations before stats-based feature joins.
         """
         pass  # pragma: no cover
 
     def scale_second(self) -> None:
         """
-        Min-max scale the newly joined summary statistics.
+        Min-max scale the newly joined summary statistics based on :attr:`feature_info`.
 
-        For each top-level key (e.g., "temp") and subkey (e.g., "mean") in
-        :attr:`feature_info["stats"]`, transform the combined column
-        named "temp_mean" or "temp_min" etc. according to specified
-        min and max.
+        Transforms columns named "{variable}_{metric}" using the min/max values
+        provided in the configuration.
         """
         if self.feature_info["stats_set"]["type"] == "min_max":
             columns_to_add = [

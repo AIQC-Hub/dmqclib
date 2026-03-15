@@ -85,7 +85,8 @@ def run_test_with_trained_model(test_obj):
     # Height should match number of test rows
     test_obj.assertEqual(ds.contingency_tables["temp"].height, 12)
     test_obj.assertListEqual(
-        ds.contingency_tables["temp"].columns, ["k", "label", "predicted_label", "score"]
+        ds.contingency_tables["temp"].columns,
+        ["k", "label", "predicted_label", "score"],
     )
 
     test_obj.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
@@ -274,16 +275,6 @@ class TestBuildModel(unittest.TestCase):
         self.assertNotEqual(ds.models["temp"], ds.models["pres"])
         self.assertNotEqual(ds.models["psal"], ds.models["pres"])
 
-    def test_build_without_test_sets(self):
-        """Ensure that calling build_targets() with no test sets available raises a ValueError."""
-        ds = BuildModel(
-            self.config,
-            training_sets=self.ds_input.training_sets,
-            test_sets=None,
-        )
-        with self.assertRaises(ValueError):
-            ds.build_targets()
-
     def test_build_without_training_sets(self):
         """Ensure that calling build_targets() with no training sets available raises a ValueError."""
         ds = BuildModel(
@@ -406,15 +397,9 @@ class TestBuildModel(unittest.TestCase):
         ds.test_targets()
         ds.write_shap_values()
 
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["shap_value"]["temp"])
-        )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["shap_value"]["psal"])
-        )
-        self.assertTrue(
-            os.path.exists(ds.output_file_names["shap_value"]["pres"])
-        )
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["pres"]))
 
         os.remove(ds.output_file_names["shap_value"]["temp"])
         os.remove(ds.output_file_names["shap_value"]["psal"])

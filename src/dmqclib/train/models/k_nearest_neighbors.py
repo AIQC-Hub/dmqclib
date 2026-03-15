@@ -22,6 +22,7 @@ class KNearestNeighbors(SklearnModelBase):
     Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
     - Uses ``sklearn.neighbors.KNeighborsClassifier``.
@@ -62,6 +63,7 @@ class KNearestNeighbors(SklearnModelBase):
         """
         Return the Scikit-Learn KNeighborsClassifier class.
 
-        :return: The KNeighborsClassifier class.
+        :returns: The KNeighborsClassifier class.
+        :rtype: Any
         """
         return SklearnKNN

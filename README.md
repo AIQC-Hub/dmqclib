@@ -9,6 +9,20 @@
 
 **dmqclib** is a Python library that provides a configuration-driven workflow for machine learning, simplifying dataset preparation, model training, and data classification. It is a core component of the AIQC project that aims to enhance anomaly detection in CTD (Conductivity, Temperature, Depth) data.
 
+## ML Algorithms Supported by **dmqclib**
+
+| Category | Algorithm | Short Name | Method |
+| :--- | :--- | :--- | :--- |
+| Tree-Based & Ensemble | **XGBoost** | XGB | Ensemble (Boosting) |
+| | **Random Forest** | RF | Ensemble (Bagging) |
+| | **Decision Tree** | DT | Tree |
+| Linear & Geometric | **Logistic Regression** | Logit | Linear |
+| | **Linear Discriminant Analysis** | LDA | Linear / Statistical |
+| | **Support Vector Machine** | SVM | Geometric |
+| Instance-Based (Distance-Based) | **K-Nearest Neighbors** | KNN | Distance-based |
+| Probabilistic | **Gaussian Naive Bayes** | GNB | Probabilistic |
+| Neural Network | **Multilayer Perceptron** | MLP | Neural Network |
+
 ## Installation
 
 The package is available on PyPI and conda-forge.
@@ -303,9 +317,7 @@ ruff format tests
 4.  **Build HTML:**
     From the project root, run:
     ```bash
-    cd docs
-    uv run make html
-    cd ..
+    cd docs; uv run make html; cd ..
     ```
     You can view the generated site by opening `docs/build/html/index.html` in a browser.
 
@@ -315,10 +327,15 @@ ruff format tests
 
 The package is published to [PyPI](https://pypi.org/project/dmqclib/) automatically via a GitHub Action whenever a new release is created on GitHub.
 
+### conda-forge (Automatic)
+
+The conda-forge bot automatically creates a pull request and merges it into the main branch when a new version of the package is published on PyPI.
+
 ### conda-forge (Manual)
 
-#### Bump version
-Updating the package on `conda-forge` involves creating a pull request to the `conda-forge/dmqclib-feedstock` repository.
+#### Bump version with new dependencies
+
+When runtime dependencies change, the automated PR from the conda-forge bot may fail. In that case, you must manually update the feedstock by creating a pull request to the `conda-forge/dmqclib-feedstock` repository in this case.
 
 1.  **Install build tools:**
     ```bash
@@ -370,6 +387,5 @@ conda-smithy
     anaconda login
     anaconda upload /path/to/your/conda-bld/noarch/dmqclib-*.conda
     ```
-
 5.  **Cleanup:**
     Copy `dmqclib/meta.yaml` to `conda/meta.yaml` for version control and remove the temporary `dmqclib` directory.

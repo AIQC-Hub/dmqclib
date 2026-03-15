@@ -65,6 +65,9 @@ def load_feature_class(
                         in :data:`FEATURE_REGISTRY`.
     """
     class_name = feature_info.get("feature")
+    if not class_name:  # Explicitly check for missing "feature" key
+        raise ValueError("Missing 'feature' key in feature_info dictionary.")
+
     feature_class = FEATURE_REGISTRY.get(class_name)
     if not feature_class:
         raise ValueError(f"Unknown feature class specified: {class_name}")

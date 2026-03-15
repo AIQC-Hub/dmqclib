@@ -31,13 +31,9 @@ class SelectDataSetAll(ProfileSelectionBase):
         """
         Initialize an instance for selecting and labeling profiles.
 
-        :param config: The configuration object specifying paths and
-                       parameters for the selection process.
+        :param config: The configuration object specifying paths and parameters for the selection process.
         :type config: dmqclib.common.base.config_base.ConfigBase
-        :param input_data: An optional Polars DataFrame of all profiles
-                           from which negative and positive examples are
-                           to be selected. If not provided, it must be
-                           assigned later using :attr:`input_data`.
+        :param input_data: An optional Polars DataFrame of all profiles from which negative and positive examples are to be selected.
         :type input_data: polars.DataFrame, optional
         """
         super().__init__(config=config, input_data=input_data)

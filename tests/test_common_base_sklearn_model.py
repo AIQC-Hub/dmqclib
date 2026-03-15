@@ -100,7 +100,7 @@ class TestSklearnModelBase(unittest.TestCase):
         """
         # Setup dummy training data
         self.model_wrapper.training_set = pl.DataFrame(
-            {"feature1": [1.0, 2.0, 3.0], "label":[0, 1, 0]}
+            {"feature1": [1.0, 2.0, 3.0], "label": [0, 1, 0]}
         )
 
         self.model_wrapper.build()
@@ -129,7 +129,9 @@ class TestSklearnModelBase(unittest.TestCase):
 
         self.assertIsNotNone(self.model_wrapper.predictions)
         self.assertEqual(self.model_wrapper.predictions.shape, (2, 2))
-        self.assertListEqual(self.model_wrapper.predictions.columns, ["predicted_label", "score"])
+        self.assertListEqual(
+            self.model_wrapper.predictions.columns, ["predicted_label", "score"]
+        )
         # Based on MockSklearnClassifier logic:
         self.assertEqual(self.model_wrapper.predictions["predicted_label"][0], 0.0)
         self.assertEqual(self.model_wrapper.predictions["score"][0], 0.5)
@@ -146,11 +148,11 @@ class TestSklearnModelBase(unittest.TestCase):
         Ensure create_report generates a DataFrame with metrics.
         """
         self.model_wrapper.k = 1
-        self.model_wrapper.test_set = pl.DataFrame({"label":[0, 1, 0, 1]})
+        self.model_wrapper.test_set = pl.DataFrame({"label": [0, 1, 0, 1]})
         self.model_wrapper.predictions = pl.DataFrame(
             {
                 "predicted_label": [0, 1, 0, 0],  # One error
-                "score":[0.5, 0.5, 0.5, 0.5],
+                "score": [0.5, 0.5, 0.5, 0.5],
             }
         )
 
@@ -227,18 +229,22 @@ class TestSklearnModelBase(unittest.TestCase):
         Ensure TreeExplainer is correctly routed and utilized for Tree models.
         Mocking the SHAP module prevents slow computations and dependency issues during tests.
         """
-        with patch.dict('sys.modules', {'shap': MagicMock()}) as mock_sys_modules:
-            mock_shap = mock_sys_modules['shap']
+        with patch.dict("sys.modules", {"shap": MagicMock()}) as mock_sys_modules:
+            mock_shap = mock_sys_modules["shap"]
 
             # Setup mock explainer returning standard array output (like XGBoost)
             mock_explainer = MagicMock()
-            mock_explainer.shap_values.return_value = np.array([[0.1, 0.2],[0.3, 0.4]])
+            mock_explainer.shap_values.return_value = np.array([[0.1, 0.2], [0.3, 0.4]])
             mock_shap.TreeExplainer.return_value = mock_explainer
 
             self.model_wrapper.expected_class_name = "XGBoost"
             self.model_wrapper.model = MockSklearnClassifier()
-            self.model_wrapper.test_set = pl.DataFrame({"f1": [1.0, 2.0], "f2":[3.0, 4.0], "label": [0, 1]})
-            self.model_wrapper.predictions = pl.DataFrame({"label": [0, 1], "predicted_label": [0, 1], "score": [0.1, 0.9]})
+            self.model_wrapper.test_set = pl.DataFrame(
+                {"f1": [1.0, 2.0], "f2": [3.0, 4.0], "label": [0, 1]}
+            )
+            self.model_wrapper.predictions = pl.DataFrame(
+                {"label": [0, 1], "predicted_label": [0, 1], "score": [0.1, 0.9]}
+            )
 
             self.model_wrapper.calculate_shap()
 
@@ -247,15 +253,18 @@ class TestSklearnModelBase(unittest.TestCase):
 
             # Verify Polars DataFrame was constructed properly
             self.assertIsNotNone(self.model_wrapper.shap_values)
-            self.assertListEqual(self.model_wrapper.shap_values.columns, ["label", "predicted_label", "score", "f1_shap", "f2_shap"])
+            self.assertListEqual(
+                self.model_wrapper.shap_values.columns,
+                ["label", "predicted_label", "score", "f1_shap", "f2_shap"],
+            )
             self.assertEqual(self.model_wrapper.shap_values["f1_shap"][0], 0.1)
 
     def test_calculate_shap_linear_explainer(self):
         """
         Ensure LinearExplainer is correctly routed for Linear models.
         """
-        with patch.dict('sys.modules', {'shap': MagicMock()}) as mock_sys_modules:
-            mock_shap = mock_sys_modules['shap']
+        with patch.dict("sys.modules", {"shap": MagicMock()}) as mock_sys_modules:
+            mock_shap = mock_sys_modules["shap"]
 
             mock_explainer = MagicMock()
             mock_explainer.shap_values.return_value = np.array([[0.5, 0.6]])
@@ -263,9 +272,15 @@ class TestSklearnModelBase(unittest.TestCase):
 
             self.model_wrapper.expected_class_name = "LogisticRegression"
             self.model_wrapper.model = MockSklearnClassifier()
-            self.model_wrapper.training_set = pl.DataFrame({"f1": [1.0], "f2": [2.0], "label": [0]})
-            self.model_wrapper.test_set = pl.DataFrame({"f1": [1.0], "f2":[2.0], "label": [0]})
-            self.model_wrapper.predictions = pl.DataFrame({"label": [0], "predicted_label": [0], "score": [0.4]})
+            self.model_wrapper.training_set = pl.DataFrame(
+                {"f1": [1.0], "f2": [2.0], "label": [0]}
+            )
+            self.model_wrapper.test_set = pl.DataFrame(
+                {"f1": [1.0], "f2": [2.0], "label": [0]}
+            )
+            self.model_wrapper.predictions = pl.DataFrame(
+                {"label": [0], "predicted_label": [0], "score": [0.4]}
+            )
 
             self.model_wrapper.calculate_shap()
 
@@ -279,23 +294,29 @@ class TestSklearnModelBase(unittest.TestCase):
         """
         Ensure KernelExplainer is routed with background summarization for Blackbox models.
         """
-        with patch.dict('sys.modules', {'shap': MagicMock()}) as mock_sys_modules:
-            mock_shap = mock_sys_modules['shap']
+        with patch.dict("sys.modules", {"shap": MagicMock()}) as mock_sys_modules:
+            mock_shap = mock_sys_modules["shap"]
 
             mock_explainer = MagicMock()
             # Kernel Explainer usually returns a list of arrays (one for each class)
             mock_explainer.shap_values.return_value = [
-                np.array([[-0.1, -0.2]]), # class 0
-                np.array([[0.9, 0.8]])    # class 1 (we extract this)
+                np.array([[-0.1, -0.2]]),  # class 0
+                np.array([[0.9, 0.8]]),  # class 1 (we extract this)
             ]
             mock_shap.KernelExplainer.return_value = mock_explainer
             mock_shap.kmeans.return_value = "mock_kmeans_summary"
 
             self.model_wrapper.expected_class_name = "SVM"
             self.model_wrapper.model = MockSklearnClassifier()
-            self.model_wrapper.training_set = pl.DataFrame({"f1": [1.0], "f2": [2.0], "label": [0]})
-            self.model_wrapper.test_set = pl.DataFrame({"f1": [1.0], "f2": [2.0], "label": [0]})
-            self.model_wrapper.predictions = pl.DataFrame({"label": [0], "predicted_label": [0], "score": [0.1]})
+            self.model_wrapper.training_set = pl.DataFrame(
+                {"f1": [1.0], "f2": [2.0], "label": [0]}
+            )
+            self.model_wrapper.test_set = pl.DataFrame(
+                {"f1": [1.0], "f2": [2.0], "label": [0]}
+            )
+            self.model_wrapper.predictions = pl.DataFrame(
+                {"label": [0], "predicted_label": [0], "score": [0.1]}
+            )
 
             # Suppress the UserWarning triggered when routing to KernelExplainer
             with warnings.catch_warnings():
@@ -305,7 +326,9 @@ class TestSklearnModelBase(unittest.TestCase):
             # Verify K-means summarization was called
             mock_shap.kmeans.assert_called_once()
             # Verify KernelExplainer was initialized with predict_proba
-            mock_shap.KernelExplainer.assert_called_once_with(self.model_wrapper.model.predict_proba, "mock_kmeans_summary")
+            mock_shap.KernelExplainer.assert_called_once_with(
+                self.model_wrapper.model.predict_proba, "mock_kmeans_summary"
+            )
 
             # Verify correct class array (index 1) was extracted
             self.assertIsNotNone(self.model_wrapper.shap_values)

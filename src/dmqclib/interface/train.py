@@ -1,6 +1,9 @@
 """
-Module orchestrating a training-and-evaluation workflow for the configured dataset.
-Each step is dynamically loaded based on the configuration provided.
+Orchestration module for the model training and evaluation pipeline.
+
+This module defines the primary workflow for loading datasets, performing model
+validation, and executing the final model construction and testing phases based
+on a centralized configuration.
 """
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -19,38 +22,27 @@ def train_and_evaluate(config: ConfigBase) -> None:
     model validation, and final model building and testing.
 
     Steps:
-
       1. Load and process input training data.
       2. Validate the model using the specified validation technique (e.g., k-fold).
       3. Build and test the final model, saving results and trained model artifacts.
 
-    :param config:
-        A training configuration object derived from :class:`ConfigBase`.
-        Specifies which classes and parameters to use at each step
-        (input, model validation, and model building).
+    :param config: A training configuration object specifying classes and parameters.
     :type config: ConfigBase
-    :returns:
-        None. The function performs I/O operations and does not return a value.
+    :return: None. The function performs I/O operations and does not return a value.
     :rtype: None
-
-    :raises SomeSpecificError: If a configuration parameter is invalid or a step fails.
-        (Example: Add specific exceptions if known to be raised).
-
-    Example Usage:
-      >>> from dmqclib.common.base.config_base import ConfigBase
-      >>> # Assuming cfg is an initialized ConfigBase object
-      >>> cfg = ConfigBase(...)
-      >>> train_and_evaluate(cfg)
     """
+    # Step 1: Input Loading
     ds_input = load_step1_input_training_set(config)
     ds_input.process_targets()
 
+    # Step 2: Model Validation
     ds_valid = load_step2_model_validation_class(config, ds_input.training_sets)
     ds_valid.process_targets()
     ds_valid.write_reports()
     ds_valid.write_contingency_tables()
     ds_valid.create_metric_plots()
 
+    # Step 4: Build and Test Model
     ds_build = load_step4_build_model_class(
         config, ds_input.training_sets, ds_input.test_sets
     )

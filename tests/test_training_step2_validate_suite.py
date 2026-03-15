@@ -165,7 +165,8 @@ class TestKFoldValidationSuite(unittest.TestCase):
         self.assertIsInstance(ds.contingency_tables["dt_psal"], pl.DataFrame)
         self.assertEqual(ds.contingency_tables["dt_psal"].height, 126)
         self.assertListEqual(
-            ds.contingency_tables["dt_psal"].columns, ["k", "label", "predicted_label", "score"]
+            ds.contingency_tables["dt_psal"].columns,
+            ["k", "label", "predicted_label", "score"],
         )
 
         # Check that file paths were dynamically updated for the composite keys

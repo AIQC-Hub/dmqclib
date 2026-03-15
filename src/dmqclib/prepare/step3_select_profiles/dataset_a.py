@@ -1,12 +1,9 @@
-"""Selects and labels oceanographic profiles based on QC flags.
+"""
+This module defines the SelectDataSetA class for oceanographic profile selection.
 
-This module defines the `SelectDataSetA` class, which is responsible for selecting
-and labeling positive and negative oceanographic profiles from a given dataset.
-
-It extends :class:`~.select_base.ProfileSelectionBase` to implement specific
-criteria for identifying "bad" (positive) and "good" (negative) profiles
-based on QC flags, and then pairs them temporally to construct a labeled dataset
-suitable for quality control machine learning applications.
+The module provides functionality to categorize profiles as "positive" (containing
+errors) or "negative" (clean) based on Quality Control (QC) flags and pairs
+them based on temporal proximity for machine learning dataset construction.
 """
 
 import operator
@@ -60,6 +57,8 @@ class SelectDataSetA(ProfileSelectionBase):
                            of profiles from which to select examples. If None,
                            it is expected to be loaded by the base class.
         :type input_data: Optional[polars.DataFrame]
+        :return: None
+        :rtype: None
         """
         super().__init__(config=config, input_data=input_data)
 
@@ -80,6 +79,9 @@ class SelectDataSetA(ProfileSelectionBase):
         its measurements have a QC flag defined as a positive flag in the
         configuration (e.g., a flag of 4). The resulting unique profiles
         are stored in the :attr:`pos_profile_df` attribute.
+
+        :return: None
+        :rtype: None
         """
         conditions = reduce(
             operator.or_,
@@ -108,6 +110,9 @@ class SelectDataSetA(ProfileSelectionBase):
         none of its measurements have a "bad" flag and at least one has a "good"
         flag. The resulting unique profiles are stored in the
         :attr:`neg_profile_df` attribute.
+
+        :return: None
+        :rtype: None
         """
         exprs = reduce(
             operator.and_,
@@ -139,6 +144,9 @@ class SelectDataSetA(ProfileSelectionBase):
         This method updates :attr:`pos_profile_df` by adding ``label`` and
         ``neg_profile_id`` columns. It also updates :attr:`neg_profile_df`
         by filtering it to the matched profiles and adding corresponding labels.
+
+        :return: None
+        :rtype: None
         """
         neg_pos_ratio = self.config.get_step_params("select").get("neg_pos_ratio", 1)
 
@@ -183,6 +191,9 @@ class SelectDataSetA(ProfileSelectionBase):
 
         The final combined DataFrame of labeled profiles is stored in the
         :attr:`selected_profiles` attribute of the base class.
+
+        :return: None
+        :rtype: None
         """
         self.select_positive_profiles()
         self.select_negative_profiles()

@@ -24,3 +24,11 @@ dmqclib.common.utils.file module
    :members:
    :show-inheritance:
    :undoc-members:
+
+dmqclib.common.utils.metric\_plots module
+-----------------------------------------
+
+.. automodule:: dmqclib.common.utils.metric_plots
+   :members:
+   :show-inheritance:
+   :undoc-members:

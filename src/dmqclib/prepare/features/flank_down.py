@@ -1,9 +1,7 @@
 """
-This module provides the FlankDown class for extracting "flanking" (neighboring) observations around the target
-rows.
-
-It extends FeatureBase and is designed for specific data processing needs,
-such as those encountered with Copernicus CTD data.
+This module provides the FlankDown class for extracting "flanking" (neighboring) observations
+around target rows within Copernicus CTD datasets. It specializes in downstream
+observation expansion and feature pivoting.
 """
 
 from typing import Optional, Dict
@@ -35,25 +33,27 @@ class FlankDown(FeatureBase):
         Initialize an instance of FlankDown.
 
         :param target_name: The key identifying which target's rows to extract
-                            features for from :attr:`selected_rows`, defaults to None.
+                            features for from :attr:`selected_rows`.
         :type target_name: Optional[str]
         :param feature_info: A dictionary containing feature-related parameters,
                              including a "stats" sub-dict with min/max info
                              and a "flank_down" integer specifying how many
-                             downstream observations to retrieve, defaults to None.
+                             downstream observations to retrieve.
         :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame with selected profiles, typically
-                                  used for further merges or lookups, defaults to None.
+                                  used for further merges or lookups.
         :type selected_profiles: Optional[pl.DataFrame]
         :param filtered_input: A potentially filtered Polars DataFrame containing
-                               full observed variables, defaults to None.
+                               full observed variables.
         :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary mapping target names to their respective
-                              DataFrames of relevant rows, defaults to None.
+                              DataFrames of relevant rows.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: A Polars DataFrame of summary statistics
-                              (unused in this subclass), defaults to None.
+                              (unused in this subclass).
         :type summary_stats: Optional[pl.DataFrame]
+        :return: None
+        :rtype: None
         """
         super().__init__(
             target_name=target_name,
@@ -71,15 +71,15 @@ class FlankDown(FeatureBase):
         Initiate the multi-step process of creating the feature set in :attr:`features`.
 
         Steps:
+          1. :meth:`_init_features` - Prepare a base DataFrame with essential columns.
+          2. :meth:`_expand_observations` - Expand observations based on "flank_down".
+          3. For each column in ``feature_info["col_names"]``:
+             - :meth:`_pivot_features` to pivot the data.
+             - :meth:`_add_features` to join the pivoted data onto the feature table.
+          4. :meth:`_clean_features` - Drop metadata columns.
 
-          1. :meth:`_init_features` - Prepare a base DataFrame with essential columns
-             (row_id, platform_code, profile_no).
-          2. :meth:`_expand_observations` - Expand observations by adding rows for
-             the specified number of "flank" steps (based on ``feature_info["flank_down"]``).
-          3. For each column in ``feature_info["col_names"]``, call:
-             - :meth:`_pivot_features` to pivot the data for that column,
-             - :meth:`_add_features` to join the pivoted data onto our feature table.
-          4. :meth:`_clean_features` - Drop columns no longer needed.
+        :return: None
+        :rtype: None
         """
         self._init_features()
         self._expand_observations()
@@ -92,6 +92,9 @@ class FlankDown(FeatureBase):
         """
         Initialize :attr:`features` by selecting core columns
         from :attr:`selected_rows[target_name]`.
+
+        :return: None
+        :rtype: None
         """
         self.features = self.selected_rows[self.target_name].select(
             ["row_id", "platform_code", "profile_no"]
@@ -104,6 +107,9 @@ class FlankDown(FeatureBase):
         This expands each row in :attr:`selected_rows[target_name]` by
         cross joining with a sequence from 1 to ``feature_info["flank_down"]``,
         then adjusts ``observation_no`` to shift forwards for each flank step.
+
+        :return: None
+        :rtype: None
         """
         summary_df = self.filtered_input.group_by(
             pl.col("platform_code"),
@@ -142,6 +148,8 @@ class FlankDown(FeatureBase):
 
         :param col_name: The original data column to be pivoted (e.g., "temp").
         :type col_name: str
+        :return: None
+        :rtype: None
         """
         self._feature_wide = (
             self._expanded_observations.join(
@@ -174,6 +182,9 @@ class FlankDown(FeatureBase):
     def _add_features(self) -> None:
         """
         Join the pivoted columns from :attr:`_feature_wide` onto :attr:`features`.
+
+        :return: None
+        :rtype: None
         """
         self.features = self.features.join(
             self._feature_wide,
@@ -184,6 +195,9 @@ class FlankDown(FeatureBase):
     def _clean_features(self) -> None:
         """
         Drop columns that are no longer needed in the final feature set.
+
+        :return: None
+        :rtype: None
         """
         self.features = self.features.drop(["platform_code", "profile_no"])
 
@@ -192,7 +206,8 @@ class FlankDown(FeatureBase):
         Apply a pre-feature-extraction scaling step on :attr:`filtered_input`
         using min-max scaling derived from :attr:`feature_info["stats"]`.
 
-        This modifies :attr:`filtered_input` in place for each relevant column.
+        :return: None
+        :rtype: None
         """
         if self.feature_info["stats_set"]["type"] == "min_max":
             for col_name, v in self.feature_info["stats"].items():
@@ -205,8 +220,9 @@ class FlankDown(FeatureBase):
     def scale_second(self) -> None:
         """
         Apply a post-feature-extraction scaling step if needed.
+        Currently unimplemented.
 
-        Currently, unimplemented; retains placeholders for additional
-        scaling/normalization after feature pivoting and expansion.
+        :return: None
+        :rtype: None
         """
         pass  # pragma: no cover

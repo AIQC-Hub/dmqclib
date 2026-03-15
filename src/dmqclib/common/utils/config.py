@@ -6,19 +6,19 @@ of specific items within the parsed configuration data.
 """
 
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional  # Added Optional
 
 import yaml
 
 
-def get_config_file(config_file: str) -> str:
+def get_config_file(config_file: Optional[str]) -> str:
     """Determine the absolute path for a configuration file.
 
     If the provided path does not exist, a ``FileNotFoundError`` is raised.
-    If `config_file` is `None`, a `ValueError` is raised.
+    If `config_file` is ``None``, a `ValueError` is raised.
 
     :param config_file: The path to the configuration file, or ``None``.
-    :type config_file: str or None
+    :type config_file: Optional[str]
     :raises ValueError: If `config_file` is ``None``.
     :raises FileNotFoundError: If the path specified by `config_file` does not exist.
     :return: The resolved absolute path to the configuration file.
@@ -32,7 +32,7 @@ def get_config_file(config_file: str) -> str:
     return str(config_file)
 
 
-def read_config(config_file: str) -> Dict[str, Any]:
+def read_config(config_file: Optional[str]) -> Dict[str, Any]:
     """Read and parse a YAML configuration file.
 
     This function uses the provided `config_file` path to locate,
@@ -40,14 +40,14 @@ def read_config(config_file: str) -> Dict[str, Any]:
 
     :param config_file: Full path to the config file, or ``None`` to indicate
                         no specific file was provided.
-    :type config_file: str
+    :type config_file: Optional[str]
     :raises ValueError: If `config_file` is ``None`` (propagated from
                         :func:`get_config_file`).
     :raises FileNotFoundError: If no file is found at the resolved path
                                (propagated from :func:`get_config_file`).
     :raises yaml.YAMLError: If the configuration file is not valid YAML.
     :return: A dictionary representing the parsed YAML configuration.
-    :rtype: dict
+    :rtype: Dict[str, Any]
     """
     resolved_file = get_config_file(config_file)
 
@@ -65,7 +65,7 @@ def get_config_item(config: Dict[str, Any], section: str, name: str) -> Dict[str
     key matches the given `name`.
 
     :param config: The configuration dictionary, e.g., from :func:`read_config`.
-    :type config: dict[str, Any]
+    :type config: Dict[str, Any]
     :param section: The top-level key in `config` that contains a list of items.
     :type section: str
     :param name: The value of the "name" key to match within the item.
@@ -74,7 +74,7 @@ def get_config_item(config: Dict[str, Any], section: str, name: str) -> Dict[str
     :raises TypeError: If the value at `config[section]` is not iterable.
     :raises ValueError: If no item with the specified `name` is found in the section.
     :return: The dictionary of the matching configuration item.
-    :rtype: dict[str, Any]
+    :rtype: Dict[str, Any]
     """
     for item in config[section]:
         if item.get("name") == name:

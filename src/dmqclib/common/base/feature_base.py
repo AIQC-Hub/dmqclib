@@ -1,10 +1,10 @@
 """
-This module defines an abstract base class, `FeatureBase`, for a standardized approach
-to extracting and scaling features using the Polars data manipulation library.
+Standardized Feature Extraction and Scaling Module.
 
-It provides a blueprint for subclasses to implement specific feature engineering
-workflows, ensuring consistency in data processing steps across different
-feature sets or models.
+This module defines the `FeatureBase` abstract base class (ABC), which provides a
+standardized framework for feature engineering tasks using the Polars library.
+It ensures that subclasses implement a consistent pipeline for feature
+extraction and multi-stage scaling.
 """
 
 from abc import ABC, abstractmethod
@@ -17,18 +17,18 @@ class FeatureBase(ABC):
     """
     Abstract base class for extracting and scaling features.
 
-    Child classes must implement all abstract methods:
+    Child classes must implement all abstract methods to define specific
+    logic for feature generation and normalization. This class serves as a
+    container for the data and metadata required during the transformation
+    lifecycle.
 
-    - :meth:`extract_features`
-    - :meth:`scale_first`
-    - :meth:`scale_second`
-
-    These methods encompass the steps to:
-
-    1. Extract relevant features from provided data.
-    2. Perform an initial scaling or normalization process.
-    3. Optionally perform a second scaling pass, depending on
-       the specific requirements.
+    :ivar target_name: Name of the target variable.
+    :ivar feature_info: Metadata or configuration for features.
+    :ivar selected_profiles: Polars DataFrame of pre-selected profiles.
+    :ivar filtered_input: Polars DataFrame of pre-filtered input data.
+    :ivar selected_rows: Mapping of identifiers to specific Polars DataFrames.
+    :ivar summary_stats: Polars DataFrame containing summary statistics.
+    :ivar features: Polars DataFrame containing the processed features.
     """
 
     def __init__(
@@ -45,21 +45,17 @@ class FeatureBase(ABC):
 
         :param target_name: Name of the target variable to use when extracting features.
         :type target_name: Optional[str]
-        :param feature_info: A dictionary containing metadata or configuration
-                             about features.
+        :param feature_info: A dictionary containing metadata or configuration about features.
         :type feature_info: Optional[Dict]
-        :param selected_profiles: A Polars DataFrame containing pre-selected
-                                  profiles or records relevant for feature derivation.
+        :param selected_profiles: A Polars DataFrame containing pre-selected profiles.
         :type selected_profiles: Optional[pl.DataFrame]
-        :param filtered_input: A Polars DataFrame that may already include filters
-                               applied to the data prior to feature extraction.
+        :param filtered_input: A Polars DataFrame that may already include filters.
         :type filtered_input: Optional[pl.DataFrame]
-        :param selected_rows: A dictionary mapping identifiers to Polars DataFrames,
-                              focusing on the target rows for subsequent transformations.
+        :param selected_rows: A dictionary mapping identifiers to Polars DataFrames.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
-        :param summary_stats: A Polars DataFrame of summary statistics that might
-                              guide transformations (e.g., scaling) of features.
+        :param summary_stats: A Polars DataFrame of summary statistics for transformations.
         :type summary_stats: Optional[pl.DataFrame]
+        :return: None
         :rtype: None
         """
         self.target_name: Optional[str] = target_name
@@ -75,12 +71,11 @@ class FeatureBase(ABC):
         """
         Extract features from the provided data sources.
 
-        This method is responsible for generating the raw features and storing them
-        in the `self.features` attribute. Classes that subclass :class:`FeatureBase`
-        must implement and tailor this method to their specific feature requirements.
-        For instance, transformations on ``self.filtered_input`` or merges with
-        ``self.selected_rows`` can occur here.
+        This method must be implemented by subclasses to generate raw features
+        from inputs like `filtered_input` or `selected_rows`. The resulting
+        DataFrame should be assigned to `self.features`.
 
+        :return: None
         :rtype: None
         """
         pass  # pragma: no cover
@@ -90,11 +85,10 @@ class FeatureBase(ABC):
         """
         Apply the first pass of scaling or normalization to the extracted features.
 
-        This is typically used to handle basic transformations,
-        removing outliers or applying standard scaling. Child classes
-        should decide how and when these transformations are applied.
-        The scaled features should update the `self.features` attribute.
+        Typically used for initial transformations such as standard scaling or
+        handling outliers. This method should update the `self.features` attribute.
 
+        :return: None
         :rtype: None
         """
         pass  # pragma: no cover
@@ -104,11 +98,11 @@ class FeatureBase(ABC):
         """
         Apply a secondary scaling or refinement step to the features.
 
-        This step might be used when further adjustments are needed
-        after the initial scaling, such as a domain-specific transformation
-        or final normalizations to align with a particular model's requirements.
-        The refined features should update the `self.features` attribute.
+        Used for additional adjustments or domain-specific normalizations
+        required after the first scaling pass. This method should update
+        the `self.features` attribute.
 
+        :return: None
         :rtype: None
         """
         pass  # pragma: no cover

@@ -39,20 +39,25 @@ def load_single_model_class_with_class_name(
     config: ConfigBase, class_name: str
 ) -> ModelBase:
     """
-    Retrieve and instantiate a model class for the "model" step from the provided configuration.
+    Retrieves and instantiates a specific model class using a given configuration and class name.
 
-    :param config: A configuration object that includes a "base_class" entry
-                   under the "model" step, specifying which model class to load.
-                   This object must implement the ``get_base_class`` method.
+    This function looks up the specified model class name in the global
+    :data:`~dmqclib.common.loader.single_model_registry.SINGLE_MODEL_REGISTRY`
+    and then instantiates it with the provided configuration object.
+
+    :param config: The configuration object to be passed to the model class constructor.
+                   This object must implement the ``get_base_class`` method if it were
+                   to be used for fetching the class name, but here it's directly passed
+                   to the model constructor.
     :type config: dmqclib.common.base.config_base.ConfigBase
-    :param class_name: A configuration object that includes a "base_class" entry
-                   under the "model" step, specifying which model class to load.
-                   This object must implement the ``get_base_class`` method.
+    :param class_name: The string name of the model class to retrieve and instantiate.
+                       This name must exist as a key in the
+                       :data:`~dmqclib.common.loader.single_model_registry.SINGLE_MODEL_REGISTRY`.
     :type class_name: str
     :returns: An instantiated model object, which is an instance of a class
               inheriting from :class:`~dmqclib.common.base.model_base.ModelBase`.
     :rtype: dmqclib.common.base.model_base.ModelBase
-    :raises ValueError: If the retrieved model class name is not found in
+    :raises ValueError: If the provided ``class_name`` is not found in
                         the :data:`~dmqclib.common.loader.single_model_registry.SINGLE_MODEL_REGISTRY`.
     """
     model_class: Optional[Type[ModelBase]] = SINGLE_MODEL_REGISTRY.get(class_name)

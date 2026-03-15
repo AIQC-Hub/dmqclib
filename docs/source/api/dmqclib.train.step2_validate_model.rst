@@ -17,6 +17,14 @@ dmqclib.train.step2\_validate\_model.kfold\_validation module
    :show-inheritance:
    :undoc-members:
 
+dmqclib.train.step2\_validate\_model.kfold\_validation\_suite module
+--------------------------------------------------------------------
+
+.. automodule:: dmqclib.train.step2_validate_model.kfold_validation_suite
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dmqclib.train.step2\_validate\_model.validate\_base module
 ----------------------------------------------------------
 

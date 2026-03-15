@@ -45,14 +45,14 @@ def _get_prepare_class(
                    for the requested step in the YAML.
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param step: The step name defined in the YAML (e.g., "input", "summary", or "select").
-    :type step: str
+    :type step: :class:`str`
     :param registry: A dictionary mapping class names to dataset class types
                      inheriting from :class:`dmqclib.common.base.dataset_base.DataSetBase`.
-    :type registry: Dict[str, Type[dmqclib.common.base.dataset_base.DataSetBase]]
+    :type registry: :class:`Dict`[:class:`str`, :class:`Type`[:class:`dmqclib.common.base.dataset_base.DataSetBase`]]
     :raises ValueError: If the class name from the configuration cannot be found
                         in the given ``registry``.
     :returns: The class constructor associated with the requested step.
-    :rtype: Type[:class:`dmqclib.common.base.dataset_base.DataSetBase`]
+    :rtype: :class:`Type`[:class:`dmqclib.common.base.dataset_base.DataSetBase`]
     """
     class_name = config.get_base_class(step)
     dataset_class = registry.get(class_name)
@@ -95,7 +95,7 @@ def load_classify_step2_summary_dataset(
     :param config: The dataset configuration object referencing the "summary" step.
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: An optional Polars DataFrame for computing summary statistics.
-    :type input_data: Optional[:class:`polars.DataFrame`]
+    :type input_data: :class:`Optional`[:class:`polars.DataFrame`]
     :returns: An instance of a class derived from :class:`dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`.
     :rtype: :class:`dmqclib.prepare.step2_calc_stats.summary_base.SummaryStatsBase`
     """
@@ -117,7 +117,7 @@ def load_classify_step3_select_dataset(
     :param config: The dataset configuration object referencing the "select" step.
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: An optional Polars DataFrame for selecting profiles.
-    :type input_data: Optional[:class:`polars.DataFrame`]
+    :type input_data: :class:`Optional`[:class:`polars.DataFrame`]
     :returns: An instance of a class derived from :class:`dmqclib.prepare.step3_select_profiles.select_base.ProfileSelectionBase`.
     :rtype: :class:`dmqclib.prepare.step3_select_profiles.select_base.ProfileSelectionBase`
     """
@@ -143,10 +143,10 @@ def load_classify_step4_locate_dataset(
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: An optional Polars DataFrame containing the data from which
                        location-based subsetting occurs.
-    :type input_data: Optional[:class:`polars.DataFrame`]
+    :type input_data: :class:`Optional`[:class:`polars.DataFrame`]
     :param selected_profiles: An optional Polars DataFrame containing already selected
                               profiles that might be used for filtering additional rows.
-    :type selected_profiles: Optional[:class:`polars.DataFrame`]
+    :type selected_profiles: :class:`Optional`[:class:`polars.DataFrame`]
     :returns: An instance of a class derived from :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`.
     :rtype: :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
     """
@@ -175,16 +175,16 @@ def load_classify_step5_extract_dataset(
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: An optional Polars DataFrame containing the data from which
                        features will be extracted.
-    :type input_data: Optional[:class:`polars.DataFrame`]
+    :type input_data: :class:`Optional`[:class:`polars.DataFrame`]
     :param selected_profiles: An optional Polars DataFrame containing selected profiles,
                               if relevant to feature extraction.
-    :type selected_profiles: Optional[:class:`polars.DataFrame`]
+    :type selected_profiles: :class:`Optional`[:class:`polars.DataFrame`]
     :param selected_rows: An optional dictionary where keys are target variable names and
                         values are Polars DataFrames identifying rows relevant to each.
-    :type selected_rows: Optional[Dict[str, :class:`polars.DataFrame`]]
+    :type selected_rows: :class:`Optional`[:class:`Dict`[:class:`str`, :class:`polars.DataFrame`]]
     :param summary_stats: An optional Polars DataFrame providing summary statistics that
                           might be used for feature scaling or reference.
-    :type summary_stats: Optional[:class:`polars.DataFrame`]
+    :type summary_stats: :class:`Optional`[:class:`polars.DataFrame`]
     :returns: An instance of a class derived from :class:`dmqclib.prepare.step5_extract_features.extract_base.ExtractFeatureBase`.
     :rtype: :class:`dmqclib.prepare.step5_extract_features.extract_base.ExtractFeatureBase`
     """
@@ -214,7 +214,7 @@ def load_classify_step6_classify_dataset(
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param test_sets: An optional dictionary of test datasets where keys are names
                       and values are Polars DataFrames.
-    :type test_sets: Optional[Dict[str, :class:`polars.DataFrame`]]
+    :type test_sets: :class:`Optional`[:class:`Dict`[:class:`str`, :class:`polars.DataFrame`]]
     :returns: An instance of a class derived from :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase`.
     :rtype: :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase`
     """
@@ -238,10 +238,10 @@ def load_classify_step7_concat_dataset(
     :param config: The dataset configuration object referencing the "concat" step.
     :type config: :class:`dmqclib.common.config.dataset_config.DataSetConfig`
     :param input_data: An optional Polars DataFrame representing the original input data.
-    :type input_data: Optional[:class:`polars.DataFrame`]
+    :type input_data: :class:`Optional`[:class:`polars.DataFrame`]
     :param predictions: An optional dictionary of predictions, where keys are prediction
                         set names and values are Polars DataFrames.
-    :type predictions: Optional[Dict[str, :class:`polars.DataFrame`]]
+    :type predictions: :class:`Optional`[:class:`Dict`[:class:`str`, :class:`polars.DataFrame`]]
     :returns: An instance of a class derived from :class:`dmqclib.classify.step7_concat_datasets.concat_base.ConcatDatasetsBase`.
     :rtype: :class:`dmqclib.classify.step7_concat_datasets.concat_base.ConcatDatasetsBase`
     """

@@ -23,6 +23,10 @@ class DataSetBase(ABC):
     :ivar expected_class_name: The expected class name for validation against configuration.
                                 This must be overridden by child classes.
     :vartype expected_class_name: str or None
+    :ivar step_name: The name of the step identified in the configuration.
+    :vartype step_name: str
+    :ivar config: A configuration object that provides the necessary information.
+    :vartype config: ConfigBase
 
     .. note::
 
