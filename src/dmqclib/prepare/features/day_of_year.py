@@ -143,7 +143,7 @@ class DayOfYearFeat(FeatureBase):
         The transformation formula used is:
 
         .. math::
-            day\\_of\\_year_{transformed} = \\frac{{\\sin(day\\_of\\_year \\cdot \\pi / 365) + 1}}{2}
+            day\\_of\\_year_{transformed} = \\frac{{\\sin((day\\_of\\_year - 1) \\cdot 2 \\cdot \\pi / 364) + 1}}{2}
 
         :return: None
         :rtype: None
@@ -160,7 +160,7 @@ class DayOfYearFeat(FeatureBase):
         The transformation formula used is:
 
         .. math::
-            day\\_of\\_year_{transformed} = \\frac{{\\cos(day\\_of\\_year \\cdot \\pi / 365) + 1}}{2}
+            day\\_of\\_year_{transformed} = \\frac{{\\cos((day\\_of\\_year - 1) \\cdot 2 \\cdot \\pi / 364) + 1}}{2}
 
         :return: None
         :rtype: None

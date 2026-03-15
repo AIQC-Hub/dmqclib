@@ -317,9 +317,7 @@ ruff format tests
 4.  **Build HTML:**
     From the project root, run:
     ```bash
-    cd docs
-    uv run make html
-    cd ..
+    cd docs; uv run make html; cd ..
     ```
     You can view the generated site by opening `docs/build/html/index.html` in a browser.
 
