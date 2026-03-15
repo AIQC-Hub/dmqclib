@@ -387,6 +387,5 @@ conda-smithy
     anaconda login
     anaconda upload /path/to/your/conda-bld/noarch/dmqclib-*.conda
     ```
-
 5.  **Cleanup:**
     Copy `dmqclib/meta.yaml` to `conda/meta.yaml` for version control and remove the temporary `dmqclib` directory.

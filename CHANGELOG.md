@@ -5,12 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 As this project is still in active development, it does not yet strictly adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Add SHAP calculation
+### Added
+- SHAP calculation
+- RTD pages for SHAP and multi-ML methods
 
 ## [0.7.2] - 2026-03-10
 ### Added
-- Add multiple ML methods support
-- Add model suite classes
+- Multiple ML methods support
+- Model suite classes
 
 ## [0.7.1] - 2026-03-06
 ### Added
