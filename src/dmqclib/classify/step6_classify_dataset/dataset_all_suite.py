@@ -130,6 +130,15 @@ class ClassifyAllSuite(BuildModelBase):
         """
         pass  # pragma: no cover
 
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Placeholder method as training does not occur during classification.
+
+        :param target_name: The name of the target variable.
+        :type target_name: str
+        """
+        pass  # pragma: no cover
+
     def test(self, target_name: str) -> None:
         """
         Test the models for the given target across all methods, appending a

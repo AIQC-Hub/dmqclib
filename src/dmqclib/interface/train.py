@@ -51,4 +51,5 @@ def train_and_evaluate(config: ConfigBase) -> None:
     ds_build.write_reports()
     ds_build.write_contingency_tables()
     ds_build.create_metric_plots()
+    ds_build.build_final_model_targets()
     ds_build.write_models()

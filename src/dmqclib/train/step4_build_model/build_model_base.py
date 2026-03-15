@@ -104,6 +104,8 @@ class BuildModelBase(DataSetBase):
 
         #: A dictionary to store model objects keyed by target name.
         self.models: Dict[str, Optional[ModelBase]] = {}
+        self.final_models: Dict[str, Optional[ModelBase]] = {}
+
         #: A dictionary to store test reports keyed by target name.
         self.reports: Dict[str, pl.DataFrame] = {}
         #: A dictionary to store contingency tables keyed by target name.
@@ -122,15 +124,21 @@ class BuildModelBase(DataSetBase):
         """
         self.base_model = load_model_class(self.config)
 
+    def build_final_model_targets(self) -> None:
+        """
+        Iterate over all targets from the configuration, calling :meth:`build_final_model`
+        for each target.
+        """
+        for target_name in self.config.get_target_names():
+            self.build_final_model(target_name)
+
     def build_targets(self) -> None:
         """
-        Iterate over all targets from the configuration, calling :meth:`build`
-        for each, and then optionally calling :meth:`test` if test sets exist.
+        Iterate over all targets from the configuration, calling :meth:`build_test`
+        for each target.
         """
         for target_name in self.config.get_target_names():
             self.build(target_name)
-            if self.test_sets is not None and target_name in self.test_sets:
-                self.test(target_name)
 
     def test_targets(self) -> None:
         """
@@ -150,11 +158,26 @@ class BuildModelBase(DataSetBase):
     @abstractmethod
     def build(self, target_name: str) -> None:
         """
-        Build a model for the specified target name.
+        Build a test model for the specified target name.
 
         This abstract method must be implemented by subclasses to
         perform the steps necessary for initializing, training,
         and storing the model in :attr:`models`.
+
+        :param target_name: The identifier for this target's model
+                            in :attr:`training_sets`.
+        :type target_name: str
+        """
+        pass  # pragma: no cover
+
+    @abstractmethod
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Build a final model for the specified target name.
+
+        This abstract method must be implemented by subclasses to
+        perform the steps necessary for initializing, training,
+        and storing the model in :attr:`final_models`.
 
         :param target_name: The identifier for this target's model
                             in :attr:`training_sets`.
@@ -246,10 +269,10 @@ class BuildModelBase(DataSetBase):
         :raises ValueError: If :attr:`models` is empty, indicating no models
                             have been built for writing.
         """
-        if not self.models:
-            raise ValueError("Member variable 'models' must not be empty.")
+        if not self.final_models:
+            raise ValueError("Member variable 'final_models' must not be empty.")
 
-        for target_name, model_ref in self.models.items():
+        for target_name, model_ref in self.final_models.items():
             output_path = self.model_file_names[target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             if model_ref:

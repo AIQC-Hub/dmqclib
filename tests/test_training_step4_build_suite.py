@@ -146,6 +146,25 @@ class TestBuildModelSuite(unittest.TestCase):
         ds = BuildModelSuite(self.config)
         self.assertIsInstance(ds.base_model, ModelSuite)
 
+    def test_build_final_model_targets(self):
+        """Confirm that building models populates 'final_models' with composite keys."""
+        ds = BuildModelSuite(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_final_model_targets()
+
+        # Both methods should exist for all targets
+        self.assertIn("xgb_temp", ds.final_models)
+        self.assertIn("dt_temp", ds.final_models)
+        self.assertIsNot(ds.final_models["xgb_temp"], ds.final_models["dt_temp"])
+
+        # Verify that internal data was joined correctly
+        self.assertEqual(
+            ds.final_models["xgb_temp"].training_set.height, 116 + 12
+        ) # 116 train + 12 test
+
     def test_build_targets(self):
         """Confirm that building models populates 'models' with composite keys."""
         ds = BuildModelSuite(
@@ -163,13 +182,25 @@ class TestBuildModelSuite(unittest.TestCase):
         # Verify that internal data was joined correctly
         self.assertEqual(
             ds.models["xgb_temp"].training_set.height, 116
-        )  # 116 train + 12 test
+        )
 
     def test_build_without_data(self):
         """Ensure that calling build_targets() without data raises ValueError."""
         ds = BuildModelSuite(self.config, training_sets=None, test_sets=None)
         with self.assertRaises(ValueError):
             ds.build_targets()
+
+    def test_build_final_model_without_test_data(self):
+        """Ensure that calling build_final_model_targets() without data raises ValueError."""
+        ds = BuildModelSuite(self.config, training_sets=self.ds_input.training_sets, test_sets=None)
+        with self.assertRaises(ValueError):
+            ds.build_final_model_targets()
+
+    def test_build_final_model_without_training_data(self):
+        """Ensure that calling build_final_model_targets() without data raises ValueError."""
+        ds = BuildModelSuite(self.config, training_sets=None, test_sets=None)
+        with self.assertRaises(ValueError):
+            ds.build_final_model_targets()
 
     def test_test_targets(self):
         """
@@ -342,7 +373,7 @@ class TestBuildModelSuite(unittest.TestCase):
         ds.model_file_names["dt_psal"] = str(data_path / "temp_model_dt_psal.joblib")
         ds.model_file_names["dt_pres"] = str(data_path / "temp_model_dt_pres.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["xgb_temp"]))

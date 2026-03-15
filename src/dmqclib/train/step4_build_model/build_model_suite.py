@@ -102,15 +102,6 @@ class BuildModelSuite(BuildModelBase):
                     "{method}", method_lower
                 )
 
-    def build_targets(self) -> None:
-        """
-        Iterate over all targets from the configuration, calling :meth:`build`
-        for each, and then optionally calling :meth:`test` if test sets exist.
-        """
-        for target_name in self.config.get_target_names():
-            self.build(target_name)
-            if self.test_sets is not None and target_name in self.test_sets:
-                self.test(target_name)
 
     def test_targets(self) -> None:
         """
@@ -156,6 +147,35 @@ class BuildModelSuite(BuildModelBase):
             current_model.build()
 
             self.models[comp_key] = current_model
+
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Build (train) models for the specified target across all configured methods,
+        storing them in :attr:`models` with composite keys.
+
+        :param target_name: The name of the target variable to build models for.
+        :type target_name: str
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets`is empty.
+        """
+        if not self.training_sets:
+            raise ValueError("Member variable 'training_sets' must not be empty.")
+
+        if not self.test_sets:
+            raise ValueError("Member variable 'test_sets' must not be empty.")
+
+        training_set = self.training_sets[target_name].drop(["k_fold"] + self.drop_cols)
+        test_set = self.test_sets[target_name].drop(self.drop_cols)
+        combined_set = training_set.vstack(test_set)
+
+        for method_name, method_obj in self.base_model.method_objs.items():
+            method_lower = getattr(method_obj, "short_name", method_name).lower()
+            comp_key = f"{method_lower}_{target_name}"
+
+            current_model = copy.deepcopy(method_obj)
+            current_model.training_set = combined_set
+            current_model.build()
+
+            self.final_models[comp_key] = current_model
 
     def test(self, target_name: str) -> None:
         """

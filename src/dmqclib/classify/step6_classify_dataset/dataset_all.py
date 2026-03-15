@@ -95,13 +95,18 @@ class ClassifyAll(BuildModelBase):
 
     def build(self, target_name: str) -> None:
         """
-        Build (train) a model for the specified target, storing it in :attr:`models`.
+        Placeholder method as training does not occur during classification.
 
-        This method is intended to encapsulate the model training logic.
-        Currently, it is a placeholder.
+        :param target_name: The name of the target variable.
+        :type target_name: str
+        """
+        pass  # pragma: no cover
 
-        :param target_name: The target variable name, used to index
-                            :attr:`training_sets` and locate the training data.
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Placeholder method as training does not occur during classification.
+
+        :param target_name: The name of the target variable.
         :type target_name: str
         """
         pass  # pragma: no cover

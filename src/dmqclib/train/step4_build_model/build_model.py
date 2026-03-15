@@ -6,7 +6,7 @@ It inherits from :class:`dmqclib.train.step4_build_model.build_model_base.BuildM
 and orchestrates the training and evaluation of models for specified targets
 using Polars DataFrames.
 """
-
+import copy
 from typing import Optional, Dict
 
 import polars as pl
@@ -67,7 +67,7 @@ class BuildModel(BuildModelBase):
 
     def build(self, target_name: str) -> None:
         """
-        Build (train) a model for the specified target, storing it in :attr:`models`.
+        Build (train) a test model for the specified target, storing it in :attr:`models`.
 
         This method:
 
@@ -83,15 +83,50 @@ class BuildModel(BuildModelBase):
         :raises ValueError: If :attr:`training_sets` is empty,
                             indicating no corresponding data is available for model building.
         """
-        self.load_base_model()
         if not self.training_sets:
             raise ValueError("Member variable 'training_sets' must not be empty.")
+
+        self.load_base_model()
 
         self.base_model.training_set = self.training_sets[target_name].drop(
             ["k_fold"] + self.drop_cols
         )
         self.base_model.build()
         self.models[target_name] = self.base_model
+
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Build (train) a model for the specified target, storing it in :attr:`final_models`.
+
+        This method:
+
+          1. Reloads the base model via :meth:`load_base_model`.
+          2. Attaches the training data for the target (dropping the ``k_fold`` column
+             and common identifying columns).
+          3. Attaches the test data for the target (dropping common identifying columns).
+          4. Calls :meth:`base_model.build`.
+          5. Stores the built model in :attr:`models[target_name]`.
+
+        :param target_name: The target variable name, used to index
+                            :attr:`training_sets` and locate the training data.
+        :type target_name: str
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets`is empty,
+                            indicating no corresponding data is available for model building.
+        """
+        if not self.training_sets:
+            raise ValueError("Member variable 'training_sets' must not be empty.")
+
+        if not self.test_sets:
+            raise ValueError("Member variable 'test_sets' must not be empty.")
+
+        self.load_base_model()
+
+        training_set = self.training_sets[target_name].drop(["k_fold"] + self.drop_cols)
+        test_set = self.test_sets[target_name].drop(self.drop_cols)
+        self.base_model.training_set = training_set.vstack(test_set)
+
+        self.base_model.build()
+        self.final_models[target_name] = self.base_model
 
     def test(self, target_name: str) -> None:
         """

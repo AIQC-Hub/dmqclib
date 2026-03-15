@@ -253,9 +253,44 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["psal"], XGBoost)
         self.assertIsInstance(ds.models["pres"], XGBoost)
 
+    def test_train_final_model_with_xgboost(self):
+        """Confirm that building test models populates the 'final_models' dictionary with XGBoost instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_final_model_targets()
+
+        self.assertIsInstance(ds.final_models["temp"], XGBoost)
+        self.assertIsInstance(ds.final_models["psal"], XGBoost)
+        self.assertIsInstance(ds.final_models["pres"], XGBoost)
+
     def test_model_objects(self):
         """
-        Confirm that building models populates a unique model object for each target.
+        Confirm that building final models populates a unique model object for each target.
+        Ensures distinct model instances are created, not just references to the same object.
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_final_model_targets()
+
+        self.assertIsNot(ds.final_models["temp"], ds.final_models["psal"])
+        self.assertIsNot(ds.final_models["temp"], ds.final_models["pres"])
+        self.assertIsNot(ds.final_models["psal"], ds.final_models["pres"])
+
+        # Note: assertNotEqual may depend on XGBoost's __eq__ implementation,
+        # but assertIsNot is a stronger check for distinct instances.
+        self.assertNotEqual(ds.final_models["temp"], ds.final_models["psal"])
+        self.assertNotEqual(ds.final_models["temp"], ds.final_models["pres"])
+        self.assertNotEqual(ds.final_models["psal"], ds.final_models["pres"])
+
+    def test_test_model_objects(self):
+        """
+        Confirm that building test models populates a unique model object for each target.
         Ensures distinct model instances are created, not just references to the same object.
         """
         ds = BuildModel(
@@ -284,6 +319,26 @@ class TestBuildModel(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             ds.build_targets()
+
+    def test_build_final_model_without_test_sets(self):
+        """Ensure that calling build_final_model_targets() with no training sets available raises a ValueError."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=None,
+        )
+        with self.assertRaises(ValueError):
+            ds.build_final_model_targets()
+
+    def test_build_final_model_without_training_sets(self):
+        """Ensure that calling build_final_model_targets() with no training sets available raises a ValueError."""
+        ds = BuildModel(
+            self.config,
+            training_sets=None,
+            test_sets=None,
+        )
+        with self.assertRaises(ValueError):
+            ds.build_final_model_targets()
 
     def test_test_without_model(self):
         """Ensure that calling test_targets() without first building models raises a ValueError."""
@@ -506,7 +561,7 @@ class TestBuildModel(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -658,7 +713,7 @@ class TestXGBoost(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_xgboost.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_xgboost.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -717,7 +772,7 @@ class TestLogisticRegression(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_logit.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_logit.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -778,7 +833,7 @@ class TestLDA(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_lda.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_lda.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -837,7 +892,7 @@ class TestSVM(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_svm.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_svm.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -896,7 +951,7 @@ class TestDecisionTree(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_dt.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_dt.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -955,7 +1010,7 @@ class TestRandomForest(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_rf.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_rf.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -1014,7 +1069,7 @@ class TestKNN(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_knn.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_knn.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -1073,7 +1128,7 @@ class TestGaussianNaiveBayes(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_gnb.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_gnb.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -1132,7 +1187,7 @@ class TestMLP(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_mlp.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_mlp.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
