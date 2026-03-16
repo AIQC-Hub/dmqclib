@@ -54,11 +54,11 @@ class SVM(SklearnModelBase):
         self.model_params: Dict[str, Any] = {
             "C": 1.0,
             "kernel": "linear",
-            "gamma": "scale",
             "probability": True,  # Required for predict_proba used in base class
             "tol": 1e-3,
             "max_iter": -1,
             "random_state": None,
+            "class_weight": "balanced",
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(

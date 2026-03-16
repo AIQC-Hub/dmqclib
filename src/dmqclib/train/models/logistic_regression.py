@@ -46,6 +46,7 @@ class LogisticRegression(SklearnModelBase):
             "penalty": "l2",
             "C": 1.0,
             "solver": "lbfgs",
+            "class_weight": "balanced",
             "max_iter": 1000,
         }
         # Update model parameters with config step parameters
