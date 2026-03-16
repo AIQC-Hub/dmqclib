@@ -13,10 +13,10 @@ from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.support_vector_machine import SupportVectorMachine
 from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
 from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.train.models.multilayer_perceptron import MultilayerPerceptron
 
 #: A dictionary mapping model names to their corresponding Python classes.
 #:
@@ -35,12 +35,12 @@ SINGLE_MODEL_REGISTRY: Dict[str, Type[ModelBase]] = {
     "Logit": LogisticRegression,
     "LinearDiscriminantAnalysis": LinearDiscriminantAnalysis,
     "LDA": LinearDiscriminantAnalysis,
-    "SupportVectorMachine": SVM,
-    "SVM": SVM,
+    "SupportVectorMachine": SupportVectorMachine,
+    "SVM": SupportVectorMachine,
     "KNearestNeighbors": KNearestNeighbors,
     "KNN": KNearestNeighbors,
     "GaussianNaiveBayes": GaussianNaiveBayes,
     "GNB": GaussianNaiveBayes,
-    "MultilayerPerceptron": MLP,
-    "MLP": MLP,
+    "MultilayerPerceptron": MultilayerPerceptron,
+    "MLP": MultilayerPerceptron,
 }

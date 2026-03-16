@@ -15,7 +15,7 @@ from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.scikit_learn_model_base import SklearnModelBase
 
 
-class MLP(SklearnModelBase):
+class MultilayerPerceptron(SklearnModelBase):
     """
     A Multi-layer Perceptron (MLP) model wrapper class for training and testing.
 
