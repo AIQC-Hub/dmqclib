@@ -30,9 +30,6 @@ class BuildModelSuite(BuildModelBase):
     It saves individual models with composite keys, but aggregates test reports,
     predictions, and contingency tables into single datasets per target name
     by introducing a 'method' column.
-
-    .. note::
-       This class sets :attr:`expected_class_name` to ``"BuildModelSuite"``.
     """
 
     expected_class_name: str = "BuildModelSuite"
@@ -155,7 +152,7 @@ class BuildModelSuite(BuildModelBase):
 
         :param target_name: The name of the target variable to build models for.
         :type target_name: str
-        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets`is empty.
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets` is empty.
         """
         if not self.training_sets:
             raise ValueError("Member variable 'training_sets' must not be empty.")

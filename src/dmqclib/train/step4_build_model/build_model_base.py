@@ -32,13 +32,6 @@ class BuildModelBase(DataSetBase):
     fields for model-building. Subclasses must define their own
     logic in the :meth:`build` and :meth:`test` abstract methods,
     potentially for different modeling frameworks.
-
-    .. note::
-
-       If you intend to instantiate this class directly (rather than a subclass),
-       you may need to define an ``expected_class_name`` that matches
-       the config's ``base_class`` property. Otherwise, a
-       :exc:`NotImplementedError` may be raised.
     """
 
     def __init__(

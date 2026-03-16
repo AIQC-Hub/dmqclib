@@ -45,16 +45,16 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, 6, 7 ]
+        neg_flag_values: [ 1 ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, 6, 7 ]
+        neg_flag_values: [ 1 ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [ 3, 4, 5, 6, 7, 8, 9 ]
-        neg_flag_values: [ 1, 2 ]
+        pos_flag_values: [ 4, 6, 7 ]
+        neg_flag_values: [ 1 ]
         
 """
 
@@ -321,7 +321,7 @@ step_param_sets:
       locate: { neighbor_n: 5 }
       extract: { }
       split: { test_set_fraction: 0.1,
-               k_fold: 10 }
+               k_fold: 5 }
 
 """
 
@@ -351,7 +351,7 @@ step_param_sets:
       locate: { }
       extract: { }
       split: { test_set_fraction: 0.1,
-               k_fold: 10 }
+               k_fold: 5 }
 
 """
 
@@ -517,16 +517,16 @@ target_sets:
     variables:
       - name: temp
         flag: temp_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 4, 6, 7 ]
+        neg_flag_values: [ 1 ]
       - name: psal
         flag: psal_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 4, 6, 7 ]
+        neg_flag_values: [ 1 ]
       - name: pres
         flag: pres_qc
-        pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-        neg_flag_values: [1, 2]
+        pos_flag_values: [ 4, 6, 7 ]
+        neg_flag_values: [ 1 ]
 
 step_class_sets:
   - name: training_step_set_1
@@ -540,8 +540,9 @@ step_param_sets:
   - name: training_param_set_1
     steps:
       input: { }
-      validate: { k_fold: 10 }
-      model: { model_params: { scale_pos_weight: 200,
+      validate: { k_fold: 5 }
+      model: { calculate_shap: False,
+               model_params: { scale_pos_weight: 200,
                                n_jobs: -1 } }
       build: { }
 
@@ -635,7 +636,7 @@ step_param_sets:
       select: { }
       locate: { }
       extract: { }
-      model: { }
+      model: { calculate_shap: False }
       classify: { }
       concat: { }
 
