@@ -21,13 +21,13 @@ from dmqclib.common.loader.classify_loader import (
 )
 from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.support_vector_machine import SupportVectorMachine
 from dmqclib.train.models.decision_tree import DecisionTree
 from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
 from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.train.models.multilayer_perceptron import MultilayerPerceptron
 
 TEST_COUNT = 3
 METHOD_TEST_COUNT = 1
@@ -747,9 +747,9 @@ class TestSVM:
         ds.model_file_names = self.model_file_names
         ds.read_models()
 
-        assert isinstance(ds.models["temp"], SVM)
-        assert isinstance(ds.models["psal"], SVM)
-        assert isinstance(ds.models["pres"], SVM)
+        assert isinstance(ds.models["temp"], SupportVectorMachine)
+        assert isinstance(ds.models["psal"], SupportVectorMachine)
+        assert isinstance(ds.models["pres"], SupportVectorMachine)
 
     @pytest.mark.parametrize("idx", range(METHOD_TEST_COUNT))
     def test_with_svm(self, idx):
@@ -1107,9 +1107,9 @@ class TestMLP:
         ds.model_file_names = self.model_file_names
         ds.read_models()
 
-        assert isinstance(ds.models["temp"], MLP)
-        assert isinstance(ds.models["psal"], MLP)
-        assert isinstance(ds.models["pres"], MLP)
+        assert isinstance(ds.models["temp"], MultilayerPerceptron)
+        assert isinstance(ds.models["psal"], MultilayerPerceptron)
+        assert isinstance(ds.models["pres"], MultilayerPerceptron)
 
     @pytest.mark.parametrize("idx", range(METHOD_TEST_COUNT))
     def test_with_mlp(self, idx):

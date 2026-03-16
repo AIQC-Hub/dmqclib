@@ -110,7 +110,7 @@ class BuildModel(BuildModelBase):
         :param target_name: The target variable name, used to index
                             :attr:`training_sets` and locate the training data.
         :type target_name: str
-        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets`is empty,
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets` is empty,
                             indicating no corresponding data is available for model building.
         """
         if not self.training_sets:

@@ -46,9 +46,10 @@ class XGBoost(SklearnModelBase):
 
         self.model_params: Dict[str, Any] = {
             "n_estimators": 100,
-            "max_depth": 6,
+            "max_depth": 10,
             "learning_rate": 0.1,
             "eval_metric": "logloss",
+            "scale_pos_weight": 1,
             "n_jobs": -1,
         }
         # Update model parameters with config step parameters

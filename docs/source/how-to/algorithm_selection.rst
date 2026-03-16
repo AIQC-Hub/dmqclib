@@ -7,24 +7,24 @@ The library supports multiple machine learning algorithms spanning different log
 Available Algorithms
 --------------------
 
-================================ ================================= ============ ======================
-Category                         Algorithm                         Short Name   Method
-================================ ================================= ============ ======================
-Tree-Based & Ensemble            **XGBoost**                       XGB          Ensemble (Boosting)
-\                                **Random Forest**                 RF           Ensemble (Bagging)
-\                                **Decision Tree**                 DT           Tree
-Linear & Geometric               **Logistic Regression**           Logit        Linear
-\                                **Linear Discriminant Analysis**  LDA          Linear / Statistical
-\                                **Support Vector Machine**        SVM          Geometric
-Instance-Based                   **K-Nearest Neighbors**           KNN          Distance-based
-Probabilistic                    **Gaussian Naive Bayes**          GNB          Probabilistic
-Neural Network                   **Multilayer Perceptron**         MLP          Neural Network
-================================ ================================= ============ ======================
+================================ ================================= ============================ ============ ======================
+Category                         Algorithm                         Class Name                   Short Name   Method
+================================ ================================= ============================ ============ ======================
+Tree-Based & Ensemble            **XGBoost**                       XGBoost                      XGB          Ensemble (Boosting)
+\                                **Random Forest**                 RandomForest                 RF           Ensemble (Bagging)
+\                                **Decision Tree**                 DecisionTree                 DT           Tree
+Linear & Geometric               **Logistic Regression**           LogisticRegression           Logit        Linear
+\                                **Linear Discriminant Analysis**  LinearDiscriminantAnalysis   LDA          Linear / Statistical
+\                                **Support Vector Machine**        SupportVectorMachine         SVM          Geometric
+Instance-Based                   **K-Nearest Neighbors**           KNearestNeighbors            KNN          Distance-based
+Probabilistic                    **Gaussian Naive Bayes**          GaussianNaiveBayes           GNB          Probabilistic
+Neural Network                   **Multilayer Perceptron**         MultilayerPerceptron         MLP          Neural Network
+================================ ================================= ============================ ============ ======================
 
 Configuration
 -------------
 
-To select an algorithm, set the ``model`` key in ``step_class_sets`` to the algorithm's class name or its short name (e.g., ``XGBoost`` or ``XGB``).
+To select an algorithm, set the ``model`` key in ``step_class_sets`` to the algorithm's class name (e.g., ``XGBoost``).
 
 To customize the hyperparameters for your selected algorithm, add them to the ``model`` step within ``step_param_sets``.
 
@@ -39,7 +39,7 @@ Training Configuration Example
         steps:
           input: InputTrainingSetA
           validate: KFoldValidation
-          model: XGB
+          model: XGBoost
           build: BuildModel
 
     step_param_sets:
@@ -71,7 +71,10 @@ Classification Configuration Example
 Model Suite Class
 -----------------
 
-``dmqclib`` provides a model suite class that performs training and classification with multiple algorithms simultaneously. To select a set of algorithms, set the ``model`` key in ``step_class_sets`` to ``ModelSuite``. Then, specify a list of actual algorithms and their parameters using the ``methods`` and ``model_params`` keys within ``step_param_sets``, respectively.
+``dmqclib`` provides a model suite class that performs training and classification with multiple algorithms simultaneously. To select a set of algorithms, set the ``model`` key in ``step_class_sets`` to ``ModelSuite``.Then, specify a list of actual algorithms and their parameters using the ``methods`` and ``model_params`` keys within ``step_param_sets``, respectively.
+
+.. note::
+  Both ``methods`` and ``model_params`` keys accept "Class name" and "Short name" shown in the table above (e.g., ``XGBoost`` and ``XGB``).
 
 In addition, the ``ModelSuite`` class requires specific counterpart classes for training and classification to correctly handle multiple outputs. These are:
 
@@ -161,13 +164,13 @@ Decision Tree (DT)
      - ``"best"``
      - The strategy used to choose the split at each node.
    * - ``max_depth``
-     - ``None``
+     - ``10``
      - The maximum depth of the tree.
    * - ``min_samples_split``
-     - ``2``
+     - ``10``
      - The minimum number of samples required to split an internal node.
    * - ``min_samples_leaf``
-     - ``1``
+     - ``5``
      - The minimum number of samples required to be at a leaf node.
    * - ``max_features``
      - ``None``
@@ -176,10 +179,10 @@ Decision Tree (DT)
      - ``None``
      - Controls the randomness of the estimator for reproducibility.
    * - ``class_weight``
-     - ``None``
+     - ``"balanced"``
      - Weights associated with classes (e.g., ``"balanced"``).
    * - ``ccp_alpha``
-     - ``0.0``
+     - ``0.001``
      - Complexity parameter used for Minimal Cost-Complexity Pruning.
 
 Random Forest (RF)
@@ -199,13 +202,13 @@ Random Forest (RF)
      - ``"gini"``
      - The function to measure the quality of a split.
    * - ``max_depth``
-     - ``None``
+     - ``10``
      - The maximum depth of the trees.
    * - ``min_samples_split``
-     - ``2``
+     - ``10``
      - The minimum number of samples required to split an internal node.
    * - ``min_samples_leaf``
-     - ``1``
+     - ``5``
      - The minimum number of samples required to be at a leaf node.
    * - ``max_features``
      - ``"sqrt"``
@@ -220,7 +223,7 @@ Random Forest (RF)
      - ``None``
      - Controls both the randomness of the bootstrapping and feature sampling.
    * - ``class_weight``
-     - ``None``
+     - ``"balanced_subsample"``
      - Weights associated with classes (e.g., ``"balanced"``).
 
 XGBoost (XGB)
@@ -237,7 +240,7 @@ XGBoost (XGB)
      - ``100``
      - Number of boosting rounds (trees to build).
    * - ``max_depth``
-     - ``6``
+     - ``10``
      - Maximum tree depth for base learners.
    * - ``learning_rate``
      - ``0.1``
@@ -245,6 +248,9 @@ XGBoost (XGB)
    * - ``eval_metric``
      - ``"logloss"``
      - Evaluation metric for validation data.
+   * - ``scale_pos_weight``
+     - ``1``
+     - Multiplier for the gradient of positive samples (e.g., set to sum(negative cases) / sum(positive cases)).
    * - ``n_jobs``
      - ``-1``
      - Number of parallel threads used to run XGBoost.
@@ -317,9 +323,6 @@ Support Vector Machine (SVM)
    * - ``kernel``
      - ``"linear"``
      - Specifies the kernel type to be used in the algorithm.
-   * - ``gamma``
-     - ``"scale"``
-     - Kernel coefficient for 'rbf', 'poly', and 'sigmoid' kernels.
    * - ``probability``
      - ``True``
      - Whether to enable probability estimates (required for ROC/PR curves).
@@ -332,6 +335,9 @@ Support Vector Machine (SVM)
    * - ``random_state``
      - ``None``
      - Controls the pseudo random number generation for probability estimates.
+   * - ``class_weight``
+     - ``"balanced"``
+     - Weights associated with classes (e.g., ``"balanced"``).
 
 Gaussian Naive Bayes (GNB)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

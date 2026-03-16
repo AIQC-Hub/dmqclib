@@ -49,18 +49,18 @@ dmqclib.train.models.logistic\_regression module
    :show-inheritance:
    :undoc-members:
 
-dmqclib.train.models.mlp module
--------------------------------
-
-.. automodule:: dmqclib.train.models.mlp
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 dmqclib.train.models.model\_suite module
 ----------------------------------------
 
 .. automodule:: dmqclib.train.models.model_suite
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dmqclib.train.models.multilayer\_perceptron module
+--------------------------------------------------
+
+.. automodule:: dmqclib.train.models.multilayer_perceptron
    :members:
    :show-inheritance:
    :undoc-members:
@@ -73,10 +73,10 @@ dmqclib.train.models.random\_forest module
    :show-inheritance:
    :undoc-members:
 
-dmqclib.train.models.svm module
--------------------------------
+dmqclib.train.models.support\_vector\_machine module
+----------------------------------------------------
 
-.. automodule:: dmqclib.train.models.svm
+.. automodule:: dmqclib.train.models.support_vector_machine
    :members:
    :show-inheritance:
    :undoc-members:

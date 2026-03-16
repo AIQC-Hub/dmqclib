@@ -22,12 +22,12 @@ from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.support_vector_machine import SupportVectorMachine
 from dmqclib.train.models.decision_tree import DecisionTree
 from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
 from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.train.models.multilayer_perceptron import MultilayerPerceptron
 
 
 class TestXGBoost(unittest.TestCase):
@@ -160,16 +160,16 @@ class TestSVM(unittest.TestCase):
         self.config.data["step_class_set"]["steps"]["model"] = "SVM"
 
     def test_init_class(self):
-        ds = SVM(self.config)
+        ds = SupportVectorMachine(self.config)
         self.assertEqual(ds.expected_class_name, "SupportVectorMachine")
         self.assertEqual(ds._get_model_class(), SklearnSVC)
 
     def test_multi_flag(self):
-        ds = SVM(self.config)
+        ds = SupportVectorMachine(self.config)
         self.assertFalse(ds.multi)
 
     def test_default_params(self):
-        ds = SVM(self.config)
+        ds = SupportVectorMachine(self.config)
         self.assertEqual(ds.model_params.get("kernel"), "linear")
         # Probability must be True for the base class predict_proba logic
         self.assertTrue(ds.model_params.get("probability"))
@@ -179,7 +179,7 @@ class TestSVM(unittest.TestCase):
             "C": 0.5,
             "kernel": "rbf",
         }
-        ds = SVM(self.config)
+        ds = SupportVectorMachine(self.config)
         self.assertEqual(ds.model_params["C"], 0.5)
         self.assertEqual(ds.model_params["kernel"], "rbf")
 
@@ -348,16 +348,16 @@ class TestMLP(unittest.TestCase):
         self.config.data["step_class_set"]["steps"]["model"] = "MLP"
 
     def test_init_class(self):
-        ds = MLP(self.config)
+        ds = MultilayerPerceptron(self.config)
         self.assertEqual(ds.expected_class_name, "MultilayerPerceptron")
         self.assertEqual(ds._get_model_class(), SklearnMLP)
 
     def test_multi_flag(self):
-        ds = MLP(self.config)
+        ds = MultilayerPerceptron(self.config)
         self.assertFalse(ds.multi)
 
     def test_default_params(self):
-        ds = MLP(self.config)
+        ds = MultilayerPerceptron(self.config)
         self.assertEqual(ds.model_params.get("hidden_layer_sizes"), (100,))
         self.assertEqual(ds.model_params.get("activation"), "relu")
 
@@ -366,6 +366,6 @@ class TestMLP(unittest.TestCase):
             "hidden_layer_sizes": (50, 50),
             "learning_rate_init": 0.01,
         }
-        ds = MLP(self.config)
+        ds = MultilayerPerceptron(self.config)
         self.assertEqual(ds.model_params["hidden_layer_sizes"], (50, 50))
         self.assertEqual(ds.model_params["learning_rate_init"], 0.01)

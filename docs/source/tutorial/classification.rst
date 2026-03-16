@@ -76,7 +76,8 @@ Update your ``classification_config.yaml`` file to match the following. Remember
          select: { }
          locate: { }
          extract: { }
-         model: { model_params: { n_jobs: -1 } } # The number of threads used by XGBoost  (-1: all available cores)
+         model: { calculate_shap: False,         # Control SHAP value calculation
+                  model_params: { n_jobs: -1 } } # The number of threads used by XGBoost  (-1: all available cores)
          classify: { }
          concat: { }
 
@@ -122,10 +123,7 @@ After the command finishes, your output root directory (e.g., ``~/aiqc_project/d
 *   **select**: Stores the input profiles after any initial filtering. In classification, this typically includes all profiles you want to classify.
 *   **locate**: Contains all observation records that proceeded through the pipeline, often after proximity-based selection for feature generation.
 *   **extract**: Holds the features extracted from the observation records, transformed consistently with how the model was trained.
-*   **classify**: This is the final output directory. It contains:
-
-    *   A ``.parquet`` file with the original input data, augmented with new columns for the model's predictions (e.g., ``temp_prediction``) and prediction probabilities (e.g., ``temp_probability``).
-    *   A summary report detailing the classification results.
+*   **classify**: This is the final output directory. It contains all classification results, including the final files that concatenate the original input with the corresponding prediction outputs.
 
 Conclusion
 ----------

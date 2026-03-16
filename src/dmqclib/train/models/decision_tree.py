@@ -47,13 +47,13 @@ class DecisionTree(SklearnModelBase):
         self.model_params: Dict[str, Any] = {
             "criterion": "gini",
             "splitter": "best",
-            "max_depth": None,
-            "min_samples_split": 2,
-            "min_samples_leaf": 1,
+            "max_depth": 10,
+            "min_samples_split": 10,
+            "min_samples_leaf": 5,
             "max_features": None,
             "random_state": None,
-            "class_weight": None,
-            "ccp_alpha": 0.0,
+            "class_weight": "balanced",
+            "ccp_alpha": 0.001,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(

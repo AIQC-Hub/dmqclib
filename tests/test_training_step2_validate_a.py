@@ -15,13 +15,13 @@ from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.support_vector_machine import SupportVectorMachine
 from dmqclib.train.models.decision_tree import DecisionTree
 from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
 from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.train.models.multilayer_perceptron import MultilayerPerceptron
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
@@ -417,7 +417,7 @@ class TestSVM(unittest.TestCase):
         instance, as defined by the configuration.
         """
         ds = KFoldValidation(self.config)
-        self.assertIsInstance(ds.base_model, SVM)
+        self.assertIsInstance(ds.base_model, SupportVectorMachine)
 
     def test_fold_validation(self):
         """
@@ -542,7 +542,7 @@ class TestMLP(unittest.TestCase):
         instance, as defined by the configuration.
         """
         ds = KFoldValidation(self.config)
-        self.assertIsInstance(ds.base_model, MLP)
+        self.assertIsInstance(ds.base_model, MultilayerPerceptron)
 
     def test_fold_validation(self):
         """

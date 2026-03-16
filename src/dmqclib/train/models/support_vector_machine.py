@@ -15,7 +15,7 @@ from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.scikit_learn_model_base import SklearnModelBase
 
 
-class SVM(SklearnModelBase):
+class SupportVectorMachine(SklearnModelBase):
     """
     A Support Vector Machine (SVM) model wrapper class for training and testing.
 
@@ -32,8 +32,6 @@ class SVM(SklearnModelBase):
     - Uses a linear kernel by default.
 
     .. note::
-       This class sets :attr:`~SVM.expected_class_name` to ``"SupportVectorMachine"``
-       and :attr:`~SVM.short_name` to ``"SVM"``.
        Standard SVM implementations (especially with a linear kernel) typically
        do not support the ``n_jobs`` parameter directly, as parallelization
        is often handled by underlying BLAS libraries.
@@ -54,11 +52,11 @@ class SVM(SklearnModelBase):
         self.model_params: Dict[str, Any] = {
             "C": 1.0,
             "kernel": "linear",
-            "gamma": "scale",
             "probability": True,  # Required for predict_proba used in base class
             "tol": 1e-3,
             "max_iter": -1,
             "random_state": None,
+            "class_weight": "balanced",
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(

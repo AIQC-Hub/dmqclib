@@ -46,14 +46,14 @@ class RandomForest(SklearnModelBase):
         self.model_params: Dict[str, Any] = {
             "n_estimators": 100,
             "criterion": "gini",
-            "max_depth": None,
-            "min_samples_split": 2,
-            "min_samples_leaf": 1,
+            "max_depth": 10,
+            "min_samples_split": 10,
+            "min_samples_leaf": 5,
             "max_features": "sqrt",
             "bootstrap": True,
             "n_jobs": -1,
             "random_state": None,
-            "class_weight": None,
+            "class_weight": "balanced_subsample",
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(
