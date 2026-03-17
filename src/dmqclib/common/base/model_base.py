@@ -116,6 +116,16 @@ class ModelBase(ABC):
         """
         pass  # pragma: no cover
 
+    @abstractmethod
+    def _get_model_class(self) -> Any:
+        """
+        Return the class type of the underlying model to be instantiated.
+
+        :return: The class object (e.g., xgboost.XGBClassifier, sklearn.linear_model.LogisticRegression).
+        :rtype: Any
+        """
+        pass
+
     def load_model(self, file_name: str) -> None:
         """
         Load or deserialize a model from the given file path.
@@ -123,11 +133,23 @@ class ModelBase(ABC):
         :param file_name: The path to the file from which the model will be loaded.
         :type file_name: str
         :raises FileNotFoundError: If the specified file does not exist.
+        :raises ValueError: If the loaded model type does not match the expected class
+                            defined by the configuration.
         """
         if not os.path.exists(file_name):
             raise FileNotFoundError(f"File '{file_name}' does not exist.")
 
         self.model = load(file_name)
+        expected_class = self._get_model_class()
+
+        if not isinstance(self.model, expected_class):
+            raise ValueError(
+                f"Inconsistent class instances between config entry and loaded model. "
+                f"Expected '{expected_class.__name__}', but got '{type(self.model).__name__}'."
+            )
+
+        if not isinstance(self.model, self._get_model_class()):
+            raise ValueError("Inconsistent class instances between config entry and loaded model.")
 
     def save_model(self, file_name: str) -> None:
         """

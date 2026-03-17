@@ -66,11 +66,11 @@ class MultilayerPerceptron(SklearnModelBase):
         self.model_params.update(model_params)
         self.allow_na = False
 
-    def _get_model_class(self) -> Type[SklearnMLP]:
+    def _get_model_class(self) -> Any:
         """
         Return the Scikit-Learn MLPClassifier class.
 
         :return: The MLPClassifier class.
-        :rtype: type[sklearn.neural_network.MLPClassifier]
+        :rtype: Any
         """
         return SklearnMLP

@@ -55,10 +55,9 @@ class SklearnModelBase(ModelBase):
         # Initialize storage for SHAP values explicitly
         self.shap_values: Optional[pl.DataFrame] = None
 
-    @abstractmethod
     def _get_model_class(self) -> Any:
         """
-        Return the class type of the underlying model to be instantiated.
+        Placeholder method.
 
         :return: The class object (e.g., xgboost.XGBClassifier, sklearn.linear_model.LogisticRegression).
         :rtype: Any

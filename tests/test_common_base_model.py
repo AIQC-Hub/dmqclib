@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Self
 
 import polars as pl
+import xgboost as xgb
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
@@ -31,6 +32,9 @@ class ModelBaseWithEmptyName(ModelBase):
     def update_nthreads(self, model: Self) -> Self:
         return model
 
+    def _get_model_class(self):
+        pass
+
 
 class ModelBaseWithExpectedName(ModelBase):
     """
@@ -51,6 +55,9 @@ class ModelBaseWithExpectedName(ModelBase):
     def update_nthreads(self, model: Self) -> Self:
         return model
 
+    def _get_model_class(self):
+        return xgb.XGBClassifier
+
 
 class ModelBaseWithWrongName(ModelBase):
     """
@@ -70,6 +77,9 @@ class ModelBaseWithWrongName(ModelBase):
 
     def update_nthreads(self, model: Self) -> Self:
         return model
+
+    def _get_model_class(self):
+        return xgb.XGBClassifier
 
 
 class TestModelBaseMethods(unittest.TestCase):
@@ -120,6 +130,42 @@ class TestModelBaseMethods(unittest.TestCase):
         ds = ModelBaseWithExpectedName(self.config)
         with self.assertRaises(FileNotFoundError):
             ds.load_model("invalid_file_path")
+
+    def test_load_model_success(self):
+        """
+        Ensure that load_model successfully loads a model when the class matches
+        the one expected by _get_model_class().
+        """
+        ds = ModelBaseWithExpectedName(self.config)
+        valid_model = xgb.XGBClassifier()
+
+        model_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "training"
+            / "model_pres_xgb.joblib"
+        )
+
+        ds.load_model(str(model_file))
+        self.assertIsInstance(ds.model, xgb.XGBClassifier)
+
+    def test_load_model_type_mismatch(self):
+        """
+        Ensure that load_model raises a ValueError when the loaded model
+        does not match the expected class.
+        """
+        ds = ModelBaseWithExpectedName(self.config)
+
+        model_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "training"
+            / "model_pres_mlp.joblib"
+        )
+
+        # Verify that loading the wrong model type triggers the custom ValueError
+        with self.assertRaisesRegex(ValueError, "Inconsistent class instances"):
+            ds.load_model(str(model_file))
 
     def test_update_contingency_table_validation(self):
         """

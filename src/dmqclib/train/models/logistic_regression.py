@@ -47,7 +47,7 @@ class LogisticRegression(SklearnModelBase):
             "C": 1.0,
             "solver": "lbfgs",
             "class_weight": "balanced",
-            "max_iter": 1000,
+            "max_iter": 200,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(
