@@ -73,6 +73,7 @@ class ModelBase(ABC):
         self.report: Optional[Any] = None
         self.contingency_table: Optional[pl.DataFrame] = None
         self.k: int = 0
+        self.allow_na = True
 
         # Check config to see if SHAP should be calculated
         self.enable_shap: bool = self.config.get_step_params("model").get(

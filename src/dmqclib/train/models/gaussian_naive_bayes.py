@@ -53,6 +53,7 @@ class GaussianNaiveBayes(SklearnModelBase):
             self.expected_class_name, self.short_name
         )
         self.model_params.update(model_params)
+        self.allow_na = False
 
     def _get_model_class(self) -> Any:
         """

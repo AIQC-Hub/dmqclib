@@ -11,7 +11,10 @@ from abc import abstractmethod
 from typing import Any, Self, Optional
 
 import polars as pl
+import numpy as np
+import pandas as pd
 from sklearn.metrics import classification_report
+from sklearn.impute import SimpleImputer
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
@@ -79,6 +82,9 @@ class SklearnModelBase(ModelBase):
             raise ValueError("Member variable 'training_set' must not be empty.")
 
         x_train = self.training_set.select(pl.exclude("label")).to_pandas()
+        if not self.allow_na:
+            imputer = SimpleImputer(strategy="median")
+            x_train = imputer.fit_transform(x_train)
         y_train = self.training_set["label"].to_pandas()
 
         model_class = self._get_model_class()
@@ -132,10 +138,34 @@ class SklearnModelBase(ModelBase):
 
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
 
+        if self.allow_na:
+            self.predictions = pl.DataFrame(
+                {
+                    "predicted_label": self.model.predict(x_test),
+                    "score": self.model.predict_proba(x_test)[:, 1],
+                }
+            )
+        else:
+            self.safe_predict()
+
+    def safe_predict(self) -> None:
+        x_test = self.test_set.select(pl.exclude("label")).to_pandas()
+        x_test = np.asarray(x_test)
+
+        nan_rows = pd.isna(x_test).any(axis=1)
+
+        predictions = np.zeros(x_test.shape[0], dtype=int)  # default class = 0
+        probs = np.zeros((x_test.shape[0], 2))
+        probs[:, 0] = 1.0  # default probability for class 0
+
+        if (~nan_rows).any():
+            predictions[~nan_rows] = self.model.predict(x_test[~nan_rows])
+            probs[~nan_rows] = self.model.predict_proba(x_test[~nan_rows])
+
         self.predictions = pl.DataFrame(
             {
-                "predicted_label": self.model.predict(x_test),
-                "score": self.model.predict_proba(x_test)[:, 1],
+                "predicted_label": predictions,
+                "score": probs[:, 1],
             }
         )
 

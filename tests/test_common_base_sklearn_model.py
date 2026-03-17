@@ -11,6 +11,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import numpy as np
+import pandas as pd
 import polars as pl
 from sklearn.base import BaseEstimator, ClassifierMixin
 
@@ -57,6 +58,24 @@ class ConcreteSklearnModel(SklearnModelBase):
 
     def _get_model_class(self) -> Any:
         return MockSklearnClassifier
+
+def make_training_set():
+    return pl.DataFrame(
+        {
+            "f1": [1.0, 2.0, None, 4.0],
+            "f2": [1.0, None, 3.0, 4.0],
+            "label": [0, 1, 0, 1],
+        }
+    )
+
+def make_test_set():
+    return pl.DataFrame(
+        {
+            "f1": [1.0, None, 3.0],
+            "f2": [1.0, 2.0, None],
+            "label": [0, 0, 1],
+        }
+    )
 
 
 class TestSklearnModelBase(unittest.TestCase):
@@ -333,3 +352,57 @@ class TestSklearnModelBase(unittest.TestCase):
             # Verify correct class array (index 1) was extracted
             self.assertIsNotNone(self.model_wrapper.shap_values)
             self.assertEqual(self.model_wrapper.shap_values["f1_shap"][0], 0.9)
+
+    def test_safe_predict_nan_rows_get_default_class(self):
+        # Setup dummy training data
+        self.model_wrapper.training_set = make_training_set()
+        self.model_wrapper.test_set = make_test_set()
+        self.model_wrapper.allow_na = False
+
+        self.model_wrapper.build()
+        self.model_wrapper.predict()
+
+        preds = self.model_wrapper.predictions
+
+        x_test = self.model_wrapper.test_set.select(pl.exclude("label")).to_pandas()
+        nan_rows = pd.isna(x_test).any(axis=1)
+
+        predicted = preds["predicted_label"].to_numpy()
+
+        assert (predicted[nan_rows] == 0).all()
+
+
+    def test_safe_predict_probability_range(self):
+        # Setup dummy training data
+        self.model_wrapper.training_set = make_training_set()
+        self.model_wrapper.test_set = make_test_set()
+        self.model_wrapper.allow_na = False
+
+        self.model_wrapper.build()
+        self.model_wrapper.predict()
+
+        scores = self.model_wrapper.predictions["score"].to_numpy()
+
+        assert np.all(scores >= 0.0)
+        assert np.all(scores <= 1.0)
+
+
+    def test_non_nan_rows_use_model_prediction(self):
+        # Setup dummy training data
+        self.model_wrapper.training_set = make_training_set()
+        self.model_wrapper.test_set = make_test_set()
+        self.model_wrapper.allow_na = False
+
+        self.model_wrapper.build()
+        self.model_wrapper.predict()
+
+        x_test = self.model_wrapper.test_set.select(pl.exclude("label")).to_pandas()
+        nan_rows = pd.isna(x_test).any(axis=1)
+
+        non_nan_rows = ~nan_rows
+
+        if non_nan_rows.any():
+            expected = self.model_wrapper.model.predict(np.asarray(x_test)[non_nan_rows])
+            predicted = self.model_wrapper.predictions["predicted_label"].to_numpy()[non_nan_rows]
+
+            assert np.array_equal(predicted, expected)
