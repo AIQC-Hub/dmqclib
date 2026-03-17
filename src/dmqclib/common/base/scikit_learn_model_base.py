@@ -84,7 +84,10 @@ class SklearnModelBase(ModelBase):
         x_train = self.training_set.select(pl.exclude("label")).to_pandas()
         if not self.allow_na:
             imputer = SimpleImputer(strategy="median")
-            x_train = imputer.fit_transform(x_train)
+            x_train = pd.DataFrame(
+                imputer.fit_transform(x_train),
+                columns=x_train.columns  # keep column names
+            )
         y_train = self.training_set["label"].to_pandas()
 
         model_class = self._get_model_class()
@@ -150,13 +153,12 @@ class SklearnModelBase(ModelBase):
 
     def safe_predict(self) -> None:
         x_test = self.test_set.select(pl.exclude("label")).to_pandas()
-        x_test = np.asarray(x_test)
 
-        nan_rows = pd.isna(x_test).any(axis=1)
+        nan_rows = x_test.isna().any(axis=1).to_numpy()
 
-        predictions = np.zeros(x_test.shape[0], dtype=int)  # default class = 0
-        probs = np.zeros((x_test.shape[0], 2))
-        probs[:, 0] = 1.0  # default probability for class 0
+        predictions = np.zeros(len(x_test), dtype=int)
+        probs = np.zeros((len(x_test), 2))
+        probs[:, 0] = 1.0
 
         if (~nan_rows).any():
             predictions[~nan_rows] = self.model.predict(x_test[~nan_rows])
