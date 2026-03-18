@@ -24,3 +24,11 @@ dmqclib.classify.step7\_concat\_datasets.dataset\_all module
    :members:
    :show-inheritance:
    :undoc-members:
+
+dmqclib.classify.step7\_concat\_datasets.dataset\_suite module
+--------------------------------------------------------------
+
+.. automodule:: dmqclib.classify.step7_concat_datasets.dataset_suite
+   :members:
+   :show-inheritance:
+   :undoc-members:

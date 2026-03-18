@@ -1,9 +1,10 @@
-"""A base class for calculating and managing summary statistics.
+"""
+Summary Statistics Module.
 
-This module provides a base class, :class:`SummaryStatsBase`, for calculating and
-managing summary statistics for tabular data, primarily using the Polars library.
-It facilitates the computation of both global and per-profile statistics for
-specified numeric columns and handles the output of these statistics to a file.
+This module provides the :class:`SummaryStatsBase` class, which serves as a base
+for calculating, aggregating, and exporting summary statistics from tabular
+datasets using the Polars library. It handles global and per-profile calculations
+and supports exporting results to TSV format.
 """
 
 import os
@@ -167,6 +168,9 @@ class SummaryStatsBase(DataSetBase):
         This method computes statistics for each column in :attr:`val_col_names`
         at both the global and per-profile level, then concatenates them into
         a single DataFrame stored in :attr:`summary_stats`.
+
+        :returns: None
+        :rtype: None
         """
         global_stats = pl.concat(
             [self.calculate_global_stats(x) for x in self.val_col_names]
@@ -184,6 +188,8 @@ class SummaryStatsBase(DataSetBase):
         The output path is determined by :attr:`output_file_name`.
 
         :raises ValueError: If :attr:`summary_stats` has not been calculated yet.
+        :returns: None
+        :rtype: None
         """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")
@@ -191,7 +197,7 @@ class SummaryStatsBase(DataSetBase):
         os.makedirs(os.path.dirname(self.output_file_name), exist_ok=True)
         self.summary_stats.write_csv(self.output_file_name, separator="\t")
 
-    def create_summary_stats_observation(self):
+    def create_summary_stats_observation(self) -> None:
         """Create a summarized view of global observation statistics.
 
         This method filters the main statistics table for global ("all") data,
@@ -199,6 +205,8 @@ class SummaryStatsBase(DataSetBase):
         :attr:`summary_stats_observation`.
 
         :raises ValueError: If :attr:`summary_stats` has not been calculated yet.
+        :returns: None
+        :rtype: None
         """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")
@@ -210,7 +218,7 @@ class SummaryStatsBase(DataSetBase):
             .sort(["variable"])
         )
 
-    def create_summary_stats_profile(self):
+    def create_summary_stats_profile(self) -> None:
         """Create a summarized view of per-profile statistics.
 
         This method filters the main statistics table for per-profile data,
@@ -218,6 +226,8 @@ class SummaryStatsBase(DataSetBase):
         profiles, and stores the result in :attr:`summary_stats_profile`.
 
         :raises ValueError: If :attr:`summary_stats` has not been calculated yet.
+        :returns: None
+        :rtype: None
         """
         if self.summary_stats is None:
             raise ValueError("Member variable 'summary_stats' must not be empty.")

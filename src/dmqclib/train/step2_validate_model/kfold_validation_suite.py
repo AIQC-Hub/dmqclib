@@ -57,11 +57,15 @@ class KFoldValidationSuite(ValidationBase):
         # Redefine default file names to include the {method} placeholder
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{method}_{target_name}.tsv",
-            "contingency_table": "contingency_tables_{method}_{target_name}.tsv",
+            "contingency_table": "contingency_tables_{method}_{target_name}.parquet",
             "metric_plot": "metric_plots_{method}_{target_name}.svg",
         }
 
         # Re-generate output file names using the new pattern with {method}
+        # For each output type (report, contingency_table, metric_plot),
+        # get the target-specific filenames from config.
+        # These filenames will still contain the {method} placeholder,
+        # which will be replaced later in the validate method for each specific method.
         self.output_file_names: Dict[str, Dict[str, str]] = {
             k: self.config.get_target_file_names(
                 step_name="validate", default_file_name=v
@@ -78,6 +82,8 @@ class KFoldValidationSuite(ValidationBase):
             "profile_no",
             "observation_no",
         ]
+
+        self.base_model.set_enable_shap(False)
 
     def get_k_fold(self) -> int:
         """
@@ -154,7 +160,9 @@ class KFoldValidationSuite(ValidationBase):
             if contingency_tables:
                 self.contingency_tables[comp_key] = pl.concat(contingency_tables)
 
-            # Resolve the {method} placeholder in the output file paths specifically for this composite key
+            # Resolve the {method} placeholder in the output file paths specifically for this composite key.
+            # The original target_name entry in self.output_file_names still contains the {method} placeholder.
+            # This creates a new entry for the composite key with the resolved path.
             self.output_file_names["report"][comp_key] = self.output_file_names[
                 "report"
             ][target_name].replace("{method}", method_lower)

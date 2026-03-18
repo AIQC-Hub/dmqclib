@@ -47,7 +47,8 @@ def main():
         print("No .py files found.")
         return
 
-    model_name = "gemini-2.5-flash"
+    #model_name = "gemini-2.5-flash"
+    model_name = "gemini-3-flash-preview"
 
     for f in py_files:
         update_file(f, prompt, client, model_name)

@@ -111,18 +111,45 @@ class TestClassifyDataSet:
         assert os.path.exists(str(dir_classify / "classify_report_psal.tsv"))
         assert os.path.exists(str(dir_classify / "classify_report_pres.tsv"))
         assert os.path.exists(
-            str(dir_classify / "classify_contingency_tables_temp.tsv")
+            str(dir_classify / "classify_contingency_tables_temp.parquet")
         )
         assert os.path.exists(
-            str(dir_classify / "classify_contingency_tables_psal.tsv")
+            str(dir_classify / "classify_contingency_tables_psal.parquet")
         )
         assert os.path.exists(
-            str(dir_classify / "classify_contingency_tables_pres.tsv")
+            str(dir_classify / "classify_contingency_tables_pres.parquet")
         )
         assert os.path.exists(str(dir_classify / "classify_metric_plots_temp.svg"))
         assert os.path.exists(str(dir_classify / "classify_metric_plots_psal.svg"))
         assert os.path.exists(str(dir_classify / "classify_metric_plots_pres.svg"))
+
+        # Assert that expected SHAP files are NOT created
+        assert not os.path.exists(dir_classify / "classify_shap_values_temp.parquet")
+        assert not os.path.exists(dir_classify / "classify_shap_values_psal.parquet")
+        assert not os.path.exists(dir_classify / "classify_shap_values_pres.parquet")
+
         assert os.path.exists(str(dir_classify / "predictions.parquet"))
+
+    @pytest.mark.parametrize("idx", range(2))
+    def test_shap_value_output(self, idx):
+        """
+        Verifies that the `classify_dataset` function generates the expected
+        SHAP output files
+        """
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = (
+            True
+        )
+        classify_dataset(self.configs[idx])
+
+        output_folder = (
+            self.test_data_location / self.configs[idx].data["dataset_folder_name"]
+        )
+        dir_classify = output_folder / "classify"
+
+        # Assert that expected SHAP files are created
+        assert os.path.exists(dir_classify / "classify_shap_values_temp.parquet")
+        assert os.path.exists(dir_classify / "classify_shap_values_psal.parquet")
+        assert os.path.exists(dir_classify / "classify_shap_values_pres.parquet")
 
 
 class TestClassifyDataSetNegX5(unittest.TestCase):
@@ -233,13 +260,19 @@ class TestClassifyDataSetNegX5(unittest.TestCase):
         self.assertTrue(os.path.exists(str(dir_classify / "classify_report_psal.tsv")))
         self.assertTrue(os.path.exists(str(dir_classify / "classify_report_pres.tsv")))
         self.assertTrue(
-            os.path.exists(str(dir_classify / "classify_contingency_tables_temp.tsv"))
+            os.path.exists(
+                str(dir_classify / "classify_contingency_tables_temp.parquet")
+            )
         )
         self.assertTrue(
-            os.path.exists(str(dir_classify / "classify_contingency_tables_psal.tsv"))
+            os.path.exists(
+                str(dir_classify / "classify_contingency_tables_psal.parquet")
+            )
         )
         self.assertTrue(
-            os.path.exists(str(dir_classify / "classify_contingency_tables_pres.tsv"))
+            os.path.exists(
+                str(dir_classify / "classify_contingency_tables_pres.parquet")
+            )
         )
         self.assertTrue(
             os.path.exists(str(dir_classify / "classify_metric_plots_temp.svg"))

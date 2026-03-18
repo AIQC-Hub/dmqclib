@@ -42,7 +42,7 @@ class DayOfYearFeat(FeatureBase):
                             :attr:`selected_rows`. Defaults to None.
         :type target_name: Optional[str]
         :param feature_info: A dictionary describing feature parameters,
-                             which may include a "convert" key (e.g., "cosine")
+                             which may include a "convert" key (e.g., "sine")
                              for sinusoidal transformations. Defaults to None.
         :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame containing a subset
@@ -60,6 +60,8 @@ class DayOfYearFeat(FeatureBase):
                               containing statistical information for potential scaling.
                               Defaults to None.
         :type summary_stats: Optional[pl.DataFrame]
+        :return: None
+        :rtype: None
         """
         super().__init__(
             target_name=target_name,
@@ -84,6 +86,9 @@ class DayOfYearFeat(FeatureBase):
           3. Compute the day of year from ``profile_timestamp`` via
              Polars' :func:`polars.Expr.dt.ordinal_day`.
           4. Remove columns no longer needed (i.e., the join keys and timestamp).
+
+        :return: None
+        :rtype: None
         """
         self.features = (
             self.selected_rows[self.target_name]
@@ -108,6 +113,9 @@ class DayOfYearFeat(FeatureBase):
         Currently, no transformations are applied to day-of-year values
         in this step, but it can be extended for outlier removal or
         other domain-specific logic.
+
+        :return: None
+        :rtype: None
         """
         pass  # pragma: no cover
 
@@ -117,35 +125,46 @@ class DayOfYearFeat(FeatureBase):
 
         If ``"convert"`` is specified as either ``"sine"`` or ``"cosine"`` in :attr:`feature_info`,
         transforms each day-of-year value into a cyclical feature in the range [0, 1].
+
+        :return: None
+        :rtype: None
         """
 
         dispatcher = {"sine": self.convert_sine, "cosine": self.convert_cosine}
         if (self.feature_info is not None) and ("convert" in self.feature_info):
-            dispatcher[self.feature_info.get("convert")]()
+            conversion_type = self.feature_info.get("convert")
+            if conversion_type in dispatcher:
+                dispatcher[conversion_type]()
 
-    def convert_sine(self):
+    def convert_sine(self) -> None:
         """
         Optionally apply a sinusoidal transformation to the day-of-year values.
 
         The transformation formula used is:
 
         .. math::
-            day\\_of\\_year_{transformed} = \\frac{{\\sin(day\\_of\\_year \\cdot \\pi / 365) + 1}}{2}
+            day\\_of\\_year_{transformed} = \\frac{{\\sin((day\\_of\\_year - 1) \\cdot 2 \\cdot \\pi / 364) + 1}}{2}
+
+        :return: None
+        :rtype: None
         """
 
         self.features = self.features.with_columns(
-            ((pl.col("day_of_year") * np.pi / 365).sin() + 1) / 2
+            (((pl.col("day_of_year") - 1) * 2 * np.pi / 364).sin() + 1) / 2
         )
 
-    def convert_cosine(self):
+    def convert_cosine(self) -> None:
         """
-        Optionally apply a sinusoidal transformation to the day-of-year values.
+        Optionally apply a cosinusoidal transformation to the day-of-year values.
 
         The transformation formula used is:
 
         .. math::
-            day\\_of\\_year_{transformed} = \\frac{{\\cos(day\\_of\\_year \\cdot \\pi / 365) + 1}}{2}
+            day\\_of\\_year_{transformed} = \\frac{{\\cos((day\\_of\\_year - 1) \\cdot 2 \\cdot \\pi / 364) + 1}}{2}
+
+        :return: None
+        :rtype: None
         """
         self.features = self.features.with_columns(
-            ((pl.col("day_of_year") * np.pi / 365).cos() + 1) / 2
+            (((pl.col("day_of_year") - 1) * 2 * np.pi / 364).cos() + 1) / 2
         )

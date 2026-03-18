@@ -38,8 +38,8 @@ Similar to the ``prepare`` workflow, this section specifies the target variables
        variables:
          - name: temp
            flag: temp_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7  ]
+           neg_flag_values: [ 1 ]
 
 `step_class_sets`
 ^^^^^^^^^^^^^^^^^
@@ -60,12 +60,16 @@ This powerful section allows you to define the core components of your training 
          model: XGBoost
          build: BuildModel
 
+.. note::
+   ``dmqclib`` integrates multiple ML algorithms, and it is easy to switch between them by setting the ``model`` key. For more details, see the dedicated :doc:`../../how-to/algorithm_selection` page.
+
 `step_param_sets`
 ^^^^^^^^^^^^^^^^^
 This section provides detailed parameters for the classes defined in your chosen ``step_class_sets``. This allows you to fine-tune the behavior of each step, such as specifying the number of folds for cross-validation or providing hyperparameters for your machine learning model.
 
 *   **steps.input**: Parameters for the input data loading step (often empty or simple flags).
 *   **steps.validate.k_fold**: For ``KFoldValidation``, specifies the number of folds for cross-validation.
+*   **steps.model.calculate_shap**: This is used to control SHAP value calculation.
 *   **steps.model.model_params.scale_pos_weight**: This is used to address imbalanced datasets by weighting the positive class. For example, ``200`` indicates a ratio of negative to positive records of 200:1.
 *   **steps.model.model_params.n_jobs**: The number of threads used by XGBoost. It tries to use all available CPU cores if it is set to `-1`.
 *   **steps.build**: Parameters for the final model building step (often empty or simple flags for saving).
@@ -76,10 +80,17 @@ This section provides detailed parameters for the classes defined in your chosen
      - name: training_param_set_1
        steps:
          input: { }
-         validate: { k_fold: 10 }
-         model: { model_params: { scale_pos_weight: 200,
+         validate: { k_fold: 5 }
+         model: { calculate_shap: False,
+                  model_params: { scale_pos_weight: 200,
                                   n_jobs: -1 } }
          build: { }
+
+.. note::
+   SHAP values can be automatically calculated during the test phase. For more details, see the dedicated :doc:`../../how-to/shap_values` page.
+
+.. note::
+   Model parameters specified by ``model_params`` differ across ML algorithms. Please consult the dedicated :doc:`../../how-to/algorithm_selection` page.
 
 `training_sets`
 ^^^^^^^^^^^^^^^^^
@@ -104,14 +115,14 @@ This is the main "assembly" section that defines a complete training and evaluat
 .. note::
    While you can define multiple training sets in the ``training_sets`` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
 
-Full Example
-------------
+Full Example with XGBoost
+---------------------------
 
 Below is a complete example of a ``training_config.yaml`` file. The lines you will most commonly need to edit or customize are highlighted for quick reference.
 
 .. code-block:: yaml
    :caption: Full training_config.yaml example
-   :emphasize-lines: 5, 38, 39, 43, 44
+   :emphasize-lines: 5, 38, 39, 40, 44, 45
 
    ---
    path_info_sets:
@@ -126,16 +137,16 @@ Below is a complete example of a ``training_config.yaml`` file. The lines you wi
        variables:
          - name: temp
            flag: temp_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
          - name: psal
            flag: psal_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
          - name: pres
            flag: pres_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
 
    step_class_sets:
      - name: training_step_set_1
@@ -149,8 +160,9 @@ Below is a complete example of a ``training_config.yaml`` file. The lines you wi
      - name: training_param_set_1
        steps:
          input: { }
-         validate: { k_fold: 10 }
-         model: { model_params: { scale_pos_weight: 200,
+         validate: { k_fold: 5 }
+         model: { calculate_shap: False,
+                  model_params: { scale_pos_weight: 200,
                                   n_jobs: -1 } }
          build: { }
 

@@ -6,15 +6,23 @@ As this project is still in active development, it does not yet strictly adhere 
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-03-18
+### Added
+- SHAP calculation
+- RTD pages for SHAP and multi-ML methods
+
+### Changed
+- Test data content between test and final models
+
 ## [0.7.2] - 2026-03-10
 ### Added
-- Add multiple ML methods support
-- Add model suite classes
+- Multiple ML methods support
+- Model suite classes
 
 ## [0.7.1] - 2026-03-06
 ### Added
-- Write contingency table after validation, test, and classification
-- Create ROC and Precision-Recall curve
+- Contingency tables after validation, test, and classification
+- ROC and Precision-Recall curves
 
 ## [0.7.0] - 2025-10-29
 ### Added

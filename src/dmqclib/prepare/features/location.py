@@ -37,26 +37,16 @@ class LocationFeat(FeatureBase):
         Initialize the location feature extractor with relevant data frames.
 
         :param target_name: The key for the target variable in :attr:`selected_rows`.
-                            Defaults to None.
         :type target_name: Optional[str]
-        :param feature_info: A dictionary describing feature parameters, typically
-                             including scaling statistics. Defaults to None.
+        :param feature_info: A dictionary describing feature parameters, typically including scaling statistics.
         :type feature_info: Optional[Dict]
-        :param selected_profiles: A Polars DataFrame containing a subset of profiles
-                                  relevant to feature extraction, including location data.
-                                  Defaults to None.
+        :param selected_profiles: A Polars DataFrame containing a subset of profiles relevant to feature extraction.
         :type selected_profiles: Optional[pl.DataFrame]
-        :param filtered_input: A filtered Polars DataFrame of input data,
-                               potentially used for advanced merging or lookups.
-                               Defaults to None.
+        :param filtered_input: A filtered Polars DataFrame of input data.
         :type filtered_input: Optional[pl.DataFrame]
-        :param selected_rows: A dictionary keyed by target names, each mapping to
-                              a Polars DataFrame of rows relevant for that target.
-                              Defaults to None.
+        :param selected_rows: A dictionary mapping target names to Polars DataFrames of relevant rows.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
-        :param summary_stats: A Polars DataFrame containing statistical
-                              information that may aid in feature scaling.
-                              Defaults to None.
+        :param summary_stats: A Polars DataFrame containing statistical information for scaling.
         :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
@@ -74,16 +64,6 @@ class LocationFeat(FeatureBase):
         :attr:`selected_profiles` into :attr:`selected_rows` to form the final
         feature set in :attr:`features`.
 
-        Specifically:
-
-          1. Selects columns like ``row_id``, ``platform_code``, and ``profile_no``
-             from the DataFrame in :attr:`selected_rows[target_name]`.
-          2. Joins this subset with corresponding columns from :attr:`selected_profiles`
-             (including ``longitude`` and ``latitude``) on ``platform_code``
-             and ``profile_no``.
-          3. Drops those join columns from the final feature set, leaving
-             ``row_id``, ``longitude``, and ``latitude`` among others.
-
         :returns: None. The result is stored in the :attr:`features` attribute.
         :rtype: None
         """
@@ -95,20 +75,16 @@ class LocationFeat(FeatureBase):
                     ["platform_code", "profile_no", "longitude", "latitude"]
                 ).unique(),
                 on=["platform_code", "profile_no"],
-                how="left",  # Changed from maintain_order to how for clarity and standard Polars usage
+                how="left",
             )
             .drop(["platform_code", "profile_no"])
         )
 
     def scale_first(self) -> None:
         """
-        (Optional) Initial scaling or normalization procedure.
+        Initial scaling or normalization procedure (currently unimplemented).
 
-        Currently, this method is unimplemented for location features and serves
-        as a placeholder for future extensions, e.g., if location data requires
-        pre-processing or transformation steps before the final scaling.
-
-        :returns: None. Operations are performed in-place on :attr:`features`.
+        :returns: None.
         :rtype: None
         """
         pass  # pragma: no cover
@@ -117,19 +93,6 @@ class LocationFeat(FeatureBase):
         """
         Apply a min-max scaling pass to each feature (column) specified in
         :attr:`feature_info["stats"]`.
-
-        This method iterates through the keys of the ``"stats"`` dictionary within
-        :attr:`feature_info`. For each key `k` (representing a feature name),
-        it expects a dictionary ``v`` with ``"min"`` and ``"max"`` keys to
-        perform the min-max scaling: ``(value - min) / (max - min)``.
-
-        Example structure for ``feature_info["stats"]``::
-
-            {
-                "longitude": {"min": -180.0, "max": 180.0},
-                "latitude": {"min": -90.0, "max": 90.0},
-                ...
-            }
 
         :returns: None. Scaling is applied in-place to the :attr:`features` DataFrame.
         :rtype: None

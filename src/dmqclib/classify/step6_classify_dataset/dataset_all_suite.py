@@ -1,8 +1,9 @@
 """
-This module defines the ClassifyAllSuite class, a specialized implementation
-of BuildModelBase designed for testing classification models across multiple targets
-and multiple ML methods. It manages configuration, data handling, and
-result persistence for a comprehensive classification workflow using a ModelSuite.
+This module provides the ClassifyAllSuite class, which extends BuildModelBase to
+facilitate the testing and evaluation of multiple classification models across
+various targets and machine learning methods. It automates the process of
+loading models, generating predictions, and aggregating results into unified
+datasets for comparative analysis.
 """
 
 import os
@@ -72,7 +73,8 @@ class ClassifyAllSuite(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "classify_report_{target_name}.tsv",
             "prediction": "classify_prediction_{target_name}.parquet",
-            "contingency_table": "classify_contingency_tables_{target_name}.tsv",
+            "contingency_table": "classify_contingency_tables_{target_name}.parquet",
+            "shap_value": "classify_shap_values_{target_name}.parquet",
             "metric_plot": "classify_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{method}_{target_name}.joblib"
@@ -122,6 +124,18 @@ class ClassifyAllSuite(BuildModelBase):
     def build(self, target_name: str) -> None:
         """
         Placeholder method as training does not occur during classification.
+
+        :param target_name: The name of the target variable.
+        :type target_name: str
+        """
+        pass  # pragma: no cover
+
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Placeholder method as training does not occur during classification.
+
+        :param target_name: The name of the target variable.
+        :type target_name: str
         """
         pass  # pragma: no cover
 
@@ -132,12 +146,16 @@ class ClassifyAllSuite(BuildModelBase):
 
         Data types for model outputs (class, score, etc.) are standardized
         to Int64 and Float64 to prevent Polars SchemaErrors when concatenating.
+
+        :param target_name: The name of the target variable to be tested.
+        :type target_name: str
         """
         test_set = self.test_sets[target_name].drop(self.drop_cols)
 
         target_reports = []
         target_predictions = []
         target_contingency = []
+        target_shap_values = []
 
         for method_name, method_obj in self.base_model.method_objs.items():
             method_lower = getattr(method_obj, "short_name", method_name).lower()
@@ -168,7 +186,7 @@ class ClassifyAllSuite(BuildModelBase):
             pred_df = pred_df.with_columns(
                 [
                     pl.lit(method_name).alias("method"),
-                    pl.col("class").cast(pl.Int64),
+                    pl.col("predicted_label").cast(pl.Int64),
                     pl.col("score").cast(pl.Float64),
                 ]
             )
@@ -180,12 +198,33 @@ class ClassifyAllSuite(BuildModelBase):
                     [
                         pl.lit(method_name).alias("method"),
                         pl.col("k").cast(pl.Int64),
-                        pl.col("label").cast(pl.Int64),
+                        pl.col("predicted_label").cast(pl.Int64),
                         pl.col("score").cast(pl.Float64),
                     ]
                 )
                 target_contingency.append(
                     ct_df.select(["method", pl.exclude("method")])
+                )
+
+            # Append method column to shap values and standardize prediction types
+            if current_model.shap_values is not None:
+                shap_df = current_model.shap_values.with_columns(
+                    [
+                        pl.lit(method_name).alias("method"),
+                        pl.col("predicted_label").cast(pl.Int64),
+                        pl.col("score").cast(pl.Float64),
+                    ]
+                )
+
+                # Explicitly cast all SHAP columns to Float64 just to be safe
+                shap_features = [c for c in shap_df.columns if c.endswith("_shap")]
+                if shap_features:
+                    shap_df = shap_df.with_columns(
+                        [pl.col(c).cast(pl.Float64) for c in shap_features]
+                    )
+
+                target_shap_values.append(
+                    shap_df.select(["method", pl.exclude("method")])
                 )
 
         self.reports[target_name] = (
@@ -197,11 +236,17 @@ class ClassifyAllSuite(BuildModelBase):
         self.contingency_tables[target_name] = (
             pl.concat(target_contingency) if target_contingency else None
         )
+        self.shap_values[target_name] = (
+            pl.concat(target_shap_values) if target_shap_values else None
+        )
 
     def read_models(self) -> None:
         """
         Read and restore each target's models from disk for all methods in the suite,
         storing the loaded models in :attr:`models`.
+
+        :raises FileNotFoundError: If a model file path specified in
+                                    :attr:`model_file_names` does not exist.
         """
         for target_name in self.config.get_target_names():
             for method_name, method_obj in self.base_model.method_objs.items():

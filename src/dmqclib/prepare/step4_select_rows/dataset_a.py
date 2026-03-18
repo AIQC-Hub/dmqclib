@@ -1,13 +1,10 @@
 """
-This module provides a specialized class, LocateDataSetA, for identifying and
-extracting positive and negative data rows from oceanographic profiles. It is
-designed to prepare paired datasets for machine learning training or evaluation
-by aligning "bad" quality-controlled observations (positive examples) with
-"good" quality-controlled observations (negative examples) based on profile
-and pressure proximity.
+Module for locating specific data rows within oceanographic datasets.
 
-It extends :class:`dmqclib.prepare.step4_select_rows.locate_base.LocatePositionBase`
-and utilizes Polars DataFrames for efficient data manipulation.
+This module defines the :class:`LocateDataSetA` class, which identifies positive
+(bad quality) and negative (good quality) observations from oceanographic
+profiles. It facilitates the creation of paired datasets for machine
+learning by aligning observations based on profile and pressure proximity.
 """
 
 from typing import Dict, Optional
@@ -76,7 +73,7 @@ class LocateDataSetA(LocatePositionBase):
         :type target_name: str
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name that indicates a "bad" observation (e.g., flag=4).
-        :type target_value: Dict[str, any]
+        :type target_value: Dict
         """
         pos_flag_values = target_value.get("pos_flag_values", [4])
         self.positive_rows[target_name] = (
@@ -116,7 +113,7 @@ class LocateDataSetA(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for selecting negative observations
                              (e.g., flag=1 or any "good" flag).
-        :type target_value: Dict[str, any]
+        :type target_value: Dict
         """
         self.select_negative_rows_closest_day(target_name, target_value)
         neighbor_n = self.config.get_step_params("locate").get("neighbor_n", 0)
@@ -145,7 +142,7 @@ class LocateDataSetA(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for selecting negative observations
                              (e.g., flag=1 or any "good" flag).
-        :type target_value: Dict[str, any]
+        :type target_value: Dict
         """
         neg_flag_values = target_value.get("neg_flag_values", [1])
         negative_rows = (
@@ -228,7 +225,7 @@ class LocateDataSetA(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for selecting negative observations
                              (e.g., flag=1 or any "good" flag).
-        :type target_value: Dict[str, any]
+        :type target_value: Dict
         """
         neighbor_n = self.config.get_step_params("locate").get("neighbor_n", 0)
         neighbor_no = list(range(1, neighbor_n + 1)) + [
@@ -296,7 +293,7 @@ class LocateDataSetA(LocatePositionBase):
         :type target_name: str
         :param target_value: A dictionary of target metadata, including the QC flag
                              variable name used for both positive and negative selection.
-        :type target_value: Dict[str, any]
+        :type target_value: Dict
         """
         self.select_positive_rows(target_name, target_value)
         self.select_negative_rows(target_name, target_value)

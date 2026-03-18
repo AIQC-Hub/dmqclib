@@ -23,6 +23,9 @@ class ExtractDataSetA(ExtractFeatureBase):
     extract class within the dmqclib framework. It inherits the full
     feature extraction pipeline and lifecycle management from its base class,
     :class:`ExtractFeatureBase`.
+
+    :cvar expected_class_name: The name expected in configuration files to identify this class.
+    :vartype expected_class_name: str
     """
 
     expected_class_name: str = "ExtractDataSetA"
@@ -41,26 +44,15 @@ class ExtractDataSetA(ExtractFeatureBase):
         This constructor sets up the necessary data and configuration for the
         feature extraction process, leveraging the capabilities of the base class.
 
-        :param config: A dataset configuration object that manages paths,
-                       target definitions, and parameters for feature extraction.
+        :param config: A dataset configuration object that manages paths, target definitions, and parameters.
         :type config: :class:`~dmqclib.common.base.config_base.ConfigBase`
-        :param input_data: An optional Polars DataFrame containing all available data
-                           for feature extraction. This typically represents the full dataset
-                           pre-processed in earlier steps. Defaults to None.
+        :param input_data: An optional Polars DataFrame containing the full pre-processed dataset.
         :type input_data: :class:`polars.DataFrame` or None
-        :param selected_profiles: An optional Polars DataFrame containing specifically-selected
-                                  profiles from earlier data preparation steps. This subset
-                                  is used to focus feature generation on relevant profiles.
-                                  Defaults to None.
+        :param selected_profiles: An optional Polars DataFrame containing specifically-selected profiles.
         :type selected_profiles: :class:`polars.DataFrame` or None
-        :param selected_rows: An optional dictionary mapping each target (str) to its respective
-                            subset of rows (:class:`polars.DataFrame`) for feature generation.
-                            This allows for target-specific feature extraction.
-                            Defaults to None.
+        :param selected_rows: An optional mapping of target names to their respective subset of rows.
         :type selected_rows: Dict[str, :class:`polars.DataFrame`] or None
-        :param summary_stats: An optional Polars DataFrame with summary statistics
-                              (e.g., mean, standard deviation) that may guide scaling
-                              or normalization of features. Defaults to None.
+        :param summary_stats: An optional Polars DataFrame with summary statistics for feature scaling.
         :type summary_stats: :class:`polars.DataFrame` or None
         """
         super().__init__(

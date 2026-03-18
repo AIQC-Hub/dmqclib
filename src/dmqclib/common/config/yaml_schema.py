@@ -1,7 +1,7 @@
 """
-Module providing YAML-based JSON schemas used to validate dataset and training
-configuration files. Each function returns a YAML string describing the structure
-and constraints for a specific configuration schema.
+Module providing YAML-based JSON schemas used to validate dataset, training,
+and classification configuration files. Each function returns a YAML string
+describing the structure and constraints for a specific configuration schema.
 """
 
 

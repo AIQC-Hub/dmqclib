@@ -13,13 +13,13 @@ from dmqclib.common.config.training_config import TrainingConfig
 from dmqclib.common.loader.model_loader import load_model_class
 from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.support_vector_machine import SupportVectorMachine
 from dmqclib.train.models.decision_tree import DecisionTree
 from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
 from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.train.models.multilayer_perceptron import MultilayerPerceptron
 
 
 class TestModelClassLoader(unittest.TestCase):
@@ -88,11 +88,11 @@ class TestModelClassLoader(unittest.TestCase):
         """
         self.config.data["step_class_set"]["steps"]["model"] = "SVM"
         ds = load_model_class(self.config)
-        self.assertIsInstance(ds, SVM)
+        self.assertIsInstance(ds, SupportVectorMachine)
 
         self.config.data["step_class_set"]["steps"]["model"] = "SupportVectorMachine"
         ds = load_model_class(self.config)
-        self.assertIsInstance(ds, SVM)
+        self.assertIsInstance(ds, SupportVectorMachine)
 
     def test_load_decision_tree_model(self):
         """
@@ -153,11 +153,11 @@ class TestModelClassLoader(unittest.TestCase):
         """
         self.config.data["step_class_set"]["steps"]["model"] = "MLP"
         ds = load_model_class(self.config)
-        self.assertIsInstance(ds, MLP)
+        self.assertIsInstance(ds, MultilayerPerceptron)
 
         self.config.data["step_class_set"]["steps"]["model"] = "MultilayerPerceptron"
         ds = load_model_class(self.config)
-        self.assertIsInstance(ds, MLP)
+        self.assertIsInstance(ds, MultilayerPerceptron)
 
     def test_load_model_invalid_config(self):
         """

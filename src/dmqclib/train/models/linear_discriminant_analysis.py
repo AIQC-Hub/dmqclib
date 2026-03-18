@@ -22,6 +22,7 @@ class LinearDiscriminantAnalysis(SklearnModelBase):
     Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
     - Uses ``sklearn.discriminant_analysis.LinearDiscriminantAnalysis``.
@@ -39,7 +40,7 @@ class LinearDiscriminantAnalysis(SklearnModelBase):
         Initialize the LDA model with default or user-specified parameters.
 
         :param config: A configuration object providing model parameters.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         """
         super().__init__(config=config)
 
@@ -56,11 +57,13 @@ class LinearDiscriminantAnalysis(SklearnModelBase):
             self.expected_class_name, self.short_name
         )
         self.model_params.update(model_params)
+        self.allow_na = False
 
     def _get_model_class(self) -> Any:
         """
         Return the Scikit-Learn LinearDiscriminantAnalysis class.
 
-        :return: The LinearDiscriminantAnalysis class.
+        :return: The LinearDiscriminantAnalysis class from scikit-learn.
+        :rtype: type
         """
         return SklearnLDA

@@ -20,6 +20,7 @@ class LogisticRegression(SklearnModelBase):
     Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters suitable for standard classification tasks.
     - Uses ``sklearn.linear_model.LogisticRegression``.
@@ -45,18 +46,21 @@ class LogisticRegression(SklearnModelBase):
             "penalty": "l2",
             "C": 1.0,
             "solver": "lbfgs",
-            "max_iter": 1000,
+            "class_weight": "balanced",
+            "max_iter": 200,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(
             self.expected_class_name, self.short_name
         )
         self.model_params.update(model_params)
+        self.allow_na = False
 
     def _get_model_class(self) -> Any:
         """
         Return the Scikit-Learn LogisticRegression class.
 
         :return: The LogisticRegression class.
+        :rtype: Any
         """
         return SklearnLR

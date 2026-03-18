@@ -60,7 +60,8 @@ class ClassifyAll(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "classify_report_{target_name}.tsv",
             "prediction": "classify_prediction_{target_name}.parquet",
-            "contingency_table": "classify_contingency_tables_{target_name}.tsv",
+            "contingency_table": "classify_contingency_tables_{target_name}.parquet",
+            "shap_value": "classify_shap_values_{target_name}.parquet",
             "metric_plot": "classify_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{target_name}.joblib"
@@ -94,13 +95,18 @@ class ClassifyAll(BuildModelBase):
 
     def build(self, target_name: str) -> None:
         """
-        Build (train) a model for the specified target, storing it in :attr:`models`.
+        Placeholder method as training does not occur during classification.
 
-        This method is intended to encapsulate the model training logic.
-        Currently, it is a placeholder.
+        :param target_name: The name of the target variable.
+        :type target_name: str
+        """
+        pass  # pragma: no cover
 
-        :param target_name: The target variable name, used to index
-                            :attr:`training_sets` and locate the training data.
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Placeholder method as training does not occur during classification.
+
+        :param target_name: The name of the target variable.
         :type target_name: str
         """
         pass  # pragma: no cover
@@ -137,6 +143,9 @@ class ClassifyAll(BuildModelBase):
 
         if self.base_model.contingency_table is not None:
             self.contingency_tables[target_name] = self.base_model.contingency_table
+
+        if self.base_model.shap_values is not None:
+            self.shap_values[target_name] = self.base_model.shap_values
 
         predictions = self.base_model.predictions
         self.predictions[target_name] = pl.concat(

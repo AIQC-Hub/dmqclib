@@ -49,6 +49,9 @@ Before you modify the config, let's create a directory where your trained models
 **Update your training_config.yaml file:**
 Modify the file to align with the following structure. Remember to replace placeholder paths with your actual project setup.
 
+.. note::
+   ``dmqclib`` integrates multiple ML algorithms, and it is easy to switch between them. For more details, see the dedicated :doc:`../../how-to/algorithm_selection` page.
+
 .. code-block:: yaml
 
     path_info_sets:
@@ -78,8 +81,9 @@ Modify the file to align with the following structure. Remember to replace place
       - name: training_param_set_1
         steps:
           input: { }
-          validate: { k_fold: 10 } # 10-fold cross-validation
-          model: { model_params: { scale_pos_weight: 200,   # Specify pos:neg ratio
+          validate: { k_fold: 5 } # 5-fold cross-validation
+          model: { calculate_shap: False,                   # Control SHAP value calculation
+                   model_params: { scale_pos_weight: 200,   # Specify pos:neg ratio
                                    n_jobs: -1 } }           # Number of threads used by XGBoost
           build: { }
 

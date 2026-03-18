@@ -40,6 +40,24 @@ class TestModelSuite(unittest.TestCase):
         ds = ModelSuite(self.config)
         self.assertTrue(ds.multi)
 
+    def test_shap_flag(self):
+        ds = ModelSuite(self.config)
+        self.assertFalse(ds.enable_shap)
+        for method_obj in ds.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = ModelSuite(self.config)
+        self.assertTrue(ds.enable_shap)
+        for method_obj in ds.method_objs.values():
+            self.assertTrue(method_obj.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = ModelSuite(self.config)
+        self.assertFalse(ds.enable_shap)
+        for method_obj in ds.method_objs.values():
+            self.assertFalse(method_obj.enable_shap)
+
     def test_init_default_methods(self):
         """
         Verify that ModelSuite loads all default methods when the config

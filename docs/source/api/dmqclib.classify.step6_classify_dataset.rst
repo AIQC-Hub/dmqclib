@@ -16,3 +16,11 @@ dmqclib.classify.step6\_classify\_dataset.dataset\_all module
    :members:
    :show-inheritance:
    :undoc-members:
+
+dmqclib.classify.step6\_classify\_dataset.dataset\_all\_suite module
+--------------------------------------------------------------------
+
+.. automodule:: dmqclib.classify.step6_classify_dataset.dataset_all_suite
+   :members:
+   :show-inheritance:
+   :undoc-members:

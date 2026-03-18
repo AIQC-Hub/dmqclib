@@ -39,7 +39,7 @@ def _get_train_class(
     :type step: str
     :param registry: A dictionary mapping class names (str) to class types
                      derived from :class:`dmqclib.common.base.dataset_base.DataSetBase`.
-    :type registry: dict[str, Type[dmqclib.common.base.dataset_base.DataSetBase]]
+    :type registry: Dict[str, Type[dmqclib.common.base.dataset_base.DataSetBase]]
     :raises ValueError: If the retrieved class name is not found in ``registry``.
     :return: The dataset class (uninstantiated) that is used for the specified step.
     :rtype: Type[dmqclib.common.base.dataset_base.DataSetBase]
@@ -88,7 +88,7 @@ def load_step2_model_validation_class(
     :type config: dmqclib.common.config.training_config.TrainingConfig
     :param training_sets: A dictionary of Polars DataFrames containing data for model validation,
                           defaults to None. Keys typically represent data categories (e.g., "train", "test").
-    :type training_sets: Optional[dict[str, polars.DataFrame]]
+    :type training_sets: Optional[Dict[str, pl.DataFrame]]
     :return: An instantiated object of a class that inherits from :class:`dmqclib.train.step2_validate_model.validate_base.ValidationBase`.
     :rtype: dmqclib.train.step2_validate_model.validate_base.ValidationBase
     """
@@ -115,10 +115,10 @@ def load_step4_build_model_class(
     :type config: dmqclib.common.config.training_config.TrainingConfig
     :param training_sets: A dictionary of Polars DataFrames of training data, defaults to None.
                           Keys typically represent data categories (e.g., "features", "target").
-    :type training_sets: Optional[dict[str, polars.DataFrame]]
+    :type training_sets: Optional[Dict[str, pl.DataFrame]]
     :param test_sets: A dictionary of Polars DataFrames of test data, defaults to None.
                       Keys typically represent data categories (e.g., "features", "target").
-    :type test_sets: Optional[dict[str, polars.DataFrame]]
+    :type test_sets: Optional[Dict[str, pl.DataFrame]]
     :return: An instantiated object of a class that inherits from :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase`.
     :rtype: dmqclib.train.step4_build_model.build_model_base.BuildModelBase
     """

@@ -1,10 +1,10 @@
 """
-This module defines the LocateDataSetAll class, a specialized implementation
-of LocatePositionBase for selecting all relevant data rows from combined
-Copernicus CTD data.
+Module for selecting all data rows from combined Copernicus CTD data.
 
-It is designed to prepare data for machine learning tasks by identifying
-and labeling data points based on configured QC flags.
+This module provides the :class:`LocateDataSetAll` class, which extends
+:class:`LocatePositionBase` to identify and label data points for machine
+learning tasks based on Quality Control (QC) flags.
+
 """
 
 from typing import Dict, Optional
@@ -23,6 +23,9 @@ class LocateDataSetAll(LocatePositionBase):
     This class assigns a default file naming scheme for target rows
     and uses configuration details (e.g., QC flags) to identify
     relevant data rows for each target.
+
+    :cvar expected_class_name: The expected name of the class for validation.
+    :vartype expected_class_name: str
     """
 
     expected_class_name: str = "LocateDataSetAll"
@@ -74,10 +77,11 @@ class LocateDataSetAll(LocatePositionBase):
                             configuration's target dictionary.
         :type target_name: str
         :param target_value: A dictionary of target metadata,
-                             including the relevant QC flag variable name
-                             (e.g., ``{"flag": "BATHY_QC_FLAG"}``).
-        :type target_value: dict
+                             including the relevant QC flag variable name,
+                             positive flag values, and negative flag values.
+        :type target_value: Dict
         :raises ValueError: If :attr:`input_data` is None when this method is called.
+        :raises KeyError: If 'flag' is not present in target_value.
         """
         if self.input_data is None:
             raise ValueError("Member variable 'input_data' must not be empty.")
@@ -123,6 +127,6 @@ class LocateDataSetAll(LocatePositionBase):
         :param target_value: A dictionary of target metadata, including
                              the QC flag variable name used for labeling
                              (e.g., ``{"flag": "TEMP_QC_FLAG"}``).
-        :type target_value: dict
+        :type target_value: Dict
         """
         self.select_all_rows(target_name, target_value)

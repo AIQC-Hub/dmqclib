@@ -1,12 +1,9 @@
-"""Selects and labels oceanographic profiles based on QC flags.
+"""
+Module for selecting and labeling oceanographic profiles based on QC flags.
 
-This module defines the `SelectDataSetA` class, which is responsible for selecting
-and labeling positive and negative oceanographic profiles from a given dataset.
-
-It extends :class:`~.select_base.ProfileSelectionBase` to implement specific
-criteria for identifying "bad" (positive) and "good" (negative) profiles
-based on QC flags, and then pairs them temporally to construct a labeled dataset
-suitable for quality control machine learning applications.
+This module defines the :class:`SelectDataSetAll` class, which identifies
+"bad" (positive) and "good" (negative) profiles based on Quality Control (QC)
+criteria and prepares a labeled dataset for machine learning applications.
 """
 
 import operator
@@ -20,21 +17,14 @@ from dmqclib.prepare.step3_select_profiles.select_base import ProfileSelectionBa
 
 
 class SelectDataSetAll(ProfileSelectionBase):
-    """Selects positive/negative profiles from Copernicus CTD data.
+    """
+    Selects positive/negative profiles from Copernicus CTD data.
 
     This class implements a strategy for labeling oceanographic profiles as
     "positive" (bad) or "negative" (good) based on their quality control (QC)
-    flags. The main steps are:
+    flags.
 
-    1.  **Select Positive Profiles**: Identify profiles with at least one "bad"
-        QC flag (e.g., a value of 4) in key sensor measurements.
-    2.  **Select Negative Profiles**: Identify profiles where all measurements for
-        all key sensors are "good" (e.g., a QC flag of 1).
-    3.  **Combine Data**: Merge the labeled positive and negative profiles into a
-        single DataFrame.
-
-    :ivar expected_class_name: The expected name of the class, used for
-        configuration validation.
+    :ivar expected_class_name: The expected name of the class for config validation.
     :vartype expected_class_name: str
     :ivar pos_profile_df: DataFrame containing positively-labeled profiles.
     :vartype pos_profile_df: Optional[polars.DataFrame]
@@ -49,14 +39,12 @@ class SelectDataSetAll(ProfileSelectionBase):
     def __init__(
         self, config: ConfigBase, input_data: Optional[pl.DataFrame] = None
     ) -> None:
-        """Initialize the selection and labeling process.
+        """
+        Initialize the selection and labeling process.
 
-        :param config: The configuration object containing paths, parameters,
-                       and QC flag definitions for the selection process.
+        :param config: The configuration object containing paths and QC flag definitions.
         :type config: dmqclib.common.base.config_base.ConfigBase
-        :param input_data: A Polars DataFrame containing the full set
-                           of profiles from which to select examples. If None,
-                           it is expected to be loaded by the base class.
+        :param input_data: A Polars DataFrame containing the full set of profiles.
         :type input_data: Optional[polars.DataFrame]
         """
         super().__init__(config=config, input_data=input_data)
@@ -72,12 +60,12 @@ class SelectDataSetAll(ProfileSelectionBase):
         ]
 
     def select_positive_profiles(self) -> None:
-        """Select profiles with "bad" QC flags.
+        """
+        Select profiles with "bad" QC flags.
 
-        A profile is considered "positive" (i.e., contains errors) if any of
-        its measurements have a QC flag defined as a positive flag in the
-        configuration (e.g., a flag of 4). The resulting unique profiles
-        are stored in the :attr:`pos_profile_df` attribute.
+        A profile is considered "positive" if any of its measurements have a QC
+        flag defined as a positive flag in the configuration. Results are
+        stored in :attr:`pos_profile_df`.
         """
         conditions = reduce(
             operator.or_,
@@ -100,13 +88,12 @@ class SelectDataSetAll(ProfileSelectionBase):
         )
 
     def select_negative_profiles(self) -> None:
-        """Select profiles with consistently "good" QC flags.
+        """
+        Select profiles with consistently "good" QC flags.
 
-        A profile is considered "negative" (i.e., contains only good data)
-        if, for every monitored parameter (e.g., temperature, salinity),
-        none of its measurements have a "bad" flag and at least one has a "good"
-        flag. The resulting unique profiles are stored in the
-        :attr:`neg_profile_df` attribute.
+        A profile is considered "negative" if no measurements have a "bad" flag
+        and at least one measurement has a "good" flag for all monitored parameters.
+        Results are stored in :attr:`neg_profile_df`.
         """
         exprs = reduce(
             operator.and_,
@@ -130,15 +117,11 @@ class SelectDataSetAll(ProfileSelectionBase):
         )
 
     def label_profiles(self) -> None:
-        """Execute the full profile selection and labeling workflow.
+        """
+        Execute the full profile selection and labeling workflow.
 
-        This method orchestrates the process by calling, in order:
-
-        1. :meth:`select_positive_profiles`
-        2. :meth:`select_negative_profiles`
-
-        The final combined DataFrame of labeled profiles is stored in the
-        :attr:`selected_profiles` attribute of the base class.
+        Orchestrates the identification of positive and negative profiles and
+        vstacks them into the :attr:`selected_profiles` attribute.
         """
         self.select_positive_profiles()
         self.select_negative_profiles()

@@ -79,11 +79,11 @@ def format_summary_stats(
     :type df: polars.DataFrame
     :param variables: An optional list of variable names to include. If empty,
                       all variables are included.
-    :type variables: list[str]
+    :type variables: List[str]
     :param summary_stats: An optional list of statistic names (e.g., "mean", "sd")
                           to include for profile-level summaries. This parameter
                           is ignored for global (non-"profiles") summaries.
-    :type summary_stats: list[str]
+    :type summary_stats: List[str]
     :return: A string containing the pretty-printed, formatted statistics.
     :rtype: str
     """
@@ -124,14 +124,14 @@ def _format_with_stats_column(
     :param variables: A list of variable names to include in the output.
                       If the list is empty, all variables found in the DataFrame
                       will be included.
-    :type variables: list[str]
+    :type variables: List[str]
     :param summary_stats: A list of specific statistic names (e.g., "mean", "sd", "pct25")
                           to include in the output. Only statistics present in this list
                           and in the DataFrame's "stats" column will be processed.
-    :type summary_stats: list[str]
+    :type summary_stats: List[str]
     :return: A nested dictionary representing the formatted statistics.
              Keys are variable names, and nested keys are statistic names.
-    :rtype: dict
+    :rtype: Dict
     """
     stats_dict = {}
     for row in df.iter_rows(named=True):
@@ -167,14 +167,14 @@ def _format_without_stats_column(
     :param variables: A list of variable names to include in the output.
                       If the list is empty, all variables found in the DataFrame
                       will be included.
-    :type variables: list[str]
+    :type variables: List[str]
     :param _: An unused parameter (conventionally denoted by an underscore)
               to maintain signature consistency with other formatting functions.
               This parameter is ignored in the processing logic.
-    :type _: list[str]
+    :type _: List[str]
     :return: A dictionary where keys are variable names and values are
              dictionaries containing "min" and "max" statistics for that variable.
-    :rtype: dict
+    :rtype: Dict
     """
     stats_dict = {}
     for row in df.iter_rows(named=True):
