@@ -247,7 +247,7 @@ class ConfigBase(ABC):
 
         if model_long_name in model_params:
             return model_params[model_long_name]
-        if model_short_name in model_params:
+        elif model_short_name in model_params:
             return model_params[model_short_name]
         else:
             return model_params

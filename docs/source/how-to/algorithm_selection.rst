@@ -7,6 +7,8 @@ The library supports multiple machine learning algorithms spanning different log
 Available Algorithms
 --------------------
 
+Except for `XGBoost <https://xgboost.readthedocs.io>`_, all methods use the implementation provided by `scikit-learn <https://scikit-learn.org>`_.
+
 ================================ ================================= ============================ ============ ======================
 Category                         Algorithm                         Class Name                   Short Name   Method
 ================================ ================================= ============================ ============ ======================
@@ -68,6 +70,12 @@ Classification Configuration Example
           classify: ClassifyAll
           concat: ConcatDataSetAll
 
+Imputation
+-----------------
+As non-tree-based machine learning methods do not accept NaN values, missing values are automatically imputed using ``SimpleImputer(strategy="median")`` provided by `scikit-learn <https://scikit-learn.org>`_ during the training phase.
+
+During the classification phase, instances containing NaN values in their features are handled such that non-tree-based models output a class value of 0 and a score of 0.
+
 Model Suite Class
 -----------------
 
@@ -87,7 +95,7 @@ Training Configuration Example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: yaml
-   :emphasize-lines: 5, 6, 7, 14, 15, 16, 17, 18, 19, 20, 21
+   :emphasize-lines: 5, 6, 7, 14, 15, 16, 17, 18, 19, 20, 21, 22
 
     step_class_sets:
       - name: training_step_set_1
@@ -103,11 +111,12 @@ Training Configuration Example
           input: { }
           validate: { }
           model: {
+                   calculate_shap: True,
                    methods: [ DT, XGB, RF ],
                    model_params: {
-                     DT: { max_depth: 30 },
-                     XGB: { learning_rate: 0.01 },
-                     RF: { bootstrap: True }
+                     DT:  { },             # Default (you still need to set an empty dictionary)
+                     XGB: { scale_pos_weight: 200 , n_jobs: 30 },
+                     RF:  { n_jobs: 30 }   # Number of parallel jobs
                    }
                  }
           build: { }
@@ -275,7 +284,7 @@ Logistic Regression (Logit)
      - ``"lbfgs"``
      - Algorithm to use in the optimization problem.
    * - ``max_iter``
-     - ``1000``
+     - ``200``
      - Maximum number of iterations taken for the solvers to converge.
 
 Linear Discriminant Analysis (LDA)
@@ -330,7 +339,7 @@ Support Vector Machine (SVM)
      - ``1e-3``
      - Tolerance for stopping criterion.
    * - ``max_iter``
-     - ``-1``
+     - ``200``
      - Hard limit on iterations within solver (``-1`` for no limit).
    * - ``random_state``
      - ``None``
@@ -399,7 +408,7 @@ Multilayer Perceptron (MLP)
      - Default
      - Description
    * - ``hidden_layer_sizes``
-     - ``(100,)``
+     - ``(50,)``
      - The ith element represents the number of neurons in the ith hidden layer.
    * - ``activation``
      - ``"relu"``
@@ -420,7 +429,7 @@ Multilayer Perceptron (MLP)
      - ``0.001``
      - The initial learning rate used.
    * - ``max_iter``
-     - ``200``
+     - ``100``
      - Maximum number of iterations/epochs.
    * - ``shuffle``
      - ``True``
@@ -429,8 +438,11 @@ Multilayer Perceptron (MLP)
      - ``None``
      - Determines random number generation for weights and bias initialization.
    * - ``tol``
-     - ``1e-4``
+     - ``1e-3``
      - Tolerance for the optimization.
    * - ``early_stopping``
-     - ``False``
+     - ``True``
      - Whether to use early stopping to terminate training when validation score is not improving.
+   * - ``n_iter_no_change``
+     - ``5``
+     - Number of iterations to stop training when validation score stops improving.

@@ -54,7 +54,7 @@ class SupportVectorMachine(SklearnModelBase):
             "kernel": "linear",
             "probability": True,  # Required for predict_proba used in base class
             "tol": 1e-3,
-            "max_iter": -1,
+            "max_iter": 200,
             "random_state": None,
             "class_weight": "balanced",
         }

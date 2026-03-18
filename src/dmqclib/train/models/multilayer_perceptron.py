@@ -46,18 +46,19 @@ class MultilayerPerceptron(SklearnModelBase):
         super().__init__(config=config)
 
         self.model_params: Dict[str, Any] = {
-            "hidden_layer_sizes": (100,),
+            "hidden_layer_sizes": (50,),
             "activation": "relu",
             "solver": "adam",
             "alpha": 0.0001,
             "batch_size": "auto",
             "learning_rate": "constant",
             "learning_rate_init": 0.001,
-            "max_iter": 200,
+            "max_iter": 100,
             "shuffle": True,
             "random_state": None,
-            "tol": 1e-4,
-            "early_stopping": False,
+            "tol": 1e-3,
+            "early_stopping": True,
+            "n_iter_no_change": 5
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(

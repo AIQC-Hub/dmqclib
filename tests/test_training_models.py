@@ -358,7 +358,7 @@ class TestMLP(unittest.TestCase):
 
     def test_default_params(self):
         ds = MultilayerPerceptron(self.config)
-        self.assertEqual(ds.model_params.get("hidden_layer_sizes"), (100,))
+        self.assertEqual(ds.model_params.get("hidden_layer_sizes"), (50,))
         self.assertEqual(ds.model_params.get("activation"), "relu")
 
     def test_config_params_override(self):
