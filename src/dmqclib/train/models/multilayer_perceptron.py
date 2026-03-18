@@ -7,7 +7,7 @@ Polars DataFrames, converting them to Pandas for compatibility with the
 `sklearn` library.
 """
 
-from typing import Dict, Any, Type
+from typing import Dict, Any
 
 from sklearn.neural_network import MLPClassifier as SklearnMLP
 
@@ -58,7 +58,7 @@ class MultilayerPerceptron(SklearnModelBase):
             "random_state": None,
             "tol": 1e-3,
             "early_stopping": True,
-            "n_iter_no_change": 5
+            "n_iter_no_change": 5,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(

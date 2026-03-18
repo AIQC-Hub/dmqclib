@@ -59,6 +59,7 @@ class ConcreteSklearnModel(SklearnModelBase):
     def _get_model_class(self) -> Any:
         return MockSklearnClassifier
 
+
 def make_training_set():
     return pl.DataFrame(
         {
@@ -67,6 +68,7 @@ def make_training_set():
             "label": [0, 1, 0, 1],
         }
     )
+
 
 def make_test_set():
     return pl.DataFrame(
@@ -371,7 +373,6 @@ class TestSklearnModelBase(unittest.TestCase):
 
         assert (predicted[nan_rows] == 0).all()
 
-
     def test_safe_predict_probability_range(self):
         # Setup dummy training data
         self.model_wrapper.training_set = make_training_set()
@@ -385,7 +386,6 @@ class TestSklearnModelBase(unittest.TestCase):
 
         assert np.all(scores >= 0.0)
         assert np.all(scores <= 1.0)
-
 
     def test_non_nan_rows_use_model_prediction(self):
         # Setup dummy training data
@@ -402,7 +402,11 @@ class TestSklearnModelBase(unittest.TestCase):
         non_nan_rows = ~nan_rows
 
         if non_nan_rows.any():
-            expected = self.model_wrapper.model.predict(np.asarray(x_test)[non_nan_rows])
-            predicted = self.model_wrapper.predictions["predicted_label"].to_numpy()[non_nan_rows]
+            expected = self.model_wrapper.model.predict(
+                np.asarray(x_test)[non_nan_rows]
+            )
+            predicted = self.model_wrapper.predictions["predicted_label"].to_numpy()[
+                non_nan_rows
+            ]
 
             assert np.array_equal(predicted, expected)

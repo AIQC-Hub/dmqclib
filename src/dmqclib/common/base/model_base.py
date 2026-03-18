@@ -149,7 +149,9 @@ class ModelBase(ABC):
             )
 
         if not isinstance(self.model, self._get_model_class()):
-            raise ValueError("Inconsistent class instances between config entry and loaded model.")
+            raise ValueError(
+                "Inconsistent class instances between config entry and loaded model."
+            )
 
     def save_model(self, file_name: str) -> None:
         """
