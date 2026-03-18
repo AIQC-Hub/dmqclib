@@ -350,12 +350,16 @@ When runtime dependencies change, the automated PR from the conda-forge bot may 
     git rebase upstream/main               # Make your local main perfectly linear with original
     git push origin main --force           # Update your GitHub fork's main (optional but good practice)
     ```
-5. **Create a new branch** (e.g., `git checkout -b update_vX.Y.Z`).
-6. **Generate a strict recipe** (e.g., `grayskull pypi dmqclib --strict-conda-forge`).
-7. **Review `recipes/meta.yaml`** and ensure it meets `conda-forge` standards.
-8. **Rerender the feedstock** (e.g., `conda smithy rerender -c auto`).
-9. **Commit, push, and open a pull request** to the `staged-recipes` repository.
-10. **Merge it** after passing CI.
+5. **Alternatively, fetch a PR from upstream:**
+    ```bash
+    git fetch upstream pull/{#PR}/head:update_vX.Y.Z
+    ```
+6. **Check out a branch** (e.g., `git checkout -b update_vX.Y.Z`).
+7. **Generate a strict recipe** (e.g., `grayskull pypi dmqclib --strict-conda-forge`).
+8. **Review `recipes/meta.yaml`** and ensure it meets `conda-forge` standards.
+9. **Rerender the feedstock (optional)** (e.g., `conda smithy rerender -c auto`. **Note:** Not needed to run this command when a PR is fetched).
+10. **Commit, push, and open a pull request** to the `staged-recipes` repository.
+11. **Merge it** after passing CI.
 
 #### Initial upload
 Submitting the package on `conda-forge` involves creating a pull request to the `conda-forge/staged-recipes` repository.
