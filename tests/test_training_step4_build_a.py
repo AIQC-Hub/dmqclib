@@ -15,13 +15,13 @@ from dmqclib.common.loader.training_loader import load_step1_input_training_set
 from dmqclib.train.step4_build_model.build_model import BuildModel
 from dmqclib.train.models.logistic_regression import LogisticRegression
 from dmqclib.train.models.linear_discriminant_analysis import LinearDiscriminantAnalysis
-from dmqclib.train.models.svm import SVM
+from dmqclib.train.models.support_vector_machine import SupportVectorMachine
 from dmqclib.train.models.decision_tree import DecisionTree
 from dmqclib.train.models.random_forest import RandomForest
 from dmqclib.train.models.xgboost import XGBoost
 from dmqclib.train.models.k_nearest_neighbors import KNearestNeighbors
 from dmqclib.train.models.gaussian_naive_bayes import GaussianNaiveBayes
-from dmqclib.train.models.mlp import MLP
+from dmqclib.train.models.multilayer_perceptron import MultilayerPerceptron
 from dmqclib.train.step2_validate_model.kfold_validation import KFoldValidation
 
 
@@ -85,7 +85,8 @@ def run_test_with_trained_model(test_obj):
     # Height should match number of test rows
     test_obj.assertEqual(ds.contingency_tables["temp"].height, 12)
     test_obj.assertListEqual(
-        ds.contingency_tables["temp"].columns, ["k", "label", "score"]
+        ds.contingency_tables["temp"].columns,
+        ["k", "label", "predicted_label", "score"],
     )
 
     test_obj.assertIsInstance(ds.contingency_tables["psal"], pl.DataFrame)
@@ -149,16 +150,30 @@ class TestBuildModel(unittest.TestCase):
 
         # Check Contingency Table paths
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_temp.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_temp.parquet",
             str(ds.output_file_names["contingency_table"]["temp"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_psal.parquet",
             str(ds.output_file_names["contingency_table"]["psal"]),
         )
         self.assertEqual(
-            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_pres.tsv",
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_contingency_tables_pres.parquet",
             str(ds.output_file_names["contingency_table"]["pres"]),
+        )
+
+        # Check SHAP value file names
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_temp.parquet",
+            str(ds.output_file_names["shap_value"]["temp"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_psal.parquet",
+            str(ds.output_file_names["shap_value"]["psal"]),
+        )
+        self.assertEqual(
+            "/path/to/build_1/nrt_bo_001/build_folder_1/test_shap_values_pres.parquet",
+            str(ds.output_file_names["shap_value"]["pres"]),
         )
 
         # Check metric plot file names
@@ -210,6 +225,21 @@ class TestBuildModel(unittest.TestCase):
         self.assertEqual(ds.test_sets["pres"].shape[0], 12)
         self.assertEqual(ds.test_sets["pres"].shape[1], 56)
 
+    def test_shap_flag(self):
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertTrue(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        ds = BuildModel(self.config)
+        model = ds.base_model
+        self.assertFalse(model.enable_shap)
+
     def test_train_with_xgboost(self):
         """Confirm that building models populates the 'models' dictionary with XGBoost instances."""
         ds = BuildModel(
@@ -223,9 +253,44 @@ class TestBuildModel(unittest.TestCase):
         self.assertIsInstance(ds.models["psal"], XGBoost)
         self.assertIsInstance(ds.models["pres"], XGBoost)
 
+    def test_train_final_model_with_xgboost(self):
+        """Confirm that building test models populates the 'final_models' dictionary with XGBoost instances."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_final_model_targets()
+
+        self.assertIsInstance(ds.final_models["temp"], XGBoost)
+        self.assertIsInstance(ds.final_models["psal"], XGBoost)
+        self.assertIsInstance(ds.final_models["pres"], XGBoost)
+
     def test_model_objects(self):
         """
-        Confirm that building models populates a unique model object for each target.
+        Confirm that building final models populates a unique model object for each target.
+        Ensures distinct model instances are created, not just references to the same object.
+        """
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        ds.build_final_model_targets()
+
+        self.assertIsNot(ds.final_models["temp"], ds.final_models["psal"])
+        self.assertIsNot(ds.final_models["temp"], ds.final_models["pres"])
+        self.assertIsNot(ds.final_models["psal"], ds.final_models["pres"])
+
+        # Note: assertNotEqual may depend on XGBoost's __eq__ implementation,
+        # but assertIsNot is a stronger check for distinct instances.
+        self.assertNotEqual(ds.final_models["temp"], ds.final_models["psal"])
+        self.assertNotEqual(ds.final_models["temp"], ds.final_models["pres"])
+        self.assertNotEqual(ds.final_models["psal"], ds.final_models["pres"])
+
+    def test_test_model_objects(self):
+        """
+        Confirm that building test models populates a unique model object for each target.
         Ensures distinct model instances are created, not just references to the same object.
         """
         ds = BuildModel(
@@ -245,16 +310,6 @@ class TestBuildModel(unittest.TestCase):
         self.assertNotEqual(ds.models["temp"], ds.models["pres"])
         self.assertNotEqual(ds.models["psal"], ds.models["pres"])
 
-    def test_build_without_test_sets(self):
-        """Ensure that calling build_targets() with no test sets available raises a ValueError."""
-        ds = BuildModel(
-            self.config,
-            training_sets=self.ds_input.training_sets,
-            test_sets=None,
-        )
-        with self.assertRaises(ValueError):
-            ds.build_targets()
-
     def test_build_without_training_sets(self):
         """Ensure that calling build_targets() with no training sets available raises a ValueError."""
         ds = BuildModel(
@@ -264,6 +319,26 @@ class TestBuildModel(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             ds.build_targets()
+
+    def test_build_final_model_without_test_sets(self):
+        """Ensure that calling build_final_model_targets() with no training sets available raises a ValueError."""
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=None,
+        )
+        with self.assertRaises(ValueError):
+            ds.build_final_model_targets()
+
+    def test_build_final_model_without_training_sets(self):
+        """Ensure that calling build_final_model_targets() with no training sets available raises a ValueError."""
+        ds = BuildModel(
+            self.config,
+            training_sets=None,
+            test_sets=None,
+        )
+        with self.assertRaises(ValueError):
+            ds.build_final_model_targets()
 
     def test_test_without_model(self):
         """Ensure that calling test_targets() without first building models raises a ValueError."""
@@ -322,13 +397,13 @@ class TestBuildModel(unittest.TestCase):
 
         # Override output file names for testing
         ds.output_file_names["contingency_table"]["temp"] = str(
-            data_path / "temp_test_contingency_tables_temp.tsv"
+            data_path / "temp_test_contingency_tables_temp.parquet"
         )
         ds.output_file_names["contingency_table"]["psal"] = str(
-            data_path / "temp_test_contingency_tables_psal.tsv"
+            data_path / "temp_test_contingency_tables_psal.parquet"
         )
         ds.output_file_names["contingency_table"]["pres"] = str(
-            data_path / "temp_test_contingency_tables_pres.tsv"
+            data_path / "temp_test_contingency_tables_pres.parquet"
         )
 
         ds.build_targets()
@@ -348,6 +423,42 @@ class TestBuildModel(unittest.TestCase):
         os.remove(ds.output_file_names["contingency_table"]["temp"])
         os.remove(ds.output_file_names["contingency_table"]["psal"])
         os.remove(ds.output_file_names["contingency_table"]["pres"])
+
+    def test_write_shap_values(self):
+        """
+        Check that contingency tables are correctly written to file,
+        and then remove the temporary files created.
+        """
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        ds = BuildModel(
+            self.config,
+            training_sets=self.ds_input.training_sets,
+            test_sets=self.ds_input.test_sets,
+        )
+        data_path = Path(__file__).resolve().parent / "data" / "training"
+
+        # Override output file names for testing
+        ds.output_file_names["shap_value"]["temp"] = str(
+            data_path / "temp_test_shap_values_temp.parquet"
+        )
+        ds.output_file_names["shap_value"]["psal"] = str(
+            data_path / "temp_test_shap_values_psal.parquet"
+        )
+        ds.output_file_names["shap_value"]["pres"] = str(
+            data_path / "temp_test_shap_values_pres.parquet"
+        )
+
+        ds.build_targets()
+        ds.test_targets()
+        ds.write_shap_values()
+
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["temp"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["psal"]))
+        self.assertTrue(os.path.exists(ds.output_file_names["shap_value"]["pres"]))
+
+        os.remove(ds.output_file_names["shap_value"]["temp"])
+        os.remove(ds.output_file_names["shap_value"]["psal"])
+        os.remove(ds.output_file_names["shap_value"]["pres"])
 
     def test_create_metric_plots(self):
         """
@@ -450,7 +561,7 @@ class TestBuildModel(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -602,7 +713,7 @@ class TestXGBoost(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_xgboost.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_xgboost.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -661,7 +772,7 @@ class TestLogisticRegression(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_logit.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_logit.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -722,7 +833,7 @@ class TestLDA(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_lda.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_lda.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -748,7 +859,7 @@ class TestSVM(unittest.TestCase):
         instance, as defined by the configuration.
         """
         ds = KFoldValidation(self.config)
-        self.assertIsInstance(ds.base_model, SVM)
+        self.assertIsInstance(ds.base_model, SupportVectorMachine)
 
     def test_training(self):
         """Confirm that building models populates the 'models' dictionary with SVM instances."""
@@ -759,9 +870,9 @@ class TestSVM(unittest.TestCase):
         )
         ds.build_targets()
 
-        self.assertIsInstance(ds.models["temp"], SVM)
-        self.assertIsInstance(ds.models["psal"], SVM)
-        self.assertIsInstance(ds.models["pres"], SVM)
+        self.assertIsInstance(ds.models["temp"], SupportVectorMachine)
+        self.assertIsInstance(ds.models["psal"], SupportVectorMachine)
+        self.assertIsInstance(ds.models["pres"], SupportVectorMachine)
 
     def test_model_output(self):
         """
@@ -781,7 +892,7 @@ class TestSVM(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_svm.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_svm.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -840,7 +951,7 @@ class TestDecisionTree(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_dt.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_dt.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -899,7 +1010,7 @@ class TestRandomForest(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_rf.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_rf.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -958,7 +1069,7 @@ class TestKNN(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_knn.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_knn.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -1017,7 +1128,7 @@ class TestGaussianNaiveBayes(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_gnb.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_gnb.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))
@@ -1043,7 +1154,7 @@ class TestMLP(unittest.TestCase):
         instance, as defined by the configuration.
         """
         ds = KFoldValidation(self.config)
-        self.assertIsInstance(ds.base_model, MLP)
+        self.assertIsInstance(ds.base_model, MultilayerPerceptron)
 
     def test_training(self):
         """Confirm that building models populates the 'models' dictionary with MLP instances."""
@@ -1054,9 +1165,9 @@ class TestMLP(unittest.TestCase):
         )
         ds.build_targets()
 
-        self.assertIsInstance(ds.models["temp"], MLP)
-        self.assertIsInstance(ds.models["psal"], MLP)
-        self.assertIsInstance(ds.models["pres"], MLP)
+        self.assertIsInstance(ds.models["temp"], MultilayerPerceptron)
+        self.assertIsInstance(ds.models["psal"], MultilayerPerceptron)
+        self.assertIsInstance(ds.models["pres"], MultilayerPerceptron)
 
     def test_model_output(self):
         """
@@ -1076,7 +1187,7 @@ class TestMLP(unittest.TestCase):
         ds.model_file_names["psal"] = str(data_path / "temp_model_psal_mlp.joblib")
         ds.model_file_names["pres"] = str(data_path / "temp_model_pres_mlp.joblib")
 
-        ds.build_targets()
+        ds.build_final_model_targets()
         ds.write_models()
 
         self.assertTrue(os.path.exists(ds.model_file_names["temp"]))

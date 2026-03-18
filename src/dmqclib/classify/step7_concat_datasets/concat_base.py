@@ -1,7 +1,9 @@
 """
-This module provides a base class for concatenating input datasets with machine learning
-model predictions. It facilitates merging raw data with classified or predicted labels
-and writing the combined dataset to persistent storage, typically in Parquet format.
+Module for concatenating input datasets with machine learning model predictions.
+
+This module provides the :class:`ConcatDatasetsBase` class, which handles the logic
+of merging original input features with generated predictions from one or more
+targets and saving the result to a Parquet file.
 """
 
 import os
@@ -39,9 +41,11 @@ class ConcatDatasetsBase(DataSetBase):
                             subset of predictions, defaults to None.
         :type predictions: Optional[Dict[str, polars.DataFrame]]
         :raises NotImplementedError: If the subclass does not define
-                                     ``expected_class_name`` (raised by base class init).
+                                     ``expected_class_name``.
         :raises ValueError: If the provided YAML config does not match this class's
-                            ``expected_class_name`` (raised by base class init).
+                            ``expected_class_name``.
+        :return: None
+        :rtype: NoneType
         """
         super().__init__(step_name="concat", config=config)
 
@@ -67,13 +71,15 @@ class ConcatDatasetsBase(DataSetBase):
         The method concatenates individual prediction DataFrames (one per target)
         and then joins them with the original input data based on common
         identifier columns ('platform_code', 'profile_no', 'observation_no').
-        The 'label' and 'predicted' columns from each target's predictions are
+        The 'label', 'predicted_label', and 'score' columns from each target's predictions are
         renamed to include the target key (e.g., 'targetA_label', 'targetA_predicted')
         to avoid name collisions.
 
         The result is stored in the :attr:`merged_predictions` attribute.
 
         :raises ValueError: If :attr:`predictions` or :attr:`input_data` is None when this method is called.
+        :return: None
+        :rtype: NoneType
         """
         if self.input_data is None:
             raise ValueError("Member variable 'input_data' must not be empty.")
@@ -87,7 +93,7 @@ class ConcatDatasetsBase(DataSetBase):
                     df.rename(
                         {
                             "label": f"{key}_label",
-                            "class": f"{key}_predicted",
+                            "predicted_label": f"{key}_predicted",
                             "score": f"{key}_score",
                         }
                     ).select(
@@ -115,6 +121,8 @@ class ConcatDatasetsBase(DataSetBase):
         The file path is determined by :attr:`output_file_name`.
 
         :raises ValueError: If :attr:`merged_predictions` is None when this method is called.
+        :return: None
+        :rtype: NoneType
         """
         if self.merged_predictions is None:
             raise ValueError("Member variable 'merged_predictions' must not be empty.")

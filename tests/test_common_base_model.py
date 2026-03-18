@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Self
 
 import polars as pl
+import xgboost as xgb
 
 from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.model_base import ModelBase
@@ -31,6 +32,9 @@ class ModelBaseWithEmptyName(ModelBase):
     def update_nthreads(self, model: Self) -> Self:
         return model
 
+    def _get_model_class(self):
+        pass
+
 
 class ModelBaseWithExpectedName(ModelBase):
     """
@@ -51,6 +55,9 @@ class ModelBaseWithExpectedName(ModelBase):
     def update_nthreads(self, model: Self) -> Self:
         return model
 
+    def _get_model_class(self):
+        return xgb.XGBClassifier
+
 
 class ModelBaseWithWrongName(ModelBase):
     """
@@ -70,6 +77,9 @@ class ModelBaseWithWrongName(ModelBase):
 
     def update_nthreads(self, model: Self) -> Self:
         return model
+
+    def _get_model_class(self):
+        return xgb.XGBClassifier
 
 
 class TestModelBaseMethods(unittest.TestCase):
@@ -121,6 +131,42 @@ class TestModelBaseMethods(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             ds.load_model("invalid_file_path")
 
+    def test_load_model_success(self):
+        """
+        Ensure that load_model successfully loads a model when the class matches
+        the one expected by _get_model_class().
+        """
+        ds = ModelBaseWithExpectedName(self.config)
+        valid_model = xgb.XGBClassifier()
+
+        model_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "training"
+            / "model_pres_xgb.joblib"
+        )
+
+        ds.load_model(str(model_file))
+        self.assertIsInstance(ds.model, xgb.XGBClassifier)
+
+    def test_load_model_type_mismatch(self):
+        """
+        Ensure that load_model raises a ValueError when the loaded model
+        does not match the expected class.
+        """
+        ds = ModelBaseWithExpectedName(self.config)
+
+        model_file = (
+            Path(__file__).resolve().parent
+            / "data"
+            / "training"
+            / "model_pres_mlp.joblib"
+        )
+
+        # Verify that loading the wrong model type triggers the custom ValueError
+        with self.assertRaisesRegex(ValueError, "Inconsistent class instances"):
+            ds.load_model(str(model_file))
+
     def test_update_contingency_table_validation(self):
         """
         Ensure that update_contingency_table raises ValueError when required
@@ -140,6 +186,18 @@ class TestModelBaseMethods(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Member variable 'predictions'"):
             model.update_contingency_table()
 
+    def test_shap_flag(self):
+        model = ModelBaseWithExpectedName(self.config)
+        self.assertFalse(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        model = ModelBaseWithExpectedName(self.config)
+        self.assertTrue(model.enable_shap)
+
+        self.config.data["step_param_set"]["steps"]["model"]["calculate_shap"] = False
+        model = ModelBaseWithExpectedName(self.config)
+        self.assertFalse(model.enable_shap)
+
     def test_update_contingency_table_flow(self):
         """
         Ensure that the contingency table is correctly initialized and
@@ -150,32 +208,43 @@ class TestModelBaseMethods(unittest.TestCase):
         # --- Batch 1 (e.g., Fold k=0) ---
         model.k = 0
         model.test_set = pl.DataFrame({"label": [0, 1, 0]})
-        model.predictions = pl.DataFrame({"class": [0, 1, 0], "score": [0.1, 0.9, 0.4]})
+        model.predictions = pl.DataFrame(
+            {"label": [0, 1, 0], "predicted_label": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
+        )
 
         model.update_contingency_table()
 
         # Check initialization
         self.assertIsNotNone(model.contingency_table)
-        self.assertEqual(model.contingency_table.shape, (3, 3))
-        self.assertListEqual(model.contingency_table.columns, ["k", "label", "score"])
+        self.assertEqual(model.contingency_table.shape, (3, 4))
+        self.assertListEqual(
+            model.contingency_table.columns, ["k", "label", "predicted_label", "score"]
+        )
 
         # Verify content of Batch 1
         expected_batch_1 = pl.DataFrame(
-            {"k": [0, 0, 0], "label": [0, 1, 0], "score": [0.1, 0.9, 0.4]}
+            {
+                "k": [0, 0, 0],
+                "label": [0, 1, 0],
+                "predicted_label": [0, 1, 0],
+                "score": [0.1, 0.9, 0.4],
+            }
         )
         self.assertTrue(model.contingency_table.equals(expected_batch_1))
 
         # --- Batch 2 (e.g., Fold k=1) ---
         model.k = 1
         model.test_set = pl.DataFrame({"label": [1, 1]})
-        model.predictions = pl.DataFrame({"class": [1, 0], "score": [0.8, 0.3]})
+        model.predictions = pl.DataFrame(
+            {"label": [1, 0], "predicted_label": [1, 0], "score": [0.8, 0.3]}
+        )
 
         model.update_contingency_table()
 
         # Check appending behavior
-        self.assertEqual(model.contingency_table.shape, (5, 3))
+        self.assertEqual(model.contingency_table.shape, (5, 4))
 
         # Verify that k=1 rows were added
         k1_rows = model.contingency_table.filter(pl.col("k") == 1)
-        self.assertEqual(k1_rows.shape, (2, 3))
+        self.assertEqual(k1_rows.shape, (2, 4))
         self.assertEqual(k1_rows["score"].to_list(), [0.8, 0.3])

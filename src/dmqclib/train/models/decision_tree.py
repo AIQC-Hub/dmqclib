@@ -22,6 +22,7 @@ class DecisionTree(SklearnModelBase):
     Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
     - Uses ``sklearn.tree.DecisionTreeClassifier``.
@@ -39,20 +40,20 @@ class DecisionTree(SklearnModelBase):
         Initialize the Decision Tree model with default or user-specified parameters.
 
         :param config: A configuration object providing model parameters.
-        :type config: ConfigBase
+        :type config: dmqclib.common.base.config_base.ConfigBase
         """
         super().__init__(config=config)
 
         self.model_params: Dict[str, Any] = {
             "criterion": "gini",
             "splitter": "best",
-            "max_depth": None,
-            "min_samples_split": 2,
-            "min_samples_leaf": 1,
+            "max_depth": 10,
+            "min_samples_split": 10,
+            "min_samples_leaf": 5,
             "max_features": None,
             "random_state": None,
-            "class_weight": None,
-            "ccp_alpha": 0.0,
+            "class_weight": "balanced",
+            "ccp_alpha": 0.001,
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(
@@ -65,5 +66,6 @@ class DecisionTree(SklearnModelBase):
         Return the Scikit-Learn DecisionTreeClassifier class.
 
         :return: The DecisionTreeClassifier class.
+        :rtype: typing.Any
         """
         return SklearnDT

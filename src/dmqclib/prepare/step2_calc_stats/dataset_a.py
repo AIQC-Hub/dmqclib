@@ -36,9 +36,9 @@ class SummaryDataSetA(SummaryStatsBase):
 
         :param config: The configuration object containing all necessary parameters
                        and paths for data processing and summary statistics calculation.
-        :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :param input_data: An optional Polars DataFrame to immediately process.
                            If ``None``, data should be set later using other methods.
-        :type input_data: :class:`polars.DataFrame` or ``None``
+        :type input_data: Optional[polars.DataFrame]
         """
         super().__init__(config=config, input_data=input_data)

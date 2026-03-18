@@ -48,7 +48,7 @@ class SplitDataSetBase(DataSetBase):
 
         :param config: A dataset configuration object containing parameters
                        and paths for splitting.
-        :type config: :class:`dmqclib.common.base.config_base.ConfigBase`
+        :type config: dmqclib.common.base.config_base.ConfigBase
         :param target_features: A dictionary where keys are target names (str)
                                 and values are Polars DataFrames holding combined
                                 features for each target, or None if not yet available.
@@ -88,7 +88,7 @@ class SplitDataSetBase(DataSetBase):
         """
         Retrieve the test set fraction (0-1) from configuration or fallback.
 
-        :returns: A float in the range [0, 1] representing the fraction of data
+        :return: A float in the range [0, 1] representing the fraction of data
                   reserved for testing.
         :rtype: float
         """
@@ -103,7 +103,7 @@ class SplitDataSetBase(DataSetBase):
         """
         Retrieve the number of folds for cross-validation from configuration or fallback.
 
-        :returns: An integer representing how many folds are used during k-fold
+        :return: An integer representing how many folds are used during k-fold
                   cross-validation steps.
         :rtype: int
         """

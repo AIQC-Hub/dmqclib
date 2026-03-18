@@ -23,16 +23,13 @@ from dmqclib.common.loader.single_model_loader import (
 
 class BuildModelSuite(BuildModelBase):
     """
-    A subclass of :class:`BuildModelBase` designed to build and test models
-    using a model suite (multi-model configuration).
+    A subclass of :class:`dmqclib.train.step4_build_model.build_model_base.BuildModelBase`
+    designed to build and test models using a model suite (multi-model configuration).
 
     This class iterates through all ML methods defined in the provided base model.
     It saves individual models with composite keys, but aggregates test reports,
     predictions, and contingency tables into single datasets per target name
     by introducing a 'method' column.
-
-    .. note::
-       This class sets :attr:`expected_class_name` to ``"BuildModelSuite"``.
     """
 
     expected_class_name: str = "BuildModelSuite"
@@ -46,6 +43,13 @@ class BuildModelSuite(BuildModelBase):
         """
         Initializes the BuildModelSuite class with a training configuration,
         and training/test sets.
+
+        :param config: The configuration object for the model building process.
+        :type config: dmqclib.common.base.config_base.ConfigBase
+        :param training_sets: A dictionary of training dataframes, keyed by target name. Defaults to None.
+        :type training_sets: Optional[Dict[str, polars.DataFrame]]
+        :param test_sets: A dictionary of test dataframes, keyed by target name. Defaults to None.
+        :type test_sets: Optional[Dict[str, polars.DataFrame]]
         """
         super().__init__(
             config=config, training_sets=training_sets, test_sets=test_sets
@@ -70,7 +74,8 @@ class BuildModelSuite(BuildModelBase):
         self.default_file_names: Dict[str, str] = {
             "report": "test_report_{target_name}.tsv",
             "prediction": "test_prediction_{target_name}.parquet",
-            "contingency_table": "test_contingency_tables_{target_name}.tsv",
+            "contingency_table": "test_contingency_tables_{target_name}.parquet",
+            "shap_value": "test_shap_values_{target_name}.parquet",
             "metric_plot": "test_metric_plots_{target_name}.svg",
         }
         self.default_model_file_name: str = "model_{method}_{target_name}.joblib"
@@ -94,15 +99,6 @@ class BuildModelSuite(BuildModelBase):
                     "{method}", method_lower
                 )
 
-    def build_targets(self) -> None:
-        """
-        Iterate over all targets from the configuration, calling :meth:`build`
-        for each, and then optionally calling :meth:`test` if test sets exist.
-        """
-        for target_name in self.config.get_target_names():
-            self.build(target_name)
-            if self.test_sets is not None and target_name in self.test_sets:
-                self.test(target_name)
 
     def test_targets(self) -> None:
         """
@@ -129,6 +125,34 @@ class BuildModelSuite(BuildModelBase):
         """
         Build (train) models for the specified target across all configured methods,
         storing them in :attr:`models` with composite keys.
+
+        :param target_name: The name of the target variable to build models for.
+        :type target_name: str
+        :raises ValueError: If :attr:`training_sets` are empty.
+        """
+        if not self.training_sets:
+            raise ValueError("Member variable 'training_sets' must not be empty.")
+
+        for method_name, method_obj in self.base_model.method_objs.items():
+            method_lower = getattr(method_obj, "short_name", method_name).lower()
+            comp_key = f"{method_lower}_{target_name}"
+
+            current_model = copy.deepcopy(method_obj)
+            current_model.training_set = self.training_sets[target_name].drop(
+                ["k_fold"] + self.drop_cols
+            )
+            current_model.build()
+
+            self.models[comp_key] = current_model
+
+    def build_final_model(self, target_name: str) -> None:
+        """
+        Build (train) models for the specified target across all configured methods,
+        storing them in :attr:`models` with composite keys.
+
+        :param target_name: The name of the target variable to build models for.
+        :type target_name: str
+        :raises ValueError: If :attr:`training_sets` or :attr:`test_sets` is empty.
         """
         if not self.training_sets:
             raise ValueError("Member variable 'training_sets' must not be empty.")
@@ -148,7 +172,7 @@ class BuildModelSuite(BuildModelBase):
             current_model.training_set = combined_set
             current_model.build()
 
-            self.models[comp_key] = current_model
+            self.final_models[comp_key] = current_model
 
     def test(self, target_name: str) -> None:
         """
@@ -158,12 +182,16 @@ class BuildModelSuite(BuildModelBase):
         Data types for model outputs (class, score, etc.) are standardized
         to Int64 and Float64 to prevent Polars SchemaErrors when concatenating
         results from different ML libraries (e.g., XGBoost vs Scikit-Learn).
+
+        :param target_name: The name of the target variable to test models for.
+        :type target_name: str
         """
         test_set = self.test_sets[target_name].drop(self.drop_cols)
 
         target_reports = []
         target_predictions = []
         target_contingency = []
+        target_shap_values = []
 
         for method_name, method_obj in self.base_model.method_objs.items():
             method_lower = getattr(method_obj, "short_name", method_name).lower()
@@ -195,7 +223,7 @@ class BuildModelSuite(BuildModelBase):
             pred_df = pred_df.with_columns(
                 [
                     pl.lit(method_name).alias("method"),
-                    pl.col("class").cast(pl.Int64),
+                    pl.col("predicted_label").cast(pl.Int64),
                     pl.col("score").cast(pl.Float64),
                 ]
             )
@@ -206,13 +234,33 @@ class BuildModelSuite(BuildModelBase):
                 ct_df = current_model.contingency_table.with_columns(
                     [
                         pl.lit(method_name).alias("method"),
-                        pl.col("k").cast(pl.Int64),
-                        pl.col("label").cast(pl.Int64),
+                        pl.col("predicted_label").cast(pl.Int64),
                         pl.col("score").cast(pl.Float64),
                     ]
                 )
                 target_contingency.append(
                     ct_df.select(["method", pl.exclude("method")])
+                )
+
+            # Append method column to shap values and standardize prediction types
+            if current_model.shap_values is not None:
+                shap_df = current_model.shap_values.with_columns(
+                    [
+                        pl.lit(method_name).alias("method"),
+                        pl.col("predicted_label").cast(pl.Int64),
+                        pl.col("score").cast(pl.Float64),
+                    ]
+                )
+
+                # Explicitly cast all SHAP columns to Float64 just to be safe
+                shap_features = [c for c in shap_df.columns if c.endswith("_shap")]
+                if shap_features:
+                    shap_df = shap_df.with_columns(
+                        [pl.col(c).cast(pl.Float64) for c in shap_features]
+                    )
+
+                target_shap_values.append(
+                    shap_df.select(["method", pl.exclude("method")])
                 )
 
         self.reports[target_name] = (
@@ -224,11 +272,16 @@ class BuildModelSuite(BuildModelBase):
         self.contingency_tables[target_name] = (
             pl.concat(target_contingency) if target_contingency else None
         )
+        self.shap_values[target_name] = (
+            pl.concat(target_shap_values) if target_shap_values else None
+        )
 
     def read_models(self) -> None:
         """
         Read and restore each target's models from disk for all methods in the suite,
         storing the loaded models in :attr:`models`.
+
+        :raises FileNotFoundError: If a model file path does not exist on disk.
         """
         for target_name in self.config.get_target_names():
             for method_name, method_obj in self.base_model.method_objs.items():
@@ -245,6 +298,11 @@ class BuildModelSuite(BuildModelBase):
                     config_method, method_name
                 )
                 new_model_instance.load_model(path)
+                # Issue: The line below is unusual. If `update_nthreads` is a method
+                # that modifies the instance in place, it should typically be called as
+                # `new_model_instance.update_nthreads()`. If it returns a new instance,
+                # it should be `new_model_instance = new_model_instance.update_nthreads()`.
+                # Passing `new_model_instance` as an argument to itself is redundant.
                 new_model_instance = new_model_instance.update_nthreads(
                     new_model_instance
                 )

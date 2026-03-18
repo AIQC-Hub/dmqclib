@@ -39,7 +39,7 @@ def read_input_file(
     :type options: Optional[Dict[str, Any]]
     :raises FileNotFoundError: If the specified ``input_file`` does not exist.
     :raises ValueError: If the file type cannot be inferred or is not supported.
-    :return: A Polars DataFrame containing the contents of the file.
+    :returns: A Polars DataFrame containing the contents of the file.
     :rtype: pl.DataFrame
 
     Example Usage:

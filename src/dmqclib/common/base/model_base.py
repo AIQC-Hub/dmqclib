@@ -1,10 +1,8 @@
 """
-This module defines `ModelBase`, an abstract base class for developing
-machine learning models within the dmqclib framework.
-
-It provides a common interface and essential functionalities such as
-configuration loading, model saving, and model loading, which all
-concrete model implementations should inherit and extend.
+This module provides the `ModelBase` abstract base class, which serves as the foundational
+interface for all machine learning model implementations within the library. It enforces
+a consistent structure for building, testing, and persisting models while managing
+configuration and result storage.
 """
 
 import os
@@ -23,9 +21,9 @@ class ModelBase(ABC):
 
     Subclasses must define:
 
-    - ``expected_class_name`` to match the configuration
-    - The :meth:`build` method for model building
-    - The :meth:`test` method for model testing
+    - ``expected_class_name`` to match the configuration.
+    - The :meth:`build` method for model building.
+    - The :meth:`test` method for model testing.
 
     .. note::
 
@@ -42,12 +40,11 @@ class ModelBase(ABC):
         Initialize the model with configuration data and validate
         that the expected class name matches what's in the YAML configuration.
 
-        :param config: A configuration object providing parameters
-                       needed for model assembly and execution.
+        :param config: A configuration object providing parameters needed for model assembly and execution.
         :type config: ConfigBase
         :raises NotImplementedError: If ``expected_class_name`` is not defined in a subclass.
-        :raises ValueError: If the class name derived from the configuration
-                            does not match the ``expected_class_name`` of this class.
+        :raises ValueError: If the class name derived from the configuration does not match the
+                            ``expected_class_name`` or ``short_name`` of this class.
         """
         if not self.expected_class_name:
             raise NotImplementedError(
@@ -76,14 +73,22 @@ class ModelBase(ABC):
         self.report: Optional[Any] = None
         self.contingency_table: Optional[pl.DataFrame] = None
         self.k: int = 0
+        self.allow_na = True
+
+        # Check config to see if SHAP should be calculated
+        self.enable_shap: bool = self.config.get_step_params("model").get(
+            "calculate_shap", False
+        )
+
+        # Initialize storage for SHAP values explicitly
+        self.shap_values: Optional[pl.DataFrame] = None
 
     @abstractmethod
     def build(self) -> None:
         """
         Build the model architecture or pipeline.
 
-        Subclasses must implement logic to create, configure,
-        and compile the model.
+        Subclasses must implement logic to create, configure, and compile the model.
         """
         pass  # pragma: no cover
 
@@ -104,10 +109,22 @@ class ModelBase(ABC):
 
         Subclasses must implement logic to update the number of threads.
 
-        :param model: The model needs to be updated.
+        :param model: The model instance that needs to be updated.
         :type model: Self
+        :return: The model instance with updated thread settings.
+        :rtype: Self
         """
         pass  # pragma: no cover
+
+    @abstractmethod
+    def _get_model_class(self) -> Any:
+        """
+        Return the class type of the underlying model to be instantiated.
+
+        :return: The class object (e.g., xgboost.XGBClassifier, sklearn.linear_model.LogisticRegression).
+        :rtype: Any
+        """
+        pass
 
     def load_model(self, file_name: str) -> None:
         """
@@ -116,11 +133,23 @@ class ModelBase(ABC):
         :param file_name: The path to the file from which the model will be loaded.
         :type file_name: str
         :raises FileNotFoundError: If the specified file does not exist.
+        :raises ValueError: If the loaded model type does not match the expected class
+                            defined by the configuration.
         """
         if not os.path.exists(file_name):
             raise FileNotFoundError(f"File '{file_name}' does not exist.")
 
         self.model = load(file_name)
+        expected_class = self._get_model_class()
+
+        if not isinstance(self.model, expected_class):
+            raise ValueError(
+                f"Inconsistent class instances between config entry and loaded model. "
+                f"Expected '{expected_class.__name__}', but got '{type(self.model).__name__}'."
+            )
+
+        if not isinstance(self.model, self._get_model_class()):
+            raise ValueError("Inconsistent class instances between config entry and loaded model.")
 
     def save_model(self, file_name: str) -> None:
         """
@@ -156,6 +185,7 @@ class ModelBase(ABC):
             {
                 "k": self.k,
                 "label": self.test_set["label"],
+                "predicted_label": self.predictions["predicted_label"],
                 "score": self.predictions["score"],
             }
         )

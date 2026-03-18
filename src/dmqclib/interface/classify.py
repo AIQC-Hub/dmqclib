@@ -1,9 +1,10 @@
 """
+Main orchestration module for the data classification pipeline.
+
 This module provides the main entry point for executing a comprehensive data classification pipeline.
 It orchestrates a series of sequential steps, from initial data loading and preparation to feature
 extraction, model prediction, and final result merging. Each step is configured and executed
-based on the parameters defined in a provided configuration object, ensuring a streamlined
-and customizable data quality control process.
+based on the parameters defined in a provided configuration object.
 """
 
 from dmqclib.common.base.config_base import ConfigBase
@@ -25,7 +26,6 @@ def classify_dataset(config: ConfigBase) -> None:
     by the provided configuration object.
 
     This function performs the following steps in sequence:
-
       1. Load and read the initial input data.
       2. Calculate and write summary statistics.
       3. Label and write selected profiles.
@@ -40,12 +40,6 @@ def classify_dataset(config: ConfigBase) -> None:
     :return: None. The function performs I/O operations and modifies datasets based
              on the configuration but does not return a value.
     :rtype: None
-
-    Example Usage:
-      >>> from dmqclib.common.base.config_base import ConfigBase
-      >>> # Assuming cfg is an instantiated ConfigBase object with necessary configurations
-      >>> cfg = ConfigBase(...)
-      >>> classify_dataset(cfg)
     """
     ds_input = load_classify_step1_input_dataset(config)
     ds_input.read_input_data()
@@ -82,6 +76,8 @@ def classify_dataset(config: ConfigBase) -> None:
     ds_classify.write_predictions()
     ds_classify.write_reports()
     ds_classify.write_contingency_tables()
+    if ds_classify.base_model.enable_shap:
+        ds_classify.write_shap_values()
     ds_classify.create_metric_plots()
 
     ds_concat = load_classify_step7_concat_dataset(

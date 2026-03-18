@@ -63,7 +63,7 @@ class ValidationBase(DataSetBase):
         #: Default file naming pattern for validation reports and contingency tables.
         self.default_file_names: Dict[str, str] = {
             "report": "validation_report_{target_name}.tsv",
-            "contingency_table": "contingency_tables_{target_name}.tsv",
+            "contingency_table": "contingency_tables_{target_name}.parquet",
             "metric_plot": "metric_plots_{target_name}.svg",
         }
 
@@ -105,6 +105,7 @@ class ValidationBase(DataSetBase):
         and can be used or extended in the subclass's validation routines.
         """
         self.base_model = load_model_class(self.config)
+        self.base_model.enable_shap = False
 
     def process_targets(self) -> None:
         """
@@ -149,7 +150,7 @@ class ValidationBase(DataSetBase):
 
     def write_contingency_tables(self) -> None:
         """
-        Write the contingency tables stored in :attr:`contingency_tables` to TSV files.
+        Write the contingency tables stored in :attr:`contingency_tables` to Parquet files.
 
         Each target's contingency DataFrame is written to a file specified by
         :attr:`output_file_names`. Directories are created if they do not exist.
@@ -162,12 +163,16 @@ class ValidationBase(DataSetBase):
         for target_name, df in self.contingency_tables.items():
             output_path = self.output_file_names["contingency_table"][target_name]
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            df.write_csv(output_path, separator="\t")
+            df.write_parquet(output_path)
 
     def create_metric_plots(self) -> None:
         """
-        Create and save ROC and Precision-Recall plots as an SVG file.
+        Generate and save ROC and Precision-Recall plots for each target.
 
-        Call the common function create_metric_plots
+        This method iterates through the validation reports stored in :attr:`reports`,
+        and for each target, it generates and saves an SVG file containing
+        the ROC curve and Precision-Recall curve using the
+        :func:`dmqclib.common.utils.metric_plots.create_metric_plots` utility function.
+        The output file path for each plot is determined by :attr:`output_file_names`.
         """
         create_metric_plots(self)

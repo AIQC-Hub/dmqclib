@@ -15,23 +15,26 @@ from dmqclib.common.base.config_base import ConfigBase
 from dmqclib.common.base.scikit_learn_model_base import SklearnModelBase
 
 
-class SVM(SklearnModelBase):
+class SupportVectorMachine(SklearnModelBase):
     """
     A Support Vector Machine (SVM) model wrapper class for training and testing.
 
-    Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
+    Inherits from :class:`dmqclib.common.base.scikit_learn_model_base.SklearnModelBase`
+    to reuse common Scikit-Learn API logic.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
-    - Uses ``sklearn.svm.SVC``.
+    - Uses :class:`sklearn.svm.SVC`.
     - Enforces ``probability=True`` by default to support the generation of
       contingency tables and ROC/PR curves used in the parent class.
     - Uses a linear kernel by default.
 
     .. note::
-       This class sets :attr:`expected_class_name` to ``"SVM"``.
-       Standard SVM implementations do not support the ``n_jobs`` parameter directly.
+       Standard SVM implementations (especially with a linear kernel) typically
+       do not support the ``n_jobs`` parameter directly, as parallelization
+       is often handled by underlying BLAS libraries.
     """
 
     expected_class_name: str = "SupportVectorMachine"
@@ -49,22 +52,27 @@ class SVM(SklearnModelBase):
         self.model_params: Dict[str, Any] = {
             "C": 1.0,
             "kernel": "linear",
-            "gamma": "scale",
             "probability": True,  # Required for predict_proba used in base class
             "tol": 1e-3,
-            "max_iter": -1,
+            "max_iter": 200,
             "random_state": None,
+            "class_weight": "balanced",
         }
         # Update model parameters with config step parameters
         model_params = self.config.get_model_params(
             self.expected_class_name, self.short_name
         )
         self.model_params.update(model_params)
+        self.allow_na = False
 
     def _get_model_class(self) -> Any:
         """
         Return the Scikit-Learn SVC class.
 
-        :return: The SVC class.
+        This method is an abstract method implementation required by
+        :class:`dmqclib.common.base.scikit_learn_model_base.SklearnModelBase`.
+
+        :returns: The Scikit-Learn SVC class.
+        :rtype: Any
         """
         return SklearnSVC

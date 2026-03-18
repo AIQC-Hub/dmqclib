@@ -39,9 +39,9 @@ class InputDataSetBase(DataSetBase):
         :param config: The ConfigBase object providing path and parameter details.
         :type config: dmqclib.common.base.config_base.ConfigBase
         :raises NotImplementedError: If the ``expected_class_name`` is not defined
-                                     by a subclass of :class:`dmqclib.common.base.dataset_base.DataSetBase`.
+            by a subclass of :class:`dmqclib.common.base.dataset_base.DataSetBase`.
         :raises ValueError: If the YAML config does not match this class's
-                            expected class name.
+            expected class name.
         """
         super().__init__(step_name="input", config=config)
 
@@ -86,7 +86,7 @@ class InputDataSetBase(DataSetBase):
         columns will be renamed accordingly. Otherwise, the method does nothing.
 
         :raises polars.exceptions.ColumnNotFoundError: If a column specified in ``rename_dict``
-                                                     for renaming does not exist in the DataFrame.
+            for renaming does not exist in the DataFrame.
         """
         if self.config.get_step_params("input")["sub_steps"][
             "rename_columns"
@@ -104,8 +104,7 @@ class InputDataSetBase(DataSetBase):
         only a specified set of years via :meth:`keep_years`.
 
         :raises polars.exceptions.ColumnNotFoundError: If 'profile_timestamp' column is not
-                                                     present in :attr:`input_data` when
-                                                     year-based filtering is attempted.
+            present in :attr:`input_data` when year-based filtering is attempted.
         """
         input_params = self.config.get_step_params("input")
         if (
@@ -130,7 +129,7 @@ class InputDataSetBase(DataSetBase):
         'profile_timestamp' column in :attr:`input_data` to extract the year.
 
         :raises polars.exceptions.ColumnNotFoundError: If 'profile_timestamp' column is not
-                                                     present in :attr:`input_data`.
+            present in :attr:`input_data`.
         """
         years = self.config.get_step_params("input")["filter_method_dict"][
             "remove_years"
@@ -152,7 +151,7 @@ class InputDataSetBase(DataSetBase):
         'profile_timestamp' column in :attr:`input_data` to extract the year.
 
         :raises polars.exceptions.ColumnNotFoundError: If 'profile_timestamp' column is not
-                                                     present in :attr:`input_data`.
+            present in :attr:`input_data`.
         """
         years = self.config.get_step_params("input")["filter_method_dict"]["keep_years"]
         self.input_data = (

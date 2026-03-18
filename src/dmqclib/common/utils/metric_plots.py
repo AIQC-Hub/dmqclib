@@ -1,3 +1,11 @@
+"""
+This module provides functions for generating and saving performance metric plots,
+specifically Receiver Operating Characteristic (ROC) curves and Precision-Recall (PR) curves.
+It supports plotting for individual models across multiple cross-validation folds (with
+mean and standard deviation) or comparing multiple models/methods on a single plot.
+Plots are saved as SVG files.
+"""
+
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,16 +15,32 @@ from sklearn.metrics import auc, precision_recall_curve, roc_curve
 
 def create_metric_plots(model) -> None:
     """
-    Create and save ROC and Precision-Recall plots as an SVG file.
+    Create and save ROC and Precision-Recall plots as an SVG file for a single model.
 
     Generates a figure with two subplots (ROC on left, PR on right) based on
-    the data in :attr:`contingency_tables`. If the contingency table contains
-    multiple unique 'k' values (folds), it plots the mean curve with a
-    shaded confidence band (standard deviation).
+    the data in ``model.contingency_tables``. If the contingency table contains
+    multiple unique 'k' values (folds), it plots individual fold curves and then
+    the mean curve with a shaded confidence band (standard deviation).
 
-    The output file path is determined by :attr:`output_file_names['metric_plot']`.
+    The output file path is determined by ``model.output_file_names['metric_plot']``.
 
-    :raises ValueError: If :attr:`contingency_tables` is empty.
+    :param model: An object containing evaluation results and output configuration.
+                  It is expected to have the following attributes:
+
+                  - ``contingency_tables`` (dict[str, polars.DataFrame]): A dictionary
+                    where keys are target names and values are Polars DataFrames. Each
+                    DataFrame must contain at least 'k' (fold identifier), 'label'
+                    (true binary labels), and 'score' (prediction probabilities/scores)
+                    columns.
+                  - ``output_file_names`` (dict[str, dict[str, str]]): A dictionary
+                    containing output file paths. Specifically,
+                    ``output_file_names['metric_plot'][target_name]`` should provide
+                    the full path where the plot for a given target will be saved.
+
+    :type model: object
+    :raises ValueError: If ``model.contingency_tables`` is empty.
+    :return: None
+    :rtype: None
     """
     if not model.contingency_tables:
         raise ValueError("Member variable 'contingency_tables' must not be empty.")
@@ -166,7 +190,36 @@ def create_multi_method_metric_plots(model) -> None:
     Create and save ROC and Precision-Recall plots for multiple methods overlaid
     on the same figure. Assumes the contingency tables have a 'method' column.
 
-    The output file path is determined by :attr:`output_file_names['metric_plot']`.
+    The output file path is determined by ``model.output_file_names['metric_plot']``.
+
+    :param model: An object containing evaluation results and output configuration.
+                  It is expected to have the following attributes:
+
+                  - ``contingency_tables`` (dict[str, polars.DataFrame]): A dictionary
+                    where keys are target names and values are Polars DataFrames. Each
+                    DataFrame must contain at least 'method' (method identifier), 'label'
+                    (true binary labels), and 'score' (prediction probabilities/scores)
+                    columns. It aggregates results across all folds/runs for each method.
+                  - ``output_file_names`` (dict[str, dict[str, str]]): A dictionary
+                    containing output file paths. Specifically,
+                    ``output_file_names['metric_plot'][target_name]`` should provide
+                    the full path where the plot for a given target will be saved.
+
+    :type model: object
+    :raises ValueError: If ``model.contingency_tables`` is empty.
+    :return: None
+    :rtype: None
+
+    .. admonition:: Code Issue
+       :class: warning
+
+       The calculation of Average Precision (AP) for the Precision-Recall curve using
+       ``pr_auc = auc(rec[::-1], prec[::-1])`` is incorrect.
+       The ``sklearn.metrics.precision_recall_curve`` function returns `recall` values
+       that are already in increasing order. Therefore, `auc(rec, prec)` should be used
+       directly to calculate the Area Under the Curve for the Precision-Recall plot.
+       Reversing `rec` and `prec` before passing them to `auc` when `rec` is already
+       increasing will lead to an incorrect AP value.
     """
     if not model.contingency_tables:
         raise ValueError("Member variable 'contingency_tables' must not be empty.")
@@ -196,7 +249,6 @@ def create_multi_method_metric_plots(model) -> None:
 
             # PR
             prec, rec, _ = precision_recall_curve(y_true, y_score)
-            # Reversing for calculation of AP across interpolatable recall
             pr_auc = auc(rec[::-1], prec[::-1])
             ax_pr.plot(rec, prec, lw=2, label=f"{method} (AP = {pr_auc:.2f})")
 

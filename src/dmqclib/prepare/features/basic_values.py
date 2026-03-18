@@ -32,24 +32,24 @@ class BasicValues(FeatureBase):
         Initialize an instance of BasicValues.
 
         :param target_name: The key identifying which target's rows to extract
-                            features for from :attr:`selected_rows`, defaults to None.
+                            features for from :attr:`selected_rows`. Defaults to :obj:`None`.
         :type target_name: Optional[str]
         :param feature_info: A dictionary containing feature-related parameters,
                              including a "stats" sub-dict with min/max info
                              and a "flank_up" integer specifying how many
-                             upstream observations to retrieve, defaults to None.
+                             upstream observations to retrieve. Defaults to :obj:`None`.
         :type feature_info: Optional[Dict]
         :param selected_profiles: A Polars DataFrame with selected profiles, typically
-                                  used for further merges or lookups, defaults to None.
+                                  used for further merges or lookups. Defaults to :obj:`None`.
         :type selected_profiles: Optional[pl.DataFrame]
         :param filtered_input: A potentially filtered Polars DataFrame containing
-                               full observed variables, defaults to None.
+                               full observed variables. Defaults to :obj:`None`.
         :type filtered_input: Optional[pl.DataFrame]
         :param selected_rows: A dictionary mapping target names to their respective
-                              DataFrames of relevant rows, defaults to None.
+                              DataFrames of relevant rows. Defaults to :obj:`None`.
         :type selected_rows: Optional[Dict[str, pl.DataFrame]]
         :param summary_stats: A Polars DataFrame of summary statistics
-                              (unused in this subclass), defaults to None.
+                              (unused in this subclass). Defaults to :obj:`None`.
         :type summary_stats: Optional[pl.DataFrame]
         """
         super().__init__(
@@ -70,9 +70,9 @@ class BasicValues(FeatureBase):
         Steps:
 
           1. :meth:`_init_features` - Prepare a base DataFrame with essential columns
-             (row_id, platform_code, profile_no).
-          2. For each column in ``feature_info["col_names"]``, call:
-             - :meth:`_add_features` to join the pivoted data onto our feature table.
+             (row_id, platform_code, profile_no, observation_no).
+          2. For each column specified in ``feature_info["col_names"]``,
+             call :meth:`_add_features` to join the pivoted data onto our feature table.
           3. :meth:`_clean_features` - Drop columns no longer needed.
         """
         self._init_features()
@@ -82,8 +82,8 @@ class BasicValues(FeatureBase):
 
     def _init_features(self) -> None:
         """
-        Initialize :attr:`features` by selecting core columns
-        from :attr:`selected_rows[target_name]`.
+        Initialize :attr:`features` by selecting core identifying columns
+        from the DataFrame specified by :attr:`selected_rows[target_name]`.
         """
         self.features = self.selected_rows[self.target_name].select(
             ["row_id", "platform_code", "profile_no", "observation_no"]
@@ -91,9 +91,11 @@ class BasicValues(FeatureBase):
 
     def _add_features(self, col_name: str) -> None:
         """
-        Join the specified column from :attr:`filtered_input` onto :attr:`features`.
+        Join the specified column from :attr:`filtered_input` onto :attr:`features`
+        using common identifier columns.
 
-        :param col_name: The name of the column to add as a feature.
+        :param col_name: The name of the column from :attr:`filtered_input` to add
+                         as a new feature.
         :type col_name: str
         """
         self.features = self.features.join(
@@ -111,7 +113,8 @@ class BasicValues(FeatureBase):
 
     def _clean_features(self) -> None:
         """
-        Drop columns that are no longer needed in the final feature set.
+        Drop intermediate columns from :attr:`features` that are no longer
+        needed after feature extraction and joining.
         """
         self.features = self.features.drop(
             ["platform_code", "profile_no", "observation_no"]
@@ -119,10 +122,11 @@ class BasicValues(FeatureBase):
 
     def scale_first(self) -> None:
         """
-        Apply a pre-feature-extraction scaling step on :attr:`filtered_input`
-        using min-max scaling derived from :attr:`feature_info["stats"]`.
+        Apply a pre-feature-extraction scaling step on :attr:`filtered_input`.
 
-        This modifies :attr:`filtered_input` in place for each relevant column.
+        This method performs min-max scaling derived from
+        :attr:`feature_info["stats"]` for each relevant column,
+        modifying :attr:`filtered_input` in place.
         """
         if self.feature_info["stats_set"]["type"] == "min_max":
             for col_name, v in self.feature_info["stats"].items():
@@ -136,7 +140,8 @@ class BasicValues(FeatureBase):
         """
         Apply a post-feature-extraction scaling step if needed.
 
-        Currently, unimplemented; retains placeholders for additional
-        scaling/normalization after feature pivoting and expansion.
+        This method is currently unimplemented but retains its placeholder
+        for potential future additions of scaling or normalization
+        after features have been pivoted and expanded.
         """
         pass  # pragma: no cover

@@ -51,8 +51,8 @@ While the classification workflow is applying a pre-trained model, this section 
        variables:
          - name: temp
            flag: temp_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
 
 `summary_stats_sets`
 ^^^^^^^^^^^^^^^^^^^^
@@ -167,6 +167,7 @@ This section provides general parameters for the workflow processes defined in `
 *   **steps.input.sub_steps.filter_rows**: A boolean flag to enable or disable row filtering based on ``filter_method_dict``.
 *   **steps.input.filter_method_dict.keep_years**: Specifies a list of years from which data should be kept for classification. Other years will be excluded.
 *   **steps.input.rename_dict**: Dictionary for renaming columns during input processing.
+*   **steps.model.calculate_shap**: This is used to control SHAP value calculation.
 *   **steps.model.model_params.n_jobs**: The number of threads used by XGBoost. It tries to use all available CPU cores if it is set to `-1`.
 *   Parameters for other steps (``summary``, ``select``, ``locate``, ``extract``, ``classify``, ``concat``) are also defined here, often left empty if default behavior is sufficient or if parameters are handled by the model itself.
 
@@ -184,7 +185,8 @@ This section provides general parameters for the workflow processes defined in `
          select: { }
          locate: { }
          extract: { }
-         model: { model_params: { n_jobs: -1 } }
+         model: { calculate_shap: False,
+                  model_params: { n_jobs: -1 } }
          classify: { }
          concat: { }
 
@@ -214,14 +216,14 @@ This is the main "assembly" section that defines a complete classification job. 
 .. note::
    While you can define multiple classification sets in the ``classification_sets`` section, a specific one must be selected for subsequent processes. Please consult the dedicated :doc:`../../how-to/selecting_specific_configurations` page for instructions on how to do this.
 
-Full Example
-------------
+Full Example with XGBoost
+--------------------------------
 
 Here is a complete example of a ``classification_config.yaml`` file, showing how all the building blocks come together. The lines you will most commonly need to edit or customize are highlighted for quick reference.
 
 .. code-block:: yaml
    :caption: Full classification_config.yaml example
-   :emphasize-lines: 5, 7, 10, 11, 13, 68, 72, 95, 97, 98, 103
+   :emphasize-lines: 5, 7, 10, 11, 13, 68, 72, 95, 97, 98, 103, 104
 
    ---
    path_info_sets:
@@ -242,16 +244,16 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
        variables:
          - name: temp
            flag: temp_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
          - name: psal
            flag: psal_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
          - name: pres
            flag: pres_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
 
    summary_stats_sets:
      - name: summary_stats_set_1
@@ -325,7 +327,8 @@ Here is a complete example of a ``classification_config.yaml`` file, showing how
          select: { }
          locate: { }
          extract: { }
-         model: { model_params: { n_jobs: -1 } }
+         model: { calculate_shap: False,
+                  model_params: { n_jobs: -1 } }
          classify: { }
          concat: { }
 

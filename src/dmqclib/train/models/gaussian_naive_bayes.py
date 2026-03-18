@@ -22,6 +22,7 @@ class GaussianNaiveBayes(SklearnModelBase):
     Inherits from :class:`SklearnModelBase` to reuse common Scikit-Learn API logic.
 
     Features include:
+
     - Automatic application of ``model_params`` from the YAML config, if defined;
       otherwise, uses default hyperparameters.
     - Uses ``sklearn.naive_bayes.GaussianNB``.
@@ -52,11 +53,13 @@ class GaussianNaiveBayes(SklearnModelBase):
             self.expected_class_name, self.short_name
         )
         self.model_params.update(model_params)
+        self.allow_na = False
 
     def _get_model_class(self) -> Any:
         """
         Return the Scikit-Learn GaussianNB class.
 
         :return: The GaussianNB class.
+        :rtype: Any
         """
         return SklearnGNB

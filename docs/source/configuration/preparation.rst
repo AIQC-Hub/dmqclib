@@ -56,8 +56,8 @@ This section specifies the target variables that your machine learning model wil
        variables:
          - name: temp
            flag: temp_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
 
 `summary_stats_sets`
 ^^^^^^^^^^^^^^^^^^^^
@@ -184,7 +184,7 @@ This section provides general parameters that control the behavior of the variou
          locate: { }
          extract: { }
          split: { test_set_fraction: 0.1,
-                  k_fold: 10 }
+                  k_fold: 5 }
 
 `data_sets`
 ^^^^^^^^^^^
@@ -235,16 +235,16 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
        variables:
          - name: temp
            flag: temp_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
          - name: psal
            flag: psal_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
          - name: pres
            flag: pres_qc
-           pos_flag_values: [3, 4, 5, 6, 7, 8, 9]
-           neg_flag_values: [1, 2]
+           pos_flag_values: [ 4, 6, 7 ]
+           neg_flag_values: [ 1 ]
 
    summary_stats_sets:
      - name: summary_stats_set_1
@@ -317,7 +317,7 @@ Below is a complete example of a ``prepare_config.yaml`` file, demonstrating how
          locate: { }
          extract: { }
          split: { test_set_fraction: 0.1,
-                  k_fold: 10 }
+                  k_fold: 5 }
 
    data_sets:
      - name: dataset_0001  # Your unique name for this dataset job
