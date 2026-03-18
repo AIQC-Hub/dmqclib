@@ -6,7 +6,7 @@ It inherits from :class:`dmqclib.train.step4_build_model.build_model_base.BuildM
 and orchestrates the training and evaluation of models for specified targets
 using Polars DataFrames.
 """
-import copy
+
 from typing import Optional, Dict
 
 import polars as pl

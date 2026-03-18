@@ -99,7 +99,6 @@ class BuildModelSuite(BuildModelBase):
                     "{method}", method_lower
                 )
 
-
     def test_targets(self) -> None:
         """
         Iterate over all targets, ensuring that models have been built for all

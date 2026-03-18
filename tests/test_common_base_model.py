@@ -137,7 +137,6 @@ class TestModelBaseMethods(unittest.TestCase):
         the one expected by _get_model_class().
         """
         ds = ModelBaseWithExpectedName(self.config)
-        valid_model = xgb.XGBClassifier()
 
         model_file = (
             Path(__file__).resolve().parent

@@ -163,7 +163,7 @@ class TestBuildModelSuite(unittest.TestCase):
         # Verify that internal data was joined correctly
         self.assertEqual(
             ds.final_models["xgb_temp"].training_set.height, 116 + 12
-        ) # 116 train + 12 test
+        )  # 116 train + 12 test
 
     def test_build_targets(self):
         """Confirm that building models populates 'models' with composite keys."""
@@ -180,9 +180,7 @@ class TestBuildModelSuite(unittest.TestCase):
         self.assertIsNot(ds.models["xgb_temp"], ds.models["dt_temp"])
 
         # Verify that internal data was joined correctly
-        self.assertEqual(
-            ds.models["xgb_temp"].training_set.height, 116
-        )
+        self.assertEqual(ds.models["xgb_temp"].training_set.height, 116)
 
     def test_build_without_data(self):
         """Ensure that calling build_targets() without data raises ValueError."""
@@ -192,7 +190,9 @@ class TestBuildModelSuite(unittest.TestCase):
 
     def test_build_final_model_without_test_data(self):
         """Ensure that calling build_final_model_targets() without data raises ValueError."""
-        ds = BuildModelSuite(self.config, training_sets=self.ds_input.training_sets, test_sets=None)
+        ds = BuildModelSuite(
+            self.config, training_sets=self.ds_input.training_sets, test_sets=None
+        )
         with self.assertRaises(ValueError):
             ds.build_final_model_targets()
 

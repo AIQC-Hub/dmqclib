@@ -117,11 +117,12 @@ class TestCreateTrainingDataSet:
         assert os.path.exists(dir_model / "model_psal.joblib")
         assert os.path.exists(dir_model / "model_pres.joblib")
 
-
     @pytest.mark.parametrize("idx", range(2))
     def test_shap_value_output(self, idx):
         # Execute the training and evaluation process with SHAP output
-        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = (
+            True
+        )
         train_and_evaluate(self.configs[idx])
 
         # Define the expected output folder based on the configuration

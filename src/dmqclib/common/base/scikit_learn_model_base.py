@@ -7,7 +7,6 @@ prediction, reporting, and SHAP value calculation for Explainable AI (XAI).
 """
 
 import warnings
-from abc import abstractmethod
 from typing import Any, Self, Optional
 
 import polars as pl
@@ -85,7 +84,7 @@ class SklearnModelBase(ModelBase):
             imputer = SimpleImputer(strategy="median")
             x_train = pd.DataFrame(
                 imputer.fit_transform(x_train),
-                columns=x_train.columns  # keep column names
+                columns=x_train.columns,  # keep column names
             )
         y_train = self.training_set["label"].to_pandas()
 

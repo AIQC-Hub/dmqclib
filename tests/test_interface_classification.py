@@ -136,7 +136,9 @@ class TestClassifyDataSet:
         Verifies that the `classify_dataset` function generates the expected
         SHAP output files
         """
-        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = True
+        self.configs[idx].data["step_param_set"]["steps"]["model"]["calculate_shap"] = (
+            True
+        )
         classify_dataset(self.configs[idx])
 
         output_folder = (
