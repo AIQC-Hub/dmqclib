@@ -2,7 +2,6 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/dmqclib)](https://pypi.org/project/dmqclib/)
 [![Conda - Version](https://img.shields.io/conda/vn/conda-forge/dmqclib)](https://anaconda.org/conda-forge/dmqclib)
-[![Check Package](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml/badge.svg)](https://github.com/AIQC-Hub/dmqclib/actions/workflows/check_package.yml)
 [![DOI](https://zenodo.org/badge/1003136460.svg)](https://doi.org/10.5281/zenodo.16055323)
 
 > ⚠️ **This repository has moved.**
