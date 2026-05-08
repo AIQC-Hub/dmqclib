@@ -1,7 +1,7 @@
 [project]
 name = "dmqclib"
-version = "0.7.3"
-description = "This package aims to offer helper functions that simplify model building and evaluation"
+version = "999.0.0"
+description = "DEPRECATED — this package has been renamed to aiqclib."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICEN[CS]E.*"]
@@ -10,36 +10,16 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "joblib>=1.4.2",
-    "jsonschema>=4.23.0",
-    "matplotlib>=3.10.8",
-    "numpy>=2.2",
-    "pandas>=2.2",
-    "polars>=1.30.0",
-    "pyarrow>=19.0.0",
-    "pyyaml>=6.0.2",
-    "scikit-learn>=1.6.1",
-    "shap>=0.51.0",
-    "xgboost>=3.0.2",
+    "aiqclib",
 ]
+
+[project.urls]
+Homepage = "https://github.com/AIQC-Hub/aiqclib"
+"New Package" = "https://pypi.org/project/aiqclib"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[dependency-groups]
-dev = [
-    "pytest>=8.4.0",
-    "pytest-cov>=6.2.1",
-    "ruff>=0.14.0",
-    "sphinx>=8.2.3",
-    "sphinx-autodoc-typehints>=3.2.0",
-    "sphinx-rtd-theme>=3.0.2",
-    "sphinx-tabs>=3.4.7",
-]
-
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.package-data]
-"" = ["CHANGELOG.md"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/dmqclib"]

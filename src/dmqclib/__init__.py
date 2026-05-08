@@ -1,36 +1,13 @@
-"""
-dmqclib Interface Module
-========================
+import warnings
 
-This module provides a high-level interface to the dmqclib library,
-exposing core functionalities for configuration management, dataset
-preparation, model training and evaluation, and dataset classification.
+warnings.warn(
+    "dmqclib has been renamed to aiqclib. "
+    "Please update your code: pip install aiqclib. "
+    "This package will not receive further updates. "
+    "See https://github.com/AIQC-Hub/aiqclib for more information.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
-Attributes:
-    __version__ (str): The version of the dmqclib library.
-"""
-
-from importlib.metadata import version, PackageNotFoundError
-
-try:
-    __version__ = version("dmqclib")
-except PackageNotFoundError:
-    __version__ = "unknown"
-
-from dmqclib.interface.classify import classify_dataset
-from dmqclib.interface.config import read_config
-from dmqclib.interface.config import write_config_template
-from dmqclib.interface.prepare import create_training_dataset
-from dmqclib.interface.stats import format_summary_stats
-from dmqclib.interface.stats import get_summary_stats
-from dmqclib.interface.train import train_and_evaluate
-
-__all__ = [
-    "classify_dataset",
-    "read_config",
-    "write_config_template",
-    "create_training_dataset",
-    "format_summary_stats",
-    "get_summary_stats",
-    "train_and_evaluate",
-]
+from aiqclib import *  # noqa: F401, F403, E402
+from aiqclib import __version__  # noqa: E402
