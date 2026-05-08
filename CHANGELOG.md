@@ -2,9 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
-As this project is still in active development, it does not yet strictly adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [999.0.0] - 2026-05-08
+### Changed
+- Package renamed to [aiqclib](https://github.com/AIQC-Hub/aiqclib)
+- This is the final release of dmqclib
 
 ## [0.7.3] - 2026-03-18
 ### Added
